@@ -763,7 +763,9 @@ p {
   width: 100%;
   height: auto;
   display: block;
+  display: block;
   will-change: transform;
+  z-index: 1;
 }
 
 .map-controls {
