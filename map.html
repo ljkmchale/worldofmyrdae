@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Map of Myrdae - Explore the realms and locations of this glorious world.">
+  <title>Map of Myrdae | World of Myrdae</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dnd-theme.css">
+  <style>
+    .map-container {
+      height: 70vh;
+      /* Fixed height for the interactive window */
+      cursor: grab;
+      background: #050508;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    .map-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(10, 10, 15, 0.8);
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .map-btn:hover {
+      background: var(--color-gold);
+      color: #000;
+    }
+
+    .map-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      will-change: transform;
+      transform-origin: 0 0;
+      /* Using translate3d in JS, but ensuring base styles are solid */
+      backface-visibility: hidden;
+      perspective: 1000;
+      -webkit-font-smoothing: subpixel-antialiased;
+    }
+
+    .map-coords {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 0.25rem 0.5rem;
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Ambient Floating Embers -->
+  <div class="ambient-embers" aria-hidden="true">
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+      <div class="logo">
+        <h2>World of Myrdae</h2>
+        <span>Legacy of the Realms</span>
+      </div>
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link">
+              <span class="nav-icon"><i class="fa-solid fa-dungeon"></i></span>
+              Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="map.html" class="nav-link active">
+              <span class="nav-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+              World Map
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer" style="margin-top: auto;">
+        <p style="font-size: 0.7rem; color: var(--color-text-muted); text-align: center;">&copy; 2026 World of Myrdae
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="page-header portal-header">
+        <h1><i class="fa-solid fa-map"></i> World Map <i class="fa-solid fa-map fa-flip-horizontal"></i></h1>
+        <p class="page-subtitle">Chart your course through the unknown</p>
+        <div class="portal-border-glow"></div>
+      </header>
+
+      <section class="card">
+        <div class="map-container" id="map-container">
+          <div class="map-controls">
+            <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
+              <i class="fa-solid fa-house"></i>
+            </button>
+            <button class="map-btn" id="overlay-toggle" onclick="toggleOverlay()" title="Toggle Locations">
+              <i class="fa-solid fa-location-dot"></i>
+            </button>
+            <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
+              <i class="fa-solid fa-crosshairs"></i>
+            </button>
+            <button class="map-btn" id="editor-toggle" onclick="RoadEditor.toggleEditMode()" title="Toggle Road Editor">
+              <i class="fa-solid fa-pen-nib"></i>
+            </button>
+            <button class="map-btn" onclick="LocationEditor.open()" title="Create New Location">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+          <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
+          <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+        </div>
+        <div style="margin-top: 1.5rem; text-align: center; color: var(--color-text-secondary);">
+          <p><i class="fa-solid fa-circle-info"></i> Use <strong>mouse wheel</strong> to zoom and <strong>click &
+              drag</strong> to move the map.</p>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top: 2rem;">
+        <h3><i class="fa-solid fa-location-dot"></i> Key Locations</h3>
+        <p>Reference locations and points of interest across the continent.</p>
+        <div class="map-container" id="locations-container">
+          <div class="map-controls">
+            <button class="map-btn" onclick="MapController.reset('locations-container', 'locations-image')"
+              title="Reset View">
+              <i class="fa-solid fa-house"></i>
+            </button>
+            <button class="map-btn" id="coords-toggle-2" onclick="toggleCoords2()" title="Toggle Coordinate Tracker">
+              <i class="fa-solid fa-crosshairs"></i>
+            </button>
+          </div>
+          <div class="map-coords" id="map-coords-2" style="display:none;">X: — Y: —</div>
+          <img src="images/Myrdae_locations.jpg" alt="Locations of Myrdae" class="map-image" id="locations-image"
+            draggable="false">
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/locations-db.js"></script>
+  <script src="js/campaign-data.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/map-overlay.js"></script>
+  <script src="js/road-editor.js"></script>
+  <script src="js/location-editor.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await CampaignData.init();
+      LocationEditor.init();
+
+      // Initialize primary map with sync callback
+      MapController.init('map-container', 'map-image', {
+        onTransform: (transformStr, scale, tx, ty) => {
+          // Sync overlay
+          const overlay = document.getElementById('map-container-overlay');
+          if (overlay) {
+            overlay.style.transform = transformStr;
+            overlay.style.transformOrigin = '0 0';
+          }
+          // Sync editor
+          const editor = document.querySelector('.road-editor-layer');
+          if (editor) {
+            editor.style.transform = transformStr;
+            editor.style.transformOrigin = '0 0';
+          }
+        }
+      });
+
+      // Initialize second map
+      MapController.init('locations-container', 'locations-image');
+
+      MapOverlay.init('map-container', 'map-image');
+      RoadEditor.init('map-container', 'map-image');
+    });
+
+    function toggleOverlay() {
+      const visible = MapOverlay.toggle('map-container');
+      const btn = document.getElementById('overlay-toggle');
+      if (btn) {
+        btn.style.opacity = visible ? '1' : '0.5';
+        btn.title = visible ? 'Hide Locations' : 'Show Locations';
+      }
+    }
+
+    // --- Coordinate Tracker (reusable) ---
+    function createCoordsTracker(containerId, imageId, displayId, toggleBtnId) {
+      let active = false;
+      const container = document.getElementById(containerId);
+      const mapImg = document.getElementById(imageId);
+      const display = document.getElementById(displayId);
+      if (!container || !mapImg || !display) return { toggle: () => { } };
+
+      container.addEventListener('mousemove', (e) => {
+        if (!active) return;
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const state = MapController.getInstanceState(containerId);
+        if (!state) return;
+        const scale = state.scale;
+        const tx = state.pointX;
+        const ty = state.pointY;
+
+        const cw = container.offsetWidth;
+        const imgDisplayWidth = cw * scale;
+        const imgDisplayHeight = (mapImg.naturalHeight / mapImg.naturalWidth) * cw * scale;
+
+        const imgX = (mouseX - tx) / imgDisplayWidth * 100;
+        const imgY = (mouseY - ty) / imgDisplayHeight * 100;
+
+        if (imgX >= 0 && imgX <= 100 && imgY >= 0 && imgY <= 100) {
+          display.textContent = `X: ${imgX.toFixed(1)}  Y: ${imgY.toFixed(1)}`;
+          display.style.color = '#ffd700';
+        } else {
+          display.textContent = 'X: —  Y: —';
+          display.style.color = '#666';
+        }
+      });
+
+      container.addEventListener('mouseleave', () => {
+        if (active) display.textContent = 'X: —  Y: —';
+      });
+
+      return {
+        toggle: () => {
+          active = !active;
+          display.style.display = active ? 'block' : 'none';
+          const btn = document.getElementById(toggleBtnId);
+          if (btn) btn.style.opacity = active ? '1' : '0.5';
+        }
+      };
+    }
+
+    const tracker1 = createCoordsTracker('map-container', 'map-image', 'map-coords', 'coords-toggle');
+    const tracker2 = createCoordsTracker('locations-container', 'locations-image', 'map-coords-2', 'coords-toggle-2');
+    function toggleCoords() { tracker1.toggle(); }
+    function toggleCoords2() { tracker2.toggle(); }
+
+
+    // Auto-refresh UI when data changes (e.g. from another window)
+    document.addEventListener('campaign-data-updated', () => {
+      console.log('UI Refreshing due to data update...');
+      const containers = document.querySelectorAll('.map-container');
+      containers.forEach(c => {
+        const img = c.querySelector('.map-image');
+        if (img) {
+          const existing = document.getElementById(c.id + '-overlay');
+          if (existing) existing.remove();
+          MapOverlay.init(c.id, img.id);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
