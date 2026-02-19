@@ -157,12 +157,8 @@
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
               <i class="fa-solid fa-crosshairs"></i>
             </button>
-            <button class="map-btn" id="editor-toggle" onclick="RoadEditor.toggleEditMode()" title="Toggle Road Editor">
-              <i class="fa-solid fa-pen-nib"></i>
-            </button>
-            <button class="map-btn" onclick="LocationEditor.open()" title="Create New Location">
-              <i class="fa-solid fa-plus"></i>
-            </button>
+
+
           </div>
           <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
           <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
@@ -198,12 +194,12 @@
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
   <script src="js/map-overlay.js"></script>
-  <script src="js/road-editor.js"></script>
-  <script src="js/location-editor.js"></script>
+
+
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       await CampaignData.init();
-      LocationEditor.init();
+
 
       // Initialize primary map with sync callback
       MapController.init('map-container', 'map-image', {
@@ -214,12 +210,7 @@
             overlay.style.transform = transformStr;
             overlay.style.transformOrigin = '0 0';
           }
-          // Sync editor
-          const editor = document.querySelector('.road-editor-layer');
-          if (editor) {
-            editor.style.transform = transformStr;
-            editor.style.transformOrigin = '0 0';
-          }
+
         }
       });
 
@@ -227,7 +218,7 @@
       MapController.init('locations-container', 'locations-image');
 
       MapOverlay.init('map-container', 'map-image');
-      RoadEditor.init('map-container', 'map-image');
+
     });
 
     function toggleOverlay() {

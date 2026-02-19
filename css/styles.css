@@ -931,7 +931,8 @@ p {
 /* Specific Style: Region Type (Inner White, Outer Brown) */
 .region-type-region,
 .marker-type-region .marker-label {
-  fill: #ffffff;
+  fill: #f5e6c4;
+  /* Sandy Off-White */
   stroke: #3e2723;
   stroke-width: 4px;
 }
@@ -957,6 +958,24 @@ p {
   fill: #f0f0f0;
   stroke: #00BFFF;
   /* Deep Sky Blue */
+}
+
+/* Specific Style: POI Type (Inner White, Outer Brown Glow) */
+.marker-type-poi .marker-label {
+  fill: #faf3e0;
+  /* Light Sandy/Cream */
+  stroke: #3e2723;
+  /* Dark Brown (Base Outline) */
+  stroke-width: 2px;
+  /* Thinner, sharper outline */
+  filter: drop-shadow(0 0 3px #3e2723);
+  /* Dispersed Glow */
+  font-weight: 600;
+}
+
+.marker-type-poi:hover .marker-label {
+  fill: #f0f0f0;
+  stroke: #5d4037;
 }
 
 /* --- Tooltip --- */

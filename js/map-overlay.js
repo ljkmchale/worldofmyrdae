@@ -233,22 +233,26 @@ const MapOverlay = (function () {
 
         switch (loc.type) {
             case 'capital': {
+                // White ring (glow) behind
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.8)', 6);
+                markerGroup.appendChild(glow);
+
                 // White filled circle, brown outline, star in center
-                const outer = makeCircle(px, py, r, '#FFFFFF', brown, 2.5);
+                const outer = makeCircle(px, py, r, brown, brown, 2.5);
                 markerGroup.appendChild(outer);
-                // 5-pointed star
+                // 8-pointed star
                 const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                const starR = r * 0.55;
+                const starR = r * 1.0;
                 const innerR = starR * 0.4;
                 let points = '';
-                for (let i = 0; i < 5; i++) {
-                    const outerAngle = (Math.PI / 2 * -1) + (i * 2 * Math.PI / 5);
-                    const innerAngle = outerAngle + Math.PI / 5;
+                for (let i = 0; i < 8; i++) {
+                    const outerAngle = (Math.PI / 2 * -1) + (i * 2 * Math.PI / 8);
+                    const innerAngle = outerAngle + Math.PI / 8;
                     points += `${px + starR * Math.cos(outerAngle)},${py + starR * Math.sin(outerAngle)} `;
                     points += `${px + innerR * Math.cos(innerAngle)},${py + innerR * Math.sin(innerAngle)} `;
                 }
                 star.setAttribute('points', points.trim());
-                star.setAttribute('fill', brown);
+                star.setAttribute('fill', '#FFFFFF');
                 star.setAttribute('stroke', darkBrown);
                 star.setAttribute('stroke-width', '0.5');
                 markerGroup.appendChild(star);
@@ -382,13 +386,20 @@ const MapOverlay = (function () {
         const wouldCollide = Math.abs(offsetX) < collisionZone && Math.abs(offsetY) < collisionZone;
 
         const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        let labelX, labelY;
         if (wouldCollide) {
-            label.setAttribute('x', px);
-            label.setAttribute('y', py - radius * 1.4);
+            labelX = px;
+            labelY = py - radius * 1.4;
             label.setAttribute('text-anchor', 'middle');
         } else {
-            label.setAttribute('x', px + offsetX);
-            label.setAttribute('y', py + offsetY);
+            labelX = px + offsetX;
+            labelY = py + offsetY;
+        }
+        label.setAttribute('x', labelX);
+        label.setAttribute('y', labelY);
+
+        if (loc.rotation) {
+            label.setAttribute('transform', `rotate(${loc.rotation}, ${labelX}, ${labelY})`);
         }
         label.setAttribute('class', 'marker-label');
         label.setAttribute('font-size', loc.fontSize || Math.max(natW * 0.005, 9));
@@ -444,9 +455,6 @@ const MapOverlay = (function () {
             <div class="tooltip-header" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
                 <span class="tooltip-icon" style="font-size: 1.1rem;">${icon}</span>
                 <span class="tooltip-name" style="font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">${loc.name}</span>
-                <button onclick="LocationEditor.open('${loc.id}')" style="margin-left: auto; background: rgba(212,175,55,0.15); border: 1px solid var(--color-gold); color: var(--color-gold); cursor: pointer; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseover="this.style.background='var(--color-gold)'; this.style.color='#000';" onmouseout="this.style.background='rgba(212,175,55,0.15)'; this.style.color='var(--color-gold)';">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                </button>
             </div>
             <div class="tooltip-type" style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #a0a0a0; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(212,175,55,0.2);">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
             ${loc.description ? `<div class="tooltip-desc" style="font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: #d0d0d0; line-height: 1.4;">${loc.description}</div>` : ''}
