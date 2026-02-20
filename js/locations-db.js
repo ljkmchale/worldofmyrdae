@@ -134,7 +134,7 @@ const WORLD_LOCATIONS = {
             "id": "sunbay",
             "name": "Sunbay",
             "type": "town",
-            "x": 73.7,
+            "x": 73.6,
             "y": 37.1,
             "region": "Otesurr Mountains",
             "description": "A coastal settlement.",
@@ -181,8 +181,8 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetX": 0,
+            "labelOffsetY": 15
         },
         {
             "id": "hesfal",
@@ -763,7 +763,616 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -40,
             "labelOffsetY": -10
+        },
+        {
+            "id": "marrowdale",
+            "name": "Marrowdale",
+            "type": "capital",
+            "x": 70.6,
+            "y": 69.7,
+            "region": "Arbescar",
+            "description": "Capital",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.1,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 10
+        },
+        {
+            "id": "farview",
+            "name": "Farview",
+            "type": "town",
+            "x": 71.9,
+            "y": 72.1,
+            "region": "Arbescar",
+            "description": "Port Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "dire-of-arbescar",
+            "name": "Dire of\nArbescar",
+            "type": "region",
+            "x": 69.4,
+            "y": 73.5,
+            "region": "Dire of Arbescar",
+            "description": "Dire of Arbescar",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "nebisill",
+            "name": "Nebisill",
+            "type": "town",
+            "x": 68.25,
+            "y": 72.7,
+            "region": "Arbescar",
+            "description": "Port Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -50,
+            "labelOffsetY": -5
+        },
+        {
+            "id": "siltbay",
+            "name": "Siltbay",
+            "type": "water",
+            "x": 69.7,
+            "y": 67.0,
+            "region": "Arbescar",
+            "description": "Port Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 30,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "stillbluff",
+            "name": "Stillbluff",
+            "type": "nature",
+            "x": 76.5,
+            "y": 69.3,
+            "region": "Arbescar",
+            "description": "Forest",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "longwood",
+            "name": "Longwood",
+            "type": "nature",
+            "x": 71.7,
+            "y": 69.7,
+            "region": "Arbescar",
+            "description": "Forest",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "nebisill-grove",
+            "name": "Nebisill\nGrove",
+            "type": "nature",
+            "x": 70.1,
+            "y": 71.7,
+            "region": "Arbescar",
+            "description": "Grove",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "mulshear",
+            "name": "Mulshear",
+            "type": "town",
+            "x": 65.85,
+            "y": 74.22,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "mulbrook",
+            "name": "Mulbrook",
+            "type": "nature",
+            "x": 65.3,
+            "y": 73.5,
+            "region": "Mulbrook",
+            "description": "Grove",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "multear-swamps",
+            "name": "Multear\nSwamps",
+            "type": "nature",
+            "x": 63.9,
+            "y": 75.7,
+            "region": "Mulbrook",
+            "description": "Swamps",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "silvermead-knolls",
+            "name": "Silvermead\nKnolls",
+            "type": "nature",
+            "x": 63.9,
+            "y": 71.9,
+            "region": "Mulbrook",
+            "description": "Knolls",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "hillside-woods",
+            "name": "Hillside\nWoods",
+            "type": "nature",
+            "x": 62.5,
+            "y": 74.3,
+            "region": "Mulbrook",
+            "description": "Woods",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "bickerfeld",
+            "name": "Bickerfeld",
+            "type": "town",
+            "x": 65.8,
+            "y": 70.2,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "nuwharf",
+            "name": "Nuwharf",
+            "type": "town",
+            "x": 65.55,
+            "y": 69.4,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "silvermead",
+            "name": "Silvermead",
+            "type": "town",
+            "x": 62.7,
+            "y": 69.7,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "eldeff",
+            "name": "Eldeff",
+            "type": "town",
+            "x": 60.2,
+            "y": 69.35,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "adamont",
+            "name": "Adamont",
+            "type": "city",
+            "x": 61.14,
+            "y": 66.3,
+            "region": "Mulbrook",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.15,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "trailpoint",
+            "name": "Trailpoint",
+            "type": "town",
+            "x": 64.7,
+            "y": 65.5,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "farnsby-port",
+            "name": "Farnsby\nPort",
+            "type": "town",
+            "x": 63.65,
+            "y": 65.3,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -30,
+            "labelOffsetY": 15
+        },
+        {
+            "id": "bistron",
+            "name": "Bistron",
+            "type": "town",
+            "x": 66.6,
+            "y": 64.0,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "unknown-1",
+            "name": "",
+            "type": "town",
+            "x": 68.5,
+            "y": 61.6,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -25,
+            "labelOffsetY": -15
+        },
+        {
+            "id": "edgewind",
+            "name": "Edgewind",
+            "type": "city",
+            "x": 69.4,
+            "y": 61.2,
+            "region": "Mulbrook",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.15,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -25,
+            "labelOffsetY": -15
+        },
+        {
+            "id": "boldshire",
+            "name": "Boldshire",
+            "type": "town",
+            "x": 67.7,
+            "y": 60.2,
+            "region": "Mulbrook",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -25,
+            "labelOffsetY": -15
+        },
+        {
+            "id": "caristone-forest",
+            "name": "Caristone\nForest",
+            "type": "nature",
+            "x": 71.2,
+            "y": 60.9,
+            "region": "Mulbrook",
+            "description": "Woods",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "tomb-of-amberblade",
+            "name": "Tomb of\nAmberblade",
+            "type": "poi",
+            "x": 63.4,
+            "y": 61.0,
+            "region": "Mulbrook",
+            "description": "Tomb",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
+            "fontWeight": "300",
+            "opacity": 0.5,
+            "markerSize": 0.0,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0
         }
     ],
-    "roads": []
+    // ------------------------------------------------------------------------
+    // ROADS CONFIGURATION
+    // ------------------------------------------------------------------------
+    // How to create a road:
+    // 1. Open the world map (map.html).
+    // 2. Turn on the Coordinate Tracker in the top right (Crosshair icon).
+    // 3. Hover your mouse to find the X and Y coordinates.
+    // 4. Add a new object to this array with the points you want to connect.
+    //
+    // Property Reference:
+    // "id":     (String) A unique name for the road.
+    // "type":   (String) "major", "minor", "border", "river". This sets default 
+    //           colors, widths, and dash styles.
+    // "curved": (Boolean) true = smooth Catmull-Rom splines, false = straight angular lines.
+    // "color":  (String) Optional. Hex or RGB color override.
+    // "width":  (Number) Optional. Multiplier for the default thickness (e.g. 1.5, 0.5).
+    // "dashed": (Boolean|String) Optional.
+    //           - true = use default dash
+    //           - false = solid line
+    //           - string = custom SVG dash array (e.g. "10, 5, 2, 5")
+    // "points": (Array) The path points. These can be:
+    //           - Literal Coordinates: [X.XX, Y.YY]
+    //           - Location IDs: "location-id-string" (The map overlay will auto-snap 
+    //             exactly to the center of that location. Very useful for making roads 
+    //             split perfectly from cities!)
+    // ------------------------------------------------------------------------
+    "roads": [
+        /*
+        // --- TEMPLATE ---
+        {
+            "id": "my-new-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "starting-city-id",
+                [45.5, 50.2], // custom waypoint
+                [42.1, 55.4], // custom waypoint
+                "ending-city-id"
+            ]
+        },
+        */
+
+        // Example: Snapped Road connecting two towns with complex curves.
+        // Adding multiple coordinates allows the Catmull-Rom splines to 
+        // create organic, winding paths that follow the terrain naturally.
+        {
+            "id": "lurdoba-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "lurdoba",     // Starts at X: 77.7, Y: 31.7
+                [78.2, 31.8],  // Soft arc East
+                [78.35, 32.0], // Eases down
+                "kallilos"     // Ends at X: 78.3, Y: 32.3
+            ]
+        }, {
+            "id": "kallilos-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "kallilos",     // Starts at [78.3, 32.3]
+                [78.3, 32.85],   // Drops straight out
+                [78.4, 33.6],   // Very subtle bulge East
+                "sari-lenora"   // Sweeps into [77.9, 34.4]
+            ]
+        }, {
+            "id": "sari-lenora-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "sari-lenora",     // Starts at [78.3, 32.3]
+                [77.9, 34.9],   // Drops straight out
+                [77.8, 36.0],   // Very subtle bulge East
+                "clador"   // Sweeps into [77.9, 34.4]
+            ]
+        }, {
+            "id": "clador-road-1",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "clador",     // Starts at [78.3, 32.3]
+                [77.2, 36.1],   // Drops straight out
+                [76.9, 36.2],   // Very subtle bulge East
+                [76.6, 36.0],
+                "buvero"   // Sweeps into [77.9, 34.4]
+            ]
+        }, {
+            "id": "clador-road-2",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "clador",     // Starts at [78.3, 32.3]
+                [77.55, 37.4],   // Drops straight out to 1st waypoint
+                [77.1, 38.5],   //1st waypoint
+                [77.3, 40.2],   //2nd waypoint
+                [77.2, 41.0],   //3rd waypoint
+                [76.9, 41.8],   //4th waypoint
+                [75.8, 41.6],   //5th waypoint
+                "deadfield"   // Sweeps into [77.9, 34.4]
+            ]
+        }, {
+            "id": "buvero-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "buvero",     // Starts at [78.3, 32.3]
+                [75.7, 36.1],   // Drops straight out to 1st waypoint
+                [75.3, 35.6],   //1st waypoint
+                [74.8, 36.3],   //2nd waypoint               
+                "sulura"   // Sweeps into [77.9, 34.4]
+            ]
+        }, {
+            "id": "sunbay-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "sunbay",     // Starts at [78.3, 32.3]
+                [73.7, 38.0],   // Drops straight out to 1st waypoint
+                "ahnassa"   // Sweeps into [77.9, 34.4]
+            ]
+        }, {
+            "id": "ahnassa-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ahnassa",     // Starts at [78.3, 32.3]
+                [72.7, 38.6],   // Drops straight out to 1st waypoint
+                [72.6, 39.7],   //1st waypoint
+                "hesfal"   // Sweeps into [77.9, 34.4]
+            ]
+        }
+    ]
 };

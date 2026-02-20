@@ -96,7 +96,7 @@ const CampaignData = (function () {
     }
 
     async function loadDefaults() {
-        // Prefer embedded data to avoid CORS on file://
+        // Use embedded data from locations-db.js
         if (typeof WORLD_LOCATIONS !== 'undefined') {
             const prep = (arr) => (arr || []).map(item => ({ ...item, fromDefault: true }));
             data = {
@@ -107,24 +107,8 @@ const CampaignData = (function () {
             };
             if (USE_LOCAL_STORAGE) save();
             console.log('Initialized data from embedded WORLD_LOCATIONS');
-            return;
-        }
-
-        try {
-            const resp = await fetch('data/locations.json');
-            const json = await resp.json();
-            const prep = (arr) => (arr || []).map(item => ({ ...item, fromDefault: true }));
-            // Merge defaults into data structure
-            data = {
-                locations: prep(json.locations),
-                roads: prep(json.roads),
-                regions: prep(json.regions),
-                notes: {}
-            };
-            if (USE_LOCAL_STORAGE) save(); // Only save if persistence is enabled
-            console.log('Initialized data from locations.json');
-        } catch (e) {
-            console.error('Failed to load defaults:', e);
+        } else {
+            console.error('WORLD_LOCATIONS not found. Ensure js/locations-db.js is loaded.');
         }
     }
 

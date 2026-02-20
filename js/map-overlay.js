@@ -533,38 +533,44 @@ const MapOverlay = (function () {
         path.setAttribute('stroke-linejoin', 'round');
 
         // Style based on type
-        let strokeColor = '#F4A460';
-        let strokeWidth = Math.max(natW * 0.0008, 0.8); // Reduced from 0.0015/1.5
-        let strokeOpacity = '0.7';
+        let strokeColor = '#3a271d'; // Base ink brown
+        let strokeWidth = Math.max(natW * 0.0001, 1);
+        let strokeOpacity = '0.9';
         let dashArray = '';
+        let haloColor = 'rgba(235, 225, 205, 0.8)'; // Sharp cream outline
 
         switch (road.type) {
             case 'major':
-                strokeColor = '#d4af37'; // Gold
-                strokeWidth = Math.max(natW * 0.002, 2);
-                strokeOpacity = '0.8';
+                strokeColor = '#2b1b13'; // Very dark ink
+                strokeWidth = Math.max(natW * 0.00018, 1.5);
+                strokeOpacity = '0.95';
+                haloColor = 'rgba(245, 235, 215, 0.9)';
                 break;
             case 'minor':
-                strokeColor = '#8B4513'; // SaddleBrown
-                strokeWidth = Math.max(natW * 0.001, 1);
-                strokeOpacity = '0.6';
-                dashArray = `${natW * 0.005}, ${natW * 0.002}`;
+                strokeColor = '#2e2017'; // Dark inked dashes
+                strokeWidth = Math.max(natW * 0.00012, 1);
+                strokeOpacity = '0.9';
+                dashArray = `${natW * 0.00025}, ${natW * 0.00025}`; // Tight dots/short dashes
+                haloColor = 'rgba(240, 230, 210, 0.8)';
                 break;
             case 'river':
                 strokeColor = '#4682B4'; // SteelBlue
-                strokeWidth = Math.max(natW * 0.0025, 2.5);
+                strokeWidth = Math.max(natW * 0.0003, 2);
+                strokeOpacity = '0.85';
+                haloColor = 'rgba(200, 220, 240, 0.6)';
                 break;
             case 'border':
-                strokeColor = '#800000'; // Maroon
-                strokeWidth = Math.max(natW * 0.0015, 1.5);
-                strokeOpacity = '0.5';
-                dashArray = `${natW * 0.01}, ${natW * 0.005}`;
+                strokeColor = '#5c4a4a'; // Muted brownish red
+                strokeWidth = Math.max(natW * 0.00015, 1);
+                strokeOpacity = '0.7';
+                dashArray = `${natW * 0.001}, ${natW * 0.0008}`;
+                haloColor = 'none';
                 break;
         }
 
         // Apply overrides from JSON
         if (road.color) strokeColor = road.color;
-        if (road.width) strokeWidth = Math.max(natW * 0.001 * road.width, 1); // Width as multiplier of base unit
+        if (road.width) strokeWidth = Math.max(natW * 0.0001 * road.width, 1); // Width as multiplier of base unit
 
         let dashLen = road.dashLength || 1.0; // Multiplier for dash only
         let gapLen = road.gapLength || dashLen; // Multiplier for gap only (defaults to dashLen if not set)
@@ -572,7 +578,7 @@ const MapOverlay = (function () {
         if (road.dashed !== undefined) {
             // If true, use default dash scaled by length multipliers.
             if (road.dashed === true) {
-                dashArray = `${natW * 0.005 * dashLen}, ${natW * 0.003 * gapLen}`;
+                dashArray = `${natW * 0.00025 * dashLen}, ${natW * 0.00025 * gapLen}`;
             } else if (typeof road.dashed === 'string') {
                 dashArray = road.dashed;
             } else if (road.dashed === false) {
@@ -587,6 +593,25 @@ const MapOverlay = (function () {
                 return val * (i % 2 === 0 ? dashLen : gapLen);
             }).join(',');
         }
+
+        // --- Create Highlight / Drop Shadow Stroke underneath main line ---
+        if (haloColor !== 'none') {
+            const halo = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            halo.setAttribute('d', d);
+            halo.setAttribute('fill', 'none');
+            halo.setAttribute('stroke', haloColor);
+            halo.setAttribute('stroke-width', strokeWidth * 2.2); // Tighter halo, looks like a sharp outline
+            halo.setAttribute('stroke-linecap', 'round');
+            halo.setAttribute('stroke-linejoin', 'round');
+
+            // Shift slightly to act like a drop-shadow edge
+            const offset = Math.max(natW * 0.00005, 0.5);
+            halo.setAttribute('transform', `translate(${offset}, ${offset})`);
+
+            if (dashArray) halo.setAttribute('stroke-dasharray', dashArray);
+            group.appendChild(halo);
+        }
+        // -------------------------------------------------------------
 
         path.setAttribute('stroke', strokeColor);
         path.setAttribute('stroke-width', strokeWidth);
@@ -618,7 +643,11 @@ const MapOverlay = (function () {
         road.points.forEach(pt => {
             if (typeof pt === 'string') {
                 const loc = locMap.get(pt);
-                if (loc) points.push({ x: (loc.x / 100) * natW, y: (loc.y / 100) * natH });
+                if (loc) {
+                    const px = (loc.x / 100) * natW + (loc.markerOffsetX || 0);
+                    const py = (loc.y / 100) * natH + (loc.markerOffsetY || 0);
+                    points.push({ x: px, y: py });
+                }
             } else if (Array.isArray(pt) && pt.length === 2) {
                 points.push({ x: (pt[0] / 100) * natW, y: (pt[1] / 100) * natH });
             }
@@ -628,25 +657,22 @@ const MapOverlay = (function () {
 
         let d = '';
         if (road.curved) {
-            // Catmull-Rom spline interpolation
+            // Smooth Midpoint Quadratic Bezier curves for gradual sweeps
             d = `M ${points[0].x} ${points[0].y}`;
-            for (let i = 0; i < points.length - 1; i++) {
-                const p0 = points[i === 0 ? 0 : i - 1];
-                const p1 = points[i];
-                const p2 = points[i + 1];
-                const p3 = points[i + 2] || p2;
-
-                const tension = 1 / 6;
-                const cp1x = p1.x + (p2.x - p0.x) * tension;
-                const cp1y = p1.y + (p2.y - p0.y) * tension;
-                const cp2x = p2.x - (p3.x - p1.x) * tension;
-                const cp2y = p2.y - (p3.y - p1.y) * tension;
-
-                d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+            if (points.length === 2) {
+                d += ` L ${points[1].x} ${points[1].y}`;
+            } else if (points.length === 3) {
+                d += ` Q ${points[1].x} ${points[1].y}, ${points[2].x} ${points[2].y}`;
+            } else {
+                for (let i = 1; i < points.length - 2; i++) {
+                    const xc = (points[i].x + points[i + 1].x) / 2;
+                    const yc = (points[i].y + points[i + 1].y) / 2;
+                    d += ` Q ${points[i].x} ${points[i].y}, ${xc} ${yc}`;
+                }
+                const lastControl = points[points.length - 2];
+                const lastPoint = points[points.length - 1];
+                d += ` Q ${lastControl.x} ${lastControl.y}, ${lastPoint.x} ${lastPoint.y}`;
             }
-            // Ensure the last point is connected
-            const last = points[points.length - 1];
-            d += ` L ${last.x} ${last.y}`;
         } else {
             // Straight lines
             d = `M ${points[0].x} ${points[0].y}`;
