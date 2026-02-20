@@ -22,16 +22,17 @@ const MapOverlay = (function () {
         const mapImg = document.getElementById(imageId);
         if (!container || !mapImg) return;
 
-        // Clear existing overlay for this container if any
-        const existing = document.getElementById(containerId + '-overlay');
-        if (existing) existing.remove();
-
         // Load location data from CampaignData
         if (typeof CampaignData !== 'undefined') {
             data = CampaignData.getData();
-            if (!data || !data.locations) {
+            if (!data || !data.locations || data.locations.length === 0) {
                 // If CampaignData isn't ready yet, wait for it or init it
                 data = await CampaignData.init();
+            }
+        } else if (typeof window.CampaignData !== 'undefined') {
+            data = window.CampaignData.getData();
+            if (!data || !data.locations || data.locations.length === 0) {
+                data = await window.CampaignData.init();
             }
         } else {
             console.error('CampaignData module not found!');
@@ -57,6 +58,14 @@ const MapOverlay = (function () {
 
         // Wait for image to load to get natural dimensions
         const setupOverlay = () => {
+            // Safety measure to ensure we clean up immediately before drawing
+            // in case multiple updates were fired while waiting for the image to load
+            let existing = document.getElementById(containerId + '-overlay');
+            if (existing) existing.remove();
+
+            const strayOverlays = container.querySelectorAll('svg.map-overlay');
+            strayOverlays.forEach(o => o.remove());
+
             natW = mapImg.naturalWidth;
             natH = mapImg.naturalHeight;
             if (!natW || !natH) return;
@@ -81,6 +90,9 @@ const MapOverlay = (function () {
                 data.locations.forEach(loc => {
                     if (loc.id) locMap.set(loc.id, loc);
                 });
+                console.log(`Location map built: ${locMap.size} locations`);
+            } else {
+                console.warn('No locations data available for road routing');
             }
 
             // Render region labels
@@ -96,13 +108,20 @@ const MapOverlay = (function () {
             }
 
             // Render roads/paths (draw these before locations so they are underneath)
-            if (data.roads) {
+            if (data.roads && data.roads.length > 0) {
                 roadGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 roadGroup.setAttribute('class', 'overlay-roads');
+                let roadsRendered = 0;
                 data.roads.forEach(road => {
-                    addRoad(roadGroup, road, locMap, natW, natH);
+                    if (road.points && road.points.length >= 2) {
+                        addRoad(roadGroup, road, locMap, natW, natH);
+                        roadsRendered++;
+                    } else {
+                        console.warn('Road skipped (needs at least 2 points):', road.id, 'points:', road.points?.length || 0);
+                    }
                 });
                 svg.appendChild(roadGroup);
+                console.log(`Rendered ${roadsRendered} of ${data.roads.length} roads`);
             }
 
             // Render location markers
@@ -130,8 +149,33 @@ const MapOverlay = (function () {
         if (mapImg.complete && mapImg.naturalWidth) {
             setupOverlay();
         } else {
-            mapImg.addEventListener('load', setupOverlay);
+            // Remove old listeners so we don't stack setups
+            mapImg.onload = setupOverlay;
         }
+    }
+
+    // Listen to data updates from outside to trigger a redraw (only bind once)
+    let isListenerBound = false;
+    if (typeof document !== 'undefined' && !isListenerBound) {
+        document.addEventListener('campaign-data-updated', async (e) => {
+            data = e.detail;
+            console.log('Map overlay: Data updated. Roads:', data.roads?.length || 0, 'Locations:', data.locations?.length || 0);
+            
+            if (data.roads && data.roads.length > 0) {
+                console.log('Roads to render:', data.roads.map(r => ({ id: r.id, points: r.points?.length || 0 })));
+            }
+
+            // Find all map containers and re-init overlay
+            const containers = document.querySelectorAll('.map-container');
+            for (const c of containers) {
+                const img = c.querySelector('.map-image');
+                if (img && img.id) {
+                    console.log(`Re-initializing overlay for container: ${c.id}, image: ${img.id}`);
+                    await init(c.id, img.id);
+                }
+            }
+        });
+        isListenerBound = true;
     }
 
     /**
@@ -192,6 +236,7 @@ const MapOverlay = (function () {
     function addMarker(group, loc, px, py, natW) {
         const markerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         markerGroup.setAttribute('class', 'marker-group marker-type-' + loc.type);
+        markerGroup.setAttribute('data-location-id', loc.id || '');
         markerGroup.style.pointerEvents = 'auto';
         markerGroup.style.cursor = 'pointer';
 
@@ -541,17 +586,17 @@ const MapOverlay = (function () {
 
         switch (road.type) {
             case 'major':
-                strokeColor = '#2b1b13'; // Very dark ink
+                strokeColor = '#9c8c78ff'; // Light brown inner
                 strokeWidth = Math.max(natW * 0.00018, 1.5);
                 strokeOpacity = '0.95';
-                haloColor = 'rgba(245, 235, 215, 0.9)';
+                haloColor = 'rgba(88, 68, 51, 0.9)'; // Dark brown glow
                 break;
             case 'minor':
-                strokeColor = '#2e2017'; // Dark inked dashes
+                strokeColor = '#9c8c78ff'; // Light brown inner
                 strokeWidth = Math.max(natW * 0.00012, 1);
                 strokeOpacity = '0.9';
                 dashArray = `${natW * 0.00025}, ${natW * 0.00025}`; // Tight dots/short dashes
-                haloColor = 'rgba(240, 230, 210, 0.8)';
+                haloColor = 'rgba(88, 68, 51, 0.9)'; // Dark brown glow
                 break;
             case 'river':
                 strokeColor = '#4682B4'; // SteelBlue
@@ -626,7 +671,7 @@ const MapOverlay = (function () {
      */
     function toggle(containerId) {
         const svg = document.getElementById(containerId + '-overlay');
-        if (!svg) return;
+        if (!svg) return overlayVisible;
         overlayVisible = !overlayVisible;
         svg.style.display = overlayVisible ? '' : 'none';
         return overlayVisible;
@@ -636,24 +681,32 @@ const MapOverlay = (function () {
      * Calculate path string for a road (internal helper)
      */
     function calculatePathD(road) {
-        if (!road.points || road.points.length < 2) return '';
+        if (!road.points || road.points.length < 2) {
+            console.warn('Road has insufficient points:', road.id, 'points:', road.points?.length || 0);
+            return '';
+        }
 
         // Resolve points
         const points = [];
-        road.points.forEach(pt => {
+        road.points.forEach((pt, idx) => {
             if (typeof pt === 'string') {
                 const loc = locMap.get(pt);
                 if (loc) {
                     const px = (loc.x / 100) * natW + (loc.markerOffsetX || 0);
                     const py = (loc.y / 100) * natH + (loc.markerOffsetY || 0);
                     points.push({ x: px, y: py });
+                } else {
+                    console.warn(`Road ${road.id}: Location ID "${pt}" not found in locMap (point ${idx})`);
                 }
             } else if (Array.isArray(pt) && pt.length === 2) {
                 points.push({ x: (pt[0] / 100) * natW, y: (pt[1] / 100) * natH });
             }
         });
 
-        if (points.length < 2) return '';
+        if (points.length < 2) {
+            console.warn(`Road ${road.id}: Could not resolve enough points (got ${points.length}, need 2)`);
+            return '';
+        }
 
         let d = '';
         if (road.curved) {

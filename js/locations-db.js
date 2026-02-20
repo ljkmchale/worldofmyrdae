@@ -17,7 +17,7 @@ const WORLD_LOCATIONS = {
             "description": "The Otesurr Mountains are a vast mountain range in the far northeast of Myrdae.",
             "fontSize": 20,
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
             "fontFamily": "Cinzel Decorative"
@@ -29,11 +29,11 @@ const WORLD_LOCATIONS = {
             "x": 77.7,
             "y": 31.7,
             "region": "Otesurr Mountains",
-            "description": "A tundra town in the far northeast.",
+            "description": "Testing save bug",
             "fontFamily": "Garamond MT",
             "fontSize": 18,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.15,
             "markerOffsetX": 10,
             "markerOffsetY": 0,
@@ -98,7 +98,7 @@ const WORLD_LOCATIONS = {
             "id": "buvero",
             "name": "Buvero",
             "type": "town",
-            "x": 76.0,
+            "x": 76,
             "y": 35.9,
             "region": "Otesurr Mountains",
             "description": "A rugged mountain settlement.",
@@ -109,8 +109,8 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetX": -20,
+            "labelOffsetY": -10
         },
         {
             "id": "sulura",
@@ -152,7 +152,7 @@ const WORLD_LOCATIONS = {
             "id": "sands-of-the-dead",
             "name": "Sands of the\nDead",
             "type": "region",
-            "x": 75.0,
+            "x": 75,
             "y": 39.8,
             "region": "Sands of the Dead",
             "description": "Sands of the Dead",
@@ -160,7 +160,7 @@ const WORLD_LOCATIONS = {
             "opacity": 0.5,
             "fontFamily": "Garamond MT",
             "fontWeight": "300",
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
@@ -217,15 +217,15 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetX": -5,
+            "labelOffsetY": -10
         },
         {
             "id": "deadfield",
             "name": "Deadfield",
             "type": "city",
             "x": 74.8,
-            "y": 42.0,
+            "y": 42,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
             "fontFamily": "Garamond MT",
@@ -253,14 +253,14 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": -57,
-            "labelOffsetY": 3
+            "labelOffsetX": -47,
+            "labelOffsetY": -10
         },
         {
             "id": "sulport",
             "name": "Sulport",
             "type": "town",
-            "x": 71.0,
+            "x": 71,
             "y": 38.2,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
@@ -287,7 +287,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -341,24 +341,7 @@ const WORLD_LOCATIONS = {
             "fontSize": 16,
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0
-        },
-        {
-            "id": "azure-depths",
-            "name": "The Azure\nDepths",
-            "type": "water",
-            "x": 25.0,
-            "y": 75.0,
-            "region": "The Great Sea",
-            "description": "Deep, mysterious waters located off the southwest coast.",
-            "fontFamily": "Garamond MT",
-            "fontSize": 18,
-            "opacity": 0.8,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -423,7 +406,7 @@ const WORLD_LOCATIONS = {
             "name": "Gunikk",
             "type": "town",
             "x": 74.6,
-            "y": 45.0,
+            "y": 45,
             "region": "Blistered Highland",
             "description": "Small Town",
             "fontFamily": "Garamond MT",
@@ -477,7 +460,7 @@ const WORLD_LOCATIONS = {
             "name": "Blistered Highland",
             "type": "region",
             "x": 78.3,
-            "y": 46.0,
+            "y": 46,
             "region": "Blistered Highland",
             "description": "Blistered Highland",
             "fontFamily": "Copperplate Gothic",
@@ -485,7 +468,7 @@ const WORLD_LOCATIONS = {
             "fontWeight": "300",
             "rotation": 0,
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -666,7 +649,7 @@ const WORLD_LOCATIONS = {
             "fontWeight": "300",
             "rotation": 11,
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -685,7 +668,7 @@ const WORLD_LOCATIONS = {
             "fontWeight": "300",
             "rotation": 0,
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -740,7 +723,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -841,7 +824,7 @@ const WORLD_LOCATIONS = {
             "name": "Siltbay",
             "type": "water",
             "x": 69.7,
-            "y": 67.0,
+            "y": 67,
             "region": "Arbescar",
             "description": "Port Town",
             "fontFamily": "Garamond MT",
@@ -849,7 +832,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -868,7 +851,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -887,7 +870,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -906,7 +889,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -943,7 +926,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -962,7 +945,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -981,7 +964,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -1000,7 +983,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -1137,7 +1120,7 @@ const WORLD_LOCATIONS = {
             "name": "Bistron",
             "type": "town",
             "x": 66.6,
-            "y": 64.0,
+            "y": 64,
             "region": "Mulbrook",
             "description": "Town",
             "fontFamily": "Garamond MT",
@@ -1217,7 +1200,7 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
@@ -1228,7 +1211,7 @@ const WORLD_LOCATIONS = {
             "name": "Tomb of\nAmberblade",
             "type": "poi",
             "x": 63.4,
-            "y": 61.0,
+            "y": 61,
             "region": "Mulbrook",
             "description": "Tomb",
             "fontFamily": "Cinzel Decorative",
@@ -1236,143 +1219,324 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic",
             "fontWeight": "300",
             "opacity": 0.5,
-            "markerSize": 0.0,
+            "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0
+        },
+        {
+            "id": "deepspring-road",
+            "name": "Deepspring",
+            "type": "town",
+            "x": 72.5,
+            "y": 43.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -5,
+            "labelOffsetY": 20
         }
     ],
-    // ------------------------------------------------------------------------
-    // ROADS CONFIGURATION
-    // ------------------------------------------------------------------------
-    // How to create a road:
-    // 1. Open the world map (map.html).
-    // 2. Turn on the Coordinate Tracker in the top right (Crosshair icon).
-    // 3. Hover your mouse to find the X and Y coordinates.
-    // 4. Add a new object to this array with the points you want to connect.
-    //
-    // Property Reference:
-    // "id":     (String) A unique name for the road.
-    // "type":   (String) "major", "minor", "border", "river". This sets default 
-    //           colors, widths, and dash styles.
-    // "curved": (Boolean) true = smooth Catmull-Rom splines, false = straight angular lines.
-    // "color":  (String) Optional. Hex or RGB color override.
-    // "width":  (Number) Optional. Multiplier for the default thickness (e.g. 1.5, 0.5).
-    // "dashed": (Boolean|String) Optional.
-    //           - true = use default dash
-    //           - false = solid line
-    //           - string = custom SVG dash array (e.g. "10, 5, 2, 5")
-    // "points": (Array) The path points. These can be:
-    //           - Literal Coordinates: [X.XX, Y.YY]
-    //           - Location IDs: "location-id-string" (The map overlay will auto-snap 
-    //             exactly to the center of that location. Very useful for making roads 
-    //             split perfectly from cities!)
-    // ------------------------------------------------------------------------
     "roads": [
-        /*
-        // --- TEMPLATE ---
-        {
-            "id": "my-new-road",
-            "type": "minor",
-            "curved": true,
-            "points": [
-                "starting-city-id",
-                [45.5, 50.2], // custom waypoint
-                [42.1, 55.4], // custom waypoint
-                "ending-city-id"
-            ]
-        },
-        */
-
-        // Example: Snapped Road connecting two towns with complex curves.
-        // Adding multiple coordinates allows the Catmull-Rom splines to 
-        // create organic, winding paths that follow the terrain naturally.
         {
             "id": "lurdoba-road",
             "type": "minor",
             "curved": true,
             "points": [
-                "lurdoba",     // Starts at X: 77.7, Y: 31.7
-                [78.2, 31.8],  // Soft arc East
-                [78.35, 32.0], // Eases down
-                "kallilos"     // Ends at X: 78.3, Y: 32.3
+                "lurdoba",
+                [
+                    78.2,
+                    31.8
+                ],
+                [
+                    78.35,
+                    32
+                ],
+                "kallilos"
             ]
-        }, {
+        },
+        {
             "id": "kallilos-road",
             "type": "minor",
             "curved": true,
             "points": [
-                "kallilos",     // Starts at [78.3, 32.3]
-                [78.3, 32.85],   // Drops straight out
-                [78.4, 33.6],   // Very subtle bulge East
-                "sari-lenora"   // Sweeps into [77.9, 34.4]
+                "kallilos",
+                [
+                    78.3,
+                    32.85
+                ],
+                [
+                    78.4,
+                    33.6
+                ],
+                "sari-lenora"
             ]
-        }, {
+        },
+        {
             "id": "sari-lenora-road",
             "type": "minor",
             "curved": true,
             "points": [
-                "sari-lenora",     // Starts at [78.3, 32.3]
-                [77.9, 34.9],   // Drops straight out
-                [77.8, 36.0],   // Very subtle bulge East
-                "clador"   // Sweeps into [77.9, 34.4]
+                "sari-lenora",
+                [
+                    77.9,
+                    34.9
+                ],
+                [
+                    77.8,
+                    36
+                ],
+                "clador"
             ]
-        }, {
+        },
+        {
             "id": "clador-road-1",
             "type": "minor",
             "curved": true,
             "points": [
-                "clador",     // Starts at [78.3, 32.3]
-                [77.2, 36.1],   // Drops straight out
-                [76.9, 36.2],   // Very subtle bulge East
-                [76.6, 36.0],
-                "buvero"   // Sweeps into [77.9, 34.4]
+                "clador",
+                [
+                    77.2,
+                    36.1
+                ],
+                [
+                    76.9,
+                    36.2
+                ],
+                [
+                    76.6,
+                    36
+                ],
+                "buvero"
             ]
-        }, {
+        },
+        {
             "id": "clador-road-2",
             "type": "minor",
             "curved": true,
             "points": [
-                "clador",     // Starts at [78.3, 32.3]
-                [77.55, 37.4],   // Drops straight out to 1st waypoint
-                [77.1, 38.5],   //1st waypoint
-                [77.3, 40.2],   //2nd waypoint
-                [77.2, 41.0],   //3rd waypoint
-                [76.9, 41.8],   //4th waypoint
-                [75.8, 41.6],   //5th waypoint
-                "deadfield"   // Sweeps into [77.9, 34.4]
+                "clador",
+                [
+                    77.55,
+                    37.4
+                ],
+                [
+                    77.1,
+                    38.5
+                ],
+                [
+                    77.3,
+                    40.2
+                ],
+                [
+                    77.2,
+                    41
+                ],
+                [
+                    76.9,
+                    41.8
+                ],
+                [
+                    75.8,
+                    41.6
+                ],
+                "deadfield"
             ]
-        }, {
+        },
+        {
             "id": "buvero-road",
             "type": "minor",
             "curved": true,
             "points": [
-                "buvero",     // Starts at [78.3, 32.3]
-                [75.7, 36.1],   // Drops straight out to 1st waypoint
-                [75.3, 35.6],   //1st waypoint
-                [74.8, 36.3],   //2nd waypoint               
-                "sulura"   // Sweeps into [77.9, 34.4]
+                "buvero",
+                [
+                    75.7,
+                    36.1
+                ],
+                [
+                    75.3,
+                    35.6
+                ],
+                [
+                    74.8,
+                    36.3
+                ],
+                "sulura"
             ]
-        }, {
+        },
+        {
             "id": "sunbay-road",
             "type": "minor",
             "curved": true,
             "points": [
-                "sunbay",     // Starts at [78.3, 32.3]
-                [73.7, 38.0],   // Drops straight out to 1st waypoint
-                "ahnassa"   // Sweeps into [77.9, 34.4]
+                "sunbay",
+                [
+                    73.7,
+                    38
+                ],
+                "ahnassa"
             ]
-        }, {
+        },
+        {
             "id": "ahnassa-road",
             "type": "minor",
             "curved": true,
             "points": [
-                "ahnassa",     // Starts at [78.3, 32.3]
-                [72.7, 38.6],   // Drops straight out to 1st waypoint
-                [72.6, 39.7],   //1st waypoint
-                "hesfal"   // Sweeps into [77.9, 34.4]
+                "ahnassa",
+                [
+                    72.7,
+                    38.6
+                ],
+                [
+                    72.6,
+                    39.7
+                ],
+                "hesfal"
+            ]
+        },
+        {
+            "id": "hesfal-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "hesfal",
+                [
+                    71.8,
+                    40
+                ],
+                [
+                    71.7,
+                    38.8
+                ],
+                "sulport"
+            ]
+        },
+        {
+            "id": "deadfield-road-northeast",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "deadfield",
+                [
+                    74.8,
+                    41.5
+                ],
+                [
+                    74.1,
+                    40.9
+                ],
+                "boneforge"
+            ]
+        },
+        {
+            "id": "boneforge-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "boneforge",
+                [
+                    73.1,
+                    41.3
+                ],
+                [
+                    72.3,
+                    41.1
+                ],
+                "hesfal"
+            ]
+        },
+        {
+            "id": "deadfield-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "deadfield",
+                [
+                    74.5,
+                    42.4
+                ],
+                "torpoint"
+            ]
+        },
+        {
+            "id": "deadfield-road-south",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "deadfield",
+                [
+                    75.4,
+                    42.9
+                ],
+                "gunikk"
+            ]
+        },
+        {
+            "id": "ginikk-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "gunikk",
+                [
+                    74.6,
+                    46.2
+                ],
+                "thrargael"
+            ]
+        },
+        {
+            "id": "thrargael-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "thrargael",
+                [
+                    75.6,
+                    47.3
+                ],
+                [
+                    75.6,
+                    46.8
+                ],
+                [
+                    76.1,
+                    46.1
+                ],
+                [
+                    76.8,
+                    43.7
+                ],
+                [
+                    78.1,
+                    44.4
+                ],
+                "nalt"
+            ]
+        },
+        {
+            "id": "torpoint-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "torpoint",
+                [
+                    74.1,
+                    43.2
+                ],
+                [
+                    73.4,
+                    43.2
+                ],
+                "deepspring-road"
             ]
         }
-    ]
+    ],
+    "regions": []
 };

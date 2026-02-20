@@ -200,7 +200,6 @@
     document.addEventListener('DOMContentLoaded', async () => {
       await CampaignData.init();
 
-
       // Initialize primary map with sync callback
       MapController.init('map-container', 'map-image', {
         onTransform: (transformStr, scale, tx, ty) => {
@@ -210,15 +209,24 @@
             overlay.style.transform = transformStr;
             overlay.style.transformOrigin = '0 0';
           }
-
         }
       });
 
-      // Initialize second map
-      MapController.init('locations-container', 'locations-image');
+      // Initialize second map with sync callback
+      MapController.init('locations-container', 'locations-image', {
+        onTransform: (transformStr, scale, tx, ty) => {
+          // Sync overlay
+          const overlay = document.getElementById('locations-container-overlay');
+          if (overlay) {
+            overlay.style.transform = transformStr;
+            overlay.style.transformOrigin = '0 0';
+          }
+        }
+      });
 
+      // Init overlays
       MapOverlay.init('map-container', 'map-image');
-
+      MapOverlay.init('locations-container', 'locations-image');
     });
 
     function toggleOverlay() {
@@ -284,21 +292,6 @@
     const tracker2 = createCoordsTracker('locations-container', 'locations-image', 'map-coords-2', 'coords-toggle-2');
     function toggleCoords() { tracker1.toggle(); }
     function toggleCoords2() { tracker2.toggle(); }
-
-
-    // Auto-refresh UI when data changes (e.g. from another window)
-    document.addEventListener('campaign-data-updated', () => {
-      console.log('UI Refreshing due to data update...');
-      const containers = document.querySelectorAll('.map-container');
-      containers.forEach(c => {
-        const img = c.querySelector('.map-image');
-        if (img) {
-          const existing = document.getElementById(c.id + '-overlay');
-          if (existing) existing.remove();
-          MapOverlay.init(c.id, img.id);
-        }
-      });
-    });
   </script>
 </body>
 

@@ -100,10 +100,14 @@ const MapController = (function () {
         if (mapImg.complete) onReady();
         else mapImg.onload = onReady;
 
-        window.addEventListener('resize', () => {
+        // Use ResizeObserver instead of window resize to handle flexbox rendering delays
+        // and sidebar toggle resizing smoothly.
+        const resizeObserver = new ResizeObserver(() => {
+            if (container.offsetWidth === 0 || container.offsetHeight === 0) return;
             updateDimensions();
             requestUpdate(false);
         });
+        resizeObserver.observe(container);
 
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
