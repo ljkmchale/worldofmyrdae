@@ -17,26 +17,29 @@ const MapOverlay = (function () {
     /**
      * Initialize the overlay on a map container
      */
-    async function init(containerId, imageId) {
+    async function init(containerId, imageId, dataOverride) {
         const container = document.getElementById(containerId);
         const mapImg = document.getElementById(imageId);
         if (!container || !mapImg) return;
 
-        // Load location data from CampaignData
-        if (typeof CampaignData !== 'undefined') {
-            data = CampaignData.getData();
-            if (!data || !data.locations || data.locations.length === 0) {
-                // If CampaignData isn't ready yet, wait for it or init it
-                data = await CampaignData.init();
-            }
-        } else if (typeof window.CampaignData !== 'undefined') {
-            data = window.CampaignData.getData();
-            if (!data || !data.locations || data.locations.length === 0) {
-                data = await window.CampaignData.init();
-            }
+        if (dataOverride) {
+            data = dataOverride;
         } else {
-            console.error('CampaignData module not found!');
-            return;
+            // Load location data from CampaignData
+            if (typeof CampaignData !== 'undefined') {
+                data = CampaignData.getData();
+                if (!data || !data.locations || data.locations.length === 0) {
+                    data = await CampaignData.init();
+                }
+            } else if (typeof window.CampaignData !== 'undefined') {
+                data = window.CampaignData.getData();
+                if (!data || !data.locations || data.locations.length === 0) {
+                    data = await window.CampaignData.init();
+                }
+            } else {
+                console.error('CampaignData module not found!');
+                return;
+            }
         }
 
         // Create tooltip element (shared, attached to body)
@@ -160,7 +163,7 @@ const MapOverlay = (function () {
         document.addEventListener('campaign-data-updated', async (e) => {
             data = e.detail;
             console.log('Map overlay: Data updated. Roads:', data.roads?.length || 0, 'Locations:', data.locations?.length || 0);
-            
+
             if (data.roads && data.roads.length > 0) {
                 console.log('Roads to render:', data.roads.map(r => ({ id: r.id, points: r.points?.length || 0 })));
             }
@@ -171,7 +174,7 @@ const MapOverlay = (function () {
                 const img = c.querySelector('.map-image');
                 if (img && img.id) {
                     console.log(`Re-initializing overlay for container: ${c.id}, image: ${img.id}`);
-                    await init(c.id, img.id);
+                    await init(c.id, img.id, data);
                 }
             }
         });
@@ -201,7 +204,32 @@ const MapOverlay = (function () {
 
         // Split on real newlines OR literal "\n" strings
         const lines = region.name.split(/\r?\n|\\n/);
-        if (lines.length > 1) {
+
+        if (region.textCurve !== undefined) {
+            // Apply curved text
+            const curveValue = parseFloat(region.textCurve) * 5; // scaled up to be visible
+            const pathId = `curve-region-${region.id || Math.random().toString(36).substr(2, 9)}`;
+
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('id', pathId);
+
+            // Generate a tighter bezier curve centered at px, py
+            const hRadius = natW * 0.05; // ~400px on an 8k map, keeping the bend contained
+            path.setAttribute('d', `M ${px - hRadius} ${py} Q ${px} ${py + curveValue} ${px + hRadius} ${py}`);
+
+            defs.appendChild(path);
+            group.appendChild(defs);
+
+            const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+            textPath.setAttribute('href', `#${pathId}`);
+            textPath.setAttribute('startOffset', '50%');
+            textPath.textContent = lines.join('  ');
+            text.appendChild(textPath);
+
+            text.removeAttribute('x');
+            text.removeAttribute('y');
+        } else if (lines.length > 1) {
             // Multi-line support
             lines.forEach((line, index) => {
                 const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
@@ -461,7 +489,30 @@ const MapOverlay = (function () {
 
         // Split on real newlines OR literal "\n" strings
         const lines = loc.name.split(/\r?\n|\\n/);
-        if (lines.length > 1) {
+        if (loc.textCurve !== undefined) {
+            const curveValue = parseFloat(loc.textCurve) * 5;
+            const pathId = `curve-label-${loc.id || Math.random().toString(36).substr(2, 9)}`;
+
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('id', pathId);
+            const hRadius = natW * 0.05;
+
+            const xPos = wouldCollide ? px : (px + offsetX);
+            path.setAttribute('d', `M ${xPos - hRadius} ${labelY} Q ${xPos} ${labelY + curveValue} ${xPos + hRadius} ${labelY}`);
+
+            defs.appendChild(path);
+            markerGroup.appendChild(defs);
+
+            const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+            textPath.setAttribute('href', `#${pathId}`);
+            textPath.setAttribute('startOffset', '50%');
+            textPath.textContent = lines.join('  ');
+            label.appendChild(textPath);
+
+            label.removeAttribute('x');
+            label.removeAttribute('y');
+        } else if (lines.length > 1) {
             lines.forEach((line, index) => {
                 const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
                 tspan.textContent = line;

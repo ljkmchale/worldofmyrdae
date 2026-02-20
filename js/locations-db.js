@@ -357,12 +357,12 @@ const WORLD_LOCATIONS = {
             "description": "Ripshod Bay",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 5,
+            "labelOffsetX": 1,
             "labelOffsetY": 16
         },
         {
@@ -1226,7 +1226,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0
         },
         {
-            "id": "deepspring-road",
+            "id": "deepspring",
             "name": "Deepspring",
             "type": "town",
             "x": 72.5,
@@ -1242,6 +1242,144 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -5,
             "labelOffsetY": 20
+        },
+        {
+            "id": "ngundeer",
+            "name": "N'gundeer",
+            "type": "town",
+            "x": 71.8,
+            "y": 45.9,
+            "region": "Searing Flats",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "fakul",
+            "name": "Fakul",
+            "type": "town",
+            "x": 70.2,
+            "y": 46.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -27,
+            "labelOffsetY": -9
+        },
+        {
+            "id": "scarwatch-hold",
+            "name": "Scarwatch\nHold",
+            "type": "poi",
+            "x": 71.6,
+            "y": 42.4,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 16,
+            "markerOffsetY": 0,
+            "labelOffsetX": -67,
+            "labelOffsetY": 4,
+            "opacity": 1
+        },
+        {
+            "id": "kylnn",
+            "name": "Kylnn",
+            "type": "town",
+            "x": 73.4,
+            "y": 48.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -41,
+            "labelOffsetY": 10
+        },
+        {
+            "id": "searing-flats",
+            "name": "Searing\nFlats",
+            "type": "region",
+            "x": 71.5,
+            "y": 47.5,
+            "region": "",
+            "description": "",
+            "fontFamily": "Copperplate Gothic",
+            "fontSize": 12,
+            "markerSize": 1,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "jagged-waste-crags",
+            "name": "Jagged Waste Crags",
+            "type": "region",
+            "x": 72.5,
+            "y": 49.4,
+            "region": "",
+            "description": "",
+            "fontFamily": "Copperplate Gothic",
+            "fontSize": 24,
+            "markerSize": 1,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "rotation": -95,
+            "textCurve": -50,
+            "opacity": 0.2
+        },
+        {
+            "id": "edgerest-forest",
+            "name": "Edgerest\nForest",
+            "type": "region",
+            "x": 68.3,
+            "y": 43.1,
+            "region": "",
+            "description": "",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "markerSize": 1,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "opacity": 0.3
+        },
+        {
+            "id": "wuldrif",
+            "name": "Wuldrif",
+            "type": "town",
+            "x": 67.7,
+            "y": 41.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -5,
+            "labelOffsetY": 18
         }
     ],
     "roads": [
@@ -1534,7 +1672,150 @@ const WORLD_LOCATIONS = {
                     73.4,
                     43.2
                 ],
-                "deepspring-road"
+                "deepspring"
+            ]
+        },
+        {
+            "id": "d-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "deepspring-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "deepspring",
+                [
+                    72.3,
+                    44
+                ],
+                [
+                    72.1,
+                    45
+                ],
+                "ngundeer"
+            ]
+        },
+        {
+            "id": "n-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "ngundeer-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ngundeer",
+                [
+                    71.8,
+                    46.1
+                ],
+                [
+                    70.8,
+                    46.3
+                ],
+                "fakul"
+            ]
+        },
+        {
+            "id": "h-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "hesfal-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "hesfal",
+                [
+                    71.4,
+                    41.7
+                ],
+                "scarwatch-hold"
+            ]
+        },
+        {
+            "id": "n-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "ngundeer-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ngundeer",
+                [
+                    71.8,
+                    46.5
+                ],
+                [
+                    73.5,
+                    46.9
+                ],
+                "kylnn"
+            ]
+        },
+        {
+            "id": "s-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "sulport-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "sulport",
+                [
+                    70.5,
+                    37.3
+                ],
+                "tratta"
+            ]
+        },
+        {
+            "id": "t-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "tratta-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "del-bris",
+                [
+                    70.9,
+                    37.9
+                ],
+                [
+                    70.74,
+                    37.1
+                ],
+                ""
+            ]
+        },
+        {
+            "id": "delbris-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "del-bris",
+                [
+                    70.1,
+                    39.3
+                ],
+                "greenvale"
             ]
         }
     ],

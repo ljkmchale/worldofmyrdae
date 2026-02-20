@@ -34,6 +34,26 @@ const Editor = (function () {
             getRoads: () => state.roads
         };
 
+        // Setup live preview for locations
+        ['loc-id', 'loc-name', 'loc-x', 'loc-y', 'loc-type', 'loc-region', 'loc-desc', 'loc-details',
+            'loc-fontFamily', 'loc-fontSize', 'loc-fontWeight', 'loc-fontStyle',
+            'loc-markerSize', 'loc-markerOffsetX', 'loc-markerOffsetY',
+            'loc-labelOffsetX', 'loc-labelOffsetY', 'loc-rotation', 'loc-opacity'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', previewLocation);
+            });
+
+        // Setup live preview for roads
+        ['road-id', 'road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
+            'road-dashed', 'road-dashLength', 'road-gapLength'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', previewRoad);
+            });
+        ['road-start-location', 'road-end-location'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', previewRoad);
+        });
+
         // Broadcast the initial load to map-overlay
         document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: state }));
 
@@ -198,6 +218,7 @@ const Editor = (function () {
         document.getElementById('loc-labelOffsetX').value = loc.labelOffsetX || '';
         document.getElementById('loc-labelOffsetY').value = loc.labelOffsetY || '';
         document.getElementById('loc-rotation').value = loc.rotation || '';
+        document.getElementById('loc-textCurve').value = loc.textCurve !== undefined ? loc.textCurve : '';
         document.getElementById('loc-opacity').value = loc.opacity !== undefined ? loc.opacity : '';
 
         renderLocationList();
@@ -229,25 +250,25 @@ const Editor = (function () {
         document.getElementById('loc-labelOffsetX').value = '';
         document.getElementById('loc-labelOffsetY').value = '';
         document.getElementById('loc-rotation').value = '';
+        document.getElementById('loc-textCurve').value = '';
         document.getElementById('loc-opacity').value = '';
 
         renderLocationList();
     }
 
-    function saveLocation(skipListRender = false) {
+    function getLocationFromForm() {
         const rawName = document.getElementById('loc-name').value;
-        const name = rawName.replace(/\\n/g, '\n'); // Convert literal \n to actual newline
+        const name = rawName.replace(/\\n/g, '\n');
 
         let id = document.getElementById('loc-id').value;
         if (!id) {
-            id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            document.getElementById('loc-id').value = id;
+            id = (state.selectedLocId) ? state.selectedLocId : name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         }
 
         const locType = document.getElementById('loc-type').value;
         const isTown = locType.toLowerCase() === 'town';
         const isPoi = locType.toLowerCase() === 'poi';
-        const isNature = locType.toLowerCase() === 'nature';
+        const isNature = ['nature', 'region', 'water', 'landmark'].includes(locType.toLowerCase());
         const isCity = locType.toLowerCase() === 'city';
 
         let defaultDesc = "";
@@ -260,8 +281,8 @@ const Editor = (function () {
             id: id,
             name: name,
             type: locType,
-            x: parseFloat(document.getElementById('loc-x').value),
-            y: parseFloat(document.getElementById('loc-y').value),
+            x: parseFloat(document.getElementById('loc-x').value) || 0,
+            y: parseFloat(document.getElementById('loc-y').value) || 0,
             region: document.getElementById('loc-region').value,
             description: document.getElementById('loc-desc').value || defaultDesc
         };
@@ -269,7 +290,6 @@ const Editor = (function () {
         const details = document.getElementById('loc-details').value;
         if (details) locData.details = details;
 
-        // Adv props
         const setIf = (key, val, parseFn, defaultVal = undefined) => {
             if (val !== '') {
                 locData[key] = parseFn ? parseFn(val) : val;
@@ -279,9 +299,9 @@ const Editor = (function () {
         };
 
         setIf('fontFamily', document.getElementById('loc-fontFamily').value, null,
-            isTown || isCity ? "Garamond MT" : (isPoi || isNature ? "Cinzel Decorative" : undefined));
+            isTown || isCity || isPoi ? "Garamond MT" : (isNature ? "Cinzel Decorative" : undefined));
         setIf('fontSize', document.getElementById('loc-fontSize').value, parseInt,
-            isTown || isCity ? 14 : (isPoi || isNature ? 12 : undefined));
+            isTown || isCity || isPoi ? 14 : (isNature ? 12 : undefined));
         setIf('fontWeight', document.getElementById('loc-fontWeight').value, null,
             isTown || isCity || isPoi || isNature ? "300" : undefined);
         setIf('fontStyle', document.getElementById('loc-fontStyle').value, null,
@@ -297,8 +317,25 @@ const Editor = (function () {
         setIf('labelOffsetY', document.getElementById('loc-labelOffsetY').value, parseInt,
             isTown ? 3 : (isCity ? 5 : (isPoi || isNature ? 0 : undefined)));
         setIf('rotation', document.getElementById('loc-rotation').value, parseInt);
+        setIf('textCurve', document.getElementById('loc-textCurve').value, parseFloat);
         setIf('opacity', document.getElementById('loc-opacity').value, parseFloat,
             isPoi || isNature ? 0.5 : undefined);
+
+        return locData;
+    }
+
+    function previewLocation() {
+        if (!state.selectedLocId) return;
+        const idx = state.locations.findIndex(l => l.id === state.selectedLocId);
+        if (idx !== -1) {
+            state.locations[idx] = getLocationFromForm();
+            refreshMap(); // Draws preview instantly, does not save to disk
+        }
+    }
+
+    function saveLocation(skipListRender = false) {
+        const locData = getLocationFromForm();
+        const id = locData.id;
 
         if (state.selectedLocId) {
             const idx = state.locations.findIndex(l => l.id === state.selectedLocId);
@@ -309,6 +346,8 @@ const Editor = (function () {
             state.locations.push(locData);
             state.selectedLocId = id;
         }
+
+        document.getElementById('loc-id').value = id;
 
         if (!skipListRender) {
             document.getElementById('btn-del-loc').style.display = 'inline-block';
@@ -429,12 +468,21 @@ const Editor = (function () {
     }
 
     function newRoad() {
-        state.selectedRoadId = null;
+        const newId = Date.now() + '-road';
+        const newRoadData = {
+            id: newId,
+            type: 'minor',
+            curved: true,
+            points: []
+        };
+        state.roads.push(newRoadData);
+        state.selectedRoadId = newId;
+
         document.getElementById('road-form-area').style.display = 'block';
         document.getElementById('road-form-title').textContent = 'New Road';
         document.getElementById('btn-del-road').style.display = 'none';
 
-        document.getElementById('road-id').value = Date.now() + '-road';
+        document.getElementById('road-id').value = newId;
         document.getElementById('road-type').value = 'minor';
         document.getElementById('road-name').value = '';
         document.getElementById('road-curved').checked = true;
@@ -641,9 +689,9 @@ const Editor = (function () {
         }
     }
 
-    function saveRoad(isNew = false) {
+    function getRoadFromForm(isNew, searchId) {
         let id = document.getElementById('road-id').value;
-        if (!id) id = 'road-' + Date.now();
+        if (!id) id = searchId || 'road-' + Date.now();
 
         const roadData = {
             id: id,
@@ -673,54 +721,66 @@ const Editor = (function () {
         const gapLen = document.getElementById('road-gapLength').value;
         if (gapLen !== '') roadData.gapLength = parseFloat(gapLen);
 
-        // Find existing road by selected ID or new ID
-        const searchId = state.selectedRoadId || id;
-        const existing = state.roads.find(r => r.id === searchId);
-
-        // Sync points from dropdowns and existing waypoints
         const startLocId = document.getElementById('road-start-location')?.value || '';
         const endLocId = document.getElementById('road-end-location')?.value || '';
 
-        // Validation: require start and end locations (unless it's a new road being auto-saved)
-        // Silently return if missing - user can add them later
-        if (!isNew && (!startLocId || !endLocId)) {
-            return;
-        }
+        const existing = state.roads.find(r => r.id === searchId);
 
-        if (existing) {
-            // Preserve existing waypoints (coordinate arrays), but sync start/end locations
-            const waypoints = (existing.points || []).filter(pt => Array.isArray(pt));
+        // If 'existing' is present, use its points array rather than freshly building one,
+        // because handleMapClick writes directly to existing.points when clicking the map.
+        if (existing && existing.points) {
+            roadData.points = [...existing.points];
 
-            // Build points array: start location, waypoints, end location
-            roadData.points = [];
-            if (startLocId) {
-                roadData.points.push(startLocId);
+            // Only force sync the start/end dropdowns if they don't match the current waypoints 
+            // array, giving precedence to the dropdowns but keeping intermediate waypoints intact
+            if (roadData.points.length > 0 && typeof roadData.points[0] === 'string' && startLocId) {
+                roadData.points[0] = startLocId;
+            } else if (startLocId) {
+                roadData.points.unshift(startLocId);
             }
-            roadData.points.push(...waypoints);
-            if (endLocId && endLocId !== startLocId) {
+
+            if (roadData.points.length > 1 && typeof roadData.points[roadData.points.length - 1] === 'string' && endLocId) {
+                roadData.points[roadData.points.length - 1] = endLocId;
+            } else if (endLocId && endLocId !== startLocId) {
                 roadData.points.push(endLocId);
             }
+        } else {
+            roadData.points = [];
+            if (startLocId) roadData.points.push(startLocId);
+            if (endLocId && endLocId !== startLocId) roadData.points.push(endLocId);
+        }
 
+        return { roadData, startLocId, endLocId, existing, id };
+    }
+
+    function previewRoad() {
+        if (!state.selectedRoadId) return;
+        const idx = state.roads.findIndex(r => r.id === state.selectedRoadId);
+        if (idx !== -1) {
+            const { roadData } = getRoadFromForm(false, state.selectedRoadId);
+            state.roads[idx] = roadData;
+            refreshMap();
+        }
+    }
+
+    function saveRoad(isNew = false) {
+        const searchId = state.selectedRoadId || document.getElementById('road-id').value;
+        const { roadData, startLocId, endLocId, existing, id } = getRoadFromForm(isNew, searchId);
+
+        if (existing) {
             const idx = state.roads.indexOf(existing);
             if (idx !== -1) {
                 state.roads[idx] = roadData;
             } else {
-                // Fallback: push if index not found
                 state.roads.push(roadData);
             }
         } else {
-            // For new roads, build points from dropdowns
-            roadData.points = [];
-            if (startLocId) {
-                roadData.points.push(startLocId);
-            }
-            if (endLocId && endLocId !== startLocId) {
-                roadData.points.push(endLocId);
-            }
             state.roads.push(roadData);
         }
 
         state.selectedRoadId = id;
+        document.getElementById('road-id').value = id;
+
         if (!isNew) {
             document.getElementById('btn-del-road').style.display = 'inline-block';
             renderRoadList();
@@ -775,6 +835,14 @@ const Editor = (function () {
     }
 
     function cancelRoad() {
+        if (state.selectedRoadId) {
+            const road = state.roads.find(r => r.id === state.selectedRoadId);
+            // Prune if this was a brand new road that was canceled before getting a valid start point
+            if (road && (!road.points || road.points.length === 0 || typeof road.points[0] !== 'string')) {
+                state.roads = state.roads.filter(r => r.id !== state.selectedRoadId);
+                refreshMap();
+            }
+        }
         state.selectedRoadId = null;
         document.getElementById('road-form-area').style.display = 'none';
         renderRoadList();
