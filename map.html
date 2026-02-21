@@ -85,6 +85,133 @@
       z-index: 100;
       pointer-events: none;
     }
+
+    /* Legend Panel Styles */
+    .legend-panel {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(10, 10, 15, 0.95);
+      border: 1px solid var(--color-gold);
+      border-radius: 8px;
+      padding: 1.25rem;
+      z-index: 110;
+      width: 240px;
+      pointer-events: auto;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top left;
+    }
+
+    .legend-panel h4 {
+      margin: 0 0 1rem 0;
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--color-gold-bright);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: #e0e0e0;
+    }
+
+    .legend-marker {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
+    /* Visual styles to match map-overlay.js markers */
+    .legend-marker.capital {
+      background: #FFFFFF;
+      border: 2px solid #3e2723;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+      position: relative;
+    }
+
+    .legend-marker.capital::after {
+      content: '★';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8px;
+      color: #3e2723;
+    }
+
+    .legend-marker.city {
+      background: #FFFFFF;
+      border: 2px solid #3e2723;
+    }
+
+    .legend-marker.town {
+      background: #3e2723;
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .legend-marker.village {
+      background: #A0522D;
+      width: 10px;
+      height: 10px;
+      margin: 2px;
+      border: 1px solid #1b1612;
+    }
+
+    .legend-marker.port {
+      background: #E8F4FD;
+      border: 1.5px solid #3e2723;
+    }
+
+    .legend-marker.ruins {
+      border: 1.5px dashed #888;
+      background: none;
+    }
+
+    .legend-marker.landmark {
+      background: #FF8C00;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      border-radius: 0;
+    }
+
+    .legend-marker.pass {
+      background: #AAA;
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      border-radius: 0;
+    }
+
+    .legend-marker.road-major {
+      height: 4px;
+      width: 20px;
+      border-radius: 2px;
+      background: #9c8c78;
+      box-shadow: 0 0 3px #584433;
+    }
+
+    .legend-marker.road-minor {
+      height: 2px;
+      width: 20px;
+      border-radius: 0;
+      background: #9c8c78;
+      border-top: 1px dashed #584433;
+    }
   </style>
 </head>
 
@@ -151,14 +278,34 @@
             <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
               <i class="fa-solid fa-house"></i>
             </button>
+            <button class="map-btn" id="legend-toggle" onclick="toggleLegend()" title="Toggle Legend">
+              <i class="fa-solid fa-list-ul"></i>
+            </button>
             <button class="map-btn" id="overlay-toggle" onclick="toggleOverlay()" title="Toggle Locations">
               <i class="fa-solid fa-location-dot"></i>
             </button>
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
               <i class="fa-solid fa-crosshairs"></i>
             </button>
+          </div>
 
-
+          <!-- Legend Panel -->
+          <div class="legend-panel" id="legend-panel" style="display:none;">
+            <h4><i class="fa-solid fa-scroll"></i> Map Legend</h4>
+            <div class="legend-items">
+              <div class="legend-item"><span class="legend-marker capital"></span> <span>Capital City</span></div>
+              <div class="legend-item"><span class="legend-marker city"></span> <span>Major City</span></div>
+              <div class="legend-item"><span class="legend-marker town"></span> <span>Town</span></div>
+              <div class="legend-item"><span class="legend-marker village"></span> <span>Village / Settlement</span>
+              </div>
+              <div class="legend-item"><span class="legend-marker port"></span> <span>Port / Coastal Hub</span></div>
+              <div class="legend-item"><span class="legend-marker ruins"></span> <span>Ancient Ruins</span></div>
+              <div class="legend-item"><span class="legend-marker landmark"></span> <span>Landmark / POI</span></div>
+              <div class="legend-item"><span class="legend-marker pass"></span> <span>Mountain Pass</span></div>
+              <div class="legend-item"><span class="legend-marker road-major"></span> <span>Major Highway</span></div>
+              <div class="legend-item"><span class="legend-marker road-minor"></span> <span>Minor Road / Trail</span>
+              </div>
+            </div>
           </div>
           <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
           <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
@@ -235,6 +382,31 @@
       if (btn) {
         btn.style.opacity = visible ? '1' : '0.5';
         btn.title = visible ? 'Hide Locations' : 'Show Locations';
+      }
+    }
+
+    function toggleLegend() {
+      const panel = document.getElementById('legend-panel');
+      const btn = document.getElementById('legend-toggle');
+      if (!panel || !btn) return;
+
+      const isVisible = panel.style.display !== 'none';
+      if (isVisible) {
+        panel.style.opacity = '0';
+        panel.style.transform = 'scale(0.95) translateX(-10px)';
+        setTimeout(() => {
+          panel.style.display = 'none';
+        }, 300);
+        btn.style.opacity = '0.5';
+      } else {
+        panel.style.display = 'block';
+        panel.style.opacity = '0';
+        panel.style.transform = 'scale(0.95) translateX(-10px)';
+        // Trigger reflow
+        panel.offsetHeight;
+        panel.style.opacity = '1';
+        panel.style.transform = 'scale(1) translateX(0)';
+        btn.style.opacity = '1';
       }
     }
 
