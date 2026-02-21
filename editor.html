@@ -144,10 +144,11 @@
       <div id="tab-locations" class="tab-content active" style="padding: 1rem;">
         <p style="font-size: 0.8rem; color: #888;">Click on the map to place a new location.</p>
 
-        <div id="location-list"
-          style="max-height: 200px; overflow-y: auto; border: 1px solid #333; margin-bottom: 1rem; padding: 0.5rem; font-size: 0.85rem;">
+        <select id="location-list" class="form-control"
+          style="margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1rem; background-color: #1a1614; color: #d4af37; border: 1px solid #584433; padding: 0.5rem; cursor: pointer; width: 100%;"
+          onchange="if(this.value) { Editor.selectLocation(this.value); } else { Editor.cancelLocation(); }">
           <!-- Populated by JS -->
-        </div>
+        </select>
 
         <div id="location-form-area" style="display: none;">
           <h3 id="form-title" style="margin-top:0; color:var(--color-gold);">Edit Location</h3>
@@ -218,7 +219,7 @@
                   class="form-control" placeholder="Italic"></div>
 
               <div class="form-group"><label>Marker Size Mult (0 to hide)</label><input type="number"
-                  id="loc-markerSize" class="form-control" step="0.1" value="1.0"></div>
+                  id="loc-markerSize" class="form-control" step="0.1" value="0.25"></div>
               <div class="form-group"><label>Marker Offset X</label><input type="number" id="loc-markerOffsetX"
                   class="form-control" step="1" value="0"></div>
               <div class="form-group"><label>Marker Offset Y</label><input type="number" id="loc-markerOffsetY"

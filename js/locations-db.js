@@ -207,13 +207,13 @@ const WORLD_LOCATIONS = {
             "name": "Boneforge",
             "type": "town",
             "x": 73.3,
-            "y": 41.1,
+            "y": 41.2,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1380,6 +1380,151 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -5,
             "labelOffsetY": 18
+        },
+        {
+            "id": "alburest",
+            "name": "Alburest",
+            "type": "city",
+            "x": 66.83,
+            "y": 42.8,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 8,
+            "labelOffsetY": 10
+        },
+        {
+            "id": "olestack",
+            "name": "Ole'stack",
+            "type": "town",
+            "x": 67.5,
+            "y": 45.2,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -1,
+            "labelOffsetY": -11
+        },
+        {
+            "id": "lochlorn",
+            "name": "Lochlorn",
+            "type": "water",
+            "x": 66.2,
+            "y": 42.7,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "igborne",
+            "name": "Igburne",
+            "type": "town",
+            "x": 68.8,
+            "y": 46.3,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -41,
+            "labelOffsetY": 17
+        },
+        {
+            "id": "simmerhorn",
+            "name": "Simmerhorn",
+            "type": "town",
+            "x": 66.7,
+            "y": 46.8,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -36,
+            "labelOffsetY": 17
+        },
+        {
+            "id": "ulkef",
+            "name": "Ulkef",
+            "type": "city",
+            "x": 69.5,
+            "y": 48.7,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -48,
+            "labelOffsetY": 1
+        },
+        {
+            "id": "rosevale",
+            "name": "Rosevale",
+            "type": "town",
+            "x": 70.2,
+            "y": 49.3,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -7,
+            "labelOffsetY": -9
+        },
+        {
+            "id": "sandgrave",
+            "name": "Sandgrave",
+            "type": "town",
+            "x": 72.3,
+            "y": 51.5,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -6,
+            "labelOffsetY": -14
         }
     ],
     "roads": [
@@ -1816,6 +1961,277 @@ const WORLD_LOCATIONS = {
                     39.3
                 ],
                 "greenvale"
+            ]
+        },
+        {
+            "id": "g-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "greenvale-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "greenvale",
+                [
+                    69.3,
+                    40.8
+                ],
+                [
+                    68.2,
+                    41
+                ],
+                "wuldrif"
+            ]
+        },
+        {
+            "id": "w-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "wuldrif-road-east",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "wuldrif",
+                [
+                    67.5,
+                    42.1
+                ],
+                "alburest"
+            ]
+        },
+        {
+            "id": "a-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "alburest-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "alburest",
+                [
+                    66.9,
+                    44.1
+                ],
+                "olestack"
+            ]
+        },
+        {
+            "id": "o-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "olestack-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "olestack",
+                [
+                    67.7,
+                    45.7
+                ],
+                "igborne"
+            ]
+        },
+        {
+            "id": "i-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "igburne-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "igborne",
+                [
+                    69.4,
+                    46.5
+                ],
+                "ulkef"
+            ]
+        },
+        {
+            "id": "o-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "olestack-road-southwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "olestack",
+                [
+                    67.3,
+                    46.9
+                ],
+                "simmerhorn"
+            ]
+        },
+        {
+            "id": "u-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "ulkef-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "ulkef",
+                [
+                    69.6,
+                    49.2
+                ],
+                "rosevale"
+            ]
+        },
+        {
+            "id": "t-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "thrargael-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "thrargael",
+                [
+                    74.7,
+                    47.8
+                ],
+                "runest"
+            ]
+        },
+        {
+            "id": "r-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "rosevale-road-east",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "rosevale",
+                [
+                    71.2,
+                    49.2
+                ],
+                [
+                    71.5,
+                    51.1
+                ],
+                "sandgrave"
+            ]
+        },
+        {
+            "id": "s-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "sandgrave-road-east",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "sandgrave",
+                [
+                    73.6,
+                    51.9
+                ],
+                "runest"
+            ]
+        },
+        {
+            "id": "r-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "runest-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "runest",
+                [
+                    75.8,
+                    50
+                ],
+                "cragflight"
+            ]
+        },
+        {
+            "id": "r-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "runest-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "runest",
+                [
+                    76.3,
+                    50.2
+                ],
+                [
+                    76.4,
+                    52.3
+                ],
+                [
+                    76.9,
+                    53.2
+                ],
+                "severyll"
+            ]
+        },
+        {
+            "id": "s-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "severyll-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "severyll",
+                [
+                    77.6,
+                    54
+                ],
+                [
+                    77.9,
+                    53.7
+                ],
+                [
+                    78.3,
+                    53.9
+                ],
+                "irebend"
             ]
         }
     ],

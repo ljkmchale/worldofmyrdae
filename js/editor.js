@@ -174,17 +174,19 @@ const Editor = (function () {
 
     function renderLocationList() {
         const list = document.getElementById('location-list');
-        list.innerHTML = '';
+        list.innerHTML = '<option value="">-- Select a Location --</option>';
 
         // Sort locations by name
         const sorted = [...state.locations].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
         sorted.forEach(loc => {
-            const el = document.createElement('div');
-            el.className = 'list-item' + (state.selectedLocId === loc.id ? ' active' : '');
-            el.innerHTML = `<span>${loc.name} <small style="color:#666">(${loc.type})</small></span>`;
-            el.onclick = () => selectLocation(loc.id);
-            list.appendChild(el);
+            const opt = document.createElement('option');
+            opt.value = loc.id;
+            opt.textContent = `${loc.name} (${loc.type})`;
+            if (state.selectedLocId === loc.id) {
+                opt.selected = true;
+            }
+            list.appendChild(opt);
         });
     }
 
@@ -196,6 +198,10 @@ const Editor = (function () {
         document.getElementById('location-form-area').style.display = 'block';
         document.getElementById('form-title').textContent = 'Edit Location';
         document.getElementById('btn-del-loc').style.display = 'inline-block';
+
+        // Sync dropdown
+        const list = document.getElementById('location-list');
+        if (list) list.value = id;
 
         // Populate form
         document.getElementById('loc-id').value = loc.id || '';
@@ -212,7 +218,7 @@ const Editor = (function () {
         document.getElementById('loc-fontSize').value = loc.fontSize || '';
         document.getElementById('loc-fontWeight').value = loc.fontWeight || '';
         document.getElementById('loc-fontStyle').value = loc.fontStyle || '';
-        document.getElementById('loc-markerSize').value = loc.markerSize !== undefined ? loc.markerSize : 1.0;
+        document.getElementById('loc-markerSize').value = loc.markerSize !== undefined ? loc.markerSize : 0.25;
         document.getElementById('loc-markerOffsetX').value = loc.markerOffsetX || 0;
         document.getElementById('loc-markerOffsetY').value = loc.markerOffsetY || 0;
         document.getElementById('loc-labelOffsetX').value = loc.labelOffsetX || '';
@@ -221,7 +227,8 @@ const Editor = (function () {
         document.getElementById('loc-textCurve').value = loc.textCurve !== undefined ? loc.textCurve : '';
         document.getElementById('loc-opacity').value = loc.opacity !== undefined ? loc.opacity : '';
 
-        renderLocationList();
+        // Update list to show active state (though on dropdown it just sets value)
+        // renderLocationList(); // Removed to avoid re-rendering and losing focus if needed, select already handles value
     }
 
     function newLocation(x, y) {
@@ -229,6 +236,10 @@ const Editor = (function () {
         document.getElementById('location-form-area').style.display = 'block';
         document.getElementById('form-title').textContent = 'New Location';
         document.getElementById('btn-del-loc').style.display = 'none';
+
+        // Clear dropdown
+        const list = document.getElementById('location-list');
+        if (list) list.value = '';
 
         // Clear form
         document.getElementById('loc-id').value = '';
@@ -244,7 +255,7 @@ const Editor = (function () {
         document.getElementById('loc-fontSize').value = '';
         document.getElementById('loc-fontWeight').value = '';
         document.getElementById('loc-fontStyle').value = '';
-        document.getElementById('loc-markerSize').value = '1.0';
+        document.getElementById('loc-markerSize').value = '0.25';
         document.getElementById('loc-markerOffsetX').value = '0';
         document.getElementById('loc-markerOffsetY').value = '0';
         document.getElementById('loc-labelOffsetX').value = '';
@@ -253,7 +264,7 @@ const Editor = (function () {
         document.getElementById('loc-textCurve').value = '';
         document.getElementById('loc-opacity').value = '';
 
-        renderLocationList();
+        // renderLocationList();
     }
 
     function getLocationFromForm() {
@@ -306,8 +317,7 @@ const Editor = (function () {
             isTown || isCity || isPoi || isNature ? "300" : undefined);
         setIf('fontStyle', document.getElementById('loc-fontStyle').value, null,
             isTown || isCity || isPoi || isNature ? "Italic" : undefined);
-        setIf('markerSize', document.getElementById('loc-markerSize').value, parseFloat,
-            isTown ? 0.25 : (isCity ? 0.15 : (isPoi || isNature ? 0 : undefined)));
+        setIf('markerSize', document.getElementById('loc-markerSize').value, parseFloat, 0.25);
         setIf('markerOffsetX', document.getElementById('loc-markerOffsetX').value, parseInt,
             isTown || isCity || isPoi || isNature ? 16 : undefined);
         setIf('markerOffsetY', document.getElementById('loc-markerOffsetY').value, parseInt,
@@ -383,12 +393,18 @@ const Editor = (function () {
             state.locations = state.locations.filter(l => l.id !== state.selectedLocId);
             cancelLocation();
             refreshMap();
+            exportData().catch(err => console.error('Failed to auto-save to disk:', err));
         }
     }
 
     function cancelLocation() {
         state.selectedLocId = null;
         document.getElementById('location-form-area').style.display = 'none';
+
+        // Clear dropdown
+        const list = document.getElementById('location-list');
+        if (list) list.value = '';
+
         renderLocationList();
     }
 
@@ -831,6 +847,7 @@ const Editor = (function () {
             state.roads = state.roads.filter(r => r.id !== state.selectedRoadId);
             cancelRoad();
             refreshMap();
+            exportData().catch(err => console.error('Failed to auto-save to disk:', err));
         }
     }
 
