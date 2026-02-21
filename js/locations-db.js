@@ -586,14 +586,14 @@ const WORLD_LOCATIONS = {
             "id": "bareford",
             "name": "Bareford",
             "type": "town",
-            "x": 79.3,
+            "x": 79.2,
             "y": 54.9,
             "region": "Blistered Highland",
             "description": "Small Town",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1089,26 +1089,26 @@ const WORLD_LOCATIONS = {
             "description": "Town",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 5
+            "labelOffsetX": 5,
+            "labelOffsetY": 16
         },
         {
             "id": "farnsby-port",
             "name": "Farnsby\nPort",
             "type": "town",
-            "x": 63.65,
-            "y": 65.3,
+            "x": 63.67,
+            "y": 65.4,
             "region": "Mulbrook",
             "description": "Town",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1134,7 +1134,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 5
         },
         {
-            "id": "unknown-1",
+            "id": "c",
             "name": "",
             "type": "town",
             "x": 68.5,
@@ -1143,8 +1143,8 @@ const WORLD_LOCATIONS = {
             "description": "Town",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1155,14 +1155,14 @@ const WORLD_LOCATIONS = {
             "id": "edgewind",
             "name": "Edgewind",
             "type": "city",
-            "x": 69.4,
-            "y": 61.2,
+            "x": 69.33,
+            "y": 61.35,
             "region": "Mulbrook",
             "description": "City",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.15,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1302,7 +1302,7 @@ const WORLD_LOCATIONS = {
             "id": "kylnn",
             "name": "Kylnn",
             "type": "town",
-            "x": 73.4,
+            "x": 73.6,
             "y": 48.4,
             "region": "",
             "description": "Town",
@@ -1525,6 +1525,192 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -6,
             "labelOffsetY": -14
+        },
+        {
+            "id": "destons-outpost",
+            "name": "Deston's\nOutpost",
+            "type": "poi",
+            "x": 70.4,
+            "y": 51.1,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 11,
+            "labelOffsetY": -7,
+            "opacity": 0.5
+        },
+        {
+            "id": "annagos",
+            "name": "Annagos",
+            "type": "town",
+            "x": 69.55,
+            "y": 51.05,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -57,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "staghaven",
+            "name": "Staghaven",
+            "type": "town",
+            "x": 69.3,
+            "y": 53.5,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 8,
+            "labelOffsetY": 11
+        },
+        {
+            "id": "witherwood",
+            "name": "Witherwood",
+            "type": "region",
+            "x": 70.4,
+            "y": 53.1,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.3
+        },
+        {
+            "id": "tynevale",
+            "name": "Tyne'vale",
+            "type": "town",
+            "x": 67.35,
+            "y": 54.7,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -64,
+            "labelOffsetY": 7
+        },
+        {
+            "id": "willow-lodge",
+            "name": "Willow\nLodge",
+            "type": "poi",
+            "x": 67.93,
+            "y": 53.1,
+            "region": "",
+            "description": "Outpost",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -3,
+            "opacity": 1
+        },
+        {
+            "id": "mid-dock",
+            "name": "Mid Dock",
+            "type": "poi",
+            "x": 67.7,
+            "y": 51.3,
+            "region": "",
+            "description": "Outpost",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 1
+        },
+        {
+            "id": "Old-gates",
+            "name": "Old Gates",
+            "type": "poi",
+            "x": 65.8,
+            "y": 56.5,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5,
+            "opacity": 1
+        },
+        {
+            "id": "dunduar",
+            "name": "Dunduar",
+            "type": "city",
+            "x": 65.3,
+            "y": 57.1,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -57,
+            "labelOffsetY": -6
+        },
+        {
+            "id": "mount-emberstrand",
+            "name": "Mount\nEmberstrand",
+            "type": "region",
+            "x": 62.7,
+            "y": 55.5,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 24,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
         }
     ],
     "roads": [
@@ -2232,6 +2418,454 @@ const WORLD_LOCATIONS = {
                     53.9
                 ],
                 "irebend"
+            ]
+        },
+        {
+            "id": "i-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "ire'bend-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "irebend",
+                [
+                    78.4,
+                    53.4
+                ],
+                [
+                    79.6,
+                    54.5
+                ],
+                "bareford"
+            ]
+        },
+        {
+            "id": "b-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "bareford-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "bareford",
+                [
+                    79.9,
+                    54.8
+                ],
+                [
+                    80.4,
+                    56.5
+                ],
+                "porthbay"
+            ]
+        },
+        {
+            "id": "r-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "rosevale-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "rosevale",
+                [
+                    70,
+                    49.9
+                ],
+                [
+                    70.3,
+                    50.6
+                ],
+                "destons-outpost"
+            ]
+        },
+        {
+            "id": "d-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "destonsoutpost-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "destons-outpost",
+                [
+                    70.3,
+                    51.5
+                ],
+                [
+                    71.1,
+                    52.5
+                ],
+                "sandgrave"
+            ]
+        },
+        {
+            "id": "d-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "destonsoutpost-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "destons-outpost",
+                [
+                    69.9,
+                    51.7
+                ],
+                [
+                    69.7,
+                    53.1
+                ],
+                "staghaven"
+            ]
+        },
+        {
+            "id": "m-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "middock-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mid-dock",
+                [
+                    68.1,
+                    52.2
+                ],
+                "willow-lodge"
+            ]
+        },
+        {
+            "id": "w-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "willowlodge-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "willow-lodge",
+                [
+                    67.8,
+                    53.4
+                ],
+                [
+                    67.9,
+                    54.6
+                ],
+                "tynevale"
+            ]
+        },
+        {
+            "id": "b-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "boldshire-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "boldshire",
+                [
+                    68.7,
+                    60.7
+                ],
+                "c"
+            ]
+        },
+        {
+            "id": "c-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "cross-road-1",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "c",
+                [
+                    68.2,
+                    61.6
+                ],
+                [
+                    67.6,
+                    63.5
+                ],
+                "bistron"
+            ]
+        },
+        {
+            "id": "e-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "edgewind-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "edgewind",
+                [
+                    68.9,
+                    61.4
+                ],
+                "c"
+            ]
+        },
+        {
+            "id": "b-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "bistron-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "bistron",
+                [
+                    66,
+                    63.9
+                ],
+                [
+                    65.5,
+                    65.6
+                ],
+                "trailpoint"
+            ]
+        },
+        {
+            "id": "t-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "trailpoint-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "trailpoint",
+                [
+                    64.2,
+                    65.6
+                ],
+                "farnsby-port"
+            ]
+        },
+        {
+            "id": "t-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "trailpoint-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "trailpoint",
+                [
+                    64.6,
+                    66.7
+                ],
+                [
+                    65.8,
+                    68.2
+                ],
+                "nuwharf"
+            ]
+        },
+        {
+            "id": "t-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "talbesar-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "talbesar",
+                [
+                    72.8,
+                    64.9
+                ],
+                [
+                    73.1,
+                    67.1
+                ],
+                "scarbrook"
+            ]
+        },
+        {
+            "id": "s-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "scarbrook-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "scarbrook",
+                [
+                    72.1,
+                    68.7
+                ],
+                [
+                    71.5,
+                    68.9
+                ],
+                "marrowdale"
+            ]
+        },
+        {
+            "id": "g-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "glaspero-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "glaspero",
+                [
+                    70.8,
+                    68.8
+                ],
+                "marrowdale"
+            ]
+        },
+        {
+            "id": "f-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "farview-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "farview",
+                [
+                    71.9,
+                    70.9
+                ],
+                [
+                    70.8,
+                    70.4
+                ],
+                "marrowdale"
+            ]
+        },
+        {
+            "id": "n-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "nebisill-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nebisill",
+                [
+                    68.7,
+                    71.2
+                ],
+                [
+                    70.8,
+                    70.6
+                ],
+                "marrowdale"
+            ]
+        },
+        {
+            "id": "m-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "mulshear-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mulshear",
+                [
+                    66.7,
+                    73.2
+                ],
+                [
+                    65.6,
+                    71.1
+                ],
+                "bickerfeld"
+            ]
+        },
+        {
+            "id": "b-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "bickerfeld-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "bickerfeld",
+                [
+                    65.3,
+                    70.6
+                ],
+                [
+                    64.5,
+                    69.2
+                ],
+                [
+                    63.7,
+                    69.1
+                ],
+                [
+                    63.1,
+                    69.8
+                ],
+                "silvermead"
             ]
         }
     ],
