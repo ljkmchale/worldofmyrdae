@@ -1065,18 +1065,18 @@ const WORLD_LOCATIONS = {
             "id": "adamont",
             "name": "Adamont",
             "type": "city",
-            "x": 61.14,
-            "y": 66.3,
+            "x": 61.13,
+            "y": 66.35,
             "region": "Mulbrook",
             "description": "City",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.15,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
+            "labelOffsetX": -62,
             "labelOffsetY": 5
         },
         {
@@ -1711,6 +1711,25 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 0.5
+        },
+        {
+            "id": "semmerest-keep",
+            "name": "Semmerest Keep",
+            "type": "poi",
+            "x": 61.8,
+            "y": 65.2,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 11,
+            "labelOffsetY": 5,
+            "opacity": 1
         }
     ],
     "roads": [
@@ -2587,6 +2606,7 @@ const WORLD_LOCATIONS = {
             "id": "boldshire-road",
             "type": "minor",
             "curved": true,
+            "name": "Boldshire",
             "points": [
                 "boldshire",
                 [
@@ -2866,6 +2886,29 @@ const WORLD_LOCATIONS = {
                     69.8
                 ],
                 "silvermead"
+            ]
+        },
+        {
+            "id": "s-road",
+            "type": "minor",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "silvermead-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "silvermead",
+                [
+                    62.3,
+                    69.7
+                ],
+                [
+                    61,
+                    71
+                ],
+                "eldeff"
             ]
         }
     ],
