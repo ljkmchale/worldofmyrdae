@@ -87,6 +87,41 @@ const MapOverlay = (function () {
             svg.style.pointerEvents = 'none';
             svg.style.willChange = 'transform';
 
+            // Add filter definitions for special label styles
+            const filterDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const waterFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+            waterFilter.setAttribute('id', 'water-label-shadow');
+            waterFilter.setAttribute('x', '-20%');
+            waterFilter.setAttribute('y', '-20%');
+            waterFilter.setAttribute('width', '140%');
+            waterFilter.setAttribute('height', '140%');
+            const feShadow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
+            feShadow.setAttribute('dx', '1');
+            feShadow.setAttribute('dy', '1');
+            feShadow.setAttribute('stdDeviation', '1.5');
+            feShadow.setAttribute('flood-color', '#555555');
+            feShadow.setAttribute('flood-opacity', '0.7');
+            waterFilter.appendChild(feShadow);
+            filterDefs.appendChild(waterFilter);
+
+            // River glow: centered grey glow (no directional offset)
+            const riverFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+            riverFilter.setAttribute('id', 'river-label-glow');
+            riverFilter.setAttribute('x', '-30%');
+            riverFilter.setAttribute('y', '-30%');
+            riverFilter.setAttribute('width', '160%');
+            riverFilter.setAttribute('height', '160%');
+            const riverGlow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
+            riverGlow.setAttribute('dx', '0');
+            riverGlow.setAttribute('dy', '0');
+            riverGlow.setAttribute('stdDeviation', '3');
+            riverGlow.setAttribute('flood-color', '#888888');
+            riverGlow.setAttribute('flood-opacity', '0.8');
+            riverFilter.appendChild(riverGlow);
+            filterDefs.appendChild(riverFilter);
+
+            svg.appendChild(filterDefs);
+
             // Create ID lookup map for road routing
             locMap.clear();
             if (data.locations) {
@@ -277,8 +312,8 @@ const MapOverlay = (function () {
         const brown = '#3e2723'; // Dark Brown
         const darkBrown = '#1b1612'; // Almost Black
 
-        // Region type or zero markerSize: label only, no marker shape
-        if (loc.type === 'region' || sizeMultiplier === 0) {
+        // Region/water/river type or zero markerSize: label only, no marker shape
+        if (loc.type === 'region' || loc.type === 'river' || sizeMultiplier === 0) {
             addLabel(markerGroup, loc, px, py, baseRadius, natW);
             markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
             markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
@@ -487,6 +522,18 @@ const MapOverlay = (function () {
             label.style.fontStyle = loc.fontStyle;
         }
 
+        // Water type: light blue text with grey shadow
+        if (loc.type === 'water') {
+            label.setAttribute('fill', '#7EC8E3');
+            label.setAttribute('filter', 'url(#water-label-shadow)');
+        }
+
+        // River type: light blue text with centered grey glow
+        if (loc.type === 'river') {
+            label.setAttribute('fill', '#7EC8E3');
+            label.setAttribute('filter', 'url(#river-label-glow)');
+        }
+
         // Split on real newlines OR literal "\n" strings
         const lines = loc.name.split(/\r?\n|\\n/);
         if (loc.textCurve !== undefined) {
@@ -541,7 +588,7 @@ const MapOverlay = (function () {
         const typeIcons = {
             city: '🏰', town: '🏠', village: '🏡', port: '⚓',
             ruins: '🏚️', landmark: '⭐', mountain: '⛰️', pass: '🏔️',
-            forest: '🌲', region: '🗺️'
+            forest: '🌲', region: '🗺️', river: '🌊', water: '💧'
         };
 
         const icon = typeIcons[loc.type] || '📍';
@@ -715,6 +762,44 @@ const MapOverlay = (function () {
         if (dashArray) path.setAttribute('stroke-dasharray', dashArray);
 
         group.appendChild(path);
+
+        // --- Render road name label along the path ---
+        if (road.name) {
+            // Need a unique ID for the textPath reference
+            const pathId = 'road-path-' + (road.id || Math.random().toString(36).substr(2, 9));
+            path.setAttribute('id', pathId);
+
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('class', 'road-label');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', road.fontSize || Math.max(natW * 0.004, 10));
+
+            if (road.fontFamily) text.style.fontFamily = road.fontFamily;
+            if (road.fontWeight) text.style.fontWeight = road.fontWeight;
+            if (road.fontStyle) text.style.fontStyle = road.fontStyle;
+
+            // Default road label styling
+            text.setAttribute('fill', road.color || '#5c4a3d');
+            text.setAttribute('stroke', 'none');
+            text.setAttribute('dy', '-0.35em'); // Offset above the path line
+
+            if (road.labelOpacity !== undefined) {
+                text.setAttribute('opacity', road.labelOpacity);
+            } else {
+                text.setAttribute('opacity', '0.7');
+            }
+
+            const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+            textPath.setAttribute('href', '#' + pathId);
+            textPath.setAttribute('startOffset', '50%');
+
+            // Support newlines: join with spaces for textPath
+            const displayName = road.name.replace(/\\n/g, '  ').replace(/\n/g, '  ');
+            textPath.textContent = displayName;
+
+            text.appendChild(textPath);
+            group.appendChild(text);
+        }
     }
 
     /**

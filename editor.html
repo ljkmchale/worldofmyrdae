@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
     rel="stylesheet">
 
   <!-- Font Awesome Icons -->
@@ -166,11 +166,11 @@
           <div class="form-inline">
             <div class="form-group" style="flex:1;">
               <label>X (%)</label>
-              <input type="number" id="loc-x" class="form-control" step="0.1" required>
+              <input type="number" id="loc-x" class="form-control" step="0.01" required>
             </div>
             <div class="form-group" style="flex:1;">
               <label>Y (%)</label>
-              <input type="number" id="loc-y" class="form-control" step="0.1" required>
+              <input type="number" id="loc-y" class="form-control" step="0.01" required>
             </div>
           </div>
 
@@ -187,6 +187,7 @@
               <option value="poi">POI</option>
               <option value="region">Region Label</option>
               <option value="water">Water Label</option>
+              <option value="river">River Label</option>
             </select>
           </div>
 
@@ -277,7 +278,7 @@
           </div>
 
           <div class="form-group">
-            <label>Name (Optional)</label>
+            <label>Name (\\n for newline)</label>
             <input type="text" id="road-name" class="form-control">
           </div>
 
@@ -299,6 +300,23 @@
                   class="form-control" step="0.1"></div>
               <div class="form-group"><label>Gap Length Multiplier</label><input type="number" id="road-gapLength"
                   class="form-control" step="0.1"></div>
+            </div>
+          </details>
+
+          <details style="margin-top: 0; margin-bottom: 1rem;">
+            <summary style="cursor: pointer; color: var(--color-gold); font-size: 0.9rem;">Road Label Typography
+            </summary>
+            <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="form-group"><label>Font Family</label><input type="text" id="road-fontFamily"
+                  class="form-control" placeholder="Simonetta"></div>
+              <div class="form-group"><label>Font Size</label><input type="number" id="road-fontSize"
+                  class="form-control" step="1" placeholder="12"></div>
+              <div class="form-group"><label>Font Weight</label><input type="text" id="road-fontWeight"
+                  class="form-control" placeholder="400"></div>
+              <div class="form-group"><label>Font Style</label><input type="text" id="road-fontStyle"
+                  class="form-control" placeholder="Italic"></div>
+              <div class="form-group"><label>Label Opacity</label><input type="number" id="road-labelOpacity"
+                  class="form-control" step="0.1" min="0" max="1" placeholder="0.7"></div>
             </div>
           </details>
 

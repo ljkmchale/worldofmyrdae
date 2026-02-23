@@ -1216,14 +1216,14 @@ const WORLD_LOCATIONS = {
             "description": "Tomb",
             "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
-            "fontStyle": "Italic",
             "fontWeight": "300",
-            "opacity": 0.5,
-            "markerSize": 0,
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0
+            "labelOffsetX": 8,
+            "labelOffsetY": -4,
+            "opacity": 1
         },
         {
             "id": "deepspring",
@@ -1403,8 +1403,8 @@ const WORLD_LOCATIONS = {
             "id": "olestack",
             "name": "Ole'stack",
             "type": "town",
-            "x": 67.5,
-            "y": 45.2,
+            "x": 67.6,
+            "y": 45.5,
             "region": "",
             "description": "Town",
             "fontFamily": "Garamond MT",
@@ -1679,8 +1679,8 @@ const WORLD_LOCATIONS = {
             "id": "dunduar",
             "name": "Dunduar",
             "type": "city",
-            "x": 65.3,
-            "y": 57.1,
+            "x": 65.47,
+            "y": 57.3,
             "region": "",
             "description": "City",
             "fontFamily": "Simonetta",
@@ -1730,6 +1730,319 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 11,
             "labelOffsetY": 5,
             "opacity": 1
+        },
+        {
+            "id": "harbok",
+            "name": "Harbok",
+            "type": "town",
+            "x": 61.7,
+            "y": 63.2,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -40,
+            "labelOffsetY": 17
+        },
+        {
+            "id": "ulgrey",
+            "name": "Ulgrey",
+            "type": "town",
+            "x": 62.87,
+            "y": 60.8,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -56,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "tower-of-zibeus",
+            "name": "Tower of\nZibeus",
+            "type": "poi",
+            "x": 62.6,
+            "y": 61.7,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -19,
+            "labelOffsetY": 17,
+            "opacity": 0.5
+        },
+        {
+            "id": "kahlbits-veil",
+            "name": "Kahlbit's\nVeil",
+            "type": "region",
+            "x": 64.2,
+            "y": 62.5,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "the-glimmering-sea",
+            "name": "The\nGlimmering\nSea",
+            "type": "water",
+            "x": 59.1,
+            "y": 61.9,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 30,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "silverhill",
+            "name": "Silverhill",
+            "type": "poi",
+            "x": 64.87,
+            "y": 45.5,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -26,
+            "labelOffsetY": 19,
+            "opacity": 1
+        },
+        {
+            "id": "crulfeld",
+            "name": "Crulfeld",
+            "type": "town",
+            "x": 65.23,
+            "y": 42.55,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -58,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "wrynn",
+            "name": "Wrynn",
+            "type": "town",
+            "x": 63.7,
+            "y": 40.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -13,
+            "labelOffsetY": -13
+        },
+        {
+            "id": "ghogam",
+            "name": "Ghogam",
+            "type": "town",
+            "x": 64.5,
+            "y": 41.5,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "ofwood",
+            "name": "Ofwood",
+            "type": "town",
+            "x": 65.4,
+            "y": 38.96,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "crimson-pins",
+            "name": "Crimson Pines",
+            "type": "region",
+            "x": 64.4,
+            "y": 38.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "mirstone",
+            "name": "Mirstone",
+            "type": "town",
+            "x": 63.6,
+            "y": 43.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -62,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "stouhg",
+            "name": "Stouhg",
+            "type": "city",
+            "x": 62.8,
+            "y": 41.5,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -38,
+            "labelOffsetY": 19
+        },
+        {
+            "id": "offwood-crossroad",
+            "name": "",
+            "type": "town",
+            "x": 65.16,
+            "y": 40.74,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 1,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.01,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "gur-madihl",
+            "name": "Gur\nMadihl",
+            "type": "city",
+            "x": 63.1,
+            "y": 46.04,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -37,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "stonewood",
+            "name": "Stonewood",
+            "type": "region",
+            "x": 65.4,
+            "y": 44.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "brokenflow",
+            "name": "Brokenflow",
+            "type": "river",
+            "x": 68,
+            "y": 40.5,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
         }
     ],
     "roads": [
@@ -2026,12 +2339,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "d-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "deepspring-road",
             "type": "minor",
             "curved": true,
@@ -2047,12 +2354,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "ngundeer"
             ]
-        },
-        {
-            "id": "n-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "ngundeer-road",
@@ -2072,12 +2373,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "h-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "hesfal-road-south",
             "type": "minor",
             "curved": true,
@@ -2089,12 +2384,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "scarwatch-hold"
             ]
-        },
-        {
-            "id": "n-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "ngundeer-road-south",
@@ -2114,12 +2403,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "s-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "sulport-road-north",
             "type": "major",
             "curved": true,
@@ -2131,12 +2414,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "tratta"
             ]
-        },
-        {
-            "id": "t-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "tratta-road",
@@ -2169,12 +2446,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "g-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "greenvale-road",
             "type": "major",
             "curved": true,
@@ -2192,12 +2463,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "w-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "wuldrif-road-east",
             "type": "major",
             "curved": true,
@@ -2209,12 +2474,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "alburest"
             ]
-        },
-        {
-            "id": "a-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "alburest-road",
@@ -2230,12 +2489,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "o-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "olestack-road-southeast",
             "type": "minor",
             "curved": true,
@@ -2247,12 +2500,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "igborne"
             ]
-        },
-        {
-            "id": "i-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "igburne-road",
@@ -2268,12 +2515,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "o-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "olestack-road-southwest",
             "type": "minor",
             "curved": true,
@@ -2285,12 +2526,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "simmerhorn"
             ]
-        },
-        {
-            "id": "u-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "ulkef-road",
@@ -2306,12 +2541,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "t-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "thrargael-road-south",
             "type": "minor",
             "curved": true,
@@ -2323,12 +2552,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "runest"
             ]
-        },
-        {
-            "id": "r-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "rosevale-road-east",
@@ -2348,12 +2571,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "s-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "sandgrave-road-east",
             "type": "major",
             "curved": true,
@@ -2367,12 +2584,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "r-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "runest-road-south",
             "type": "minor",
             "curved": true,
@@ -2384,12 +2595,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "cragflight"
             ]
-        },
-        {
-            "id": "r-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "runest-road-southeast",
@@ -2413,12 +2618,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "s-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "severyll-road",
             "type": "minor",
             "curved": true,
@@ -2440,12 +2639,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "i-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "ire'bend-road",
             "type": "minor",
             "curved": true,
@@ -2461,12 +2654,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "bareford"
             ]
-        },
-        {
-            "id": "b-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "bareford-road",
@@ -2486,12 +2673,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "r-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "rosevale-road-south",
             "type": "minor",
             "curved": true,
@@ -2507,12 +2688,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "destons-outpost"
             ]
-        },
-        {
-            "id": "d-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "destonsoutpost-road-east",
@@ -2532,12 +2707,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "d-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "destonsoutpost-road-south",
             "type": "minor",
             "curved": true,
@@ -2555,12 +2724,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "m-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "middock-road",
             "type": "minor",
             "curved": true,
@@ -2572,12 +2735,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "willow-lodge"
             ]
-        },
-        {
-            "id": "w-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "willowlodge-road",
@@ -2597,12 +2754,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "b-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "boldshire-road",
             "type": "minor",
             "curved": true,
@@ -2615,12 +2766,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "c"
             ]
-        },
-        {
-            "id": "c-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "cross-road-1",
@@ -2640,12 +2785,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "e-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "edgewind-road",
             "type": "minor",
             "curved": true,
@@ -2657,12 +2796,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "c"
             ]
-        },
-        {
-            "id": "b-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "bistron-road",
@@ -2682,12 +2815,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "t-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "trailpoint-road",
             "type": "minor",
             "curved": true,
@@ -2699,12 +2826,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "farnsby-port"
             ]
-        },
-        {
-            "id": "t-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "trailpoint-road-south",
@@ -2724,12 +2845,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "t-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "talbesar-road",
             "type": "minor",
             "curved": true,
@@ -2745,12 +2860,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "scarbrook"
             ]
-        },
-        {
-            "id": "s-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "scarbrook-road",
@@ -2770,12 +2879,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "g-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "glaspero-road",
             "type": "minor",
             "curved": true,
@@ -2787,12 +2890,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "marrowdale"
             ]
-        },
-        {
-            "id": "f-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "farview-road",
@@ -2812,12 +2909,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "n-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "nebisill-road",
             "type": "minor",
             "curved": true,
@@ -2835,12 +2926,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "m-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "mulshear-road",
             "type": "minor",
             "curved": true,
@@ -2856,12 +2941,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "bickerfeld"
             ]
-        },
-        {
-            "id": "b-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
         },
         {
             "id": "bickerfeld-road",
@@ -2889,12 +2968,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "s-road",
-            "type": "minor",
-            "curved": true,
-            "points": []
-        },
-        {
             "id": "silvermead-road",
             "type": "minor",
             "curved": true,
@@ -2909,6 +2982,193 @@ const WORLD_LOCATIONS = {
                     71
                 ],
                 "eldeff"
+            ]
+        },
+        {
+            "id": "ulgrey-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ulgrey",
+                [
+                    62.09,
+                    60.98
+                ],
+                [
+                    61.94,
+                    62.56
+                ],
+                "harbok"
+            ]
+        },
+        {
+            "id": "ulgrey-road-southwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ulgrey",
+                [
+                    63.43,
+                    61.2
+                ],
+                [
+                    63.33,
+                    63.01
+                ],
+                [
+                    65.14,
+                    63.97
+                ],
+                "trailpoint"
+            ]
+        },
+        {
+            "id": "ulgrey-road-northeast",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "ulgrey",
+                [
+                    62.94,
+                    59.81
+                ],
+                [
+                    64.51,
+                    59.91
+                ],
+                [
+                    64.48,
+                    57.45
+                ],
+                "dunduar"
+            ]
+        },
+        {
+            "id": "wuldrif-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "wuldrif",
+                [
+                    67.29,
+                    40.76
+                ],
+                [
+                    66.45,
+                    41.25
+                ],
+                [
+                    65.4,
+                    40.54
+                ],
+                [
+                    64.69,
+                    41.09
+                ],
+                "ghogam"
+            ]
+        },
+        {
+            "id": "ofwood-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ofwood",
+                [
+                    64.99,
+                    39.75
+                ],
+                "offwood-crossroad"
+            ]
+        },
+        {
+            "id": "crulfeld-road-northwest",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "crulfeld",
+                [
+                    64.79,
+                    41.72
+                ],
+                "ghogam"
+            ]
+        },
+        {
+            "id": "ghogam-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "ghogam",
+                [
+                    63.9,
+                    40.78
+                ],
+                "wrynn"
+            ]
+        },
+        {
+            "id": "wrynn-road",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "wrynn",
+                [
+                    63.32,
+                    40.87
+                ],
+                "stouhg"
+            ]
+        },
+        {
+            "id": "mirstone-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mirstone",
+                [
+                    64.03,
+                    42.92
+                ],
+                [
+                    65,
+                    43.4
+                ],
+                "crulfeld"
+            ]
+        },
+        {
+            "id": "simmerhorn-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "simmerhorn",
+                [
+                    66.25,
+                    46.65
+                ],
+                [
+                    65.59,
+                    45.5
+                ],
+                "silverhill"
+            ]
+        },
+        {
+            "id": "silverhill-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "silverhill",
+                [
+                    64.28,
+                    45.41
+                ],
+                [
+                    63.72,
+                    46.6
+                ],
+                "gur-madihl"
             ]
         }
     ],

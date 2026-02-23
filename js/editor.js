@@ -44,8 +44,9 @@ const Editor = (function () {
             });
 
         // Setup live preview for roads
-        ['road-id', 'road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
-            'road-dashed', 'road-dashLength', 'road-gapLength'].forEach(id => {
+        ['road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
+            'road-dashed', 'road-dashLength', 'road-gapLength',
+            'road-fontFamily', 'road-fontSize', 'road-fontWeight', 'road-fontStyle', 'road-labelOpacity'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', previewRoad);
             });
@@ -97,7 +98,7 @@ const Editor = (function () {
 
                     // If editing a waypoint, update it instead of adding new
                     if (state.editingWaypointIndex !== null && state.editingWaypointIndex > 0 && state.editingWaypointIndex < road.points.length - 1) {
-                        road.points[state.editingWaypointIndex] = [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+                        road.points[state.editingWaypointIndex] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
                         state.editingWaypointIndex = null;
                         renderRoadPoints(road.points);
                         refreshMap();
@@ -115,7 +116,7 @@ const Editor = (function () {
                     }
 
                     // Add intermediate waypoint (coordinate array)
-                    const point = [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+                    const point = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
                     // Insert before the end location
                     if (road.points.length > 0 && typeof road.points[road.points.length - 1] === 'string') {
                         road.points.splice(road.points.length - 1, 0, point);
@@ -279,7 +280,7 @@ const Editor = (function () {
         const locType = document.getElementById('loc-type').value;
         const isTown = locType.toLowerCase() === 'town';
         const isPoi = locType.toLowerCase() === 'poi';
-        const isNature = ['nature', 'region', 'water', 'landmark'].includes(locType.toLowerCase());
+        const isNature = ['nature', 'region', 'water', 'river', 'landmark'].includes(locType.toLowerCase());
         const isCity = locType.toLowerCase() === 'city';
 
         let defaultDesc = "";
@@ -444,6 +445,13 @@ const Editor = (function () {
         document.getElementById('road-dashLength').value = road.dashLength !== undefined ? road.dashLength : '';
         document.getElementById('road-gapLength').value = road.gapLength !== undefined ? road.gapLength : '';
 
+        // Road label typography
+        document.getElementById('road-fontFamily').value = road.fontFamily || '';
+        document.getElementById('road-fontSize').value = road.fontSize !== undefined ? road.fontSize : '';
+        document.getElementById('road-fontWeight').value = road.fontWeight || '';
+        document.getElementById('road-fontStyle').value = road.fontStyle || '';
+        document.getElementById('road-labelOpacity').value = road.labelOpacity !== undefined ? road.labelOpacity : '';
+
         // Update location dropdowns
         updateLocationDropdowns();
         const points = road.points || [];
@@ -570,10 +578,10 @@ const Editor = (function () {
                 el.innerHTML = `
                     <div style="flex: 1; display: flex; gap: 0.25rem; align-items: center;">
                         <strong style="color:#888; font-size:0.7rem;">${label}:</strong>
-                        <input type="number" id="waypoint-x-${idx}" value="${pt[0]}" step="0.1" 
+                        <input type="number" id="waypoint-x-${idx}" value="${pt[0]}" step="0.01" 
                             style="width:60px; padding:2px; font-size:0.7rem; background:#222; border:1px solid #444; color:#fff;" />
                         <span style="color:#666;">,</span>
-                        <input type="number" id="waypoint-y-${idx}" value="${pt[1]}" step="0.1" 
+                        <input type="number" id="waypoint-y-${idx}" value="${pt[1]}" step="0.01" 
                             style="width:60px; padding:2px; font-size:0.7rem; background:#222; border:1px solid #444; color:#fff;" />
                         <button style="background:#0a0; border:none; color:#fff; cursor:pointer; padding:2px 6px; font-size:0.7rem; border-radius:2px;" 
                             onclick="Editor.saveWaypoint(${idx})" title="Save"><i class="fa-solid fa-check"></i></button>
@@ -581,6 +589,25 @@ const Editor = (function () {
                             onclick="Editor.cancelEditWaypoint()" title="Cancel"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 `;
+                // Add live preview listeners after element is in the DOM
+                setTimeout(() => {
+                    const xEl = document.getElementById(`waypoint-x-${idx}`);
+                    const yEl = document.getElementById(`waypoint-y-${idx}`);
+                    if (xEl && yEl) {
+                        const previewHandler = () => {
+                            const road = state.roads.find(r => r.id === state.selectedRoadId);
+                            if (!road || !road.points) return;
+                            const x = parseFloat(xEl.value);
+                            const y = parseFloat(yEl.value);
+                            if (!isNaN(x) && !isNaN(y)) {
+                                road.points[idx] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
+                                refreshMap();
+                            }
+                        };
+                        xEl.addEventListener('input', previewHandler);
+                        yEl.addEventListener('input', previewHandler);
+                    }
+                }, 0);
             } else {
                 // Show display mode
                 el.innerHTML = `
@@ -614,7 +641,7 @@ const Editor = (function () {
                 const x = parseFloat(xInput.value);
                 const y = parseFloat(yInput.value);
                 if (!isNaN(x) && !isNaN(y)) {
-                    road.points[idx] = [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+                    road.points[idx] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
                     state.editingWaypointIndex = null;
                     renderRoadPoints(road.points);
                     refreshMap();
@@ -736,6 +763,22 @@ const Editor = (function () {
 
         const gapLen = document.getElementById('road-gapLength').value;
         if (gapLen !== '') roadData.gapLength = parseFloat(gapLen);
+
+        // Road label typography
+        const fontFamily = document.getElementById('road-fontFamily').value;
+        if (fontFamily) roadData.fontFamily = fontFamily;
+
+        const fontSize = document.getElementById('road-fontSize').value;
+        if (fontSize !== '') roadData.fontSize = parseFloat(fontSize);
+
+        const fontWeight = document.getElementById('road-fontWeight').value;
+        if (fontWeight) roadData.fontWeight = fontWeight;
+
+        const fontStyle = document.getElementById('road-fontStyle').value;
+        if (fontStyle) roadData.fontStyle = fontStyle;
+
+        const labelOpacity = document.getElementById('road-labelOpacity').value;
+        if (labelOpacity !== '') roadData.labelOpacity = parseFloat(labelOpacity);
 
         const startLocId = document.getElementById('road-start-location')?.value || '';
         const endLocId = document.getElementById('road-end-location')?.value || '';

@@ -2,6 +2,31 @@
    WORLD OF MYRDAE - PREMIUM FANTASY THEME
    ============================================ */
 
+/* Self-hosted Simonetta font */
+@font-face {
+  font-family: 'Simonetta';
+  src: url('../fonts/Simonetta/Simonetta-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Simonetta';
+  src: url('../fonts/Simonetta/Simonetta-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Simonetta';
+  src: url('../fonts/Simonetta/Simonetta-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap');
 
 /* ---------- CSS Custom Properties ---------- */
