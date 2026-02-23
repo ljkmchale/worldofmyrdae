@@ -766,39 +766,65 @@ const MapOverlay = (function () {
         // --- Render road name label along the path ---
         if (road.name) {
             // Need a unique ID for the textPath reference
-            const pathId = 'road-path-' + (road.id || Math.random().toString(36).substr(2, 9));
-            path.setAttribute('id', pathId);
+            let labelPathId = 'road-path-' + (road.id || Math.random().toString(36).substr(2, 9));
+            path.setAttribute('id', labelPathId);
 
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('class', 'road-label');
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('font-size', road.fontSize || Math.max(natW * 0.004, 10));
+            // If labelReverse is set, create a reversed copy of the path for text
+            if (road.labelReverse) {
+                const reversedPathId = labelPathId + '-reversed';
+                const reversedPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                reversedPath.setAttribute('id', reversedPathId);
+                reversedPath.setAttribute('fill', 'none');
+                reversedPath.setAttribute('stroke', 'none');
 
-            if (road.fontFamily) text.style.fontFamily = road.fontFamily;
-            if (road.fontWeight) text.style.fontWeight = road.fontWeight;
-            if (road.fontStyle) text.style.fontStyle = road.fontStyle;
-
-            // Default road label styling
-            text.setAttribute('fill', road.color || '#5c4a3d');
-            text.setAttribute('stroke', 'none');
-            text.setAttribute('dy', '-0.35em'); // Offset above the path line
-
-            if (road.labelOpacity !== undefined) {
-                text.setAttribute('opacity', road.labelOpacity);
-            } else {
-                text.setAttribute('opacity', '0.7');
+                // Reverse the path: re-calculate from road points in reverse order
+                const reversedRoad = { ...road, points: [...road.points].reverse() };
+                const reversedD = calculatePathD(reversedRoad);
+                if (reversedD) {
+                    reversedPath.setAttribute('d', reversedD);
+                    group.appendChild(reversedPath);
+                    labelPathId = reversedPathId;
+                }
             }
 
-            const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
-            textPath.setAttribute('href', '#' + pathId);
-            textPath.setAttribute('startOffset', '50%');
+            // Split on real newlines OR literal "\n" strings
+            const lines = road.name.split(/\r?\n|\\n/);
+            const fontSize = road.fontSize || Math.max(natW * 0.004, 10);
+            const startOffset = (road.labelOffset !== undefined ? road.labelOffset : 50) + '%';
+            const opacity = road.labelOpacity !== undefined ? road.labelOpacity : '0.7';
 
-            // Support newlines: join with spaces for textPath
-            const displayName = road.name.replace(/\\n/g, '  ').replace(/\n/g, '  ');
-            textPath.textContent = displayName;
+            lines.forEach((line, lineIndex) => {
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'road-label');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', fontSize);
 
-            text.appendChild(textPath);
-            group.appendChild(text);
+                if (road.fontFamily) text.style.fontFamily = road.fontFamily;
+                if (road.fontWeight) text.style.fontWeight = road.fontWeight;
+                if (road.fontStyle) text.style.fontStyle = road.fontStyle;
+
+                // Default road label styling (matches POI text)
+                text.setAttribute('fill', '#faf3e0');
+                text.setAttribute('stroke', '#3e2723');
+                text.setAttribute('stroke-width', '2px');
+                text.setAttribute('paint-order', 'stroke fill');
+                text.setAttribute('stroke-linejoin', 'round');
+
+                // Stack lines vertically: first line above path, subsequent lines below
+                const baseDy = -0.35; // em, base offset above path
+                const lineDy = baseDy + (lineIndex * 1.2); // 1.2em per line
+                text.setAttribute('dy', lineDy + 'em');
+
+                text.setAttribute('opacity', opacity);
+
+                const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+                textPath.setAttribute('href', '#' + labelPathId);
+                textPath.setAttribute('startOffset', startOffset);
+                textPath.textContent = line;
+
+                text.appendChild(textPath);
+                group.appendChild(text);
+            });
         }
     }
 

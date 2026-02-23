@@ -46,7 +46,8 @@ const Editor = (function () {
         // Setup live preview for roads
         ['road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
             'road-dashed', 'road-dashLength', 'road-gapLength',
-            'road-fontFamily', 'road-fontSize', 'road-fontWeight', 'road-fontStyle', 'road-labelOpacity'].forEach(id => {
+            'road-fontFamily', 'road-fontSize', 'road-fontWeight', 'road-fontStyle', 'road-labelOpacity',
+            'road-labelOffset', 'road-labelReverse'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', previewRoad);
             });
@@ -177,18 +178,45 @@ const Editor = (function () {
         const list = document.getElementById('location-list');
         list.innerHTML = '<option value="">-- Select a Location --</option>';
 
-        // Sort locations by name
-        const sorted = [...state.locations].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        // Group locations by type
+        const typeOrder = ['capital', 'city', 'town', 'village', 'port', 'poi', 'landmark', 'ruins', 'region', 'water', 'river'];
+        const typeLabels = {
+            capital: 'Capitals', city: 'Cities', town: 'Towns', village: 'Villages',
+            port: 'Ports', poi: 'Points of Interest', landmark: 'Landmarks',
+            ruins: 'Ruins', region: 'Region Labels', water: 'Water Labels', river: 'River Labels'
+        };
 
-        sorted.forEach(loc => {
-            const opt = document.createElement('option');
-            opt.value = loc.id;
-            opt.textContent = `${loc.name} (${loc.type})`;
-            if (state.selectedLocId === loc.id) {
-                opt.selected = true;
-            }
-            list.appendChild(opt);
+        const grouped = {};
+        state.locations.forEach(loc => {
+            const type = loc.type || 'other';
+            if (!grouped[type]) grouped[type] = [];
+            grouped[type].push(loc);
         });
+
+        // Sort each group alphabetically
+        Object.values(grouped).forEach(arr => arr.sort((a, b) => (a.name || '').localeCompare(b.name || '')));
+
+        // Render in type order, then any remaining types
+        const renderedTypes = new Set();
+        const renderGroup = (type) => {
+            if (!grouped[type] || renderedTypes.has(type)) return;
+            renderedTypes.add(type);
+            const label = typeLabels[type] || (type.charAt(0).toUpperCase() + type.slice(1));
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = `── ${label} ──`;
+            grouped[type].forEach(loc => {
+                const opt = document.createElement('option');
+                opt.value = loc.id;
+                opt.textContent = loc.name || loc.id;
+                if (state.selectedLocId === loc.id) opt.selected = true;
+                optgroup.appendChild(opt);
+            });
+            list.appendChild(optgroup);
+        };
+
+        typeOrder.forEach(renderGroup);
+        // Any types not in typeOrder
+        Object.keys(grouped).forEach(renderGroup);
     }
 
     function selectLocation(id) {
@@ -280,13 +308,15 @@ const Editor = (function () {
         const locType = document.getElementById('loc-type').value;
         const isTown = locType.toLowerCase() === 'town';
         const isPoi = locType.toLowerCase() === 'poi';
-        const isNature = ['nature', 'region', 'water', 'river', 'landmark'].includes(locType.toLowerCase());
+        const isRiver = locType.toLowerCase() === 'river';
+        const isNature = ['nature', 'region', 'water', 'landmark'].includes(locType.toLowerCase());
         const isCity = locType.toLowerCase() === 'city';
 
         let defaultDesc = "";
         if (isTown) defaultDesc = "Town";
         else if (isCity) defaultDesc = "City";
         else if (isPoi) defaultDesc = "Point of Interest";
+        else if (isRiver) defaultDesc = "Nature";
         else if (isNature) defaultDesc = "Nature";
 
         const locData = {
@@ -311,26 +341,26 @@ const Editor = (function () {
         };
 
         setIf('fontFamily', document.getElementById('loc-fontFamily').value, null,
-            isTown || isCity || isPoi ? "Garamond MT" : (isNature ? "Cinzel Decorative" : undefined));
+            isTown || isCity || isPoi || isRiver ? "Garamond MT" : (isNature ? "Cinzel Decorative" : undefined));
         setIf('fontSize', document.getElementById('loc-fontSize').value, parseInt,
-            isTown || isCity || isPoi ? 14 : (isNature ? 12 : undefined));
+            isTown || isCity || isPoi || isRiver ? 14 : (isNature ? 12 : undefined));
         setIf('fontWeight', document.getElementById('loc-fontWeight').value, null,
-            isTown || isCity || isPoi || isNature ? "300" : undefined);
+            isTown || isCity || isPoi || isNature || isRiver ? "300" : undefined);
         setIf('fontStyle', document.getElementById('loc-fontStyle').value, null,
-            isTown || isCity || isPoi || isNature ? "Italic" : undefined);
+            isTown || isCity || isPoi || isNature || isRiver ? "Italic" : undefined);
         setIf('markerSize', document.getElementById('loc-markerSize').value, parseFloat, 0.25);
         setIf('markerOffsetX', document.getElementById('loc-markerOffsetX').value, parseInt,
-            isTown || isCity || isPoi || isNature ? 16 : undefined);
+            isTown || isCity || isPoi || isNature || isRiver ? 16 : undefined);
         setIf('markerOffsetY', document.getElementById('loc-markerOffsetY').value, parseInt,
-            isTown || isCity || isPoi || isNature ? 0 : undefined);
+            isTown || isCity || isPoi || isNature || isRiver ? 0 : undefined);
         setIf('labelOffsetX', document.getElementById('loc-labelOffsetX').value, parseInt,
-            isTown || isCity ? 10 : (isPoi || isNature ? 0 : undefined));
+            isTown || isCity ? 10 : (isPoi || isNature || isRiver ? 0 : undefined));
         setIf('labelOffsetY', document.getElementById('loc-labelOffsetY').value, parseInt,
-            isTown ? 3 : (isCity ? 5 : (isPoi || isNature ? 0 : undefined)));
+            isTown ? 3 : (isCity ? 5 : (isPoi || isNature || isRiver ? 0 : undefined)));
         setIf('rotation', document.getElementById('loc-rotation').value, parseInt);
         setIf('textCurve', document.getElementById('loc-textCurve').value, parseFloat);
         setIf('opacity', document.getElementById('loc-opacity').value, parseFloat,
-            isPoi || isNature ? 0.5 : undefined);
+            isPoi || isNature || isRiver ? 0.5 : undefined);
 
         return locData;
     }
@@ -413,15 +443,20 @@ const Editor = (function () {
 
     function renderRoadList() {
         const list = document.getElementById('road-list');
-        list.innerHTML = '';
+        list.innerHTML = '<option value="">-- Select a Road --</option>';
 
-        state.roads.forEach(road => {
-            const el = document.createElement('div');
-            el.className = 'list-item' + (state.selectedRoadId === road.id ? ' active' : '');
+        // Sort roads by name/id
+        const sorted = [...state.roads].sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+
+        sorted.forEach(road => {
+            const opt = document.createElement('option');
+            opt.value = road.id;
             const roadName = road.name || road.id;
-            el.innerHTML = `<span>${roadName} <small style="color:#666">(${road.type})</small></span>`;
-            el.onclick = () => selectRoad(road.id);
-            list.appendChild(el);
+            opt.textContent = `${roadName} (${road.type})`;
+            if (state.selectedRoadId === road.id) {
+                opt.selected = true;
+            }
+            list.appendChild(opt);
         });
     }
 
@@ -451,6 +486,8 @@ const Editor = (function () {
         document.getElementById('road-fontWeight').value = road.fontWeight || '';
         document.getElementById('road-fontStyle').value = road.fontStyle || '';
         document.getElementById('road-labelOpacity').value = road.labelOpacity !== undefined ? road.labelOpacity : '';
+        document.getElementById('road-labelOffset').value = road.labelOffset !== undefined ? road.labelOffset : '';
+        document.getElementById('road-labelReverse').checked = road.labelReverse || false;
 
         // Update location dropdowns
         updateLocationDropdowns();
@@ -516,6 +553,8 @@ const Editor = (function () {
         document.getElementById('road-dashed').value = '';
         document.getElementById('road-dashLength').value = '';
         document.getElementById('road-gapLength').value = '';
+        document.getElementById('road-labelOffset').value = '';
+        document.getElementById('road-labelReverse').checked = false;
 
         // Reset location dropdowns
         updateLocationDropdowns();
@@ -779,6 +818,12 @@ const Editor = (function () {
 
         const labelOpacity = document.getElementById('road-labelOpacity').value;
         if (labelOpacity !== '') roadData.labelOpacity = parseFloat(labelOpacity);
+
+        const labelOffset = document.getElementById('road-labelOffset').value;
+        if (labelOffset !== '') roadData.labelOffset = parseInt(labelOffset);
+
+        const labelReverse = document.getElementById('road-labelReverse').checked;
+        if (labelReverse) roadData.labelReverse = true;
 
         const startLocId = document.getElementById('road-start-location')?.value || '';
         const endLocId = document.getElementById('road-end-location')?.value || '';
@@ -1070,6 +1115,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         cancelLocation,
 
         // Roads
+        selectRoad,
         newRoad,
         saveRoad,
         deleteRoad,

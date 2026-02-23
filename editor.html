@@ -251,10 +251,11 @@
       <div id="tab-roads" class="tab-content" style="padding: 1rem; display: none;">
         <p style="font-size: 0.8rem; color: #888;">Select a road to edit, or click 'New Road' to start plotting.</p>
 
-        <div id="road-list"
-          style="max-height: 200px; overflow-y: auto; border: 1px solid #333; margin-bottom: 1rem; padding: 0.5rem; font-size: 0.85rem;">
+        <select id="road-list" class="form-control"
+          style="margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1rem; background-color: #1a1614; color: #d4af37; border: 1px solid #584433; padding: 0.5rem; cursor: pointer; width: 100%;"
+          onchange="if(this.value) { Editor.selectRoad(this.value); } else { Editor.cancelRoad(); }">
           <!-- Populated by JS -->
-        </div>
+        </select>
 
         <button class="btn btn-secondary" onclick="Editor.newRoad()" style="width: 100%; margin-bottom: 1rem;">+ New
           Road</button>
@@ -317,6 +318,11 @@
                   class="form-control" placeholder="Italic"></div>
               <div class="form-group"><label>Label Opacity</label><input type="number" id="road-labelOpacity"
                   class="form-control" step="0.1" min="0" max="1" placeholder="0.7"></div>
+              <div class="form-group"><label>Label Position (% along road, 0-100)</label><input type="number"
+                  id="road-labelOffset" class="form-control" step="1" min="0" max="100" placeholder="50"></div>
+              <div class="form-group">
+                <label><input type="checkbox" id="road-labelReverse"> Reverse Label Direction</label>
+              </div>
             </div>
           </details>
 
