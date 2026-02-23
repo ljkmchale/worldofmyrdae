@@ -6,6 +6,7 @@
 const MapOverlay = (function () {
     let data = null;
     let tooltip = null;
+    let hideTimer = null;
     let overlayVisible = true;
     let locMap = new Map(); // Shared location map
     let natW = 0;
@@ -585,6 +586,12 @@ const MapOverlay = (function () {
     function showTooltip(e, loc) {
         if (!tooltip) return;
 
+        // Cancel any pending hide — prevents flicker when moving between marker dot and label
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+
         const typeIcons = {
             city: '🏰', town: '🏠', village: '🏡', port: '⚓',
             ruins: '🏚️', landmark: '⭐', mountain: '⛰️', pass: '🏔️',
@@ -602,6 +609,7 @@ const MapOverlay = (function () {
             <div class="tooltip-type" style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #a0a0a0; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(212,175,55,0.2);">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
             ${loc.description ? `<div class="tooltip-desc" style="font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: #d0d0d0; line-height: 1.4;">${loc.description}</div>` : ''}
             ${loc.details ? `<div class="tooltip-details" style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: #888; font-style: italic; margin-top: 0.3rem;">${loc.details}</div>` : ''}
+            ${loc.link ? `<div class="tooltip-link" style="margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid rgba(212,175,55,0.2);"><a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #ffd700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.2s;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More <span style="font-size: 0.9em;">→</span></a></div>` : ''}
         `;
 
         tooltip.style.display = 'block';
@@ -635,28 +643,42 @@ const MapOverlay = (function () {
     }
 
     function moveTooltip(e) {
-        // Only follow mouse if we haven't "locked" onto the tooltip (optional enhancement)
-        // For now, let's keep it static once visible to make it easier to click
-        // but if they are still on the marker, we can update position.
-        if (e.target.closest('.marker-group') || e.target.closest('.region-label')) {
-            positionTooltip(e);
-        }
+        // Tooltip is locked in place after initial show — don't follow the mouse.
+        // This makes it much easier to move the cursor into the tooltip to click links.
     }
 
     function hideTooltip(e) {
         if (!tooltip) return;
 
-        // Small delay to allow moving mouse into the tooltip
-        setTimeout(() => {
+        // Cancel any previous pending hide
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+
+        // Generous delay to allow moving mouse between marker parts or into the tooltip
+        hideTimer = setTimeout(() => {
             const currentHover = document.querySelectorAll(':hover');
             const isHoveringTooltip = Array.from(currentHover).some(el => el === tooltip || tooltip.contains(el));
             const isHoveringTrigger = Array.from(currentHover).some(el => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
 
             if (!isHoveringTooltip && !isHoveringTrigger) {
-                tooltip.style.display = 'none';
-                tooltip.style.pointerEvents = 'none';
+                // Second check after another delay — gives extra time if user is mid-move
+                hideTimer = setTimeout(() => {
+                    const hover2 = document.querySelectorAll(':hover');
+                    const stillOnTooltip = Array.from(hover2).some(el => el === tooltip || tooltip.contains(el));
+                    const stillOnTrigger = Array.from(hover2).some(el => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
+
+                    if (!stillOnTooltip && !stillOnTrigger) {
+                        tooltip.style.display = 'none';
+                        tooltip.style.pointerEvents = 'none';
+                    }
+                    hideTimer = null;
+                }, 300);
+            } else {
+                hideTimer = null;
             }
-        }, 150);
+        }, 500);
     }
 
     /**
@@ -810,8 +832,9 @@ const MapOverlay = (function () {
                 text.setAttribute('paint-order', 'stroke fill');
                 text.setAttribute('stroke-linejoin', 'round');
 
-                // Stack lines vertically: first line above path, subsequent lines below
-                const baseDy = -0.35; // em, base offset above path
+                // Stack lines vertically: position above or below the path based on labelSide
+                const isBottom = road.labelSide === 'bottom';
+                const baseDy = isBottom ? 1.2 : -0.35; // em offset: positive = below, negative = above
                 const lineDy = baseDy + (lineIndex * 1.2); // 1.2em per line
                 text.setAttribute('dy', lineDy + 'em');
 

@@ -47,7 +47,7 @@ const Editor = (function () {
         ['road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
             'road-dashed', 'road-dashLength', 'road-gapLength',
             'road-fontFamily', 'road-fontSize', 'road-fontWeight', 'road-fontStyle', 'road-labelOpacity',
-            'road-labelOffset', 'road-labelReverse'].forEach(id => {
+            'road-labelOffset', 'road-labelSide', 'road-labelReverse'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', previewRoad);
             });
@@ -241,6 +241,7 @@ const Editor = (function () {
         document.getElementById('loc-region').value = loc.region || '';
         document.getElementById('loc-desc').value = loc.description || '';
         document.getElementById('loc-details').value = loc.details || '';
+        document.getElementById('loc-link').value = loc.link || '';
 
         // Advanced
         document.getElementById('loc-fontFamily').value = loc.fontFamily || '';
@@ -279,6 +280,7 @@ const Editor = (function () {
         document.getElementById('loc-region').value = '';
         document.getElementById('loc-desc').value = '';
         document.getElementById('loc-details').value = '';
+        document.getElementById('loc-link').value = '';
 
         document.getElementById('loc-fontFamily').value = '';
         document.getElementById('loc-fontSize').value = '';
@@ -331,6 +333,9 @@ const Editor = (function () {
 
         const details = document.getElementById('loc-details').value;
         if (details) locData.details = details;
+
+        const link = document.getElementById('loc-link').value.trim();
+        if (link) locData.link = link;
 
         const setIf = (key, val, parseFn, defaultVal = undefined) => {
             if (val !== '') {
@@ -487,6 +492,7 @@ const Editor = (function () {
         document.getElementById('road-fontStyle').value = road.fontStyle || '';
         document.getElementById('road-labelOpacity').value = road.labelOpacity !== undefined ? road.labelOpacity : '';
         document.getElementById('road-labelOffset').value = road.labelOffset !== undefined ? road.labelOffset : '';
+        document.getElementById('road-labelSide').value = road.labelSide || 'top';
         document.getElementById('road-labelReverse').checked = road.labelReverse || false;
 
         // Update location dropdowns
@@ -554,6 +560,7 @@ const Editor = (function () {
         document.getElementById('road-dashLength').value = '';
         document.getElementById('road-gapLength').value = '';
         document.getElementById('road-labelOffset').value = '';
+        document.getElementById('road-labelSide').value = 'top';
         document.getElementById('road-labelReverse').checked = false;
 
         // Reset location dropdowns
@@ -822,6 +829,9 @@ const Editor = (function () {
         const labelOffset = document.getElementById('road-labelOffset').value;
         if (labelOffset !== '') roadData.labelOffset = parseInt(labelOffset);
 
+        const labelSide = document.getElementById('road-labelSide').value;
+        if (labelSide && labelSide !== 'top') roadData.labelSide = labelSide;
+
         const labelReverse = document.getElementById('road-labelReverse').checked;
         if (labelReverse) roadData.labelReverse = true;
 
@@ -871,15 +881,26 @@ const Editor = (function () {
         const searchId = state.selectedRoadId || document.getElementById('road-id').value;
         const { roadData, startLocId, endLocId, existing, id } = getRoadFromForm(isNew, searchId);
 
+        // Find existing road to replace — try `existing` from getRoadFromForm first,
+        // then fall back to searching by state.selectedRoadId (handles ID-change scenarios)
+        let idx = -1;
         if (existing) {
-            const idx = state.roads.indexOf(existing);
-            if (idx !== -1) {
-                state.roads[idx] = roadData;
+            idx = state.roads.indexOf(existing);
+        }
+        if (idx === -1 && state.selectedRoadId) {
+            idx = state.roads.findIndex(r => r.id === state.selectedRoadId);
+        }
+
+        if (idx !== -1) {
+            state.roads[idx] = roadData;
+        } else {
+            // Only push if a road with this ID doesn't already exist (prevent duplicates)
+            const dupeIdx = state.roads.findIndex(r => r.id === roadData.id);
+            if (dupeIdx !== -1) {
+                state.roads[dupeIdx] = roadData;
             } else {
                 state.roads.push(roadData);
             }
-        } else {
-            state.roads.push(roadData);
         }
 
         state.selectedRoadId = id;

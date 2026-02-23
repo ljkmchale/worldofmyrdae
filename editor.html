@@ -206,6 +206,11 @@
             <textarea id="loc-details" class="form-control" rows="2"></textarea>
           </div>
 
+          <div class="form-group">
+            <label>Link URL (opens in new tab)</label>
+            <input type="text" id="loc-link" class="form-control" placeholder="https://example.com/page">
+          </div>
+
           <details style="margin-top: 1rem; margin-bottom: 1rem;">
             <summary style="cursor: pointer; color: var(--color-gold); font-size: 0.9rem;">Advanced Typography / Markers
             </summary>
@@ -320,6 +325,13 @@
                   class="form-control" step="0.1" min="0" max="1" placeholder="0.7"></div>
               <div class="form-group"><label>Label Position (% along road, 0-100)</label><input type="number"
                   id="road-labelOffset" class="form-control" step="1" min="0" max="100" placeholder="50"></div>
+              <div class="form-group">
+                <label>Label Side</label>
+                <select id="road-labelSide" class="form-control">
+                  <option value="top">Top (above road)</option>
+                  <option value="bottom">Bottom (below road)</option>
+                </select>
+              </div>
               <div class="form-group">
                 <label><input type="checkbox" id="road-labelReverse"> Reverse Label Direction</label>
               </div>
