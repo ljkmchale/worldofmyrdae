@@ -1751,7 +1751,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -19,
             "labelOffsetY": 17,
-            "opacity": 0.5
+            "opacity": 1
         },
         {
             "id": "kahlbits-veil",
@@ -2880,6 +2880,46 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -40,
             "labelOffsetY": 16
+        },
+        {
+            "id": "greyrun",
+            "name": "Greyrun",
+            "type": "river",
+            "x": 62.26,
+            "y": 61.73,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "400",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": -53,
+            "opacity": 1
+        },
+        {
+            "id": "harbok-river",
+            "name": "Harbok River",
+            "type": "river",
+            "x": 61.79,
+            "y": 60.9,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": -75,
+            "opacity": 1
         }
     ],
     "roads": [
@@ -3849,6 +3889,8 @@ const WORLD_LOCATIONS = {
             "id": "ulgrey-road-southwest",
             "type": "minor",
             "curved": true,
+            "name": "South\\nKahlbit Trace",
+            "fontSize": 10,
             "points": [
                 "ulgrey",
                 [
@@ -4385,6 +4427,28 @@ const WORLD_LOCATIONS = {
                     72.19
                 ],
                 "unknown-location-11"
+            ]
+        },
+        {
+            "id": "ulgrey-road-northwest",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "ulgrey",
+                [
+                    62.54,
+                    59.94
+                ],
+                [
+                    61.85,
+                    59.9
+                ],
+                [
+                    61.46,
+                    58.09
+                ],
+                "emberstran"
             ]
         }
     ],

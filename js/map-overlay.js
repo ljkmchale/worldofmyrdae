@@ -122,7 +122,7 @@ const MapOverlay = (function () {
             riverGlow.setAttribute('dx', '0');
             riverGlow.setAttribute('dy', '0');
             riverGlow.setAttribute('stdDeviation', '3');
-            riverGlow.setAttribute('flood-color', '#888888');
+            riverGlow.setAttribute('flood-color', '#666666');
             riverGlow.setAttribute('flood-opacity', '0.8');
             riverFilter.appendChild(riverGlow);
             filterDefs.appendChild(riverFilter);
@@ -551,7 +551,7 @@ const MapOverlay = (function () {
 
         // River type: light blue text with centered grey glow
         if (loc.type === 'river') {
-            label.setAttribute('fill', '#7EC8E3');
+            label.setAttribute('fill', '#8A9EA8');
             label.setAttribute('filter', 'url(#river-label-glow)');
         }
 
