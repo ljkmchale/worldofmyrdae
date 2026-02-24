@@ -379,12 +379,23 @@ const Editor = (function () {
         return locData;
     }
 
+    // Debounce helper for live preview
+    let _previewTimer = null;
+    function _debouncedRefresh() {
+        if (_previewTimer) clearTimeout(_previewTimer);
+        _previewTimer = setTimeout(() => {
+            refreshMap();
+            _previewTimer = null;
+        }, 80);
+    }
+
     function previewLocation() {
-        if (!state.selectedLocId) return;
+        if (!state.selectedLocId) return; // Only preview existing (saved) locations
+        const locData = getLocationFromForm();
         const idx = state.locations.findIndex(l => l.id === state.selectedLocId);
         if (idx !== -1) {
-            state.locations[idx] = getLocationFromForm();
-            refreshMap(); // Draws preview instantly, does not save to disk
+            state.locations[idx] = locData;
+            _debouncedRefresh();
         }
     }
 
@@ -882,7 +893,7 @@ const Editor = (function () {
         if (idx !== -1) {
             const { roadData } = getRoadFromForm(false, state.selectedRoadId);
             state.roads[idx] = roadData;
-            refreshMap();
+            _debouncedRefresh();
         }
     }
 
@@ -1143,6 +1154,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         saveLocation,
         deleteLocation,
         cancelLocation,
+        previewLocation,
 
         // Roads
         selectRoad,
@@ -1158,6 +1170,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         editWaypoint,
         saveWaypoint,
         cancelEditWaypoint,
+        previewRoad,
 
         // Core
         exportData,

@@ -2823,6 +2823,45 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 10,
             "labelOffsetY": 3,
             "hideLabel": true
+        },
+        {
+            "id": "vanapur-mountains",
+            "name": "Vanapur Mountains",
+            "type": "region",
+            "x": 55.81,
+            "y": 71.49,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 18,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": 65,
+            "textCurve": 60,
+            "opacity": 0.5
+        },
+        {
+            "id": "climbor",
+            "name": "Climbor",
+            "type": "city",
+            "x": 51.6,
+            "y": 69.97,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -1,
+            "labelOffsetY": 19
         }
     ],
     "roads": [
@@ -4222,6 +4261,112 @@ const WORLD_LOCATIONS = {
                     66.07
                 ],
                 "next-to-glimmerstone-location-1"
+            ]
+        },
+        {
+            "id": "unnamed-road-2",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "next-to-glimmerstone-location-1",
+                [
+                    55.92,
+                    65.43
+                ],
+                "next-to-glimmerstone-location-3"
+            ]
+        },
+        {
+            "id": "nurador-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nurador",
+                [
+                    54.96,
+                    66.59
+                ],
+                [
+                    55.57,
+                    66.05
+                ],
+                "next-to-glimmerstone-location-3"
+            ]
+        },
+        {
+            "id": "nurador-road-northeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nurador",
+                [
+                    55.47,
+                    66.91
+                ],
+                [
+                    56.06,
+                    66.75
+                ],
+                "next-to-glimmerstone-location-1"
+            ]
+        },
+        {
+            "id": "paendley-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "paendley",
+                [
+                    54.19,
+                    63.69
+                ],
+                [
+                    54.26,
+                    65.33
+                ],
+                [
+                    55.06,
+                    64.95
+                ],
+                "next-to-glimmerstone-location-3"
+            ]
+        },
+        {
+            "id": "nurador-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nurador",
+                [
+                    55.25,
+                    68.65
+                ],
+                [
+                    56.18,
+                    69.29
+                ],
+                [
+                    56.01,
+                    71.04
+                ],
+                "unknown-location-11"
+            ]
+        },
+        {
+            "id": "brokenfall-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "brokenfall",
+                [
+                    56.44,
+                    73.55
+                ],
+                [
+                    56.61,
+                    72.19
+                ],
+                "unknown-location-11"
             ]
         }
     ],

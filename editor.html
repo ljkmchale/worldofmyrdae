@@ -159,13 +159,13 @@
           </div>
 
           <div class="form-group">
-            <label>Name (\n for newline)</label>
-            <input type="text" id="loc-name" class="form-control" required>
+            <label>Name (\\n for newline)</label>
+            <input type="text" id="loc-name" class="form-control" required oninput="Editor.previewLocation()">
           </div>
 
           <div class="form-group" style="margin-top: 0.25rem;">
             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-              <input type="checkbox" id="loc-hideLabel">
+              <input type="checkbox" id="loc-hideLabel" onchange="Editor.previewLocation()">
               Hide Label <span style="color: #888; font-size: 0.8rem;">(marker only, no text on map)</span>
             </label>
           </div>
@@ -173,17 +173,19 @@
           <div class="form-inline">
             <div class="form-group" style="flex:1;">
               <label>X (%)</label>
-              <input type="number" id="loc-x" class="form-control" step="0.01" required>
+              <input type="number" id="loc-x" class="form-control" step="0.01" required
+                oninput="Editor.previewLocation()">
             </div>
             <div class="form-group" style="flex:1;">
               <label>Y (%)</label>
-              <input type="number" id="loc-y" class="form-control" step="0.01" required>
+              <input type="number" id="loc-y" class="form-control" step="0.01" required
+                oninput="Editor.previewLocation()">
             </div>
           </div>
 
           <div class="form-group">
             <label>Type</label>
-            <select id="loc-type" class="form-control">
+            <select id="loc-type" class="form-control" onchange="Editor.previewLocation()">
               <option value="capital">Capital</option>
               <option value="city">City</option>
               <option value="town">Town</option>
@@ -200,22 +202,23 @@
 
           <div class="form-group">
             <label>Region</label>
-            <input type="text" id="loc-region" class="form-control">
+            <input type="text" id="loc-region" class="form-control" oninput="Editor.previewLocation()">
           </div>
 
           <div class="form-group">
             <label>Description (Tooltip)</label>
-            <textarea id="loc-desc" class="form-control" rows="2"></textarea>
+            <textarea id="loc-desc" class="form-control" rows="2" oninput="Editor.previewLocation()"></textarea>
           </div>
 
           <div class="form-group">
             <label>Details (Extra Italic Info)</label>
-            <textarea id="loc-details" class="form-control" rows="2"></textarea>
+            <textarea id="loc-details" class="form-control" rows="2" oninput="Editor.previewLocation()"></textarea>
           </div>
 
           <div class="form-group">
             <label>Link URL (opens in new tab)</label>
-            <input type="text" id="loc-link" class="form-control" placeholder="https://example.com/page">
+            <input type="text" id="loc-link" class="form-control" placeholder="https://example.com/page"
+              oninput="Editor.previewLocation()">
           </div>
 
           <details style="margin-top: 1rem; margin-bottom: 1rem;">
@@ -223,30 +226,31 @@
             </summary>
             <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
               <div class="form-group"><label>Font Family</label><input type="text" id="loc-fontFamily"
-                  class="form-control" placeholder="Garamond MT"></div>
+                  class="form-control" placeholder="Garamond MT" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Font Size</label><input type="number" id="loc-fontSize"
-                  class="form-control" step="1"></div>
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Font Weight</label><input type="text" id="loc-fontWeight"
-                  class="form-control" placeholder="300"></div>
+                  class="form-control" placeholder="300" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Font Style</label><input type="text" id="loc-fontStyle"
-                  class="form-control" placeholder="Italic"></div>
+                  class="form-control" placeholder="Italic" oninput="Editor.previewLocation()"></div>
 
               <div class="form-group"><label>Marker Size Mult (0 to hide)</label><input type="number"
-                  id="loc-markerSize" class="form-control" step="0.1" value="0.25"></div>
+                  id="loc-markerSize" class="form-control" step="0.1" value="0.25" oninput="Editor.previewLocation()">
+              </div>
               <div class="form-group"><label>Marker Offset X</label><input type="number" id="loc-markerOffsetX"
-                  class="form-control" step="1" value="0"></div>
+                  class="form-control" step="1" value="0" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Marker Offset Y</label><input type="number" id="loc-markerOffsetY"
-                  class="form-control" step="1" value="0"></div>
+                  class="form-control" step="1" value="0" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Label Offset X</label><input type="number" id="loc-labelOffsetX"
-                  class="form-control" step="1"></div>
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Label Offset Y</label><input type="number" id="loc-labelOffsetY"
-                  class="form-control" step="1"></div>
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Rotation (degrees)</label><input type="number" id="loc-rotation"
-                  class="form-control" step="1"></div>
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Text Curve (Arc bend, e.g. -50 to 50)</label><input type="number"
-                  id="loc-textCurve" class="form-control" step="1"></div>
+                  id="loc-textCurve" class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Opacity</label><input type="number" id="loc-opacity" class="form-control"
-                  step="0.1" max="1" min="0"></div>
+                  step="0.1" max="1" min="0" oninput="Editor.previewLocation()"></div>
             </div>
           </details>
 
@@ -282,7 +286,7 @@
 
           <div class="form-group">
             <label>Type</label>
-            <select id="road-type" class="form-control">
+            <select id="road-type" class="form-control" onchange="Editor.previewRoad()">
               <option value="major">Major Road</option>
               <option value="minor">Minor Road</option>
               <option value="river">River</option>
@@ -292,11 +296,11 @@
 
           <div class="form-group">
             <label>Name (\\n for newline)</label>
-            <input type="text" id="road-name" class="form-control">
+            <input type="text" id="road-name" class="form-control" oninput="Editor.previewRoad()">
           </div>
 
           <div class="form-group">
-            <label><input type="checkbox" id="road-curved" checked> Curved Lines</label>
+            <label><input type="checkbox" id="road-curved" checked onchange="Editor.previewRoad()"> Curved Lines</label>
           </div>
 
           <details style="margin-top: 1rem; margin-bottom: 1rem;">
@@ -304,15 +308,16 @@
             </summary>
             <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
               <div class="form-group"><label>Color Override</label><input type="text" id="road-color"
-                  class="form-control" placeholder="#ffffff or rgba(...)"></div>
+                  class="form-control" placeholder="#ffffff or rgba(...)" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Width Multiplier</label><input type="number" id="road-width"
-                  class="form-control" step="0.1"></div>
+                  class="form-control" step="0.1" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Dashed Style ("true", "false", or dasharray)</label><input type="text"
-                  id="road-dashed" class="form-control" placeholder="e.g. true, false, or 4,4"></div>
+                  id="road-dashed" class="form-control" placeholder="e.g. true, false, or 4,4"
+                  oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Dash Length Multiplier</label><input type="number" id="road-dashLength"
-                  class="form-control" step="0.1"></div>
+                  class="form-control" step="0.1" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Gap Length Multiplier</label><input type="number" id="road-gapLength"
-                  class="form-control" step="0.1"></div>
+                  class="form-control" step="0.1" oninput="Editor.previewRoad()"></div>
             </div>
           </details>
 
@@ -321,26 +326,29 @@
             </summary>
             <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
               <div class="form-group"><label>Font Family</label><input type="text" id="road-fontFamily"
-                  class="form-control" placeholder="Simonetta"></div>
+                  class="form-control" placeholder="Simonetta" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Font Size</label><input type="number" id="road-fontSize"
-                  class="form-control" step="1" placeholder="12"></div>
+                  class="form-control" step="1" placeholder="12" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Font Weight</label><input type="text" id="road-fontWeight"
-                  class="form-control" placeholder="400"></div>
+                  class="form-control" placeholder="400" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Font Style</label><input type="text" id="road-fontStyle"
-                  class="form-control" placeholder="Italic"></div>
+                  class="form-control" placeholder="Italic" oninput="Editor.previewRoad()"></div>
               <div class="form-group"><label>Label Opacity</label><input type="number" id="road-labelOpacity"
-                  class="form-control" step="0.1" min="0" max="1" placeholder="0.7"></div>
+                  class="form-control" step="0.1" min="0" max="1" placeholder="0.7" oninput="Editor.previewRoad()">
+              </div>
               <div class="form-group"><label>Label Position (% along road, 0-100)</label><input type="number"
-                  id="road-labelOffset" class="form-control" step="1" min="0" max="100" placeholder="50"></div>
+                  id="road-labelOffset" class="form-control" step="1" min="0" max="100" placeholder="50"
+                  oninput="Editor.previewRoad()"></div>
               <div class="form-group">
                 <label>Label Side</label>
-                <select id="road-labelSide" class="form-control">
+                <select id="road-labelSide" class="form-control" onchange="Editor.previewRoad()">
                   <option value="top">Top (above road)</option>
                   <option value="bottom">Bottom (below road)</option>
                 </select>
               </div>
               <div class="form-group">
-                <label><input type="checkbox" id="road-labelReverse"> Reverse Label Direction</label>
+                <label><input type="checkbox" id="road-labelReverse" onchange="Editor.previewRoad()"> Reverse Label
+                  Direction</label>
               </div>
             </div>
           </details>
