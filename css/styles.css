@@ -987,16 +987,16 @@ p {
 
 /* Specific Style: River Type (Inner Light Blue, Outer Grey Glow) */
 .marker-type-river .marker-label {
-  fill: #5BB0C9;
-  /* Light Blue */
-  stroke: #888888;
+  fill: #8A9EA8;
+  /* Bluegrey */
+  stroke: #666666;
   /* Grey Glow */
   stroke-width: 3px;
 }
 
 .marker-type-river:hover .marker-label {
-  fill: #A0DFFF;
-  stroke: #aaaaaa;
+  fill: #A0B2BC;
+  stroke: #888888;
 }
 
 /* Specific Style: POI Type (Inner White, Outer Brown Glow) */
