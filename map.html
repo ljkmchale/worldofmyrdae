@@ -158,8 +158,16 @@
     }
 
     .legend-marker.city {
-      background: #FFFFFF;
+      background: radial-gradient(circle at center, #3e2723 30%, #FFFFFF 30%);
       border: 2px solid #3e2723;
+    }
+
+    .legend-marker.small-city {
+      background: #FFFFFF;
+      border: 1.5px solid #3e2723;
+      width: 11px;
+      height: 11px;
+      margin: 1.5px;
     }
 
     .legend-marker.town {
@@ -295,6 +303,7 @@
             <div class="legend-items">
               <div class="legend-item"><span class="legend-marker capital"></span> <span>Capital City</span></div>
               <div class="legend-item"><span class="legend-marker city"></span> <span>Major City</span></div>
+              <div class="legend-item"><span class="legend-marker small-city"></span> <span>Small City</span></div>
               <div class="legend-item"><span class="legend-marker town"></span> <span>Town</span></div>
               <div class="legend-item"><span class="legend-marker village"></span> <span>Village / Settlement</span>
               </div>
@@ -371,9 +380,8 @@
         }
       });
 
-      // Init overlays
+      // Init overlay on the main map only (not the Key Locations reference map)
       MapOverlay.init('map-container', 'map-image');
-      MapOverlay.init('locations-container', 'locations-image');
     });
 
     function toggleOverlay() {

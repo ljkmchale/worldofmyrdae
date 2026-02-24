@@ -12,6 +12,7 @@ const MapOverlay = (function () {
     let natW = 0;
     let natH = 0;
     let roadGroup = null;
+    let initializedContainers = []; // Track which containers have been explicitly initialized
 
     function getData() { return data; }
 
@@ -22,6 +23,11 @@ const MapOverlay = (function () {
         const container = document.getElementById(containerId);
         const mapImg = document.getElementById(imageId);
         if (!container || !mapImg) return;
+
+        // Track this container so we can re-init it on data updates (avoid duplicates)
+        if (!initializedContainers.some(e => e.containerId === containerId)) {
+            initializedContainers.push({ containerId, imageId });
+        }
 
         if (dataOverride) {
             data = dataOverride;
@@ -204,14 +210,10 @@ const MapOverlay = (function () {
                 console.log('Roads to render:', data.roads.map(r => ({ id: r.id, points: r.points?.length || 0 })));
             }
 
-            // Find all map containers and re-init overlay
-            const containers = document.querySelectorAll('.map-container');
-            for (const c of containers) {
-                const img = c.querySelector('.map-image');
-                if (img && img.id) {
-                    console.log(`Re-initializing overlay for container: ${c.id}, image: ${img.id}`);
-                    await init(c.id, img.id, data);
-                }
+            // Only re-init containers that were explicitly initialized
+            for (const entry of initializedContainers) {
+                console.log(`Re-initializing overlay for container: ${entry.containerId}, image: ${entry.imageId}`);
+                await init(entry.containerId, entry.imageId, data);
             }
         });
         isListenerBound = true;
@@ -331,6 +333,7 @@ const MapOverlay = (function () {
         switch (loc.type) {
             case 'capital': r = baseRadius * 2.2; break;
             case 'city': r = baseRadius * 1.8; break;
+            case 'small-city': r = baseRadius * 1.2; break;
             case 'town': r = baseRadius * 0.9; break;
             case 'village': r = baseRadius * 0.6; break;
             case 'port': r = baseRadius * 1.4; break;
@@ -383,6 +386,17 @@ const MapOverlay = (function () {
                 // ...brown dot in center
                 const dot = makeCircle(px, py, r * 0.35, brown, darkBrown, 0.5);
                 markerGroup.appendChild(dot);
+
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'small-city': {
+                // Smaller city marker: white circle with brown outline, no center dot
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.5)', 3);
+                markerGroup.appendChild(glow);
+
+                const outer = makeCircle(px, py, r, '#FFFFFF', brown, 1.5);
+                markerGroup.appendChild(outer);
 
                 addLabel(markerGroup, loc, px, py, r, natW);
                 break;
@@ -599,7 +613,7 @@ const MapOverlay = (function () {
         }
 
         const typeIcons = {
-            city: '🏰', town: '🏠', village: '🏡', port: '⚓',
+            city: '🏰', 'small-city': '🏘️', town: '🏠', village: '🏡', port: '⚓',
             ruins: '🏚️', landmark: '⭐', mountain: '⛰️', pass: '🏔️',
             forest: '🌲', region: '🗺️', river: '🌊', water: '💧'
         };

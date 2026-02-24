@@ -182,9 +182,9 @@ const Editor = (function () {
         list.innerHTML = '<option value="">-- Select a Location --</option>';
 
         // Group locations by type
-        const typeOrder = ['capital', 'city', 'town', 'village', 'port', 'poi', 'landmark', 'ruins', 'region', 'water', 'river'];
+        const typeOrder = ['capital', 'city', 'small-city', 'town', 'village', 'port', 'poi', 'landmark', 'ruins', 'region', 'water', 'river'];
         const typeLabels = {
-            capital: 'Capitals', city: 'Cities', town: 'Towns', village: 'Villages',
+            capital: 'Capitals', city: 'Cities (Large)', 'small-city': 'Cities (Small)', town: 'Towns', village: 'Villages',
             port: 'Ports', poi: 'Points of Interest', landmark: 'Landmarks',
             ruins: 'Ruins', region: 'Region Labels', water: 'Water Labels', river: 'River Labels'
         };
@@ -317,7 +317,7 @@ const Editor = (function () {
         const isPoi = locType.toLowerCase() === 'poi';
         const isRiver = locType.toLowerCase() === 'river';
         const isNature = ['nature', 'region', 'water', 'landmark'].includes(locType.toLowerCase());
-        const isCity = locType.toLowerCase() === 'city';
+        const isCity = locType.toLowerCase() === 'city' || locType.toLowerCase() === 'small-city';
 
         let defaultDesc = "";
         if (isTown) defaultDesc = "Town";

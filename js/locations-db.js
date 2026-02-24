@@ -223,15 +223,15 @@ const WORLD_LOCATIONS = {
         {
             "id": "deadfield",
             "name": "Deadfield",
-            "type": "city",
+            "type": "small-city",
             "x": 74.8,
             "y": 42,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
             "fontFamily": "Garamond MT",
             "fontSize": 18,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.15,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1047,7 +1047,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "adamont",
             "name": "Adamont",
-            "type": "city",
+            "type": "small-city",
             "x": 61.13,
             "y": 66.35,
             "region": "Mulbrook",
@@ -1120,7 +1120,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "edgewind",
             "name": "Edgewind",
-            "type": "city",
+            "type": "small-city",
             "x": 69.33,
             "y": 61.35,
             "region": "Mulbrook",
@@ -1350,7 +1350,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "alburest",
             "name": "Alburest",
-            "type": "city",
+            "type": "small-city",
             "x": 66.83,
             "y": 42.8,
             "region": "",
@@ -1441,7 +1441,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "ulkef",
             "name": "Ulkef",
-            "type": "city",
+            "type": "small-city",
             "x": 69.5,
             "y": 48.7,
             "region": "",
@@ -1645,7 +1645,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "dunduar",
             "name": "Dunduar",
-            "type": "city",
+            "type": "small-city",
             "x": 65.47,
             "y": 57.3,
             "region": "",
@@ -2469,7 +2469,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "paendley",
             "name": "Paendley",
-            "type": "city",
+            "type": "small-city",
             "x": 53.85,
             "y": 63.28,
             "region": "",
@@ -2862,6 +2862,24 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -1,
             "labelOffsetY": 19
+        },
+        {
+            "id": "felden",
+            "name": "Felden",
+            "type": "small-city",
+            "x": 50.5,
+            "y": 67.2,
+            "region": "",
+            "description": "Small City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -40,
+            "labelOffsetY": 16
         }
     ],
     "roads": [
