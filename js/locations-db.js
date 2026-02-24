@@ -373,10 +373,11 @@ const WORLD_LOCATIONS = {
             "y": 39.3,
             "region": "Yearning Slough",
             "description": "Ripshod Bay",
+            "link": "https://docs.google.com/document/d/1OMJ-Jq5iTfG6oabmr79bWLPphvwfWL_xM2qEPPPjamE/edit?tab=t.0",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -682,10 +683,11 @@ const WORLD_LOCATIONS = {
             "y": 64.7,
             "region": "Blustery Waste",
             "description": "Small Town",
+            "link": "https://docs.google.com/document/d/1DiuIO2qtBG5l-wQECq-OqyMS2hc44vLnqJmNPQFi1AA/edit?tab=t.0",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
-            "fontStyle": "Italic",
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1068,6 +1070,7 @@ const WORLD_LOCATIONS = {
             "y": 65.5,
             "region": "Mulbrook",
             "description": "Town",
+            "link": "https://docs.google.com/document/d/1fhbQ8CwQYQ7D055Y0pOuxjnBlbhu3zEqUR4rVGeRHuo/edit?tab=t.0",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1571,6 +1574,7 @@ const WORLD_LOCATIONS = {
             "y": 54.7,
             "region": "",
             "description": "Town",
+            "link": "https://docs.google.com/document/d/1J553Gt1bLDE58Cfx2Lt2zUh4pT6XlRj__qlzz2GMyXg/edit?tab=t.0",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
@@ -2093,6 +2097,7 @@ const WORLD_LOCATIONS = {
             "y": 58.23,
             "region": "",
             "description": "City",
+            "link": "https://docs.google.com/document/d/1oECFiNos1Qqa1CfGo-2DJWbyet9SOF_gMKd3ZR2kY6c/edit?tab=t.0",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
@@ -2649,6 +2654,175 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -27,
             "labelOffsetY": 19
+        },
+        {
+            "id": "driftbend",
+            "name": "Driftbend",
+            "type": "town",
+            "x": 59.92,
+            "y": 74.96,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -66,
+            "labelOffsetY": 12
+        },
+        {
+            "id": "brokenfall",
+            "name": "Brokenfall",
+            "type": "town",
+            "x": 56.53,
+            "y": 73.93,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -70,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "crossroad-boldshire-edgewind-bistron",
+            "name": "crossroad-boldshire-edgewind-bistron",
+            "type": "town",
+            "x": 68.76,
+            "y": 61.7,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "coastline-location-siltbay",
+            "name": "coastline-location-siltbay",
+            "type": "town",
+            "x": 69.28,
+            "y": 62.86,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "next-to-glimmerstone-location",
+            "name": "next-to-glimmerstone-location",
+            "type": "town",
+            "x": 57.16,
+            "y": 65.23,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "next-to-glimmerstone-location-1",
+            "name": "next-to-glimmerstone-location-1",
+            "type": "town",
+            "x": 56.17,
+            "y": 66.19,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "next-to-glimmerstone-location-3",
+            "name": "next-to-glimmerstone-location-3",
+            "type": "town",
+            "x": 55.51,
+            "y": 65.26,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "unknown-location-10",
+            "name": "unknown-location-10",
+            "type": "town",
+            "x": 53.8,
+            "y": 69.7,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "unknown-location-11",
+            "name": "unknown-location-11",
+            "type": "town",
+            "x": 56.4,
+            "y": 71.8,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
         }
     ],
     "roads": [
@@ -3377,7 +3551,7 @@ const WORLD_LOCATIONS = {
                     68.7,
                     60.7
                 ],
-                "c"
+                "crossroad-boldshire-edgewind-bistron"
             ]
         },
         {
@@ -3385,7 +3559,7 @@ const WORLD_LOCATIONS = {
             "type": "minor",
             "curved": true,
             "points": [
-                "c",
+                "crossroad-boldshire-edgewind-bistron",
                 [
                     68.2,
                     61.6
@@ -3407,11 +3581,11 @@ const WORLD_LOCATIONS = {
                     68.9,
                     61.4
                 ],
-                "c"
+                "crossroad-boldshire-edgewind-bistron"
             ]
         },
         {
-            "id": "bistron-road",
+            "id": "bistron-road-east",
             "type": "minor",
             "curved": true,
             "points": [
@@ -3962,6 +4136,92 @@ const WORLD_LOCATIONS = {
                     52.54
                 ],
                 "lasdale"
+            ]
+        },
+        {
+            "id": "driftbend-road",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 12,
+            "points": [
+                "driftbend",
+                [
+                    59.26,
+                    74.52
+                ],
+                [
+                    58.81,
+                    73.12
+                ],
+                "terandell"
+            ]
+        },
+        {
+            "id": "terandell-road",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 12,
+            "points": [
+                "terandell",
+                [
+                    57.77,
+                    72.97
+                ],
+                [
+                    57.21,
+                    73.87
+                ],
+                "brokenfall"
+            ]
+        },
+        {
+            "id": "1771877532713-road",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 12,
+            "points": []
+        },
+        {
+            "id": "culburn-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "culburn",
+                [
+                    58.25,
+                    66.82
+                ],
+                "next-to-glimmerstone-location"
+            ]
+        },
+        {
+            "id": "glimmerstone-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "glimmerstone",
+                [
+                    57.1,
+                    64.72
+                ],
+                "next-to-glimmerstone-location"
+            ]
+        },
+        {
+            "id": "glimmerstone-unnamed-road-1",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "next-to-glimmerstone-location",
+                [
+                    57.06,
+                    65.84
+                ],
+                [
+                    56.58,
+                    66.07
+                ],
+                "next-to-glimmerstone-location-1"
             ]
         }
     ],

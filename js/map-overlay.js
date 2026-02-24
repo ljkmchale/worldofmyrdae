@@ -221,6 +221,9 @@ const MapOverlay = (function () {
      * Add a region label (italic text, no marker)
      */
     function addRegionLabel(group, region, px, py, natW) {
+        // Skip label rendering if hideLabel is set
+        if (region.hideLabel) return;
+
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', px);
         text.setAttribute('y', py);
@@ -485,6 +488,9 @@ const MapOverlay = (function () {
 
     /** Helper: add a text label next to a marker */
     function addLabel(markerGroup, loc, px, py, radius, natW) {
+        // Skip label rendering if hideLabel is set
+        if (loc.hideLabel) return;
+
         const defaultX = radius * 2.5;
         const defaultY = radius * 0.4;
         let offsetX = loc.labelOffsetX !== undefined ? loc.labelOffsetX : defaultX;

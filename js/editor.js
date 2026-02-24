@@ -42,6 +42,9 @@ const Editor = (function () {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', previewLocation);
             });
+        // Checkbox needs 'change' event for live preview
+        const hideLabelEl = document.getElementById('loc-hideLabel');
+        if (hideLabelEl) hideLabelEl.addEventListener('change', previewLocation);
 
         // Setup live preview for roads
         ['road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
@@ -256,6 +259,7 @@ const Editor = (function () {
         document.getElementById('loc-rotation').value = loc.rotation || '';
         document.getElementById('loc-textCurve').value = loc.textCurve !== undefined ? loc.textCurve : '';
         document.getElementById('loc-opacity').value = loc.opacity !== undefined ? loc.opacity : '';
+        document.getElementById('loc-hideLabel').checked = !!loc.hideLabel;
 
         // Update list to show active state (though on dropdown it just sets value)
         // renderLocationList(); // Removed to avoid re-rendering and losing focus if needed, select already handles value
@@ -294,6 +298,7 @@ const Editor = (function () {
         document.getElementById('loc-rotation').value = '';
         document.getElementById('loc-textCurve').value = '';
         document.getElementById('loc-opacity').value = '';
+        document.getElementById('loc-hideLabel').checked = false;
 
         // renderLocationList();
     }
@@ -366,6 +371,10 @@ const Editor = (function () {
         setIf('textCurve', document.getElementById('loc-textCurve').value, parseFloat);
         setIf('opacity', document.getElementById('loc-opacity').value, parseFloat,
             isPoi || isNature || isRiver ? 0.5 : undefined);
+
+        if (document.getElementById('loc-hideLabel').checked) {
+            locData.hideLabel = true;
+        }
 
         return locData;
     }
