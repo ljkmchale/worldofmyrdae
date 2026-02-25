@@ -338,7 +338,7 @@
         function coordsToSphere(x, y) {
             const lon = (x / 100) * Math.PI * 2;
             const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
-            const r = planetRadius + 18; // Increased offset from surface
+            const r = planetRadius + 0.5; // Minimal offset - right on surface
             return {
                 x: r * Math.cos(lat) * Math.cos(lon),
                 y: r * Math.sin(lat),
@@ -356,14 +356,14 @@
             const pos = coordsToSphere(location.x, location.y);
             const color = typeColors[location.type] || 0x888888;
             
-            // Visible glowing sphere using MeshStandardMaterial
-            const markerGeom = new THREE.SphereGeometry(8, 12, 12);
+            // Small glowing sphere - like dots on 2D map
+            const markerGeom = new THREE.SphereGeometry(2, 8, 8);
             const markerMat = new THREE.MeshStandardMaterial({ 
                 color: color, 
                 emissive: color,
-                emissiveIntensity: 0.6,
-                metalness: 0.2,
-                roughness: 0.4,
+                emissiveIntensity: 1.0,
+                metalness: 0,
+                roughness: 0.3,
                 toneMapped: false
             });
             const marker = new THREE.Mesh(markerGeom, markerMat);
@@ -386,7 +386,7 @@
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
             const material = new THREE.LineBasicMaterial({
                 color: isMajor ? 0xd4af37 : 0x8b7355,
-                linewidth: isMajor ? 8 : 5,
+                linewidth: isMajor ? 1 : 0.5,
                 fog: false,
                 toneMapped: false
             });
