@@ -334,11 +334,12 @@
             nature: 0x228b22, poi: 0xff69b4, region: 0x90ee90, water: 0x4169e1, river: 0x1e90ff
         };
 
-        // Convert map coords to sphere surface
+        // Convert map coords to sphere surface (coords are 0-100, but only use the available range)
         function coordsToSphere(x, y) {
+            // Scale coordinates to 0-1 range for spherical mapping
             const lon = (x / 100) * Math.PI * 2;
             const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
-            const r = planetRadius + 0.5; // Minimal offset - right on surface
+            const r = planetRadius + 0.5; // Right on surface
             return {
                 x: r * Math.cos(lat) * Math.cos(lon),
                 y: r * Math.sin(lat),
@@ -490,24 +491,8 @@
             if (validLocations.length > 0) {
                 const xValues = validLocations.map(l => l.x);
                 const yValues = validLocations.map(l => l.y);
-                const minX = Math.min(...xValues);
-                const maxX = Math.max(...xValues);
-                const minY = Math.min(...yValues);
-                const maxY = Math.max(...yValues);
-                
-                console.log("X range:", minX, "to", maxX);
-                console.log("Y range:", minY, "to", maxY);
-                console.log("First 5 locations:", validLocations.slice(0, 5).map(l => ({ name: l.name, x: l.x, y: l.y, type: l.type })));
-                
-                // Normalize coordinates to 0-100 range
-                locations.forEach((loc) => {
-                    if (loc.x !== undefined && loc.y !== undefined && loc.type !== 'region') {
-                        loc.x = ((loc.x - minX) / (maxX - minX)) * 100;
-                        loc.y = ((loc.y - minY) / (maxY - minY)) * 100;
-                    }
-                });
-                
-                console.log("Coordinates normalized to 0-100 range");
+                console.log("X range:", Math.min(...xValues), "to", Math.max(...xValues));
+                console.log("Y range:", Math.min(...yValues), "to", Math.max(...yValues));
             }
             
             if (locations.length > 0) {
