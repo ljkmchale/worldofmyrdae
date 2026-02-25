@@ -177,7 +177,6 @@
 </head>
 
 <body>
-    <div class="planet-name" id="planet-name">Myrdae</div>
     <canvas id="canvas-3d"></canvas>
 
     <!-- Controls -->
@@ -208,376 +207,185 @@
     <script src="js/campaign-data.js"></script>
 
     <script>
-        // 3D Planet Scene Setup
+        console.log("Starting Three.js scene...");
+
         const canvas = document.getElementById('canvas-3d');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x000814);
-        scene.fog = new THREE.Fog(0x000814, 3000, 10000);
-
-        const camera = new THREE.PerspectiveCamera(
-            45,
-            window.innerWidth / window.innerHeight,
-            1,
-            50000
-        );
-
-        const rotation = { x: 0.3, y: 0.5 };
-        camera.position.set(0, 0, 700);
-        camera.lookAt(0, 0, 0);
-
-        const renderer = new THREE.WebGLRenderer({
-            canvas,
-            antialias: true,
-            alpha: true
-        });
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 350;
+        
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+        
+        console.log("Renderer initialized", renderer.domElement);
 
-        // Lighting - Sun from space
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
+        // Lights
+        const light1 = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(light1);
+        
+        const light2 = new THREE.DirectionalLight(0xffffff, 0.6);
+        light2.position.set(100, 100, 100);
+        scene.add(light2);
 
-        const sunLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        sunLight.position.set(500, 300, 400);
-        sunLight.castShadow = true;
-        sunLight.shadow.camera.left = -500;
-        sunLight.shadow.camera.right = 500;
-        sunLight.shadow.camera.top = 500;
-        sunLight.shadow.camera.bottom = -500;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
-        scene.add(sunLight);
-
-        // Starfield background
-        const starGeometry = new THREE.BufferGeometry();
-        const starCount = 1000;
-        const positions = new Float32Array(starCount * 3);
-
-        for (let i = 0; i < starCount * 3; i += 3) {
-            positions[i] = (Math.random() - 0.5) * 30000;
-            positions[i + 1] = (Math.random() - 0.5) * 30000;
-            positions[i + 2] = (Math.random() - 0.5) * 30000;
-        }
-
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const starMaterial = new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 50,
-            sizeAttenuation: true
+        // Create a simple sphere first
+        const geometry = new THREE.SphereGeometry(150, 64, 64);
+        
+        // Add texture
+        const loader = new THREE.TextureLoader();
+        let material = new THREE.MeshStandardMaterial({ color: 0x4a7c59, roughness: 0.8 });
+        
+        loader.load('images/Myrdae.jpg', (texture) => {
+            console.log("Texture loaded!");
+            material.map = texture;
+            material.needsUpdate = true;
+        }, undefined, (err) => {
+            console.log("Could not load texture, using color instead", err);
         });
-        const stars = new THREE.Points(starGeometry, starMaterial);
-        scene.add(stars);
+        
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.rotation.x = 0.2;
+        sphere.rotation.z = 0.5;
+        scene.add(sphere);
+        
+        console.log("Sphere added to scene");
 
-        // Planet sphere with terrain
-        const planetRadius = 200;
-        const segments = 64;
-        const planetGeometry = new THREE.SphereGeometry(planetRadius, segments, segments);
-
-        // Generate heightmap for custom terrain
-        function generatePlanetHeight(u, v) {
-            let height = 0;
-            height += Math.sin(u * Math.PI * 3) * Math.cos(v * Math.PI * 2.5) * 8;
-            height += Math.sin(u * Math.PI * 6) * Math.cos(v * Math.PI * 4) * 4;
-            height += (Math.random() - 0.5) * 2;
-            return height;
-        }
-
-        // Displace vertices based on height
-        const positions = planetGeometry.getAttribute('position');
-        const posArray = positions.array;
-
-        for (let i = 0; i < posArray.length; i += 3) {
-            const x = posArray[i];
-            const y = posArray[i + 1];
-            const z = posArray[i + 2];
-
-            // Normalize to get direction
-            const r = Math.sqrt(x * x + y * y + z * z);
-            const nx = x / r;
-            const ny = y / r;
-            const nz = z / r;
-
-            // Get height variation
-            const u = (Math.atan2(z, x) / Math.PI + 1) * 0.5;
-            const v = Math.acos(y / r) / Math.PI;
-
-            const heightVariation = generatePlanetHeight(u, v);
-            const newRadius = planetRadius + heightVariation;
-
-            posArray[i] = nx * newRadius;
-            posArray[i + 1] = ny * newRadius;
-            posArray[i + 2] = nz * newRadius;
-        }
-
-        positions.needsUpdate = true;
-        planetGeometry.computeVertexNormals();
-
-        // Terrain material
-        const textureLoader = new THREE.TextureLoader();
-        const mapTexture = textureLoader.load('images/Myrdae.jpg');
-        mapTexture.anisotropy = 16;
-
-        const planetMaterial = new THREE.MeshPhongMaterial({
-            map: mapTexture,
-            side: THREE.FrontSide,
-            shininess: 10
-        });
-
-        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-        planet.castShadow = true;
-        planet.receiveShadow = true;
-        planet.rotation.z = Math.PI / 6;
-        planet.rotation.x = Math.PI / 8;
-        scene.add(planet);
-
-        // Atmosphere glow
-        const atmosphereGeometry = new THREE.SphereGeometry(planetRadius + 5, segments, segments);
-        const atmosphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x87ceeb,
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0.2
-        });
-        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-        atmosphere.rotation.z = Math.PI / 6;
-        atmosphere.rotation.x = Math.PI / 8;
-        scene.add(atmosphere);
-
-        // Roads group
-        const roadsGroup = new THREE.Group();
-        scene.add(roadsGroup);
-
-        // Location markers
-        const locationMarkers = new Map();
-        const markerGroup = new THREE.Group();
-        scene.add(markerGroup);
-
-        let markersVisible = true;
-
+        // Markers group
+        const markersGroup = new THREE.Group();
+        scene.add(markersGroup);
+        
         const typeColors = {
-            capital: 0xffffff,
-            city: 0xd4af37,
-            'small-city': 0xcccccc,
-            town: 0x8b7355,
-            village: 0xa0522d,
-            port: 0x87ceeb,
-            ruins: 0x999999,
-            landmark: 0xff8c00,
-            nature: 0x228b22,
-            poi: 0xff69b4,
-            region: 0x90ee90,
-            water: 0x4169e1,
-            river: 0x1e90ff
+            capital: 0xffffff, city: 0xd4af37, 'small-city': 0xcccccc, town: 0x8b7355,
+            village: 0xa0522d, port: 0x87ceeb, ruins: 0x999999, landmark: 0xff8c00,
+            nature: 0x228b22, poi: 0xff69b4, region: 0x90ee90, water: 0x4169e1, river: 0x1e90ff
         };
 
-        // Convert map coordinates to sphere coordinates
-        function mapCoordsToSphere(x, y) {
-            // x and y are percentage coordinates (0-100)
-            const u = x / 100; // 0-1 longitude
-            const v = y / 100; // 0-1 latitude
-
-            // Convert to radians
-            const lon = u * Math.PI * 2;
-            const lat = (0.5 - v) * Math.PI;
-
-            const r = planetRadius + 20;
-            const px = r * Math.cos(lat) * Math.cos(lon);
-            const pz = r * Math.cos(lat) * Math.sin(lon);
-            const py = r * Math.sin(lat);
-
-            return new THREE.Vector3(px, py, pz);
+        // Convert coords to sphere
+        function toSphere(x, y) {
+            const lon = (x / 100) * Math.PI * 2;
+            const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
+            const r = 160;
+            return {
+                x: r * Math.cos(lat) * Math.cos(lon),
+                y: r * Math.sin(lat),
+                z: r * Math.cos(lat) * Math.sin(lon)
+            };
         }
 
-        // Create marker for each location
-        function createLocationMarker(location) {
-            const pos = mapCoordsToSphere(location.x, location.y);
-
-            // Cone marker pointing away from planet
-            const geometry = new THREE.ConeGeometry(6, 20, 10);
-            const color = typeColors[location.type] || 0x888888;
-            const material = new THREE.MeshPhongMaterial({
-                color: color,
-                emissive: color,
-                shininess: 100
-            });
-
-            const marker = new THREE.Mesh(geometry, material);
-            marker.position.copy(pos);
-            
-            // Orient cone to point outward from planet
-            const direction = pos.clone().normalize();
-            marker.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-            
-            marker.castShadow = true;
-            marker.userData = location;
-            markerGroup.add(marker);
-
-            // Glowing sphere
-            const labelGeometry = new THREE.SphereGeometry(4, 8, 8);
-            const labelMaterial = new THREE.MeshBasicMaterial({
-                color: color,
-                emissive: color
-            });
-            const label = new THREE.Mesh(labelGeometry, labelMaterial);
-            label.position.copy(pos);
-            markerGroup.add(label);
-
-            locationMarkers.set(marker, { location, label });
+        // Create markers
+        function addMarker(loc) {
+            const pos = toSphere(loc.x, loc.y);
+            const color = typeColors[loc.type] || 0x888888;
+            const markerGeom = new THREE.SphereGeometry(5, 8, 8);
+            const markerMat = new THREE.MeshBasicMaterial({ color: color, emissive: color });
+            const marker = new THREE.Mesh(markerGeom, markerMat);
+            marker.position.set(pos.x, pos.y, pos.z);
+            marker.userData = loc;
+            markersGroup.add(marker);
+            return marker;
         }
 
-        // Create roads
-        function createRoads(routes) {
-            routes.forEach(route => {
-                const startPos = mapCoordsToSphere(route.start.x, route.start.y);
-                const endPos = mapCoordsToSphere(route.end.x, route.end.y);
+        // Mouse controls
+        let isDragging = false;
+        let prevX = 0, prevY = 0;
 
-                const curve = new THREE.LineCurve3(startPos, endPos);
-                const points = curve.getPoints(30);
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const material = new THREE.LineBasicMaterial({
-                    color: route.type === 'major' ? 0xd4af37 : 0x888888,
-                    linewidth: route.type === 'major' ? 2 : 1,
-                    fog: true
-                });
-                const line = new THREE.Line(geometry, material);
-                roadsGroup.add(line);
-            });
-        }
+        document.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            prevX = e.clientX;
+            prevY = e.clientY;
+        });
 
-        // Initialize
-        async function initialize() {
-            console.log('Initializing planet...');
-            await CampaignData.init();
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - prevX;
+            const dy = e.clientY - prevY;
+            sphere.rotation.y += dx * 0.01;
+            sphere.rotation.x += dy * 0.01;
+            markersGroup.rotation.copy(sphere.rotation);
+            prevX = e.clientX;
+            prevY = e.clientY;
+        });
 
-            const locations = LocationsDB.getLocations();
-            console.log('Loaded', locations.length, 'locations');
-            locations.forEach(location => {
-                createLocationMarker(location);
-            });
+        document.addEventListener('mouseup', () => { isDragging = false; });
 
-            if (CampaignData.routes && CampaignData.routes.length > 0) {
-                console.log('Creating', CampaignData.routes.length, 'roads');
-                createRoads(CampaignData.routes);
-            }
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            camera.position.z += e.deltaY * 0.2;
+            camera.position.z = Math.max(150, Math.min(800, camera.position.z));
+        });
 
-            console.log('Planet initialized, starting animation...');
-            animate();
-        }
-
-        // Mouse interaction
+        // Click detection
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        window.addEventListener('click', (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+        document.addEventListener('click', (e) => {
+            if (isDragging) return;
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
-
-            const intersects = raycaster.intersectObjects(markerGroup.children);
-            if (intersects.length > 0) {
-                const clicked = intersects[0].object;
-                if (locationMarkers.has(clicked)) {
-                    const { location } = locationMarkers.get(clicked);
-                    showLocationInfo(location);
-                }
+            const hits = raycaster.intersectObjects(markersGroup.children);
+            if (hits.length > 0) {
+                const loc = hits[0].object.userData;
+                const panel = document.getElementById('info-panel');
+                document.getElementById('info-content').innerHTML = `
+                    <h4>${loc.name}</h4>
+                    <p><strong>Type:</strong> ${loc.type}</p>
+                    <p><strong>Coords:</strong> X: ${loc.x.toFixed(1)}, Y: ${loc.y.toFixed(1)}</p>
+                    ${loc.region ? `<p><strong>Region:</strong> ${loc.region}</p>` : ''}
+                    ${loc.description ? `<p>${loc.description}</p>` : ''}
+                `;
+                panel.style.display = 'block';
             }
         });
 
-        // Controls
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const deltaX = e.clientX - previousMousePosition.x;
-            const deltaY = e.clientY - previousMousePosition.y;
-            
-            // Rotate planet and atmosphere together
-            planet.rotation.y += deltaX * 0.005;
-            planet.rotation.x += deltaY * 0.005;
-            atmosphere.rotation.copy(planet.rotation);
-            markerGroup.rotation.copy(planet.rotation);
-
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const currentZ = camera.position.z;
-            const newZ = Math.max(300, Math.min(1500, currentZ + e.deltaY * 0.5));
-            camera.position.z = newZ;
-        });
-
         function resetCamera() {
-            camera.position.set(0, 0, 700);
-            planet.rotation.set(Math.PI / 8, Math.PI / 6, 0);
-            atmosphere.rotation.copy(planet.rotation);
-            markerGroup.rotation.copy(planet.rotation);
+            camera.position.z = 350;
+            sphere.rotation.set(0.2, 0, 0.5);
+            markersGroup.rotation.copy(sphere.rotation);
         }
 
         function toggleLocations() {
-            markersVisible = !markersVisible;
-            markerGroup.visible = markersVisible;
-            const btn = document.getElementById('loc-toggle');
-            btn.style.opacity = markersVisible ? '1' : '0.5';
-        }
-
-        function showLocationInfo(location) {
-            const panel = document.getElementById('info-panel');
-            const content = document.getElementById('info-content');
-
-            content.innerHTML = `
-                <h4><i class="fa-solid fa-location-dot"></i> Location</h4>
-                <div class="location-name">${location.name}</div>
-                <div class="location-type">${location.type}</div>
-                <div class="location-coords">X: ${location.x.toFixed(1)} | Y: ${location.y.toFixed(1)}</div>
-                ${location.description ? `<div class="location-description">${location.description}</div>` : ''}
-                ${location.region ? `<div style="margin-top: 1rem; font-size: 0.85rem; color: #aaa;">Region: <strong>${location.region}</strong></div>` : ''}
-            `;
-
-            panel.style.display = 'block';
+            markersGroup.visible = !markersGroup.visible;
+            document.getElementById('loc-toggle').style.opacity = markersGroup.visible ? '1' : '0.5';
         }
 
         function hideInfo() {
             document.getElementById('info-panel').style.display = 'none';
         }
 
-        // Resize handler
+        // Init markers
+        async function init() {
+            console.log("Initializing markers...");
+            await CampaignData.init();
+            const locs = LocationsDB.getLocations();
+            console.log("Loaded", locs.length, "locations");
+            locs.forEach(addMarker);
+            console.log("Starting animation");
+            animate();
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (!isDragging) {
+                sphere.rotation.y += 0.0003;
+                markersGroup.rotation.copy(sphere.rotation);
+            }
+            
+            renderer.render(scene, camera);
+        }
+
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Subtle planet rotation when not dragging
-            if (!isDragging) {
-                planet.rotation.y += 0.0003;
-                atmosphere.rotation.copy(planet.rotation);
-                markerGroup.rotation.copy(planet.rotation);
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        // Start
-        initialize().catch(err => {
-            console.error('Error initializing planet:', err);
+        init().catch(err => {
+            console.error("Error:", err);
             animate();
         });
     </script>
