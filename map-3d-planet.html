@@ -318,25 +318,13 @@
         const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
         scene.add(atmosphere);
 
-        // Groups for roads and markers (make them children of planet so they rotate together)
+        // Groups for roads and markers (keep as scene children for correct coordinate system)
         const roadsGroup = new THREE.Group();
         const markersGroup = new THREE.Group();
-        planet.add(roadsGroup);
-        planet.add(markersGroup);
+        scene.add(roadsGroup);
+        scene.add(markersGroup);
         
-        console.log("Groups created and added to planet");
-        
-        // TEST: Add a simple visible test marker directly to scene
-        const testMarkerGeom = new THREE.SphereGeometry(40, 16, 16);
-        const testMarkerMat = new THREE.MeshBasicMaterial({ 
-            color: 0xff0000, 
-            emissive: 0xff0000,
-            emissiveIntensity: 2.0
-        });
-        const testMarker = new THREE.Mesh(testMarkerGeom, testMarkerMat);
-        testMarker.position.set(300, 0, 0); // Positioned to the right of the planet
-        scene.add(testMarker);
-        console.log("TEST MARKER added at position (300, 0, 0)");
+        console.log("Groups created and added to scene");
         
         let markersVisible = true;
 
@@ -363,8 +351,8 @@
             const pos = coordsToSphere(location.x, location.y);
             const color = typeColors[location.type] || 0x888888;
             
-            // Very large glowing sphere for testing visibility
-            const markerGeom = new THREE.SphereGeometry(30, 16, 16);
+            // Visible glowing sphere
+            const markerGeom = new THREE.SphereGeometry(12, 16, 16);
             const markerMat = new THREE.MeshBasicMaterial({ 
                 color: color, 
                 emissive: color,
@@ -421,6 +409,8 @@
             planet.rotation.y += dx * 0.008;
             planet.rotation.x += dy * 0.008;
             atmosphere.rotation.copy(planet.rotation);
+            markersGroup.rotation.copy(planet.rotation);
+            roadsGroup.rotation.copy(planet.rotation);
             prevX = e.clientX;
             prevY = e.clientY;
         });
@@ -523,6 +513,8 @@
             if (!isDragging) {
                 planet.rotation.y += 0.0002;
                 atmosphere.rotation.y += 0.0002;
+                markersGroup.rotation.copy(planet.rotation);
+                roadsGroup.rotation.copy(planet.rotation);
             }
             
             renderer.render(scene, camera);
