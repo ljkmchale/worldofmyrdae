@@ -326,6 +326,18 @@
         
         console.log("Groups created and added to planet");
         
+        // TEST: Add a simple visible test marker directly to scene
+        const testMarkerGeom = new THREE.SphereGeometry(40, 16, 16);
+        const testMarkerMat = new THREE.MeshBasicMaterial({ 
+            color: 0xff0000, 
+            emissive: 0xff0000,
+            emissiveIntensity: 2.0
+        });
+        const testMarker = new THREE.Mesh(testMarkerGeom, testMarkerMat);
+        testMarker.position.set(300, 0, 0); // Positioned to the right of the planet
+        scene.add(testMarker);
+        console.log("TEST MARKER added at position (300, 0, 0)");
+        
         let markersVisible = true;
 
         const typeColors = {
