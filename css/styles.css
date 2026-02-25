@@ -972,24 +972,24 @@ p {
 /* Specific Style: Water Type (Inner White, Outer Light Blue) */
 .region-type-water,
 .marker-type-water .marker-label {
-  fill: #ffffff;
-  stroke: #87CEFA;
+  fill: #9ebbd1;
+  stroke: #57666e;
   /* Light Sky Blue */
   stroke-width: 4px;
 }
 
 .region-type-water:hover,
 .marker-type-water:hover .marker-label {
-  fill: #f0f0f0;
-  stroke: #00BFFF;
+  fill: #9ebbd1;
+  stroke: #5c6b70;
   /* Deep Sky Blue */
 }
 
 /* Specific Style: River Type (Inner Light Blue, Outer Grey Glow) */
 .marker-type-river .marker-label {
-  fill: #8A9EA8;
+  fill: #6393ac;
   /* Bluegrey */
-  stroke: #666666;
+  stroke: #2e2929;
   /* Grey Glow */
   stroke-width: 3px;
 }
@@ -1020,7 +1020,7 @@ p {
 /* Specific Style: Nature Type (Transparent Inner, Grey Outline) */
 .region-type-nature,
 .marker-type-nature .marker-label {
-  fill: transparent;
+  fill: #58833b;
   stroke: #808080;
   /* Grey */
   stroke-width: 1px;
