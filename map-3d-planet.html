@@ -326,6 +326,28 @@
         
         console.log("Groups created and added to scene");
         
+        // DEBUG: Create test markers at known positions
+        const testPositions = [
+            { pos: new THREE.Vector3(0, 150, 0), color: 0xff0000, name: "Top" },
+            { pos: new THREE.Vector3(150, 0, 0), color: 0x00ff00, name: "Right" },
+            { pos: new THREE.Vector3(0, 0, 150), color: 0x0000ff, name: "Forward" }
+        ];
+        
+        testPositions.forEach(test => {
+            const geom = new THREE.SphereGeometry(20, 12, 12);
+            const mat = new THREE.MeshBasicMaterial({ 
+                color: test.color, 
+                emissive: test.color
+            });
+            const marker = new THREE.Mesh(geom, mat);
+            marker.position.copy(test.pos);
+            markersGroup.add(marker);
+            console.log("TEST MARKER:", test.name, "at", test.pos);
+        });
+        
+        console.log("Camera position:", camera.position);
+        console.log("Camera looking at origin, markersGroup has", markersGroup.children.length, "children");
+        
         let markersVisible = true;
 
         const typeColors = {
