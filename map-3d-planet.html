@@ -335,9 +335,12 @@
         
         testPositions.forEach(test => {
             const geom = new THREE.SphereGeometry(20, 12, 12);
-            const mat = new THREE.MeshBasicMaterial({ 
-                color: test.color, 
-                emissive: test.color
+            const mat = new THREE.MeshStandardMaterial({ 
+                color: test.color,
+                emissive: test.color,
+                emissiveIntensity: 1.0,
+                metalness: 0,
+                roughness: 0.5
             });
             const marker = new THREE.Mesh(geom, mat);
             marker.position.copy(test.pos);
@@ -378,12 +381,14 @@
             const pos = coordsToSphere(location.x, location.y);
             const color = typeColors[location.type] || 0x888888;
             
-            // Visible glowing sphere
+            // Visible glowing sphere using MeshStandardMaterial
             const markerGeom = new THREE.SphereGeometry(15, 12, 12);
-            const markerMat = new THREE.MeshBasicMaterial({ 
+            const markerMat = new THREE.MeshStandardMaterial({ 
                 color: color, 
                 emissive: color,
                 emissiveIntensity: 0.8,
+                metalness: 0.2,
+                roughness: 0.4,
                 toneMapped: false
             });
             const marker = new THREE.Mesh(markerGeom, markerMat);
