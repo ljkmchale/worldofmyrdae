@@ -352,20 +352,20 @@
             const color = typeColors[location.type] || 0x888888;
             
             // Visible glowing sphere
-            const markerGeom = new THREE.SphereGeometry(12, 16, 16);
+            const markerGeom = new THREE.SphereGeometry(25, 16, 16);
             const markerMat = new THREE.MeshBasicMaterial({ 
                 color: color, 
                 emissive: color,
                 emissiveIntensity: 1.0,
-                toneMapped: false,
-                depthTest: true,
-                depthWrite: true
+                toneMapped: false
             });
             const marker = new THREE.Mesh(markerGeom, markerMat);
             marker.position.set(pos.x, pos.y, pos.z);
             marker.userData = location;
             markersGroup.add(marker);
-            console.log("Created marker at", location.name, "pos:", pos);
+            if (location.name === "Valdris" || location.name === "Silvanus" || location.name === "Thornhold") {
+                console.log("Created marker at", location.name, "pos:", pos, "dist from origin:", Math.sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
+            }
         }
 
         // Create roads
@@ -382,10 +382,9 @@
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
             const material = new THREE.LineBasicMaterial({
                 color: isMajor ? 0xd4af37 : 0x8b7355,
-                linewidth: isMajor ? 5 : 3,
+                linewidth: isMajor ? 8 : 5,
                 fog: false,
-                toneMapped: false,
-                depthTest: true
+                toneMapped: false
             });
             
             const line = new THREE.Line(geometry, material);
@@ -409,8 +408,6 @@
             planet.rotation.y += dx * 0.008;
             planet.rotation.x += dy * 0.008;
             atmosphere.rotation.copy(planet.rotation);
-            markersGroup.rotation.copy(planet.rotation);
-            roadsGroup.rotation.copy(planet.rotation);
             prevX = e.clientX;
             prevY = e.clientY;
         });
@@ -513,8 +510,6 @@
             if (!isDragging) {
                 planet.rotation.y += 0.0002;
                 atmosphere.rotation.y += 0.0002;
-                markersGroup.rotation.copy(planet.rotation);
-                roadsGroup.rotation.copy(planet.rotation);
             }
             
             renderer.render(scene, camera);
