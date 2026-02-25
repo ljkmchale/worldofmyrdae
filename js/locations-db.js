@@ -2905,7 +2905,7 @@ const WORLD_LOCATIONS = {
             "id": "harbok-river",
             "name": "Harbok River",
             "type": "river",
-            "x": 61.79,
+            "x": 61.89,
             "y": 60.9,
             "region": "",
             "description": "Nature",
@@ -2918,8 +2918,263 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "rotation": -75,
+            "rotation": -60,
             "opacity": 1
+        },
+        {
+            "id": "crossroads-1",
+            "name": "beveress-paendley-crossroads",
+            "type": "town",
+            "x": 53.82,
+            "y": 62.64,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "Beveress",
+            "name": "Beveress",
+            "type": "town",
+            "x": 52.65,
+            "y": 60.06,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -22,
+            "labelOffsetY": -10
+        },
+        {
+            "id": "stoneflow",
+            "name": "Stoneflow",
+            "type": "river",
+            "x": 50.28,
+            "y": 62.55,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 1
+        },
+        {
+            "id": "corebb-keep",
+            "name": "Corebb\nKeep",
+            "type": "landmark",
+            "x": 51.8,
+            "y": 62.5,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -36,
+            "labelOffsetY": -13,
+            "opacity": 1
+        },
+        {
+            "id": "hasfen",
+            "name": "Hasfen",
+            "type": "town",
+            "x": 51.85,
+            "y": 59.74,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -48,
+            "labelOffsetY": -8
+        },
+        {
+            "id": "stoneshore",
+            "name": "Stoneshore",
+            "type": "city",
+            "x": 48.62,
+            "y": 61.12,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -73,
+            "labelOffsetY": 11
+        },
+        {
+            "id": "steenlodge",
+            "name": "Steenlodge",
+            "type": "town",
+            "x": 48.8,
+            "y": 64.1,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "gevakaln",
+            "name": "Gevakaln",
+            "type": "city",
+            "x": 46.88,
+            "y": 64.68,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -69,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "duskwaren",
+            "name": "Duskwaren",
+            "type": "town",
+            "x": 52.66,
+            "y": 65.29,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "heildward",
+            "name": "Heildward",
+            "type": "town",
+            "x": 51.7,
+            "y": 66.1,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -36,
+            "labelOffsetY": -10
+        },
+        {
+            "id": "basinpass",
+            "name": "Basinpass",
+            "type": "town",
+            "x": 49.06,
+            "y": 66.26,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -67,
+            "labelOffsetY": -5
+        },
+        {
+            "id": "morimyr",
+            "name": "Morimyr",
+            "type": "town",
+            "x": 52.44,
+            "y": 67.67,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "tarrarin",
+            "name": "Tarrarin",
+            "type": "small-city",
+            "x": 48.37,
+            "y": 74.34,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -62,
+            "labelOffsetY": 2
+        },
+        {
+            "id": "witguard",
+            "name": "Witguard",
+            "type": "town",
+            "x": 49.9,
+            "y": 78,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
         }
     ],
     "roads": [
@@ -4449,6 +4704,210 @@ const WORLD_LOCATIONS = {
                     58.09
                 ],
                 "emberstran"
+            ]
+        },
+        {
+            "id": "flatgarde-road-south",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "flatgarde",
+                [
+                    54.34,
+                    58.93
+                ],
+                [
+                    54.26,
+                    61.84
+                ],
+                "crossroads-1"
+            ]
+        },
+        {
+            "id": "beveress-road-south",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "Beveress",
+                [
+                    53.79,
+                    61.17
+                ],
+                "paendley"
+            ]
+        },
+        {
+            "id": "flatgarde-road-southwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "flatgarde",
+                [
+                    54.06,
+                    58.17
+                ],
+                [
+                    53.16,
+                    60.09
+                ],
+                "Beveress"
+            ]
+        },
+        {
+            "id": "beveress-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "Beveress",
+                [
+                    52.28,
+                    59.77
+                ],
+                "hasfen"
+            ]
+        },
+        {
+            "id": "hasfen-road",
+            "type": "major",
+            "curved": true,
+            "name": "Deep Road",
+            "fontSize": 10,
+            "labelReverse": true,
+            "points": [
+                "hasfen",
+                [
+                    50.78,
+                    59.65
+                ],
+                [
+                    49.89,
+                    60.89
+                ],
+                [
+                    48.74,
+                    60.75
+                ],
+                "stoneshore"
+            ]
+        },
+        {
+            "id": "paendley-road-southwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "paendley",
+                [
+                    53.57,
+                    64.13
+                ],
+                [
+                    52.83,
+                    64.69
+                ],
+                "duskwaren"
+            ]
+        },
+        {
+            "id": "duskwaren-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "duskwaren",
+                [
+                    52.53,
+                    66.69
+                ],
+                "heildward"
+            ]
+        },
+        {
+            "id": "heilward-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "heildward",
+                [
+                    50.85,
+                    66.27
+                ],
+                "felden"
+            ]
+        },
+        {
+            "id": "heildward-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "heildward",
+                [
+                    51.51,
+                    66.96
+                ],
+                "morimyr"
+            ]
+        },
+        {
+            "id": "morimyr-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "morimyr",
+                [
+                    52.56,
+                    69.34
+                ],
+                "climbor"
+            ]
+        },
+        {
+            "id": "felden-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "felden",
+                [
+                    50.5,
+                    67.83
+                ],
+                [
+                    50.88,
+                    68.38
+                ],
+                "climbor"
+            ]
+        },
+        {
+            "id": "nurador-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nurador",
+                [
+                    54.48,
+                    67.48
+                ],
+                [
+                    54.36,
+                    69.42
+                ],
+                "unknown-location-10"
+            ]
+        },
+        {
+            "id": "unknown-road-10",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "unknown-location-10",
+                [
+                    53.02,
+                    69.69
+                ],
+                [
+                    52.09,
+                    70.3
+                ],
+                "climbor"
             ]
         }
     ],
