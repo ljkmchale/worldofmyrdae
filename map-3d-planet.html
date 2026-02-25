@@ -326,31 +326,6 @@
         
         console.log("Groups created and added to scene");
         
-        // DEBUG: Create test markers at known positions
-        const testPositions = [
-            { pos: new THREE.Vector3(0, 150, 0), color: 0xff0000, name: "Top" },
-            { pos: new THREE.Vector3(150, 0, 0), color: 0x00ff00, name: "Right" },
-            { pos: new THREE.Vector3(0, 0, 150), color: 0x0000ff, name: "Forward" }
-        ];
-        
-        testPositions.forEach(test => {
-            const geom = new THREE.SphereGeometry(20, 12, 12);
-            const mat = new THREE.MeshStandardMaterial({ 
-                color: test.color,
-                emissive: test.color,
-                emissiveIntensity: 1.0,
-                metalness: 0,
-                roughness: 0.5
-            });
-            const marker = new THREE.Mesh(geom, mat);
-            marker.position.copy(test.pos);
-            markersGroup.add(marker);
-            console.log("TEST MARKER:", test.name, "at", test.pos);
-        });
-        
-        console.log("Camera position:", camera.position);
-        console.log("Camera looking at origin, markersGroup has", markersGroup.children.length, "children");
-        
         let markersVisible = true;
 
         const typeColors = {
@@ -382,11 +357,11 @@
             const color = typeColors[location.type] || 0x888888;
             
             // Visible glowing sphere using MeshStandardMaterial
-            const markerGeom = new THREE.SphereGeometry(15, 12, 12);
+            const markerGeom = new THREE.SphereGeometry(8, 12, 12);
             const markerMat = new THREE.MeshStandardMaterial({ 
                 color: color, 
                 emissive: color,
-                emissiveIntensity: 0.8,
+                emissiveIntensity: 0.6,
                 metalness: 0.2,
                 roughness: 0.4,
                 toneMapped: false
@@ -437,6 +412,8 @@
             planet.rotation.y += dx * 0.008;
             planet.rotation.x += dy * 0.008;
             atmosphere.rotation.copy(planet.rotation);
+            markersGroup.rotation.copy(planet.rotation);
+            roadsGroup.rotation.copy(planet.rotation);
             prevX = e.clientX;
             prevY = e.clientY;
         });
@@ -513,9 +490,24 @@
             if (validLocations.length > 0) {
                 const xValues = validLocations.map(l => l.x);
                 const yValues = validLocations.map(l => l.y);
-                console.log("X range:", Math.min(...xValues), "to", Math.max(...xValues));
-                console.log("Y range:", Math.min(...yValues), "to", Math.max(...yValues));
+                const minX = Math.min(...xValues);
+                const maxX = Math.max(...xValues);
+                const minY = Math.min(...yValues);
+                const maxY = Math.max(...yValues);
+                
+                console.log("X range:", minX, "to", maxX);
+                console.log("Y range:", minY, "to", maxY);
                 console.log("First 5 locations:", validLocations.slice(0, 5).map(l => ({ name: l.name, x: l.x, y: l.y, type: l.type })));
+                
+                // Normalize coordinates to 0-100 range
+                locations.forEach((loc) => {
+                    if (loc.x !== undefined && loc.y !== undefined && loc.type !== 'region') {
+                        loc.x = ((loc.x - minX) / (maxX - minX)) * 100;
+                        loc.y = ((loc.y - minY) / (maxY - minY)) * 100;
+                    }
+                });
+                
+                console.log("Coordinates normalized to 0-100 range");
             }
             
             if (locations.length > 0) {
@@ -562,6 +554,10 @@
                 planet.rotation.y += 0.0002;
                 atmosphere.rotation.y += 0.0002;
             }
+            
+            // Markers and roads must rotate with planet
+            markersGroup.rotation.copy(planet.rotation);
+            roadsGroup.rotation.copy(planet.rotation);
             
             renderer.render(scene, camera);
         }
