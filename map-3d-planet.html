@@ -351,18 +351,21 @@
             const pos = coordsToSphere(location.x, location.y);
             const color = typeColors[location.type] || 0x888888;
             
-            // Larger glowing sphere for better visibility
-            const markerGeom = new THREE.SphereGeometry(8, 12, 12);
+            // Very large glowing sphere for testing visibility
+            const markerGeom = new THREE.SphereGeometry(30, 16, 16);
             const markerMat = new THREE.MeshBasicMaterial({ 
                 color: color, 
                 emissive: color,
-                toneMapped: false
+                emissiveIntensity: 1.0,
+                toneMapped: false,
+                depthTest: true,
+                depthWrite: true
             });
             const marker = new THREE.Mesh(markerGeom, markerMat);
             marker.position.set(pos.x, pos.y, pos.z);
             marker.userData = location;
             markersGroup.add(marker);
-            console.log("Created marker at", location.name, pos);
+            console.log("Created marker at", location.name, "pos:", pos);
         }
 
         // Create roads
@@ -379,9 +382,10 @@
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
             const material = new THREE.LineBasicMaterial({
                 color: isMajor ? 0xd4af37 : 0x8b7355,
-                linewidth: isMajor ? 3 : 2,
+                linewidth: isMajor ? 5 : 3,
                 fog: false,
-                toneMapped: false
+                toneMapped: false,
+                depthTest: true
             });
             
             const line = new THREE.Line(geometry, material);
