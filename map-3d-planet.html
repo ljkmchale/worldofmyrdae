@@ -370,24 +370,26 @@
 
         // Create location markers
         function createMarker(location) {
+            // Skip regions and other non-marker types
+            if (!location.x || !location.y || location.type === 'region') {
+                return;
+            }
+            
             const pos = coordsToSphere(location.x, location.y);
             const color = typeColors[location.type] || 0x888888;
             
             // Visible glowing sphere
-            const markerGeom = new THREE.SphereGeometry(25, 16, 16);
+            const markerGeom = new THREE.SphereGeometry(15, 12, 12);
             const markerMat = new THREE.MeshBasicMaterial({ 
                 color: color, 
                 emissive: color,
-                emissiveIntensity: 1.0,
+                emissiveIntensity: 0.8,
                 toneMapped: false
             });
             const marker = new THREE.Mesh(markerGeom, markerMat);
             marker.position.set(pos.x, pos.y, pos.z);
             marker.userData = location;
             markersGroup.add(marker);
-            if (location.name === "Valdris" || location.name === "Silvanus" || location.name === "Thornhold") {
-                console.log("Created marker at", location.name, "pos:", pos, "dist from origin:", Math.sqrt(pos.x*pos.x + pos.y*pos.y + pos.z*pos.z));
-            }
         }
 
         // Create roads
@@ -497,13 +499,23 @@
             await CampaignData.init();
             
             const locations = CampaignData.getLocations();
-            console.log("Loaded", locations.length, "locations");
+            console.log("Loaded", locations.length, "total locations");
+            
+            // Analyze location distribution
+            const validLocations = locations.filter(l => l.x !== undefined && l.y !== undefined && l.type !== 'region');
+            console.log("Valid markers (excluding regions):", validLocations.length);
+            
+            if (validLocations.length > 0) {
+                const xValues = validLocations.map(l => l.x);
+                const yValues = validLocations.map(l => l.y);
+                console.log("X range:", Math.min(...xValues), "to", Math.max(...xValues));
+                console.log("Y range:", Math.min(...yValues), "to", Math.max(...yValues));
+                console.log("First 5 locations:", validLocations.slice(0, 5).map(l => ({ name: l.name, x: l.x, y: l.y, type: l.type })));
+            }
             
             if (locations.length > 0) {
-                console.log("First location:", locations[0]);
-                locations.forEach((loc, idx) => {
+                locations.forEach((loc) => {
                     createMarker(loc);
-                    if (idx === 0) console.log("Sample marker created for", loc.name);
                 });
             }
             
