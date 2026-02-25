@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="3D Planet Map of Myrdae">
+    <title>Planet Myrdae</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Base styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dnd-theme.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000814;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body::before,
+        body::after {
+            display: none !important;
+        }
+
+        #canvas-3d {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-controls-3d {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .map-btn-3d {
+            width: 38px;
+            height: 38px;
+            background: rgba(10, 10, 15, 0.85);
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .map-btn-3d:hover {
+            background: var(--color-gold);
+            color: #000;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: rgba(10, 10, 15, 0.95);
+            border: 1px solid var(--color-gold);
+            border-radius: 8px;
+            padding: 1.25rem;
+            z-index: 110;
+            width: 280px;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .info-panel h4 {
+            margin: 0 0 0.5rem 0;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--color-gold-bright);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .location-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .location-type {
+            font-size: 0.85rem;
+            color: var(--color-gold);
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+        }
+
+        .location-coords {
+            font-size: 0.8rem;
+            color: #999;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1rem;
+        }
+
+        .location-description {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        .info-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--color-gold);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .info-close:hover {
+            color: #fff;
+        }
+
+        .controls-info {
+            position: absolute;
+            bottom: 0.75rem;
+            left: 0.75rem;
+            background: rgba(10, 10, 15, 0.85);
+            border: 1px solid var(--color-gold);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #ddd;
+        }
+
+        .controls-info div {
+            margin: 0.25rem 0;
+        }
+
+        .controls-info strong {
+            color: var(--color-gold);
+        }
+
+        .planet-name {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: rgba(255, 215, 0, 0.3);
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="planet-name" id="planet-name">Myrdae</div>
+    <canvas id="canvas-3d"></canvas>
+
+    <!-- Controls -->
+    <div class="map-controls-3d">
+        <button class="map-btn-3d" onclick="resetCamera()" title="Reset Camera">
+            <i class="fa-solid fa-house"></i>
+        </button>
+        <button class="map-btn-3d" onclick="toggleLocations()" title="Toggle Location Markers" id="loc-toggle">
+            <i class="fa-solid fa-location-dot"></i>
+        </button>
+    </div>
+
+    <!-- Info Panel (Hidden by default) -->
+    <div class="info-panel" id="info-panel" style="display: none;">
+        <button class="info-close" onclick="hideInfo()">×</button>
+        <div id="info-content"></div>
+    </div>
+
+    <!-- Controls Info -->
+    <div class="controls-info">
+        <div><strong>Mouse:</strong> Drag to rotate, Scroll to zoom</div>
+        <div><strong>Click:</strong> Select location</div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/locations-db.js"></script>
+    <script src="js/campaign-data.js"></script>
+
+    <script>
+        // 3D Planet Scene Setup
+        const canvas = document.getElementById('canvas-3d');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000814);
+        scene.fog = new THREE.Fog(0x000814, 5000, 15000);
+
+        const camera = new THREE.PerspectiveCamera(
+            60,
+            window.innerWidth / window.innerHeight,
+            1,
+            50000
+        );
+
+        const rotation = { x: 0.3, y: 0.5 };
+        camera.position.set(0, 300, 500);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+
+        // Lighting - Sun from space
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        sunLight.position.set(1000, 800, 600);
+        sunLight.castShadow = true;
+        sunLight.shadow.camera.left = -1000;
+        sunLight.shadow.camera.right = 1000;
+        sunLight.shadow.camera.top = 1000;
+        sunLight.shadow.camera.bottom = -1000;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        scene.add(sunLight);
+
+        // Starfield background
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 1000;
+        const positions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 30000;
+            positions[i + 1] = (Math.random() - 0.5) * 30000;
+            positions[i + 2] = (Math.random() - 0.5) * 30000;
+        }
+
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 50,
+            sizeAttenuation: true
+        });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // Planet sphere with terrain
+        const planetRadius = 250;
+        const segments = 128;
+        const planetGeometry = new THREE.IcosahedronGeometry(planetRadius, segments);
+
+        // Generate heightmap for custom terrain
+        function generatePlanetHeight(u, v) {
+            // u and v are 0-1
+            // Use multiple sine waves to create terrain variation
+            let height = 0;
+            height += Math.sin(u * Math.PI * 3) * Math.cos(v * Math.PI * 2.5) * 15;
+            height += Math.sin(u * Math.PI * 7) * Math.cos(v * Math.PI * 5) * 8;
+            height += Math.sin(u * Math.PI * 15) * Math.cos(v * Math.PI * 11) * 4;
+            height += (Math.random() - 0.5) * 3;
+            return height;
+        }
+
+        // Displace vertices based on height
+        const positions = planetGeometry.getAttribute('position');
+        const posArray = positions.array;
+
+        for (let i = 0; i < posArray.length; i += 3) {
+            const x = posArray[i];
+            const y = posArray[i + 1];
+            const z = posArray[i + 2];
+
+            // Convert to spherical coordinates
+            const r = Math.sqrt(x * x + y * y + z * z);
+            const u = (Math.atan2(z, x) / Math.PI + 1) * 0.5;
+            const v = Math.acos(y / r) / Math.PI;
+
+            const heightVariation = generatePlanetHeight(u, v);
+            const scale = 1 + (heightVariation / planetRadius);
+
+            posArray[i] = x * scale;
+            posArray[i + 1] = y * scale;
+            posArray[i + 2] = z * scale;
+        }
+
+        positions.needsUpdate = true;
+        planetGeometry.computeVertexNormals();
+
+        // Terrain material
+        const textureLoader = new THREE.TextureLoader();
+        const mapTexture = textureLoader.load('images/Myrdae.jpg');
+
+        const planetMaterial = new THREE.MeshStandardMaterial({
+            map: mapTexture,
+            roughness: 0.85,
+            metalness: 0.0,
+            side: THREE.FrontSide
+        });
+
+        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+        planet.castShadow = true;
+        planet.receiveShadow = true;
+        planet.rotation.z = Math.PI / 4; // Tilt the planet
+        scene.add(planet);
+
+        // Atmosphere glow
+        const atmosphereGeometry = new THREE.IcosahedronGeometry(planetRadius + 10, segments);
+        const atmosphereMaterial = new THREE.MeshBasicMaterial({
+            color: 0x87ceeb,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.15
+        });
+        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+        scene.add(atmosphere);
+
+        // Roads group
+        const roadsGroup = new THREE.Group();
+        scene.add(roadsGroup);
+
+        // Location markers
+        const locationMarkers = new Map();
+        const markerGroup = new THREE.Group();
+        scene.add(markerGroup);
+
+        let markersVisible = true;
+
+        const typeColors = {
+            capital: 0xffffff,
+            city: 0xd4af37,
+            'small-city': 0xcccccc,
+            town: 0x8b7355,
+            village: 0xa0522d,
+            port: 0x87ceeb,
+            ruins: 0x999999,
+            landmark: 0xff8c00,
+            nature: 0x228b22,
+            poi: 0xff69b4,
+            region: 0x90ee90,
+            water: 0x4169e1,
+            river: 0x1e90ff
+        };
+
+        // Convert map coordinates to sphere coordinates
+        function mapCoordsToSphere(x, y) {
+            // x and y are percentage coordinates (0-100)
+            const u = x / 100; // 0-1
+            const v = y / 100; // 0-1
+
+            // Convert to spherical coordinates
+            const lon = u * Math.PI * 2 - Math.PI;
+            const lat = (1 - v) * Math.PI - Math.PI / 2;
+
+            const r = planetRadius + 15;
+            const px = r * Math.cos(lat) * Math.cos(lon);
+            const py = r * Math.sin(lat);
+            const pz = r * Math.cos(lat) * Math.sin(lon);
+
+            return new THREE.Vector3(px, py, pz);
+        }
+
+        // Create marker for each location
+        function createLocationMarker(location) {
+            const pos = mapCoordsToSphere(location.x, location.y);
+
+            // Cone marker
+            const geometry = new THREE.ConeGeometry(8, 25, 12);
+            const color = typeColors[location.type] || 0x888888;
+            const material = new THREE.MeshStandardMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.7,
+                metalness: 0.7,
+                roughness: 0.3
+            });
+
+            const marker = new THREE.Mesh(geometry, material);
+            marker.position.copy(pos);
+            marker.lookAt(pos.clone().multiplyScalar(1.2)); // Point away from planet
+            marker.castShadow = true;
+            marker.receiveShadow = true;
+            marker.userData = location;
+            markerGroup.add(marker);
+
+            // Glowing sphere
+            const labelGeometry = new THREE.SphereGeometry(5, 8, 8);
+            const labelMaterial = new THREE.MeshBasicMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.9
+            });
+            const label = new THREE.Mesh(labelGeometry, labelMaterial);
+            label.position.copy(pos).multiplyScalar(1.08);
+            markerGroup.add(label);
+
+            locationMarkers.set(marker, { location, label });
+        }
+
+        // Create roads
+        function createRoads(routes) {
+            routes.forEach(route => {
+                const startPos = mapCoordsToSphere(route.start.x, route.start.y);
+                const endPos = mapCoordsToSphere(route.end.x, route.end.y);
+
+                const curve = new THREE.LineCurve3(startPos, endPos);
+                const points = curve.getPoints(30);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({
+                    color: route.type === 'major' ? 0xd4af37 : 0x888888,
+                    linewidth: route.type === 'major' ? 2 : 1,
+                    fog: true
+                });
+                const line = new THREE.Line(geometry, material);
+                roadsGroup.add(line);
+            });
+        }
+
+        // Initialize
+        async function initialize() {
+            console.log('Initializing planet...');
+            await CampaignData.init();
+
+            const locations = LocationsDB.getLocations();
+            console.log('Loaded', locations.length, 'locations');
+            locations.forEach(location => {
+                createLocationMarker(location);
+            });
+
+            if (CampaignData.routes && CampaignData.routes.length > 0) {
+                console.log('Creating', CampaignData.routes.length, 'roads');
+                createRoads(CampaignData.routes);
+            }
+
+            console.log('Planet initialized, starting animation...');
+            animate();
+        }
+
+        // Mouse interaction
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(markerGroup.children);
+            if (intersects.length > 0) {
+                const clicked = intersects[0].object;
+                if (locationMarkers.has(clicked)) {
+                    const { location } = locationMarkers.get(clicked);
+                    showLocationInfo(location);
+                }
+            }
+        });
+
+        // Controls
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+            
+            // Rotate planet
+            planet.rotation.y += deltaX * 0.003;
+            planet.rotation.x += deltaY * 0.003;
+            atmosphere.rotation.copy(planet.rotation);
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const direction = camera.position.clone().normalize();
+            const distance = camera.position.length();
+            const newDistance = Math.max(300, Math.min(1500, distance + e.deltaY * 0.3));
+            camera.position.copy(direction.multiplyScalar(newDistance));
+        });
+
+        function resetCamera() {
+            camera.position.set(0, 300, 500);
+            planet.rotation.set(Math.PI / 6, 0, Math.PI / 4);
+            atmosphere.rotation.copy(planet.rotation);
+        }
+
+        function toggleLocations() {
+            markersVisible = !markersVisible;
+            markerGroup.visible = markersVisible;
+            const btn = document.getElementById('loc-toggle');
+            btn.style.opacity = markersVisible ? '1' : '0.5';
+        }
+
+        function showLocationInfo(location) {
+            const panel = document.getElementById('info-panel');
+            const content = document.getElementById('info-content');
+
+            content.innerHTML = `
+                <h4><i class="fa-solid fa-location-dot"></i> Location</h4>
+                <div class="location-name">${location.name}</div>
+                <div class="location-type">${location.type}</div>
+                <div class="location-coords">X: ${location.x.toFixed(1)} | Y: ${location.y.toFixed(1)}</div>
+                ${location.description ? `<div class="location-description">${location.description}</div>` : ''}
+                ${location.region ? `<div style="margin-top: 1rem; font-size: 0.85rem; color: #aaa;">Region: <strong>${location.region}</strong></div>` : ''}
+            `;
+
+            panel.style.display = 'block';
+        }
+
+        function hideInfo() {
+            document.getElementById('info-panel').style.display = 'none';
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Subtle planet rotation when not dragging
+            if (!isDragging) {
+                planet.rotation.y += 0.00005;
+                atmosphere.rotation.y += 0.00005;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Start
+        initialize().catch(err => {
+            console.error('Error initializing planet:', err);
+            animate();
+        });
+    </script>
+</body>
+
+</html>

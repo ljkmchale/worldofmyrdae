@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="3D Interactive Map of Myrdae">
+    <title>3D Map of Myrdae</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Base styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dnd-theme.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #050508;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body::before,
+        body::after {
+            display: none !important;
+        }
+
+        #canvas-3d {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-controls-3d {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .map-btn-3d {
+            width: 38px;
+            height: 38px;
+            background: rgba(10, 10, 15, 0.85);
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .map-btn-3d:hover {
+            background: var(--color-gold);
+            color: #000;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: rgba(10, 10, 15, 0.95);
+            border: 1px solid var(--color-gold);
+            border-radius: 8px;
+            padding: 1.25rem;
+            z-index: 110;
+            width: 280px;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .info-panel h4 {
+            margin: 0 0 0.5rem 0;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--color-gold-bright);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .location-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .location-type {
+            font-size: 0.85rem;
+            color: var(--color-gold);
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+        }
+
+        .location-coords {
+            font-size: 0.8rem;
+            color: #999;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1rem;
+        }
+
+        .location-description {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        .info-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--color-gold);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .info-close:hover {
+            color: #fff;
+        }
+
+        .controls-info {
+            position: absolute;
+            bottom: 0.75rem;
+            left: 0.75rem;
+            background: rgba(10, 10, 15, 0.85);
+            border: 1px solid var(--color-gold);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #ddd;
+        }
+
+        .controls-info div {
+            margin: 0.25rem 0;
+        }
+
+        .controls-info strong {
+            color: var(--color-gold);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas-3d"></canvas>
+
+    <!-- Controls -->
+    <div class="map-controls-3d">
+        <button class="map-btn-3d" onclick="resetCamera()" title="Reset Camera">
+            <i class="fa-solid fa-house"></i>
+        </button>
+        <button class="map-btn-3d" onclick="toggleWireframe()" title="Toggle Wireframe">
+            <i class="fa-solid fa-cube"></i>
+        </button>
+        <button class="map-btn-3d" onclick="highlightLocations()" title="Toggle Location Markers">
+            <i class="fa-solid fa-location-dot"></i>
+        </button>
+    </div>
+
+    <!-- Info Panel (Hidden by default) -->
+    <div class="info-panel" id="info-panel" style="display: none;">
+        <button class="info-close" onclick="hideInfo()">×</button>
+        <div id="info-content"></div>
+    </div>
+
+    <!-- Controls Info -->
+    <div class="controls-info">
+        <div><strong>Mouse:</strong> Drag to rotate, Scroll to zoom</div>
+        <div><strong>Click:</strong> Select location</div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/locations-db.js"></script>
+    <script src="js/campaign-data.js"></script>
+
+    <script>
+        // 3D Map Scene Setup
+        const canvas = document.getElementById('canvas-3d');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050508);
+        scene.fog = new THREE.Fog(0x050508, 5000, 10000);
+
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            20000
+        );
+
+        // Camera rotation state
+        const rotation = { x: -0.8, y: 0 };
+
+        camera.position.set(0, 1500, 1500);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(500, 400, 300);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.camera.left = -2500;
+        directionalLight.shadow.camera.right = 2500;
+        directionalLight.shadow.camera.top = 2500;
+        directionalLight.shadow.camera.bottom = -2500;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        scene.add(directionalLight);
+
+        // Add a helper grid
+        const gridHelper = new THREE.GridHelper(4096, 16, 0x444444, 0x222222);
+        gridHelper.position.y = -50;
+        scene.add(gridHelper);
+
+        // Map plane
+        let mapPlane;
+        const mapMaterial = new THREE.MeshStandardMaterial({
+            color: 0x6b5d4f,
+            roughness: 0.7,
+            metalness: 0.1,
+            side: THREE.DoubleSide
+        });
+
+        const mapGeometry = new THREE.PlaneGeometry(2048, 1536);
+        mapPlane = new THREE.Mesh(mapGeometry, mapMaterial);
+        mapPlane.receiveShadow = true;
+        mapPlane.rotation.x = 0;
+        mapPlane.position.set(0, 0, 0);
+        scene.add(mapPlane);
+
+        // Try to load texture overlay
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('images/Myrdae.jpg', (texture) => {
+            mapMaterial.map = texture;
+            mapMaterial.needsUpdate = true;
+            console.log('Map texture loaded successfully');
+        }, undefined, (error) => {
+            console.warn('Could not load map texture:', error);
+        });
+
+        // Location markers
+        const locationMarkers = new Map();
+        const markerGroup = new THREE.Group();
+        scene.add(markerGroup);
+
+        const typeColors = {
+            capital: 0xffffff,
+            city: 0xd4af37,
+            'small-city': 0xcccccc,
+            town: 0x8b7355,
+            village: 0xa0522d,
+            port: 0x87ceeb,
+            ruins: 0x999999,
+            landmark: 0xff8c00,
+            nature: 0x228b22,
+            poi: 0xff69b4,
+            region: 0x90ee90,
+            water: 0x4169e1,
+            river: 0x1e90ff
+        };
+
+        // Create marker for each location
+        function createLocationMarker(location) {
+            // Convert percentage coordinates to world space
+            const x = (location.x / 100 - 0.5) * 2048;
+            const y = (0.5 - location.y / 100) * 1536;
+
+            const geometry = new THREE.ConeGeometry(20, 60, 16);
+            const color = typeColors[location.type] || 0x888888;
+            const material = new THREE.MeshStandardMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.5,
+                metalness: 0.6,
+                roughness: 0.4
+            });
+
+            const marker = new THREE.Mesh(geometry, material);
+            marker.position.set(x, y, 40);
+            marker.castShadow = true;
+            marker.receiveShadow = true;
+            marker.userData = location;
+            markerGroup.add(marker);
+
+            // Create a label sphere
+            const labelGeometry = new THREE.SphereGeometry(10, 8, 8);
+            const labelMaterial = new THREE.MeshBasicMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.7
+            });
+            const label = new THREE.Mesh(labelGeometry, labelMaterial);
+            label.position.copy(marker.position);
+            label.position.z += 60;
+            markerGroup.add(label);
+
+            locationMarkers.set(marker, { location, label });
+        }
+
+        // Initialize markers after campaign data loads
+        async function initLocationMarkers() {
+            try {
+                await CampaignData.init();
+                const locations = LocationsDB.getLocations();
+                console.log('Loaded', locations.length, 'locations');
+                locations.forEach(location => {
+                    createLocationMarker(location);
+                });
+            } catch (err) {
+                console.warn('Error loading location markers:', err);
+            }
+        }
+
+        // Mouse interaction
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(markerGroup.children);
+            if (intersects.length > 0) {
+                const clicked = intersects[0].object;
+                if (locationMarkers.has(clicked)) {
+                    const { location } = locationMarkers.get(clicked);
+                    showLocationInfo(location);
+                }
+            }
+        });
+
+        // Orbit controls (basic)
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            rotation.y += deltaX * 0.005;
+            rotation.x += deltaY * 0.005;
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const direction = camera.position.clone().normalize();
+            const distance = camera.position.length();
+            const newDistance = Math.max(500, Math.min(3000, distance + e.deltaY * 0.5));
+            camera.position.copy(direction.multiplyScalar(newDistance));
+        });
+
+        // Camera controls
+        function updateCamera() {
+            const distance = Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2);
+            if (distance === 0) return;
+            
+            const x = distance * Math.sin(rotation.y) * Math.cos(rotation.x);
+            const z = distance * Math.cos(rotation.y) * Math.cos(rotation.x);
+            const y = distance * Math.sin(rotation.x);
+            
+            camera.position.set(x, y, z);
+            camera.lookAt(0, 0, 0);
+        }
+
+        function resetCamera() {
+            camera.position.set(0, 1500, 1500);
+            rotation.x = -0.8;
+            rotation.y = 0;
+            camera.lookAt(0, 0, 0);
+        }
+
+        // Wireframe toggle
+        let wireframeMode = false;
+        function toggleWireframe() {
+            wireframeMode = !wireframeMode;
+            mapMaterial.wireframe = wireframeMode;
+            markerGroup.children.forEach(marker => {
+                if (marker.material) marker.material.wireframe = wireframeMode;
+            });
+        }
+
+        // Location info display
+        function showLocationInfo(location) {
+            const panel = document.getElementById('info-panel');
+            const content = document.getElementById('info-content');
+            
+            content.innerHTML = `
+                <h4><i class="fa-solid fa-location-dot"></i> Location</h4>
+                <div class="location-name">${location.name}</div>
+                <div class="location-type">${location.type}</div>
+                <div class="location-coords">X: ${location.x.toFixed(1)} | Y: ${location.y.toFixed(1)}</div>
+                ${location.description ? `<div class="location-description">${location.description}</div>` : ''}
+                ${location.region ? `<div style="margin-top: 1rem; font-size: 0.85rem; color: #aaa;">Region: <strong>${location.region}</strong></div>` : ''}
+            `;
+            
+            panel.style.display = 'block';
+        }
+
+        function hideInfo() {
+            document.getElementById('info-panel').style.display = 'none';
+        }
+
+        // Hide panels on 2D click
+        function highlightLocations() {
+            // Toggle visibility of markers
+            markerGroup.visible = !markerGroup.visible;
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            updateCamera();
+
+            // Subtle rotation for idle state
+            if (!isDragging) {
+                rotation.y += 0.0002;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Start
+        console.log('Initializing 3D map...');
+        initLocationMarkers().then(() => {
+            console.log('Location markers initialized, starting animation...');
+            animate();
+        }).catch(err => {
+            console.error('Error initializing location markers:', err);
+            animate(); // Still animate even if markers fail
+        });
+    </script>
+</body>
+
+</html>
