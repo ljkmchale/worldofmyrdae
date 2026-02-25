@@ -496,7 +496,7 @@
             console.log("Loading campaign data...");
             await CampaignData.init();
             
-            const locations = LocationsDB.getLocations();
+            const locations = CampaignData.getLocations();
             console.log("Loaded", locations.length, "locations");
             
             if (locations.length > 0) {
@@ -508,14 +508,26 @@
             }
             
             // Draw roads if available
-            if (CampaignData.routes && CampaignData.routes.length > 0) {
-                console.log("Creating", CampaignData.routes.length, "roads");
-                CampaignData.routes.forEach((route, idx) => {
-                    createRoad(route.start, route.end, route.type === 'major');
-                    if (idx === 0) console.log("Sample road created");
+            const roads = CampaignData.getRoads();
+            if (roads && roads.length > 0) {
+                console.log("Creating", roads.length, "roads");
+                roads.forEach((route, idx) => {
+                    if (route.points && route.points.length >= 3) {
+                        // Roads are stored as: [startLocationId, [x,y], [x,y], ..., endLocationId]
+                        for (let i = 1; i < route.points.length - 1; i++) {
+                            const curr = route.points[i];
+                            const next = route.points[i + 1];
+                            if (Array.isArray(curr) && Array.isArray(next)) {
+                                const start = { x: curr[0], y: curr[1] };
+                                const end = { x: next[0], y: next[1] };
+                                createRoad(start, end, route.type === 'major');
+                            }
+                        }
+                        if (idx === 0) console.log("Sample road created from route");
+                    }
                 });
             } else {
-                console.log("No routes found in campaign data");
+                console.log("No roads found in campaign data");
             }
             
             console.log("Markers group children:", markersGroup.children.length);
