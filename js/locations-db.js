@@ -3163,7 +3163,99 @@ const WORLD_LOCATIONS = {
             "name": "Witguard",
             "type": "town",
             "x": 49.9,
-            "y": 78,
+            "y": 70.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -59,
+            "labelOffsetY": -11
+        },
+        {
+            "id": "pelveron",
+            "name": "Pelveron",
+            "type": "small-city",
+            "x": 49.26,
+            "y": 72.3,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -59,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "silviora",
+            "name": "Silviora",
+            "type": "town",
+            "x": 50.5,
+            "y": 73.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "tyrynader",
+            "name": "Tyrynder",
+            "type": "small-city",
+            "x": 47.73,
+            "y": 70.8,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -52,
+            "labelOffsetY": -8
+        },
+        {
+            "id": "unknown-12",
+            "name": "unknown-12",
+            "type": "poi",
+            "x": 50.1,
+            "y": 71.6,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 1,
+            "hideLabel": true
+        },
+        {
+            "id": "Valenlun",
+            "name": "Valenlun",
+            "type": "town",
+            "x": 47.93,
+            "y": 68.2,
             "region": "",
             "description": "Town",
             "fontFamily": "Garamond MT",
@@ -4908,6 +5000,126 @@ const WORLD_LOCATIONS = {
                     70.3
                 ],
                 "climbor"
+            ]
+        },
+        {
+            "id": "witguard-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "witguard",
+                [
+                    50.09,
+                    71.11
+                ],
+                "unknown-12"
+            ]
+        },
+        {
+            "id": "pelveron-road-northeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "pelveron",
+                [
+                    49.89,
+                    72.04
+                ],
+                "unknown-12"
+            ]
+        },
+        {
+            "id": "pelveron-road-southeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "pelveron",
+                [
+                    49.36,
+                    72.64
+                ],
+                "silviora"
+            ]
+        },
+        {
+            "id": "pelveron-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "pelveron",
+                [
+                    48.94,
+                    74.16
+                ],
+                "tarrarin"
+            ]
+        },
+        {
+            "id": "silviora-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "silviora",
+                [
+                    48.79,
+                    74.02
+                ],
+                "tarrarin"
+            ]
+        },
+        {
+            "id": "witguard-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "witguard",
+                [
+                    49.31,
+                    70.8
+                ],
+                [
+                    48.43,
+                    71.13
+                ],
+                [
+                    48.18,
+                    70.67
+                ],
+                "tyrynader"
+            ]
+        },
+        {
+            "id": "climbor-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "climbor",
+                [
+                    50.82,
+                    70
+                ],
+                [
+                    50.21,
+                    70.85
+                ],
+                "witguard"
+            ]
+        },
+        {
+            "id": "climbor-road-southwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "climbor",
+                [
+                    50.95,
+                    70.89
+                ],
+                [
+                    50.59,
+                    71.37
+                ],
+                "unknown-12"
             ]
         }
     ],
