@@ -318,11 +318,13 @@
         const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
         scene.add(atmosphere);
 
-        // Groups for roads and markers
+        // Groups for roads and markers (add AFTER planet so they render on top)
         const roadsGroup = new THREE.Group();
         const markersGroup = new THREE.Group();
         scene.add(roadsGroup);
         scene.add(markersGroup);
+        
+        console.log("Groups created and added to scene");
         
         let markersVisible = true;
 
@@ -336,7 +338,7 @@
         function coordsToSphere(x, y) {
             const lon = (x / 100) * Math.PI * 2;
             const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
-            const r = planetRadius + 15;
+            const r = planetRadius + 18; // Increased offset from surface
             return {
                 x: r * Math.cos(lat) * Math.cos(lon),
                 y: r * Math.sin(lat),
@@ -349,16 +351,18 @@
             const pos = coordsToSphere(location.x, location.y);
             const color = typeColors[location.type] || 0x888888;
             
-            // Glowing sphere
-            const markerGeom = new THREE.SphereGeometry(6, 8, 8);
+            // Larger glowing sphere for better visibility
+            const markerGeom = new THREE.SphereGeometry(8, 12, 12);
             const markerMat = new THREE.MeshBasicMaterial({ 
                 color: color, 
-                emissive: color
+                emissive: color,
+                toneMapped: false
             });
             const marker = new THREE.Mesh(markerGeom, markerMat);
             marker.position.set(pos.x, pos.y, pos.z);
             marker.userData = location;
             markersGroup.add(marker);
+            console.log("Created marker at", location.name, pos);
         }
 
         // Create roads
@@ -371,11 +375,13 @@
                 new THREE.Vector3(endPos.x, endPos.y, endPos.z)
             );
             
-            const points = curve.getPoints(20);
+            const points = curve.getPoints(30);
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
             const material = new THREE.LineBasicMaterial({
                 color: isMajor ? 0xd4af37 : 0x8b7355,
-                linewidth: isMajor ? 2 : 1
+                linewidth: isMajor ? 3 : 2,
+                fog: false,
+                toneMapped: false
             });
             
             const line = new THREE.Line(geometry, material);
@@ -470,16 +476,27 @@
             const locations = LocationsDB.getLocations();
             console.log("Loaded", locations.length, "locations");
             
-            locations.forEach(createMarker);
+            if (locations.length > 0) {
+                console.log("First location:", locations[0]);
+                locations.forEach((loc, idx) => {
+                    createMarker(loc);
+                    if (idx === 0) console.log("Sample marker created for", loc.name);
+                });
+            }
             
             // Draw roads if available
             if (CampaignData.routes && CampaignData.routes.length > 0) {
                 console.log("Creating", CampaignData.routes.length, "roads");
-                CampaignData.routes.forEach(route => {
+                CampaignData.routes.forEach((route, idx) => {
                     createRoad(route.start, route.end, route.type === 'major');
+                    if (idx === 0) console.log("Sample road created");
                 });
+            } else {
+                console.log("No routes found in campaign data");
             }
             
+            console.log("Markers group children:", markersGroup.children.length);
+            console.log("Roads group children:", roadsGroup.children.length);
             console.log("Initialization complete, starting animation");
             animate();
         }
