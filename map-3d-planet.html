@@ -318,13 +318,13 @@
         const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
         scene.add(atmosphere);
 
-        // Groups for roads and markers (add AFTER planet so they render on top)
+        // Groups for roads and markers (make them children of planet so they rotate together)
         const roadsGroup = new THREE.Group();
         const markersGroup = new THREE.Group();
-        scene.add(roadsGroup);
-        scene.add(markersGroup);
+        planet.add(roadsGroup);
+        planet.add(markersGroup);
         
-        console.log("Groups created and added to scene");
+        console.log("Groups created and added to planet");
         
         let markersVisible = true;
 
@@ -405,8 +405,6 @@
             planet.rotation.y += dx * 0.008;
             planet.rotation.x += dy * 0.008;
             atmosphere.rotation.copy(planet.rotation);
-            markersGroup.rotation.copy(planet.rotation);
-            roadsGroup.rotation.copy(planet.rotation);
             prevX = e.clientX;
             prevY = e.clientY;
         });
@@ -509,8 +507,6 @@
             if (!isDragging) {
                 planet.rotation.y += 0.0002;
                 atmosphere.rotation.y += 0.0002;
-                markersGroup.rotation.y += 0.0002;
-                roadsGroup.rotation.y += 0.0002;
             }
             
             renderer.render(scene, camera);
