@@ -267,13 +267,11 @@
             const ny = y / len;
             const nz = z / len;
             
-            // Perlin-like noise for terrain variation
-            const noise = Math.sin(x * 0.015) * Math.cos(y * 0.015) * Math.sin(z * 0.015) * 15 +
-                         Math.sin(x * 0.03) * Math.cos(y * 0.03) * 8 +
-                         Math.sin(x * 0.06) * 4;
+            // Subtle terrain variation - much smaller displacement
+            const noise = Math.sin(x * 0.02) * Math.cos(y * 0.02) * 3 +
+                         Math.sin(x * 0.04) * 1.5;
             
-            const scale = 1 + (noise / planetRadius);
-            const newRadius = planetRadius * scale;
+            const newRadius = planetRadius + noise;
             
             posArray[i] = nx * newRadius;
             posArray[i + 1] = ny * newRadius;
@@ -287,8 +285,9 @@
         const loader = new THREE.TextureLoader();
         let planetMaterial = new THREE.MeshStandardMaterial({ 
             color: 0x5a8c5a,
-            roughness: 0.8,
-            metalness: 0
+            roughness: 0.7,
+            metalness: 0,
+            side: THREE.FrontSide
         });
         
         loader.load('images/Myrdae.jpg', (texture) => {
