@@ -452,8 +452,8 @@
                     // variation (dark deep / lighter shallow) stays readable
                     float _lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
                     // deep ocean blue target, scaled by original luminance
-                    vec3 _blue = vec3(0.06, 0.22, 0.78) * (_lum / 0.38);
-                    diffuseColor.rgb = mix(diffuseColor.rgb, _blue, _wm * 0.88);
+                    vec3 _blue = vec3(0.08, 0.30, 0.72) * (_lum / 0.38);
+                    diffuseColor.rgb = mix(diffuseColor.rgb, _blue, _wm * 0.72);
                     // Wave brightness on top
                     diffuseColor.rgb *= clamp(1.0 + _waveH * 0.28, 0.74, 1.26);
                 }`
