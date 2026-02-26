@@ -617,58 +617,91 @@
                     return v;
                 }
 
-                // ── Rodrigues rotation ──────────────────────────────────────────
-                vec3 rotAx(vec3 v, vec3 ax, float a) {
-                    return v * cos(a) + cross(ax, v) * sin(a) + ax * dot(ax, v) * (1.0 - cos(a));
-                }
-                // Slow Y-axis drift
+                // Y-axis global drift
                 vec3 rotY(vec3 p, float a) {
                     float c = cos(a), s = sin(a);
                     return vec3(p.x*c - p.z*s, p.y, p.x*s + p.z*c);
                 }
 
-                // ── Storm vortex ────────────────────────────────────────────────
-                // Rotates the sample coordinate around the storm centre so the
-                // cloud *texture* visibly spins — innermost clouds spin fastest.
-                vec3 vortex(vec3 pos, vec3 cen, float radius, float angle) {
+                // ── Compact hurricane spiral ────────────────────────────────────
+                // Returns 0–1 cloud density contribution.
+                // windDir: +1 = CCW (N hemisphere), -1 = CW (S hemisphere)
+                float storm(vec3 pos, vec3 cen, float radius, float spinTime, float windDir) {
                     vec3 d = pos - cen;
                     float dist = length(d);
-                    float f = 1.0 - smoothstep(0.0, radius * 2.4, dist);
-                    f = f * f * f;
-                    return cen + rotAx(d, normalize(cen), angle * f);
+                    if (dist > radius) return 0.0;
+                    float nd = dist / radius;   // 0 = eye centre, 1 = outer edge
+
+                    // Tangent-plane basis at storm centre
+                    vec3 ax  = normalize(cen);
+                    vec3 ref = (abs(ax.y) < 0.85) ? vec3(0., 1., 0.) : vec3(1., 0., 0.);
+                    vec3 ex  = normalize(cross(ax, ref));
+                    vec3 ey  = cross(ax, ex);
+                    float az = atan(dot(d, ey), dot(d, ex));
+
+                    // 2 spiral arms, ~1 full turn from centre to edge.
+                    // Wider arms = clearly visible even at foreshortened polar angles.
+                    float phase = az * 2.0 + nd * windDir * 6.3 - spinTime;
+                    float arm   = pow(max(0.0, cos(phase)), 3.5);
+
+                    // ① Persistent circular eyewall ring just outside the clear eye
+                    //   (dense regardless of arm direction — the defining hurricane feature)
+                    float eyeRing = smoothstep(0.08, 0.18, nd) * (1.0 - smoothstep(0.22, 0.40, nd));
+
+                    // ② Spiral rainbands curving outward from the eyewall
+                    float eyeFactor = smoothstep(0.0, 0.14, nd);
+                    float radFalloff = pow(1.0 - nd, 1.5);
+                    float bands = eyeFactor * arm * radFalloff;
+
+                    return clamp(eyeRing * 0.85 + bands * 0.80, 0.0, 1.0);
+                }
+
+                // Radial falloff mask — 1.0 at storm centre, 0.0 at edge
+                float stormMask(vec3 pos, vec3 cen, float radius) {
+                    float nd = clamp(length(pos - cen) / radius, 0.0, 1.0);
+                    return 1.0 - nd * nd;
                 }
 
                 void main() {
                     vec3 p = vPos;
 
-                    // Very slow global drift so clouds move independently of terrain
+                    // Slow global cloud drift
                     p = rotY(p, time * 0.00008);
 
-                    // ── Five storm systems, each spinning at its own rate ──────
-                    // Radii are ~0.10–0.16 (hurricane-sized, not planet-spanning).
-                    // N hemisphere spins counter-clockwise (+), S hemisphere clockwise (−)
-                    p = vortex(p, normalize(vec3(-0.55, 0.38, 0.74)),  0.16,  time * 0.00045);
-                    p = vortex(p, normalize(vec3( 0.52,-0.52,-0.67)),  0.15, -time * 0.00038);
-                    p = vortex(p, normalize(vec3(-0.28, 0.58,-0.76)),  0.12,  time * 0.00032);
-                    p = vortex(p, normalize(vec3( 0.88, 0.36, 0.30)),  0.14,  time * 0.00040);
-                    p = vortex(p, normalize(vec3( 0.18,-0.62, 0.76)),  0.10, -time * 0.00030);
-
-                    // ── Domain-warped fBm for organic, streak-like cloud masses ─
+                    // ── Organic background clouds ───────────────────────────────
                     vec3 q = p * 5.5;
-                    // Single warp pass — keeps clouds distinct rather than a uniform layer
                     vec3 w1 = vec3(fbm(q + vec3(1.7, 9.2, 3.8)),
                                    fbm(q + vec3(8.3, 2.8, 5.1)),
                                    fbm(q + vec3(4.5, 6.7, 1.2)));
                     float cloud = fbm(q + w1 * 0.85);
-
-                    // Fine detail wisps
                     cloud = cloud * 0.68 + fbm(p * 14.0 + vec3(50.0, 30.0, 10.0)) * 0.32;
+                    cloud = smoothstep(0.52, 0.74, cloud);
 
-                    // Threshold tuned for ~55% coverage (matching satellite imagery)
-                    cloud = smoothstep(0.48, 0.72, cloud);
+                    // ── Suppress background inside each storm so eye & arms pop ─
+                    // Background is damped (not zero) so clouds blend naturally at
+                    // the outer edge but the organised spiral structure dominates.
+                    // Polar / high-latitude storm systems (|y| > 0.55).
+                    // c1, c3, c5 face the camera at initial rotation; c2, c4 visible on back.
+                    vec3 c1 = normalize(vec3( 0.20, 0.92,-0.30));   // N-pole, camera-facing
+                    vec3 c2 = normalize(vec3(-0.65, 0.75, 0.10));   // N-pole, far side
+                    vec3 c3 = normalize(vec3( 0.50,-0.75,-0.45));   // S high-lat, camera-facing
+                    vec3 c4 = normalize(vec3(-0.40,-0.88, 0.25));   // S-pole, far side
+                    vec3 c5 = normalize(vec3( 0.45,-0.55,-0.70));   // S mid-high, camera-facing
+                    float suppress = max(max(max(stormMask(p,c1,0.38), stormMask(p,c2,0.34)),
+                                             max(stormMask(p,c3,0.36), stormMask(p,c4,0.34))),
+                                             stormMask(p,c5,0.30));
+                    cloud *= (1.0 - suppress * 0.80);
 
-                    // Thick clouds bright white; dense cores slightly grey-blue
-                    float density = smoothstep(0.55, 1.0, cloud);
+                    // ── Storm spirals replace the cleared zone ──────────────────
+                    cloud += storm(p, c1, 0.34, time*0.00045,  1.0) * 2.5;
+                    cloud += storm(p, c2, 0.30, time*0.00038, -1.0) * 2.5;
+                    cloud += storm(p, c3, 0.32, time*0.00032,  1.0) * 2.5;
+                    cloud += storm(p, c4, 0.30, time*0.00040,  1.0) * 2.5;
+                    cloud += storm(p, c5, 0.28, time*0.00030, -1.0) * 2.5;
+                    cloud = clamp(cloud, 0.0, 1.0);
+
+                    // Dense cores grey-blue, thin wisps bright white
+                    float density = smoothstep(0.5, 1.0, cloud);
                     vec3 col = mix(vec3(1.0, 1.0, 1.0), vec3(0.78, 0.82, 0.92), density * 0.45);
 
                     gl_FragColor = vec4(col, cloud * 0.92);
