@@ -886,34 +886,54 @@
             const fWeight = location.fontWeight || 'normal';
             const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
 
-            // Measure label width
+            // Split name on \n so multi-line labels render correctly
+            const lines      = location.name ? location.name.split('\n') : [];
+            const lineHeight = fSize * 1.35;
+
+            // Measure the widest line for canvas width
             const tmpCtx = document.createElement('canvas').getContext('2d');
             tmpCtx.font  = fontStr;
-            const textW  = location.name ? tmpCtx.measureText(location.name).width : 0;
+            const textW  = lines.length
+                ? Math.max(...lines.map(l => tmpCtx.measureText(l).width))
+                : 0;
+
+            // Canvas height grows with line count; single-line stays at CANVAS_H
+            const canvasH = lines.length > 1
+                ? Math.ceil(Math.max(CANVAS_H, lines.length * lineHeight + 16))
+                : CANVAS_H;
+            const dotY    = Math.round(canvasH / 2);   // dot vertically centred
 
             const canvasW = Math.ceil(DOT_AREA + textW + 10);
             const canvas  = document.createElement('canvas');
             canvas.width  = canvasW;
-            canvas.height = CANVAS_H;
+            canvas.height = canvasH;
             const ctx     = canvas.getContext('2d');
 
             // Draw marker shape
-            drawDot(ctx, type, DOT_CX, DOT_CY, r);
+            drawDot(ctx, type, DOT_CX, dotY, r);
 
             // Draw label — cream fill + dark-brown outline (matches 2D map exactly)
-            if (location.name) {
+            if (lines.length) {
                 ctx.font      = fontStr;
                 ctx.lineJoin  = 'round';
                 ctx.lineWidth = Math.max(fSize * 0.22, 1.5);
+                // Vertically centre the text block around the dot
+                const blockH    = (lines.length - 1) * lineHeight;
+                const firstBaseline = dotY - blockH / 2 + fSize * 0.38;
                 ctx.strokeStyle = BROWN;
-                ctx.strokeText(location.name, DOT_AREA, DOT_CY + fSize * 0.38);
+                lines.forEach((line, i) => {
+                    ctx.strokeText(line, DOT_AREA, firstBaseline + i * lineHeight);
+                });
                 ctx.fillStyle = '#faf3e0';
-                ctx.fillText(location.name,   DOT_AREA, DOT_CY + fSize * 0.38);
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, DOT_AREA, firstBaseline + i * lineHeight);
+                });
             }
 
             const pos    = coordsToSphere(location.x, location.y);
-            const worldH = spriteHeights[type] || 8;
-            const worldW = worldH * (canvasW / CANVAS_H);
+            // worldH scales with canvas height so multi-line sprites aren't squashed
+            const worldH = (spriteHeights[type] || 8) * (canvasH / CANVAS_H);
+            const worldW = worldH * (canvasW / canvasH);
 
             // Shift geometry so the dot column (DOT_CX) sits at the mesh origin,
             // letting the label extend to the right — same as sprite.center did.
