@@ -13,7 +13,14 @@
       "Bash(tasklist /fi \"pid eq 45712\")",
       "Bash(tasklist //fi \"pid eq 45712\")",
       "Bash(wmic process where ProcessId=45712 get Name,CommandLine)",
-      "Bash(findstr \":3001\")"
+      "Bash(findstr \":3001\")",
+      "Bash(powershell -Command \"Remove-Item ''C:\\\\Users\\\\Larry McHale\\\\Desktop\\\\WorldofMyrdae\\\\.claude\\\\worktrees\\\\confident-antonelli\\\\js\\\\locations-db.js'' -Force; New-Item -ItemType SymbolicLink -Path ''C:\\\\Users\\\\Larry McHale\\\\Desktop\\\\WorldofMyrdae\\\\.claude\\\\worktrees\\\\confident-antonelli\\\\js\\\\locations-db.js'' -Target ''C:\\\\Users\\\\Larry McHale\\\\Desktop\\\\WorldofMyrdae\\\\js\\\\locations-db.js''\")",
+      "Bash(cmd /c mklink /H \"C:\\\\Users\\\\Larry McHale\\\\Desktop\\\\WorldofMyrdae\\\\.claude\\\\worktrees\\\\confident-antonelli\\\\js\\\\locations-db.js\" \"C:\\\\Users\\\\Larry McHale\\\\Desktop\\\\WorldofMyrdae\\\\js\\\\locations-db.js\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3001 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id \\(Get-Process -Id $_OwningProcess\\).Id -Force }; Write-Host ''Port 3001 freed''\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id \\(Get-Process -Id $_OwningProcess\\).Id -Force -ErrorAction SilentlyContinue }; Write-Host ''done''\")",
+      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue; Write-Host ''node processes killed''\")",
+      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue; Write-Host ''cleared''\")"
     ]
   }
 }
