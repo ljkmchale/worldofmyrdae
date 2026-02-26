@@ -257,6 +257,15 @@
         <div id="info-content"></div>
     </div>
 
+    <!-- Moon alignment indicator -->
+    <div id="moon-display" style="
+        position:absolute; bottom:158px; left:12px;
+        color:#faf3e0; font-family:'Cinzel',serif; font-size:13px; font-weight:600;
+        background: rgba(5,8,18,0.75); border:1px solid rgba(212,175,55,0.3);
+        border-radius:5px; padding:4px 10px;
+        text-shadow: 1px 1px 3px #000; pointer-events:none; letter-spacing:0.05em;">
+    </div>
+
     <!-- Season indicator -->
     <div id="season-display" style="
         position:absolute; bottom:120px; left:12px;
@@ -724,6 +733,133 @@
         );
         scene.add(cloudMesh);
 
+        // ── Moon meshes ───────────────────────────────────────────────────────────
+        // MeshStandardMaterial so sunLight gives natural phase shading automatically.
+        const endeloMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(8, 32, 32),
+            new THREE.MeshStandardMaterial({ color: 0xc8102e, roughness: 0.85, metalness: 0.05 })
+        );
+        scene.add(endeloMesh);
+
+        const tudaraMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(6, 32, 32),
+            new THREE.MeshStandardMaterial({ color: 0x0066cc, roughness: 0.85, metalness: 0.05 })
+        );
+        scene.add(tudaraMesh);
+
+        // ── Atmospheric rim glow ──────────────────────────────────────────────────
+        // BackSide rendering: far-hemisphere polygons visible at the limb only;
+        // planet depth test naturally hides the centre. AdditiveBlending = pure glow.
+        const atmosphereMaterial = new THREE.ShaderMaterial({
+            uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
+            vertexShader: `
+                varying vec3 vWorldNormal;
+                varying vec3 vCamDir;
+                void main() {
+                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+                    vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                    vCamDir = cameraPosition - worldPos.xyz;
+                    gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vWorldNormal;
+                varying vec3 vCamDir;
+                uniform vec3 sunDir;
+                void main() {
+                    vec3 n = normalize(vWorldNormal);
+                    vec3 v = normalize(vCamDir);
+                    float fresnel = 1.0 - abs(dot(n, v));
+                    fresnel = pow(fresnel, 2.5);
+                    float dayFac = smoothstep(-0.2, 0.5, dot(n, normalize(sunDir)));
+                    vec3 col = mix(vec3(0.05, 0.15, 0.55), vec3(0.25, 0.65, 1.0), dayFac);
+                    float alpha = fresnel * (0.3 + 0.7 * dayFac) * 0.85;
+                    gl_FragColor = vec4(col, alpha);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+        });
+        const atmosphereMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius * 1.07, 64, 32),
+            atmosphereMaterial
+        );
+        scene.add(atmosphereMesh);
+
+        // ── Twilight colour band ──────────────────────────────────────────────────
+        // Thin orange-red stripe hugging the terminator line (NdotL ≈ 0).
+        const twilightMaterial = new THREE.ShaderMaterial({
+            uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
+            vertexShader: `
+                varying vec3 vWorldNormal;
+                void main() {
+                    vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vWorldNormal;
+                uniform vec3 sunDir;
+                void main() {
+                    float NdotL = dot(normalize(vWorldNormal), normalize(sunDir));
+                    float band = smoothstep(-0.2, 0.0, NdotL) * (1.0 - smoothstep(0.0, 0.25, NdotL));
+                    vec3 col = mix(vec3(0.9, 0.18, 0.02), vec3(1.0, 0.55, 0.1),
+                                  smoothstep(-0.1, 0.1, NdotL));
+                    gl_FragColor = vec4(col, band * 0.55);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide,
+        });
+        const twilightMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 2, 64, 32),
+            twilightMaterial
+        );
+        scene.add(twilightMesh);
+
+        // ── Seasonal polar ice caps ───────────────────────────────────────────────
+        // One sphere covers both poles; icy region controlled by two uniforms that
+        // expand / shrink with yearAngle. Rotates with planet so poles stay aligned.
+        const iceMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                northCapAngle: { value: 0.22 },  // radians of latitude coverage at north
+                southCapAngle: { value: 0.22 },  // radians of latitude coverage at south
+            },
+            vertexShader: `
+                varying vec3 vPos;
+                void main() {
+                    vPos = normalize(position);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vPos;
+                uniform float northCapAngle;
+                uniform float southCapAngle;
+                void main() {
+                    float lat = asin(clamp(vPos.y, -1.0, 1.0));
+                    float northEdge = 1.5708 - northCapAngle;
+                    float southEdge = -(1.5708 - southCapAngle);
+                    float northIce = smoothstep(northEdge - 0.04, northEdge + 0.04, lat);
+                    float southIce = smoothstep(southEdge + 0.04, southEdge - 0.04, lat);
+                    float ice = max(northIce, southIce);
+                    if (ice < 0.01) discard;
+                    gl_FragColor = vec4(0.88, 0.95, 1.0, ice * 0.82);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide,
+        });
+        const iceMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 1, 64, 32),
+            iceMaterial
+        );
+        scene.add(iceMesh);
+
         // ── Groups ─────────────────────────────────────────────────────────────────
         const roadsGroup   = new THREE.Group();
         const markersGroup = new THREE.Group();
@@ -747,6 +883,18 @@
         const YEAR_MS       = YEAR_DAYS * DAY_MS;           // 384 real minutes = 1 full orbit
         const ECLIPTIC_TILT = 23.5 * Math.PI / 180;        // axial tilt in radians
         const SUN_DIST      = 500;                          // sun light position radius
+
+        // ── Moon orbital constants ────────────────────────────────────────────────
+        // Beat period = P_e * P_t / (P_e - P_t) = 96*48/(96-48) = 96 days → 4 Salvus/year ✓
+        const ENDELO_PERIOD = 96 * DAY_MS;          // Endelo'ar: 96 Oberra days per orbit
+        const TUDARA_PERIOD = 48 * DAY_MS;          // Tudara:    48 Oberra days per orbit
+        const ENDELO_INCL   = 8  * Math.PI / 180;  // Endelo'ar orbital inclination
+        const TUDARA_INCL   = 5  * Math.PI / 180;  // Tudara orbital inclination
+        const ENDELO_DIST   = 350;                  // scene units from Oberra centre
+        const TUDARA_DIST   = 260;
+
+        let endeloAngle = 0;           // Endelo'ar starts at reference angle
+        let tudaraAngle = Math.PI;     // Tudara starts opposite — visually separated on load
 
         let lastFrameTime = performance.now();
         let dayAngle      = INIT_ROT_Y;                     // start from map-facing rotation
@@ -1132,6 +1280,36 @@
             return 'Briscarn';
         }
 
+        // ── Moon phase detection ──────────────────────────────────────────────────
+        // dot(moonDir, sunDir): +1 = moon near sun (New), -1 = moon opposite sun (Full)
+        function getMoonPhase(moonPos) {
+            const sunDir  = sunLight.position.clone().normalize();
+            const moonDir = moonPos.clone().normalize();
+            const dot = moonDir.dot(sunDir);
+            if (dot < -0.7) return 'Full';
+            if (dot >  0.7) return 'New';
+            if (Math.abs(dot) < 0.3) return 'Half';
+            return 'Visible';
+        }
+
+        // Alignment lookup: key = "TudaraPhase+EndeloPhase"
+        const ALIGNMENT_TABLE = {
+            'Full+Full':       'Salvus',
+            'Full+New':        'Vigorius',
+            'New+New':         'Absentia',
+            'New+Full':        'Brutali',
+            'Half+Half':       'True Harmony',
+            'Visible+Full':    'Illuminot',
+            'Full+Visible':    'Lunaus',
+            'Visible+New':     'Parsuli',
+            'New+Visible':     'Parsuli',
+            'Visible+Visible': 'Harmony',
+        };
+
+        function getAlignment(tudaraPhase, endeloPhase) {
+            return ALIGNMENT_TABLE[`${tudaraPhase}+${endeloPhase}`] || '';
+        }
+
         function animate() {
             requestAnimationFrame(animate);
 
@@ -1150,6 +1328,35 @@
             // Year progresses regardless of pause / drag
             yearAngle += (2 * Math.PI / YEAR_MS) * delta;
 
+            // ── Moon orbits ───────────────────────────────────────────────────────────
+            endeloAngle += (2 * Math.PI / ENDELO_PERIOD) * delta;
+            tudaraAngle += (2 * Math.PI / TUDARA_PERIOD) * delta;
+
+            endeloMesh.position.set(
+                ENDELO_DIST * Math.cos(endeloAngle),
+                ENDELO_DIST * Math.sin(endeloAngle) * Math.sin(ENDELO_INCL),
+                ENDELO_DIST * Math.sin(endeloAngle) * Math.cos(ENDELO_INCL)
+            );
+            tudaraMesh.position.set(
+                TUDARA_DIST * Math.cos(tudaraAngle),
+                TUDARA_DIST * Math.sin(tudaraAngle) * Math.sin(TUDARA_INCL),
+                TUDARA_DIST * Math.sin(tudaraAngle) * Math.cos(TUDARA_INCL)
+            );
+
+            // ── Phase detection & alignment UI ────────────────────────────────────────
+            const endeloPhase = getMoonPhase(endeloMesh.position);
+            const tudaraPhase = getMoonPhase(tudaraMesh.position);
+            const alignName   = getAlignment(tudaraPhase, endeloPhase);
+            const moonEl      = document.getElementById('moon-display');
+            if (moonEl && alignName) {
+                const eMark = endeloPhase === 'New' ? '○' : '●';
+                const tMark = tudaraPhase === 'New' ? '○' : '●';
+                moonEl.innerHTML =
+                    `${alignName} ` +
+                    `<span style="color:#e84040">${eMark} Endelo'ar</span> ` +
+                    `<span style="color:#4499ff">${tMark} Tudara</span>`;
+            }
+
             // ── Sun position: ecliptic orbit tilted 23.5° from equatorial plane ─────
             sunLight.position.set(
                 SUN_DIST * Math.cos(yearAngle),
@@ -1161,9 +1368,25 @@
             const season = getSeason(yearAngle);
             sunLight.color.lerp(SEASON_COLORS[season], 0.005);
 
-            // ── Season UI ─────────────────────────────────────────────────────────────
+            // ── Atmosphere / twilight / ice — update sun direction & cap sizes ────────
+            const sunDirVec = sunLight.position.clone().normalize();
+            atmosphereMaterial.uniforms.sunDir.value.copy(sunDirVec);
+            twilightMaterial.uniforms.sunDir.value.copy(sunDirVec);
+
+            // Ice caps grow in the winter hemisphere, shrink in summer
+            const sinYear = Math.sin(yearAngle);
+            iceMaterial.uniforms.northCapAngle.value = 0.22 - 0.16 * sinYear;
+            iceMaterial.uniforms.southCapAngle.value = 0.22 + 0.16 * sinYear;
+            iceMesh.rotation.copy(planet.rotation); // follow planet pole axis
+
+            // ── Season + time UI ──────────────────────────────────────────────────────
+            const dayFrac    = ((dayAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const hour       = Math.floor((dayFrac / (2 * Math.PI)) * 24);
+            const yearFrac   = ((yearAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const dayOfSeason = (Math.floor((yearFrac / (2 * Math.PI)) * 384) % 96) + 1;
             const seasonEl = document.getElementById('season-display');
-            if (seasonEl) seasonEl.textContent = `☀ ${season}`;
+            if (seasonEl) seasonEl.textContent =
+                `☀ ${season}  ·  Day ${dayOfSeason}  ·  Hour ${String(hour).padStart(2, '0')}`;
 
             // Advance cloud shader time — storm vortices and global drift
             // are computed entirely on the GPU; cloud mesh just follows planet
