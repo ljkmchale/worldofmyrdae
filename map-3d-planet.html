@@ -478,7 +478,7 @@
             shader.fragmentShader = shader.fragmentShader.replace(
                 '#include <roughnessmap_fragment>',
                 `#include <roughnessmap_fragment>
-                roughnessFactor = mix(roughnessFactor, 0.04, _wm);`
+                roughnessFactor = mix(roughnessFactor, 0.55, _wm);`
             );
 
             // (4) Normal perturbation using pre-computed swell values + fine shimmer
