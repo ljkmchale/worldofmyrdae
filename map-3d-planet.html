@@ -249,6 +249,27 @@
         <button class="map-btn-3d" onclick="toggleRotation()" title="Pause / Resume Rotation" id="rot-toggle">
             <i class="fa-solid fa-pause"></i>
         </button>
+        <button class="map-btn-3d" onclick="toggleTimeControls()" title="Adjust Season &amp; Time" id="time-btn">
+            <i class="fa-solid fa-clock"></i>
+        </button>
+    </div>
+
+    <!-- Time / Season controls panel -->
+    <div id="time-controls" style="
+        display:none; position:absolute; top:12px; right:58px;
+        background:rgba(5,8,18,0.92); border:1px solid rgba(212,175,55,0.4);
+        border-radius:8px; padding:14px 16px; width:240px;
+        font-family:'Cinzel',serif; color:#faf3e0; z-index:99;
+        box-shadow:0 4px 24px rgba(0,0,0,0.7);">
+        <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; margin-bottom:12px; color:#d4af37;">TIME CONTROLS</div>
+        <div style="margin-bottom:14px;">
+            <div style="font-size:11px; margin-bottom:5px;">Day of Year &nbsp;<span id="tc-day-label" style="color:#d4af37;"></span></div>
+            <input type="range" id="tc-day" min="1" max="384" value="1" style="width:100%; accent-color:#d4af37; cursor:pointer;">
+        </div>
+        <div>
+            <div style="font-size:11px; margin-bottom:5px;">Hour &nbsp;<span id="tc-hour-label" style="color:#d4af37;"></span></div>
+            <input type="range" id="tc-hour" min="0" max="23" value="0" style="width:100%; accent-color:#d4af37; cursor:pointer;">
+        </div>
     </div>
 
     <!-- Info Panel (Hidden by default) -->
@@ -1321,6 +1342,54 @@
         function hideInfo() {
             document.getElementById('info-panel').style.display = 'none';
         }
+
+        function toggleTimeControls() {
+            const panel = document.getElementById('time-controls');
+            const opening = panel.style.display === 'none';
+            panel.style.display = opening ? 'block' : 'none';
+            document.getElementById('time-btn').style.opacity = opening ? '1' : '0.6';
+            if (opening) syncTimeSliders();
+        }
+
+        function syncTimeSliders() {
+            const yearFrac = ((yearAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const day = Math.max(1, Math.floor((yearFrac / (2 * Math.PI)) * 384) + 1);
+            const dayFrac2 = ((dayAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const hour = Math.floor((dayFrac2 / (2 * Math.PI)) * 24);
+            const daySlider = document.getElementById('tc-day');
+            const hourSlider = document.getElementById('tc-hour');
+            if (daySlider)  { daySlider.value  = day;  updateDayLabel(day); }
+            if (hourSlider) { hourSlider.value = hour; updateHourLabel(hour); }
+        }
+
+        function getDaySeasonLabel(day) {
+            if (day <= 96)  return `${day}  ·  Natali`;
+            if (day <= 192) return `${day}  ·  Sultra`;
+            if (day <= 288) return `${day}  ·  Garnest`;
+            return `${day}  ·  Briscarn`;
+        }
+
+        function updateDayLabel(day) {
+            const el = document.getElementById('tc-day-label');
+            if (el) el.textContent = getDaySeasonLabel(day);
+        }
+
+        function updateHourLabel(hour) {
+            const el = document.getElementById('tc-hour-label');
+            if (el) el.textContent = String(hour).padStart(2, '0') + ':00';
+        }
+
+        document.getElementById('tc-day').addEventListener('input', function () {
+            const day = parseInt(this.value);
+            updateDayLabel(day);
+            yearAngle = ((day - 1) / 384) * 2 * Math.PI;
+        });
+
+        document.getElementById('tc-hour').addEventListener('input', function () {
+            const hour = parseInt(this.value);
+            updateHourLabel(hour);
+            dayAngle = (hour / 24) * 2 * Math.PI;
+        });
 
         // ── Init ───────────────────────────────────────────────────────────────────
         async function init() {
