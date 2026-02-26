@@ -419,51 +419,65 @@
         });
 
         // ── Realistic water ───────────────────────────────────────────────────────
-        // Inject into the standard shader without rewriting it.
-        // Three patches: (1) detect water from texture colour, (2) make water
-        // shiny (low roughness → sharp specular sun glint), (3) animated wave
-        // normal perturbation so the glint shimmers like a moving ocean.
+        // Four patches injected into MeshStandardMaterial's shader:
+        // (1) detect ocean pixels, pre-compute wave values for reuse
+        // (2) diffuse brightness variation — wave crests lighter, troughs darker
+        //     → visible at ANY angle/zoom, not just the specular hot-spot
+        // (3) roughness → 0.04 on water for sharp specular sun glint
+        // (4) normal perturbation for specular shimmer
         planetMaterial.onBeforeCompile = function (shader) {
             planetMaterial.userData.shader = shader;
             shader.uniforms.waveTime = { value: 0.0 };
-
-            // Declare uniform at the top of the fragment shader
             shader.fragmentShader = 'uniform float waveTime;\n' + shader.fragmentShader;
 
-            // (1) Compute water mask immediately after the map texture is sampled.
-            //     Ocean pixels: B ≈ 0.49, R ≈ 0.25  →  B-R ≈ 0.24  →  mask = 1
-            //     Land/snow:    B ≈ R                →  B-R ≈ 0      →  mask = 0
+            // (1) Water mask + wave pre-computation (variables declared at main() scope
+            //     so they are accessible in every later chunk).
+            //     Also colour-correct ocean toward blue: reduce G, nudge B up.
             shader.fragmentShader = shader.fragmentShader.replace(
                 '#include <map_fragment>',
                 `#include <map_fragment>
-                float _wm = smoothstep(0.05, 0.20, diffuseColor.b - diffuseColor.r);`
+                // Ocean pixels: B≈0.49 R≈0.25 → B-R≈0.24; land/snow ≈ 0
+                float _wm = smoothstep(0.05, 0.20, diffuseColor.b - diffuseColor.r);
+                float _t  = waveTime * 0.00018;
+                // Large-scale swells (6-11 UV cycles across planet)
+                float _wvX = sin(vUv.x *  6.0 + _t * 0.70) * 0.55
+                           + sin(vUv.x * 11.0 - vUv.y *  7.0 + _t * 1.10) * 0.35;
+                float _wvY = cos(vUv.y *  7.0 + _t * 0.50) * 0.55
+                           + cos(vUv.y * 10.0 + vUv.x *  6.0 + _t * 0.90) * 0.35;
+                float _waveH = (_wvX + _wvY) * 0.25; // normalised ~[-0.55, 0.55]
+                // (2) Diffuse wave shading — crests brighter, troughs darker.
+                //     clamp keeps it realistic; visible regardless of camera angle.
+                if (_wm > 0.01) {
+                    // Remap to deep royal blue — preserve luminance so depth
+                    // variation (dark deep / lighter shallow) stays readable
+                    float _lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+                    // deep ocean blue target, scaled by original luminance
+                    vec3 _blue = vec3(0.06, 0.22, 0.78) * (_lum / 0.38);
+                    diffuseColor.rgb = mix(diffuseColor.rgb, _blue, _wm * 0.88);
+                    // Wave brightness on top
+                    diffuseColor.rgb *= clamp(1.0 + _waveH * 0.28, 0.74, 1.26);
+                }`
             );
 
-            // (2) Lower roughness on water so it picks up a sharp specular highlight.
+            // (3) Low roughness → sharp specular glint on water
             shader.fragmentShader = shader.fragmentShader.replace(
                 '#include <roughnessmap_fragment>',
                 `#include <roughnessmap_fragment>
                 roughnessFactor = mix(roughnessFactor, 0.04, _wm);`
             );
 
-            // (3) Animated wave normals — crossed sine pairs at two scales so the
-            //     specular glint shimmers and slowly drifts like real ocean surface.
+            // (4) Normal perturbation using pre-computed swell values + fine shimmer
             shader.fragmentShader = shader.fragmentShader.replace(
                 '#include <normal_fragment_maps>',
                 `#include <normal_fragment_maps>
                 if (_wm > 0.01) {
-                    float _t  = waveTime * 0.00018;
-                    // Large-scale swells — visible when zoomed in close
-                    float _wx = sin(vUv.x *  6.0 + _t * 0.7) * 0.055
-                              + sin(vUv.x * 11.0 - vUv.y *  7.0 + _t * 1.1) * 0.035;
-                    float _wy = cos(vUv.y *  7.0 + _t * 0.5) * 0.055
-                              + cos(vUv.y * 10.0 + vUv.x *  6.0 + _t * 0.9) * 0.035;
-                    // Fine-scale shimmer — adds sparkle when zoomed out
-                    _wx += (sin(vUv.x * 42.0 + _t * 2.3) +
-                            sin(vUv.x * 26.0 - vUv.y * 14.0 + _t)) * 0.018;
-                    _wy += (cos(vUv.y * 39.0 + _t * 1.8) +
-                            cos(vUv.y * 23.0 + vUv.x * 17.0 + _t * 1.4)) * 0.018;
-                    normal = normalize(normal + vec3(_wx, _wy, 0.0) * _wm);
+                    float _nx = _wvX * 0.10
+                              + (sin(vUv.x * 42.0 + _t * 2.3) +
+                                 sin(vUv.x * 26.0 - vUv.y * 14.0 + _t)) * 0.018;
+                    float _ny = _wvY * 0.10
+                              + (cos(vUv.y * 39.0 + _t * 1.8) +
+                                 cos(vUv.y * 23.0 + vUv.x * 17.0 + _t * 1.4)) * 0.018;
+                    normal = normalize(normal + vec3(_nx, _ny, 0.0) * _wm);
                 }`
             );
         };
@@ -768,11 +782,11 @@
                     cloud += storm(p, c5, 0.28, time*0.00030, -1.0) * 2.5;
                     cloud = clamp(cloud, 0.0, 1.0);
 
-                    // Dense cores grey-blue, thin wisps bright white
+                    // Dense cores very slightly grey-blue, thin wisps pure white
                     float density = smoothstep(0.5, 1.0, cloud);
-                    vec3 col = mix(vec3(1.0, 1.0, 1.0), vec3(0.78, 0.82, 0.92), density * 0.45);
+                    vec3 col = mix(vec3(1.0, 1.0, 1.0), vec3(0.88, 0.91, 0.96), density * 0.20);
 
-                    gl_FragColor = vec4(col, cloud * 0.92);
+                    gl_FragColor = vec4(col, cloud);
                 }
             `
         });
@@ -822,8 +836,8 @@
                     float fresnel = 1.0 - abs(dot(n, v));
                     fresnel = pow(fresnel, 2.5);
                     float dayFac = smoothstep(-0.2, 0.5, dot(n, normalize(sunDir)));
-                    vec3 col = mix(vec3(0.03, 0.08, 0.50), vec3(0.10, 0.30, 1.0), dayFac);
-                    float alpha = fresnel * (0.3 + 0.7 * dayFac) * 0.85;
+                    vec3 col = mix(vec3(0.05, 0.12, 0.60), vec3(0.20, 0.55, 1.0), dayFac);
+                    float alpha = fresnel * (0.5 + 0.5 * dayFac) * 1.1;
                     gl_FragColor = vec4(col, alpha);
                 }
             `,
@@ -833,10 +847,52 @@
             blending: THREE.AdditiveBlending,
         });
         const atmosphereMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(planetRadius * 1.07, 64, 32),
+            new THREE.SphereGeometry(planetRadius * 1.12, 64, 32),
             atmosphereMaterial
         );
         scene.add(atmosphereMesh);
+
+        // ── Inner atmosphere limb haze ────────────────────────────────────────────
+        // FrontSide sphere sitting just above the surface: adds a blue tint to
+        // the planet's edges as seen from the camera (same effect as looking through
+        // more atmosphere near the horizon — prominent in the Earth-from-space look).
+        const innerAtmMaterial = new THREE.ShaderMaterial({
+            uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
+            vertexShader: `
+                varying vec3 vWorldNormal;
+                varying vec3 vCamDir;
+                void main() {
+                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+                    vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                    vCamDir = cameraPosition - worldPos.xyz;
+                    gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vWorldNormal;
+                varying vec3 vCamDir;
+                uniform vec3 sunDir;
+                void main() {
+                    vec3 n = normalize(vWorldNormal);
+                    vec3 v = normalize(vCamDir);
+                    // Fresnel: strong at grazing angles (limb), zero facing camera
+                    float fresnel = 1.0 - max(0.0, dot(n, v));
+                    fresnel = pow(fresnel, 3.5);
+                    float dayFac = smoothstep(-0.1, 0.6, dot(n, normalize(sunDir)));
+                    vec3 col = mix(vec3(0.05, 0.12, 0.55), vec3(0.18, 0.50, 1.0), dayFac);
+                    gl_FragColor = vec4(col, fresnel * dayFac * 0.60);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide,
+            blending: THREE.AdditiveBlending,
+        });
+        const innerAtmMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius * 1.02, 64, 32),
+            innerAtmMaterial
+        );
+        scene.add(innerAtmMesh);
 
         // ── Twilight colour band ──────────────────────────────────────────────────
         // Thin orange-red stripe hugging the terminator line (NdotL ≈ 0).
@@ -1422,6 +1478,7 @@
             const sunDirVec = sunLight.position.clone().normalize();
             atmosphereMaterial.uniforms.sunDir.value.copy(sunDirVec);
             twilightMaterial.uniforms.sunDir.value.copy(sunDirVec);
+            innerAtmMaterial.uniforms.sunDir.value.copy(sunDirVec);
 
             // Ice caps grow in the winter hemisphere, shrink in summer
             const sinYear = Math.sin(yearAngle);
