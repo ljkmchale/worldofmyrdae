@@ -29,7 +29,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #000814;
+            background: #000510;
             font-family: 'Inter', sans-serif;
         }
 
@@ -42,6 +42,47 @@
             display: block;
             width: 100%;
             height: 100%;
+        }
+
+        /* Loading screen */
+        #loading-screen {
+            position: absolute;
+            inset: 0;
+            background: #000510;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: opacity 0.8s ease;
+        }
+
+        #loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading-screen h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin: 0 0 1.5rem 0;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+        }
+
+        #loading-screen p {
+            color: rgba(212, 175, 55, 0.5);
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            animation: loadingPulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.4; }
+            50%       { opacity: 1; }
         }
 
         .map-controls-3d {
@@ -57,7 +98,7 @@
         .map-btn-3d {
             width: 38px;
             height: 38px;
-            background: rgba(10, 10, 15, 0.85);
+            background: rgba(5, 8, 18, 0.88);
             border: 1px solid var(--color-gold);
             color: var(--color-gold);
             border-radius: 6px;
@@ -78,15 +119,15 @@
             position: absolute;
             top: 0.75rem;
             left: 0.75rem;
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(5, 8, 18, 0.96);
             border: 1px solid var(--color-gold);
             border-radius: 8px;
             padding: 1.25rem;
             z-index: 110;
             width: 280px;
             pointer-events: auto;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.05);
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -100,31 +141,21 @@
             padding-bottom: 0.5rem;
         }
 
-        .location-name {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 0.5rem;
+        .info-panel p {
+            margin: 0.35rem 0;
+            font-size: 0.875rem;
+            color: #ccc;
+            line-height: 1.45;
+        }
+
+        .info-panel p strong {
+            color: var(--color-gold);
         }
 
         .location-type {
             font-size: 0.85rem;
             color: var(--color-gold);
-            margin-bottom: 0.5rem;
             text-transform: capitalize;
-        }
-
-        .location-coords {
-            font-size: 0.8rem;
-            color: #999;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 1rem;
-        }
-
-        .location-description {
-            font-size: 0.9rem;
-            color: #ddd;
-            line-height: 1.4;
         }
 
         .info-close {
@@ -136,6 +167,7 @@
             color: var(--color-gold);
             cursor: pointer;
             font-size: 1.5rem;
+            line-height: 1;
         }
 
         .info-close:hover {
@@ -146,38 +178,65 @@
             position: absolute;
             bottom: 0.75rem;
             left: 0.75rem;
-            background: rgba(10, 10, 15, 0.85);
-            border: 1px solid var(--color-gold);
+            background: rgba(5, 8, 18, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 6px;
-            padding: 0.75rem 1rem;
-            font-size: 0.8rem;
-            color: #ddd;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.75rem;
+            color: #aaa;
         }
 
         .controls-info div {
-            margin: 0.25rem 0;
+            margin: 0.2rem 0;
         }
 
         .controls-info strong {
             color: var(--color-gold);
         }
 
-        .planet-name {
+        /* Hover tooltip */
+        #hover-tooltip {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Cinzel', serif;
-            font-size: 3rem;
-            color: rgba(255, 215, 0, 0.3);
+            background: rgba(5, 8, 18, 0.93);
+            border: 1px solid rgba(212, 175, 55, 0.55);
+            border-radius: 4px;
+            padding: 0.3rem 0.65rem;
             pointer-events: none;
-            z-index: 5;
+            z-index: 200;
+            display: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+        }
+
+        #hover-tooltip .tt-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        #hover-tooltip .tt-type {
+            font-size: 0.68rem;
+            color: var(--color-gold);
+            text-transform: capitalize;
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
 
 <body>
+    <!-- Loading screen -->
+    <div id="loading-screen">
+        <h1>Myrdae</h1>
+        <p>Charting the Realm&hellip;</p>
+    </div>
+
     <canvas id="canvas-3d"></canvas>
+
+    <!-- Hover tooltip -->
+    <div id="hover-tooltip">
+        <div class="tt-name" id="tt-name"></div>
+        <div class="tt-type" id="tt-type"></div>
+    </div>
 
     <!-- Controls -->
     <div class="map-controls-3d">
@@ -197,8 +256,9 @@
 
     <!-- Controls Info -->
     <div class="controls-info">
-        <div><strong>Mouse:</strong> Drag to rotate, Scroll to zoom</div>
-        <div><strong>Click:</strong> Select location</div>
+        <div><strong>Drag:</strong> Rotate globe</div>
+        <div><strong>Scroll:</strong> Zoom in / out</div>
+        <div><strong>Click:</strong> View location details</div>
     </div>
 
     <!-- Three.js Library -->
@@ -207,216 +267,298 @@
     <script src="js/campaign-data.js"></script>
 
     <script>
-        console.log("Starting Myrdae 3D Planet...");
-
+        // ── Scene setup ────────────────────────────────────────────────────────────
         const canvas = document.getElementById('canvas-3d');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000814);
-        scene.fog = new THREE.Fog(0x000814, 2000, 5000);
-        
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-        camera.position.z = 400;
-        
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
-        
-        console.log("Renderer initialized");
+        const scene  = new THREE.Scene();
+        scene.background = new THREE.Color(0x000510);
+        scene.fog        = new THREE.Fog(0x000510, 2000, 5000);
 
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        // Tighter FOV gives a more "globe" look vs the wide-angle distortion of 75°
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 420;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+
+        // ── Lighting ───────────────────────────────────────────────────────────────
+        // Blue-tinted ambient keeps the dark side from going pure black
+        const ambientLight = new THREE.AmbientLight(0x2a3a5a, 1.0);
         scene.add(ambientLight);
-        
-        const sunLight = new THREE.DirectionalLight(0xffffff, 0.9);
-        sunLight.position.set(200, 150, 200);
+
+        // Warm directional "sun"
+        const sunLight = new THREE.DirectionalLight(0xfff5d0, 1.4);
+        sunLight.position.set(300, 200, 300);
         sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.width  = 2048;
         sunLight.shadow.mapSize.height = 2048;
         scene.add(sunLight);
 
-        // Starfield
-        const starGeometry = new THREE.BufferGeometry();
-        const starPositions = new Float32Array(1000 * 3);
-        for (let i = 0; i < 1000 * 3; i += 3) {
-            starPositions[i] = (Math.random() - 0.5) * 5000;
-            starPositions[i + 1] = (Math.random() - 0.5) * 5000;
-            starPositions[i + 2] = (Math.random() - 0.5) * 5000;
-        }
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 20 });
-        const stars = new THREE.Points(starGeometry, starMaterial);
-        scene.add(stars);
+        // Faint cool fill from the opposite side — separates the dark limb from pure black
+        const fillLight = new THREE.DirectionalLight(0x1a2a6a, 0.22);
+        fillLight.position.set(-300, -100, -300);
+        scene.add(fillLight);
 
-        // Create Planet with Terrain
+        // ── Starfield ──────────────────────────────────────────────────────────────
+        // Stars are placed on a sphere shell (min 2500 units from origin) so they are
+        // always further away than the planet and can never overlap it.
+        // A circular canvas texture stops PointsMaterial rendering squares.
+        (function buildStarfield() {
+            // Circular soft-dot texture — makes points round instead of square
+            const starCanvas = document.createElement('canvas');
+            starCanvas.width = starCanvas.height = 32;
+            const sCtx = starCanvas.getContext('2d');
+            const grad = sCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            grad.addColorStop(0,   'rgba(255,255,255,1)');
+            grad.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+            grad.addColorStop(1,   'rgba(255,255,255,0)');
+            sCtx.fillStyle = grad;
+            sCtx.fillRect(0, 0, 32, 32);
+            const starTex = new THREE.CanvasTexture(starCanvas);
+
+            const COUNT     = 8000;
+            const positions = new Float32Array(COUNT * 3);
+            const colors    = new Float32Array(COUNT * 3);
+
+            for (let i = 0; i < COUNT; i++) {
+                // Uniform distribution on a sphere shell between 2500–4500 units
+                const theta = Math.random() * Math.PI * 2;
+                const phi   = Math.acos(2 * Math.random() - 1);
+                const r     = 2500 + Math.random() * 2000;
+                positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = r * Math.cos(phi);
+
+                const rng = Math.random();
+                if (rng < 0.07) {
+                    colors[i * 3] = 1.0; colors[i * 3 + 1] = 0.88; colors[i * 3 + 2] = 0.6;
+                } else if (rng < 0.14) {
+                    colors[i * 3] = 0.7; colors[i * 3 + 1] = 0.85; colors[i * 3 + 2] = 1.0;
+                } else {
+                    const v = 0.6 + Math.random() * 0.4;
+                    colors[i * 3] = v; colors[i * 3 + 1] = v; colors[i * 3 + 2] = v;
+                }
+            }
+
+            const geom = new THREE.BufferGeometry();
+            geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geom.setAttribute('color',    new THREE.BufferAttribute(colors,    3));
+            const starPoints = new THREE.Points(geom, new THREE.PointsMaterial({
+                size: 2.5,
+                sizeAttenuation: false,
+                vertexColors: true,
+                map: starTex,
+                transparent: true,
+                alphaTest: 0.01,
+                depthWrite: false,  // stars never write depth — planet always renders on top
+            }));
+            starPoints.renderOrder = -1;
+            scene.add(starPoints);
+
+            // A handful of brighter feature stars
+            const bCount     = 60;
+            const bPositions = new Float32Array(bCount * 3);
+            for (let i = 0; i < bCount; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi   = Math.acos(2 * Math.random() - 1);
+                const r     = 2600 + Math.random() * 1800;
+                bPositions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+                bPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                bPositions[i * 3 + 2] = r * Math.cos(phi);
+            }
+            const bGeom = new THREE.BufferGeometry();
+            bGeom.setAttribute('position', new THREE.BufferAttribute(bPositions, 3));
+            const brightPoints = new THREE.Points(bGeom, new THREE.PointsMaterial({
+                size: 4,
+                sizeAttenuation: false,
+                color: 0xffffff,
+                map: starTex,
+                transparent: true,
+                alphaTest: 0.01,
+                depthWrite: false,
+            }));
+            brightPoints.renderOrder = -1;
+            scene.add(brightPoints);
+        })();
+
+        // ── Planet ─────────────────────────────────────────────────────────────────
         const planetRadius = 180;
-        const segments = 64;
+        const segments     = 64;
         const planetGeometry = new THREE.SphereGeometry(planetRadius, segments, segments);
-        
-        // Add terrain displacement
+
+        // Subtle terrain displacement
         const posArray = planetGeometry.getAttribute('position').array;
-        const originalPos = new Float32Array(posArray);
-        
         for (let i = 0; i < posArray.length; i += 3) {
-            const x = posArray[i];
-            const y = posArray[i + 1];
-            const z = posArray[i + 2];
-            
+            const x = posArray[i], y = posArray[i + 1], z = posArray[i + 2];
             const len = Math.sqrt(x * x + y * y + z * z);
-            const nx = x / len;
-            const ny = y / len;
-            const nz = z / len;
-            
-            // Subtle terrain variation - much smaller displacement
-            const noise = Math.sin(x * 0.02) * Math.cos(y * 0.02) * 3 +
-                         Math.sin(x * 0.04) * 1.5;
-            
-            const newRadius = planetRadius + noise;
-            
-            posArray[i] = nx * newRadius;
-            posArray[i + 1] = ny * newRadius;
-            posArray[i + 2] = nz * newRadius;
+            const nx = x / len, ny = y / len, nz = z / len;
+            const noise = Math.sin(x * 0.02) * Math.cos(y * 0.02) * 3 + Math.sin(x * 0.04) * 1.5;
+            const r = planetRadius + noise;
+            posArray[i] = nx * r; posArray[i + 1] = ny * r; posArray[i + 2] = nz * r;
         }
-        
         planetGeometry.getAttribute('position').needsUpdate = true;
         planetGeometry.computeVertexNormals();
 
-        // Load planet texture
         const loader = new THREE.TextureLoader();
-        let planetMaterial = new THREE.MeshStandardMaterial({ 
+        const planetMaterial = new THREE.MeshStandardMaterial({
             color: 0x5a8c5a,
-            roughness: 0.7,
-            metalness: 0,
-            side: THREE.FrontSide
+            roughness: 0.75,
+            metalness: 0.0,
         });
-        
+
         loader.load('images/Myrdae.jpg', (texture) => {
-            console.log("Texture loaded");
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
             planetMaterial.map = texture;
             planetMaterial.needsUpdate = true;
-        }, undefined, (err) => {
-            console.log("Texture load failed, using color");
+        }, undefined, () => {
+            console.log("Texture load failed — using base color");
         });
-        
-        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-        planet.castShadow = true;
-        planet.receiveShadow = true;
-        planet.rotation.x = 0;
-        planet.rotation.z = 0;
-        scene.add(planet);
-        
-        console.log("Planet created with terrain variation");
 
-        // Atmosphere
-        const atmosphereGeometry = new THREE.SphereGeometry(planetRadius + 8, segments, segments);
-        const atmosphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x87ceeb,
-            transparent: true,
-            opacity: 0.15,
-            side: THREE.BackSide
-        });
-        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+        planet.castShadow    = true;
+        planet.receiveShadow = true;
+        scene.add(planet);
+
+        // ── Atmosphere ─────────────────────────────────────────────────────────────
+        // Two BackSide layers: inner haze + wide outer rim glow.
+        // BackSide trick: the shell is only visible at the planet's limb, creating a
+        // natural-looking atmospheric halo without needing a custom shader.
+        const atmosphere = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 7, segments, segments),
+            new THREE.MeshBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.13, side: THREE.BackSide })
+        );
         scene.add(atmosphere);
 
-        // Groups for roads and markers (keep as scene children for correct coordinate system)
-        const roadsGroup = new THREE.Group();
+        const outerGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 28, segments, segments),
+            new THREE.MeshBasicMaterial({ color: 0x1a3a9a, transparent: true, opacity: 0.07, side: THREE.BackSide })
+        );
+        scene.add(outerGlow);
+
+        // ── Groups ─────────────────────────────────────────────────────────────────
+        const roadsGroup   = new THREE.Group();
         const markersGroup = new THREE.Group();
         scene.add(roadsGroup);
         scene.add(markersGroup);
-        
-        console.log("Groups created and added to scene");
-        
+
+        // Initial rotation — THREE.js SphereGeometry UV maps u=0 → (-x face), so
+        // coordsToSphere uses -x to match. Continent center is at map x≈64.3 (lon≈4.04 rad),
+        // which sits at 3D pos (0.69, 0, -0.72). rotation.y=3.91 brings it front-facing.
+        const INIT_ROT_X = 0.15;
+        const INIT_ROT_Y = 3.91;
+        planet.rotation.set(INIT_ROT_X, INIT_ROT_Y, 0);
+        syncGroups();
+
         let markersVisible = true;
 
+        // ── Location config ────────────────────────────────────────────────────────
         const typeColors = {
-            capital: 0xffffff, city: 0xd4af37, 'small-city': 0xcccccc, town: 0x8b7355,
-            village: 0xa0522d, port: 0x87ceeb, ruins: 0x999999, landmark: 0xff8c00,
-            nature: 0x228b22, poi: 0xff69b4, region: 0x90ee90, water: 0x4169e1, river: 0x1e90ff
+            capital: 0xffffff, city: 0xd4af37, 'small-city': 0xe0e0e0, town: 0xb09070,
+            village: 0xa0784d, port: 0x87ceeb, ruins: 0x999999, landmark: 0xff8c00,
+            nature: 0x40b840, poi: 0xff69b4, region: 0x90ee90, water: 0x4169e1, river: 0x1e90ff,
         };
 
-        // Convert map coords to sphere surface (coords are 0-100, but only use the available range)
-        function coordsToSphere(x, y) {
-            // Scale coordinates to 0-1 range for spherical mapping
+        // Marker radius by settlement importance — capitals are visibly larger than villages
+        const typeSizes = {
+            capital: 6.5, city: 5.5, 'small-city': 4.5, town: 3.5,
+            village: 2.5, port: 4.0, ruins: 3.0, landmark: 3.5,
+            nature: 2.5, poi: 3.0, region: 0, water: 0, river: 0,
+        };
+
+        // ── Coordinate mapping ─────────────────────────────────────────────────────
+        // THREE.js SphereGeometry formula: x = -cos(phi)*sin(theta), z = sin(phi)*sin(theta)
+        // So u=0 → (-1,0,0). Our lon=0 (map x=0) must also map to (-1,0,0) — hence the -x.
+        function coordsToSphere(x, y, offset = 2) {
             const lon = (x / 100) * Math.PI * 2;
             const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
-            const r = planetRadius + 0.5; // Right on surface
-            return {
-                x: r * Math.cos(lat) * Math.cos(lon),
-                y: r * Math.sin(lat),
-                z: r * Math.cos(lat) * Math.sin(lon)
-            };
+            const r   = planetRadius + offset;
+            return new THREE.Vector3(
+                -r * Math.cos(lat) * Math.cos(lon),   // negative x to match THREE.js UV convention
+                 r * Math.sin(lat),
+                 r * Math.cos(lat) * Math.sin(lon)
+            );
         }
 
-        // Create location markers
+        // ── Markers ────────────────────────────────────────────────────────────────
         function createMarker(location) {
-            // Skip regions and other non-marker types
-            if (!location.x || !location.y || location.type === 'region') {
-                return;
-            }
-            
-            const pos = coordsToSphere(location.x, location.y);
-            const color = typeColors[location.type] || 0x888888;
-            
-            // Small glowing sphere - like dots on 2D map
-            const markerGeom = new THREE.SphereGeometry(2, 8, 8);
-            const markerMat = new THREE.MeshStandardMaterial({ 
-                color: color, 
-                emissive: color,
-                emissiveIntensity: 1.0,
-                metalness: 0,
-                roughness: 0.3,
-                toneMapped: false
-            });
-            const marker = new THREE.Mesh(markerGeom, markerMat);
-            marker.position.set(pos.x, pos.y, pos.z);
+            if (!location.x || !location.y || location.type === 'region') return;
+            const size = typeSizes[location.type] ?? 2.5;
+            if (size === 0) return;
+
+            const color  = typeColors[location.type] || 0x888888;
+            const pos    = coordsToSphere(location.x, location.y);
+
+            const marker = new THREE.Mesh(
+                new THREE.SphereGeometry(size, 8, 8),
+                new THREE.MeshStandardMaterial({
+                    color,
+                    emissive: color,
+                    emissiveIntensity: 0.85,
+                    metalness: 0.1,
+                    roughness: 0.2,
+                    toneMapped: false,
+                })
+            );
+            marker.position.copy(pos);
             marker.userData = location;
             markersGroup.add(marker);
         }
 
-        // Create roads
+        // ── Roads ──────────────────────────────────────────────────────────────────
+        // Fix: straight LineCurve3 cut through the globe. Great-circle arcs via
+        // lerp + normalize keep every point on the sphere surface.
         function createRoad(start, end, isMajor) {
-            const startPos = coordsToSphere(start.x, start.y);
-            const endPos = coordsToSphere(end.x, end.y);
-            
-            const curve = new THREE.LineCurve3(
-                new THREE.Vector3(startPos.x, startPos.y, startPos.z),
-                new THREE.Vector3(endPos.x, endPos.y, endPos.z)
-            );
-            
-            const points = curve.getPoints(30);
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const material = new THREE.LineBasicMaterial({
+            const sv = coordsToSphere(start.x, start.y, 0).normalize();
+            const ev = coordsToSphere(end.x,   end.y,   0).normalize();
+
+            const STEPS  = 24;
+            const points = [];
+            for (let i = 0; i <= STEPS; i++) {
+                const p = new THREE.Vector3()
+                    .lerpVectors(sv, ev, i / STEPS)
+                    .normalize()
+                    .multiplyScalar(planetRadius + 2);
+                points.push(p);
+            }
+
+            const geom = new THREE.BufferGeometry().setFromPoints(points);
+            const mat  = new THREE.LineBasicMaterial({
                 color: isMajor ? 0xd4af37 : 0x8b7355,
-                linewidth: isMajor ? 1 : 0.5,
+                linewidth: 1,
                 fog: false,
-                toneMapped: false
+                toneMapped: false,
             });
-            
-            const line = new THREE.Line(geometry, material);
-            roadsGroup.add(line);
+            roadsGroup.add(new THREE.Line(geom, mat));
         }
 
-        // Mouse controls
+        // ── Mouse controls ─────────────────────────────────────────────────────────
         let isDragging = false;
+        let hasDragged = false;   // Fix: mouseup clears isDragging before click fires
         let prevX = 0, prevY = 0;
 
         document.addEventListener('mousedown', (e) => {
             isDragging = true;
+            hasDragged = false;
             prevX = e.clientX;
             prevY = e.clientY;
         });
 
         document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - prevX;
-            const dy = e.clientY - prevY;
-            planet.rotation.y += dx * 0.008;
-            planet.rotation.x += dy * 0.008;
-            atmosphere.rotation.copy(planet.rotation);
-            markersGroup.rotation.copy(planet.rotation);
-            roadsGroup.rotation.copy(planet.rotation);
-            prevX = e.clientX;
-            prevY = e.clientY;
+            if (isDragging) {
+                const dx = e.clientX - prevX;
+                const dy = e.clientY - prevY;
+                if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasDragged = true;
+                planet.rotation.y += dx * 0.007;
+                planet.rotation.x += dy * 0.007;
+                syncGroups();
+                prevX = e.clientX;
+                prevY = e.clientY;
+                hideTooltip();
+                return;
+            }
+            updateTooltip(e);
         });
 
         document.addEventListener('mouseup', () => { isDragging = false; });
@@ -424,51 +566,78 @@
         document.addEventListener('wheel', (e) => {
             e.preventDefault();
             camera.position.z += e.deltaY * 0.2;
-            camera.position.z = Math.max(200, Math.min(800, camera.position.z));
-        });
+            camera.position.z = Math.max(210, Math.min(900, camera.position.z));
+        }, { passive: false });
 
-        // Click detection for markers
+        // ── Raycasting & tooltip ───────────────────────────────────────────────────
         const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        const mouse     = new THREE.Vector2();
+        const tooltip   = document.getElementById('hover-tooltip');
 
-        document.addEventListener('click', (e) => {
-            if (isDragging) return;
-            
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            
+        function updateTooltip(e) {
+            mouse.x = (e.clientX / window.innerWidth)  *  2 - 1;
+            mouse.y = (e.clientY / window.innerHeight) * -2 + 1;
             raycaster.setFromCamera(mouse, camera);
             const hits = raycaster.intersectObjects(markersGroup.children);
-            
+
             if (hits.length > 0) {
-                const location = hits[0].object.userData;
-                const panel = document.getElementById('info-panel');
+                const loc = hits[0].object.userData;
+                document.getElementById('tt-name').textContent = loc.name;
+                document.getElementById('tt-type').textContent = loc.type;
+                tooltip.style.left    = (e.clientX + 14) + 'px';
+                tooltip.style.top     = (e.clientY - 10) + 'px';
+                tooltip.style.display = 'block';
+                document.body.style.cursor = 'pointer';
+            } else {
+                hideTooltip();
+            }
+        }
+
+        function hideTooltip() {
+            tooltip.style.display      = 'none';
+            document.body.style.cursor = '';
+        }
+
+        document.addEventListener('click', (e) => {
+            if (hasDragged) return;   // Don't treat a drag-release as a click
+
+            mouse.x = (e.clientX / window.innerWidth)  *  2 - 1;
+            mouse.y = (e.clientY / window.innerHeight) * -2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(markersGroup.children);
+
+            if (hits.length > 0) {
+                const loc     = hits[0].object.userData;
                 const content = document.getElementById('info-content');
-                
                 content.innerHTML = `
-                    <h4><i class="fa-solid fa-location-dot"></i> ${location.name}</h4>
-                    <p><strong>Type:</strong> <span class="location-type">${location.type}</span></p>
-                    <p><strong>Coordinates:</strong> X: ${location.x.toFixed(1)}, Y: ${location.y.toFixed(1)}</p>
-                    ${location.region ? `<p><strong>Region:</strong> ${location.region}</p>` : ''}
-                    ${location.description ? `<p>${location.description}</p>` : ''}
+                    <h4><i class="fa-solid fa-location-dot"></i> ${loc.name}</h4>
+                    <p><strong>Type:</strong> <span class="location-type">${loc.type}</span></p>
+                    <p><strong>Coordinates:</strong> X: ${loc.x.toFixed(1)}, Y: ${loc.y.toFixed(1)}</p>
+                    ${loc.region      ? `<p><strong>Region:</strong> ${loc.region}</p>` : ''}
+                    ${loc.description ? `<p>${loc.description}</p>` : ''}
                 `;
-                
-                panel.style.display = 'block';
+                document.getElementById('info-panel').style.display = 'block';
             }
         });
 
-        function resetCamera() {
-            camera.position.z = 400;
-            planet.rotation.set(0.2, 0, 0.5);
+        // ── Helpers ────────────────────────────────────────────────────────────────
+        function syncGroups() {
             atmosphere.rotation.copy(planet.rotation);
+            outerGlow.rotation.copy(planet.rotation);
             markersGroup.rotation.copy(planet.rotation);
             roadsGroup.rotation.copy(planet.rotation);
+        }
+
+        function resetCamera() {
+            camera.position.z = 420;
+            planet.rotation.set(INIT_ROT_X, INIT_ROT_Y, 0);
+            syncGroups();
         }
 
         function toggleLocations() {
             markersVisible = !markersVisible;
             markersGroup.visible = markersVisible;
-            roadsGroup.visible = markersVisible;
+            roadsGroup.visible   = markersVisible;
             document.getElementById('loc-toggle').style.opacity = markersVisible ? '1' : '0.5';
         }
 
@@ -476,87 +645,61 @@
             document.getElementById('info-panel').style.display = 'none';
         }
 
-        // Initialize with data
+        // ── Init ───────────────────────────────────────────────────────────────────
         async function init() {
-            console.log("Loading campaign data...");
             await CampaignData.init();
-            
+
             const locations = CampaignData.getLocations();
-            console.log("Loaded", locations.length, "total locations");
-            
-            // Analyze location distribution
-            const validLocations = locations.filter(l => l.x !== undefined && l.y !== undefined && l.type !== 'region');
-            console.log("Valid markers (excluding regions):", validLocations.length);
-            
-            if (validLocations.length > 0) {
-                const xValues = validLocations.map(l => l.x);
-                const yValues = validLocations.map(l => l.y);
-                console.log("X range:", Math.min(...xValues), "to", Math.max(...xValues));
-                console.log("Y range:", Math.min(...yValues), "to", Math.max(...yValues));
-            }
-            
-            if (locations.length > 0) {
-                locations.forEach((loc) => {
-                    createMarker(loc);
-                });
-            }
-            
-            // Draw roads if available
+            locations.forEach(createMarker);
+            console.log('Markers:', markersGroup.children.length);
+
             const roads = CampaignData.getRoads();
             if (roads && roads.length > 0) {
-                console.log("Creating", roads.length, "roads");
-                roads.forEach((route, idx) => {
-                    if (route.points && route.points.length >= 3) {
-                        // Roads are stored as: [startLocationId, [x,y], [x,y], ..., endLocationId]
-                        for (let i = 1; i < route.points.length - 1; i++) {
-                            const curr = route.points[i];
-                            const next = route.points[i + 1];
-                            if (Array.isArray(curr) && Array.isArray(next)) {
-                                const start = { x: curr[0], y: curr[1] };
-                                const end = { x: next[0], y: next[1] };
-                                createRoad(start, end, route.type === 'major');
-                            }
+                roads.forEach((route) => {
+                    if (!route.points || route.points.length < 3) return;
+                    for (let i = 1; i < route.points.length - 1; i++) {
+                        const curr = route.points[i];
+                        const next = route.points[i + 1];
+                        if (Array.isArray(curr) && Array.isArray(next)) {
+                            createRoad({ x: curr[0], y: curr[1] }, { x: next[0], y: next[1] }, route.type === 'major');
                         }
-                        if (idx === 0) console.log("Sample road created from route");
                     }
                 });
-            } else {
-                console.log("No roads found in campaign data");
+                console.log('Roads:', roadsGroup.children.length);
             }
-            
-            console.log("Markers group children:", markersGroup.children.length);
-            console.log("Roads group children:", roadsGroup.children.length);
-            console.log("Initialization complete, starting animation");
+
+            // Fade out loading screen once data is ready
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.classList.add('fade-out');
+            setTimeout(() => { loadingScreen.style.display = 'none'; }, 900);
+
             animate();
         }
 
-        // Animation loop
+        // ── Animation loop ─────────────────────────────────────────────────────────
         function animate() {
             requestAnimationFrame(animate);
-            
-            // Auto-rotate when not dragging
+
             if (!isDragging) {
                 planet.rotation.y += 0.0002;
-                atmosphere.rotation.y += 0.0002;
             }
-            
-            // Markers and roads must rotate with planet
-            markersGroup.rotation.copy(planet.rotation);
-            roadsGroup.rotation.copy(planet.rotation);
-            
+
+            // Always keep groups in sync with current planet rotation
+            syncGroups();
+
             renderer.render(scene, camera);
         }
 
-        // Handle window resize
+        // ── Resize ─────────────────────────────────────────────────────────────────
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Start everything
-        init().catch(err => {
-            console.error("Initialization error:", err);
+        init().catch((err) => {
+            console.error('Init error:', err);
+            document.getElementById('loading-screen').style.display = 'none';
             animate();
         });
     </script>
