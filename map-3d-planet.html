@@ -642,15 +642,16 @@
                     vec3 p = vPos;
 
                     // Very slow global drift so clouds move independently of terrain
-                    p = rotY(p, time * 0.00018);
+                    p = rotY(p, time * 0.00008);
 
                     // ── Five storm systems, each spinning at its own rate ──────
+                    // Radii are ~0.10–0.16 (hurricane-sized, not planet-spanning).
                     // N hemisphere spins counter-clockwise (+), S hemisphere clockwise (−)
-                    p = vortex(p, normalize(vec3(-0.55, 0.38, 0.74)),  0.44,  time * 0.00110);
-                    p = vortex(p, normalize(vec3( 0.52,-0.52,-0.67)),  0.40, -time * 0.00095);
-                    p = vortex(p, normalize(vec3(-0.28, 0.58,-0.76)),  0.32,  time * 0.00080);
-                    p = vortex(p, normalize(vec3( 0.88, 0.36, 0.30)),  0.34,  time * 0.00100);
-                    p = vortex(p, normalize(vec3( 0.18,-0.62, 0.76)),  0.28, -time * 0.00075);
+                    p = vortex(p, normalize(vec3(-0.55, 0.38, 0.74)),  0.16,  time * 0.00045);
+                    p = vortex(p, normalize(vec3( 0.52,-0.52,-0.67)),  0.15, -time * 0.00038);
+                    p = vortex(p, normalize(vec3(-0.28, 0.58,-0.76)),  0.12,  time * 0.00032);
+                    p = vortex(p, normalize(vec3( 0.88, 0.36, 0.30)),  0.14,  time * 0.00040);
+                    p = vortex(p, normalize(vec3( 0.18,-0.62, 0.76)),  0.10, -time * 0.00030);
 
                     // ── Domain-warped fBm for organic, streak-like cloud masses ─
                     vec3 q = p * 5.5;
