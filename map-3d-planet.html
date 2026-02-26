@@ -811,47 +811,6 @@
         );
         scene.add(tudaraMesh);
 
-        // ── Atmospheric rim glow ──────────────────────────────────────────────────
-        // BackSide rendering: far-hemisphere polygons visible at the limb only;
-        // planet depth test naturally hides the centre. AdditiveBlending = pure glow.
-        const atmosphereMaterial = new THREE.ShaderMaterial({
-            uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
-            vertexShader: `
-                varying vec3 vWorldNormal;
-                varying vec3 vCamDir;
-                void main() {
-                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
-                    vWorldNormal = normalize(mat3(modelMatrix) * normal);
-                    vCamDir = cameraPosition - worldPos.xyz;
-                    gl_Position = projectionMatrix * viewMatrix * worldPos;
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vWorldNormal;
-                varying vec3 vCamDir;
-                uniform vec3 sunDir;
-                void main() {
-                    vec3 n = normalize(vWorldNormal);
-                    vec3 v = normalize(vCamDir);
-                    float fresnel = 1.0 - abs(dot(n, v));
-                    fresnel = pow(fresnel, 2.5);
-                    float dayFac = smoothstep(-0.2, 0.5, dot(n, normalize(sunDir)));
-                    vec3 col = mix(vec3(0.05, 0.12, 0.60), vec3(0.20, 0.55, 1.0), dayFac);
-                    float alpha = fresnel * (0.5 + 0.5 * dayFac) * 1.1;
-                    gl_FragColor = vec4(col, alpha);
-                }
-            `,
-            transparent: true,
-            depthWrite: false,
-            side: THREE.BackSide,
-            blending: THREE.AdditiveBlending,
-        });
-        const atmosphereMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(planetRadius * 1.12, 64, 32),
-            atmosphereMaterial
-        );
-        scene.add(atmosphereMesh);
-
         // ── Inner atmosphere limb haze ────────────────────────────────────────────
         // FrontSide sphere sitting just above the surface: adds a blue tint to
         // the planet's edges as seen from the camera (same effect as looking through
@@ -1476,7 +1435,6 @@
 
             // ── Atmosphere / twilight / ice — update sun direction & cap sizes ────────
             const sunDirVec = sunLight.position.clone().normalize();
-            atmosphereMaterial.uniforms.sunDir.value.copy(sunDirVec);
             twilightMaterial.uniforms.sunDir.value.copy(sunDirVec);
             innerAtmMaterial.uniforms.sunDir.value.copy(sunDirVec);
 
