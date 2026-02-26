@@ -246,6 +246,9 @@
         <button class="map-btn-3d" onclick="toggleLocations()" title="Toggle Location Markers" id="loc-toggle">
             <i class="fa-solid fa-location-dot"></i>
         </button>
+        <button class="map-btn-3d" onclick="toggleRotation()" title="Pause / Resume Rotation" id="rot-toggle">
+            <i class="fa-solid fa-pause"></i>
+        </button>
     </div>
 
     <!-- Info Panel (Hidden by default) -->
@@ -284,21 +287,21 @@
         renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
 
         // ── Lighting ───────────────────────────────────────────────────────────────
-        // Blue-tinted ambient keeps the dark side from going pure black
-        const ambientLight = new THREE.AmbientLight(0x2a3a5a, 1.0);
+        // Low ambient so the night side is visibly dark
+        const ambientLight = new THREE.AmbientLight(0x1a2a4a, 0.35);
         scene.add(ambientLight);
 
-        // Warm directional "sun"
-        const sunLight = new THREE.DirectionalLight(0xfff5d0, 1.4);
-        sunLight.position.set(300, 200, 300);
+        // Bright warm sun — positioned upper-left so the terminator line is clearly visible
+        const sunLight = new THREE.DirectionalLight(0xfff5d0, 2.2);
+        sunLight.position.set(-350, 200, 300);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width  = 2048;
         sunLight.shadow.mapSize.height = 2048;
         scene.add(sunLight);
 
-        // Faint cool fill from the opposite side — separates the dark limb from pure black
-        const fillLight = new THREE.DirectionalLight(0x1a2a6a, 0.22);
-        fillLight.position.set(-300, -100, -300);
+        // Very faint blue fill on the night side — stops it going pure black
+        const fillLight = new THREE.DirectionalLight(0x1a2a6a, 0.12);
+        fillLight.position.set(350, -100, -300);
         scene.add(fillLight);
 
         // ── Starfield ──────────────────────────────────────────────────────────────
@@ -403,7 +406,7 @@
 
         const loader = new THREE.TextureLoader();
         const planetMaterial = new THREE.MeshStandardMaterial({
-            color: 0x5a8c5a,
+            color: 0xffffff,   // white so the texture colours aren't tinted green
             roughness: 0.75,
             metalness: 0.0,
         });
@@ -421,21 +424,65 @@
         planet.receiveShadow = true;
         scene.add(planet);
 
-        // ── Atmosphere ─────────────────────────────────────────────────────────────
-        // Two BackSide layers: inner haze + wide outer rim glow.
-        // BackSide trick: the shell is only visible at the planet's limb, creating a
-        // natural-looking atmospheric halo without needing a custom shader.
-        const atmosphere = new THREE.Mesh(
-            new THREE.SphereGeometry(planetRadius + 7, segments, segments),
-            new THREE.MeshBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.13, side: THREE.BackSide })
-        );
-        scene.add(atmosphere);
+        // (atmosphere glow removed)
 
-        const outerGlow = new THREE.Mesh(
-            new THREE.SphereGeometry(planetRadius + 28, segments, segments),
-            new THREE.MeshBasicMaterial({ color: 0x1a3a9a, transparent: true, opacity: 0.07, side: THREE.BackSide })
+        // ── Cloud layer ─────────────────────────────────────────────────────────────
+        // Pixel-level fBm noise using summed sine/cosine octaves.
+        // u spans 0→2π so sin(u*k) wraps perfectly — zero visible seam on the sphere.
+        // 256×128 is fast to generate; GPU bilinear filtering makes it smooth.
+        function generateCloudTexture(w, h) {
+            const cvs = document.createElement('canvas');
+            cvs.width = w; cvs.height = h;
+            const ctx = cvs.getContext('2d');
+            const img = ctx.createImageData(w, h);
+            const d   = img.data;
+            // Octave [uFreq, vFreq, uPhase, vPhase]
+            const oct = [
+                [3,  2,  1.10, 0.50],
+                [5,  4,  2.30, 1.70],
+                [9,  7,  0.70, 2.90],
+                [17, 13, 3.10, 0.30],
+                [33, 25, 1.60, 2.10],
+                [63, 49, 0.40, 1.50],
+            ];
+            const amps = [1.00, 0.65, 0.45, 0.28, 0.16, 0.09];
+            const totalAmp = amps.reduce((a, b) => a + b, 0);
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const u = (x / w) * Math.PI * 2;   // wraps 0→2π
+                    const v = (y / h) * Math.PI;        // 0→π
+                    let n = 0;
+                    for (let o = 0; o < oct.length; o++) {
+                        const [uf, vf, up, vp] = oct[o];
+                        n += Math.sin(u * uf + up) * Math.cos(v * vf + vp) * amps[o];
+                    }
+                    n = n / totalAmp;               // −1 … 1
+                    n = (n + 1) * 0.5;              // 0 … 1
+                    n = Math.max(0, (n - 0.46) / 0.54); // threshold ≈ 46% coverage
+                    n = Math.pow(n, 1.5);           // crisper cloud edges
+                    const i = (y * w + x) * 4;
+                    d[i] = d[i+1] = d[i+2] = 255;
+                    d[i+3] = Math.round(n * 215);
+                }
+            }
+            ctx.putImageData(img, 0, 0);
+            const tex = new THREE.CanvasTexture(cvs);
+            tex.minFilter = THREE.LinearFilter;
+            return tex;
+        }
+
+        const cloudMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 3, 64, 64),
+            new THREE.MeshStandardMaterial({
+                map: generateCloudTexture(256, 128),
+                transparent: true,
+                depthWrite: false,
+                roughness: 1.0,
+                metalness: 0.0,
+            })
         );
-        scene.add(outerGlow);
+        scene.add(cloudMesh);
+        let cloudDrift = 0;  // clouds drift independently of planet rotation
 
         // ── Groups ─────────────────────────────────────────────────────────────────
         const roadsGroup   = new THREE.Group();
@@ -452,20 +499,7 @@
         syncGroups();
 
         let markersVisible = true;
-
-        // ── Location config ────────────────────────────────────────────────────────
-        const typeColors = {
-            capital: 0xffffff, city: 0xd4af37, 'small-city': 0xe0e0e0, town: 0xb09070,
-            village: 0xa0784d, port: 0x87ceeb, ruins: 0x999999, landmark: 0xff8c00,
-            nature: 0x40b840, poi: 0xff69b4, region: 0x90ee90, water: 0x4169e1, river: 0x1e90ff,
-        };
-
-        // Marker radius by settlement importance — capitals are visibly larger than villages
-        const typeSizes = {
-            capital: 6.5, city: 5.5, 'small-city': 4.5, town: 3.5,
-            village: 2.5, port: 4.0, ruins: 3.0, landmark: 3.5,
-            nature: 2.5, poi: 3.0, region: 0, water: 0, river: 0,
-        };
+        let autoRotate     = true;
 
         // ── Coordinate mapping ─────────────────────────────────────────────────────
         // THREE.js SphereGeometry formula: x = -cos(phi)*sin(theta), z = sin(phi)*sin(theta)
@@ -475,62 +509,202 @@
             const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
             const r   = planetRadius + offset;
             return new THREE.Vector3(
-                -r * Math.cos(lat) * Math.cos(lon),   // negative x to match THREE.js UV convention
+                -r * Math.cos(lat) * Math.cos(lon),
                  r * Math.sin(lat),
                  r * Math.cos(lat) * Math.sin(lon)
             );
         }
 
-        // ── Markers ────────────────────────────────────────────────────────────────
-        function createMarker(location) {
-            if (!location.x || !location.y || location.type === 'region') return;
-            const size = typeSizes[location.type] ?? 2.5;
-            if (size === 0) return;
+        // ── Markers — matching 2D map style ───────────────────────────────────────
+        // Canvas constants: dot sits in the left portion, label extends right.
+        const BROWN      = '#3e2723';
+        const DARK_BROWN = '#1b1612';
+        const DOT_CX     = 16;   // dot centre x inside canvas
+        const DOT_CY     = 25;   // dot centre y (canvas height = 50)
+        const CANVAS_H   = 50;
+        const DOT_AREA   = 34;   // pixels reserved left of label text
 
-            const color  = typeColors[location.type] || 0x888888;
-            const pos    = coordsToSphere(location.x, location.y);
+        // Dot drawing radius per type (canvas pixels)
+        const dotRadii = {
+            capital:  6, city:  6, 'small-city': 7, town: 6,
+            village:  4, port:  7, ruins:  7, landmark:  9,
+            poi:  5, nature:  5,
+        };
 
-            const marker = new THREE.Mesh(
-                new THREE.SphereGeometry(size, 8, 8),
-                new THREE.MeshStandardMaterial({
-                    color,
-                    emissive: color,
-                    emissiveIntensity: 0.85,
-                    metalness: 0.1,
-                    roughness: 0.2,
-                    toneMapped: false,
-                })
-            );
-            marker.position.copy(pos);
-            marker.userData = location;
-            markersGroup.add(marker);
+        // Sprite world-unit height per type (controls visual size on globe)
+        const spriteHeights = {
+            capital:  8, city:  8, 'small-city':  9, town: 8,
+            village:  6, port:  9, ruins:  8, landmark:  8,
+            poi:  7, nature:  7,
+        };
+
+        function drawStar(ctx, cx, cy, r, color) {
+            const pts = 5, step = (Math.PI * 2) / pts, half = step / 2;
+            ctx.beginPath();
+            for (let i = 0; i < pts; i++) {
+                const ox = cx + Math.cos(i * step - Math.PI / 2) * r;
+                const oy = cy + Math.sin(i * step - Math.PI / 2) * r;
+                const ix = cx + Math.cos(i * step + half - Math.PI / 2) * (r * 0.42);
+                const iy = cy + Math.sin(i * step + half - Math.PI / 2) * (r * 0.42);
+                i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
+                ctx.lineTo(ix, iy);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
         }
 
-        // ── Roads ──────────────────────────────────────────────────────────────────
-        // Fix: straight LineCurve3 cut through the globe. Great-circle arcs via
-        // lerp + normalize keep every point on the sphere surface.
-        function createRoad(start, end, isMajor) {
-            const sv = coordsToSphere(start.x, start.y, 0).normalize();
-            const ev = coordsToSphere(end.x,   end.y,   0).normalize();
+        function drawDot(ctx, type, cx, cy, r) {
+            switch (type) {
+                case 'capital': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.65)'; ctx.lineWidth = 5; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 2.5; ctx.stroke();
+                    drawStar(ctx, cx, cy, r * 0.54, BROWN);
+                    break;
+                }
+                case 'city': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 4; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+                    ctx.fillStyle = BROWN; ctx.fill();
+                    break;
+                }
+                case 'small-city': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r + 3, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 3; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 1.5; ctx.stroke();
+                    break;
+                }
+                case 'town': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = BROWN; ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+                    break;
+                }
+                case 'village': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#A0522D'; ctx.fill();
+                    ctx.strokeStyle = DARK_BROWN; ctx.lineWidth = 1; ctx.stroke();
+                    break;
+                }
+                case 'port': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#E8F4FD'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 1.5; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+                    ctx.fillStyle = '#4682B4'; ctx.fill();
+                    break;
+                }
+                case 'ruins': {
+                    ctx.setLineDash([r * 0.7, r * 0.5]);
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#888888'; ctx.lineWidth = 1.5; ctx.stroke();
+                    ctx.setLineDash([]);
+                    break;
+                }
+                case 'landmark': {
+                    ctx.beginPath();
+                    ctx.moveTo(cx,           cy - r);
+                    ctx.lineTo(cx + r * 0.65, cy);
+                    ctx.lineTo(cx,           cy + r);
+                    ctx.lineTo(cx - r * 0.65, cy);
+                    ctx.closePath();
+                    ctx.fillStyle = '#FF8C00'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 1.5; ctx.stroke();
+                    break;
+                }
+                case 'poi': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff69b4'; ctx.fill();
+                    ctx.strokeStyle = DARK_BROWN; ctx.lineWidth = 1; ctx.stroke();
+                    break;
+                }
+                case 'nature': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#228b22'; ctx.fill();
+                    ctx.strokeStyle = DARK_BROWN; ctx.lineWidth = 1; ctx.stroke();
+                    break;
+                }
+                default: {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#aaaaaa'; ctx.fill();
+                }
+            }
+        }
 
-            const STEPS  = 24;
-            const points = [];
-            for (let i = 0; i <= STEPS; i++) {
-                const p = new THREE.Vector3()
-                    .lerpVectors(sv, ev, i / STEPS)
-                    .normalize()
-                    .multiplyScalar(planetRadius + 2);
-                points.push(p);
+        function createMarker(location) {
+            if (!location.x || !location.y || location.type === 'region') return;
+            const type = location.type;
+            const r    = dotRadii[type];
+            if (!r) return;
+
+            // Font — match per-location settings from the 2D map data
+            const fSize   = Math.min(Math.max(location.fontSize || 11, 9), 13);
+            const fFamily = location.fontFamily
+                ? `"${location.fontFamily}", "Cinzel", serif`
+                : '"Cinzel", serif';
+            const fStyle  = (location.fontStyle || '').toLowerCase() === 'italic' ? 'italic' : 'normal';
+            const fWeight = location.fontWeight || 'normal';
+            const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
+
+            // Measure label width
+            const tmpCtx = document.createElement('canvas').getContext('2d');
+            tmpCtx.font  = fontStr;
+            const textW  = location.name ? tmpCtx.measureText(location.name).width : 0;
+
+            const canvasW = Math.ceil(DOT_AREA + textW + 10);
+            const canvas  = document.createElement('canvas');
+            canvas.width  = canvasW;
+            canvas.height = CANVAS_H;
+            const ctx     = canvas.getContext('2d');
+
+            // Draw marker shape
+            drawDot(ctx, type, DOT_CX, DOT_CY, r);
+
+            // Draw label — cream fill + dark-brown outline (matches 2D map exactly)
+            if (location.name) {
+                ctx.font      = fontStr;
+                ctx.lineJoin  = 'round';
+                ctx.lineWidth = Math.max(fSize * 0.22, 1.5);
+                ctx.strokeStyle = BROWN;
+                ctx.strokeText(location.name, DOT_AREA, DOT_CY + fSize * 0.38);
+                ctx.fillStyle = '#faf3e0';
+                ctx.fillText(location.name,   DOT_AREA, DOT_CY + fSize * 0.38);
             }
 
-            const geom = new THREE.BufferGeometry().setFromPoints(points);
-            const mat  = new THREE.LineBasicMaterial({
-                color: isMajor ? 0xd4af37 : 0x8b7355,
-                linewidth: 1,
-                fog: false,
+            const pos    = coordsToSphere(location.x, location.y);
+            const worldH = spriteHeights[type] || 8;
+            const worldW = worldH * (canvasW / CANVAS_H);
+
+            // Shift geometry so the dot column (DOT_CX) sits at the mesh origin,
+            // letting the label extend to the right — same as sprite.center did.
+            const xShift = worldW * (0.5 - DOT_CX / canvasW);
+            const geo = new THREE.PlaneGeometry(worldW, worldH);
+            geo.translate(xShift, 0, 0);
+
+            const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+                map: new THREE.CanvasTexture(canvas),
+                transparent: true,
+                alphaTest: 0.01,
                 toneMapped: false,
-            });
-            roadsGroup.add(new THREE.Line(geom, mat));
+                depthWrite: false,
+                depthTest: false,   // always render on top of terrain
+            }));
+            mesh.renderOrder = 1;  // render after opaque planet
+            mesh.position.copy(pos);
+            // Orient flat on the sphere: make the plane's +Z normal point outward
+            // from the sphere centre so the label lies flush against the surface.
+            mesh.lookAt(pos.clone().multiplyScalar(2));
+            mesh.userData = location;
+            markersGroup.add(mesh);
         }
 
         // ── Mouse controls ─────────────────────────────────────────────────────────
@@ -622,8 +796,6 @@
 
         // ── Helpers ────────────────────────────────────────────────────────────────
         function syncGroups() {
-            atmosphere.rotation.copy(planet.rotation);
-            outerGlow.rotation.copy(planet.rotation);
             markersGroup.rotation.copy(planet.rotation);
             roadsGroup.rotation.copy(planet.rotation);
         }
@@ -634,10 +806,16 @@
             syncGroups();
         }
 
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+            const icon = document.querySelector('#rot-toggle i');
+            icon.className = autoRotate ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+            document.getElementById('rot-toggle').style.opacity = autoRotate ? '1' : '0.5';
+        }
+
         function toggleLocations() {
             markersVisible = !markersVisible;
             markersGroup.visible = markersVisible;
-            roadsGroup.visible   = markersVisible;
             document.getElementById('loc-toggle').style.opacity = markersVisible ? '1' : '0.5';
         }
 
@@ -648,25 +826,11 @@
         // ── Init ───────────────────────────────────────────────────────────────────
         async function init() {
             await CampaignData.init();
+            await document.fonts.ready;   // ensure fonts are loaded before canvas text measurement
 
             const locations = CampaignData.getLocations();
             locations.forEach(createMarker);
             console.log('Markers:', markersGroup.children.length);
-
-            const roads = CampaignData.getRoads();
-            if (roads && roads.length > 0) {
-                roads.forEach((route) => {
-                    if (!route.points || route.points.length < 3) return;
-                    for (let i = 1; i < route.points.length - 1; i++) {
-                        const curr = route.points[i];
-                        const next = route.points[i + 1];
-                        if (Array.isArray(curr) && Array.isArray(next)) {
-                            createRoad({ x: curr[0], y: curr[1] }, { x: next[0], y: next[1] }, route.type === 'major');
-                        }
-                    }
-                });
-                console.log('Roads:', roadsGroup.children.length);
-            }
 
             // Fade out loading screen once data is ready
             const loadingScreen = document.getElementById('loading-screen');
@@ -677,15 +841,35 @@
         }
 
         // ── Animation loop ─────────────────────────────────────────────────────────
+        // Pre-allocated to avoid per-frame GC pressure
+        const _q = new THREE.Quaternion();
+        const _v = new THREE.Vector3();
+
         function animate() {
             requestAnimationFrame(animate);
 
-            if (!isDragging) {
+            if (!isDragging && autoRotate) {
                 planet.rotation.y += 0.0002;
             }
 
+            // Clouds drift visibly faster than the planet (weather movement)
+            cloudDrift += 0.0005;
+            cloudMesh.rotation.x = planet.rotation.x;
+            cloudMesh.rotation.y = planet.rotation.y + cloudDrift;
+
             // Always keep groups in sync with current planet rotation
             syncGroups();
+
+            // Back-face cull: depthTest is off so we manually hide markers on the
+            // far hemisphere to stop them showing through the planet.
+            // Skipped during drag to avoid per-frame overhead while rotating.
+            if (markersVisible && !isDragging) {
+                _q.setFromEuler(planet.rotation);
+                markersGroup.children.forEach(mesh => {
+                    _v.copy(mesh.position).applyQuaternion(_q);
+                    mesh.visible = _v.z > 0;
+                });
+            }
 
             renderer.render(scene, camera);
         }
