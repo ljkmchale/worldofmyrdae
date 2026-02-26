@@ -445,6 +445,21 @@
                 float _wvY = cos(vUv.y *  7.0 + _t * 0.50) * 0.55
                            + cos(vUv.y * 10.0 + vUv.x *  6.0 + _t * 0.90) * 0.35;
                 float _waveH = (_wvX + _wvY) * 0.25; // normalised ~[-0.55, 0.55]
+                // ── Black outline removal ───────────────────────────────────────
+                // Baked coastline outlines are near-black land pixels.  Sample
+                // 4 neighbours and blend the dark pixel toward their average.
+                float _pixLum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+                if (_pixLum < 0.15 && _wm < 0.3) {
+                    float _off = 0.0015;
+                    vec3 _nb = (texture2D(map, vUv + vec2( _off,  0.0)).rgb
+                              + texture2D(map, vUv + vec2(-_off,  0.0)).rgb
+                              + texture2D(map, vUv + vec2( 0.0,  _off)).rgb
+                              + texture2D(map, vUv + vec2( 0.0, -_off)).rgb) * 0.25;
+                    float _outlineBlend = smoothstep(0.12, 0.02, _pixLum);
+                    diffuseColor.rgb = mix(diffuseColor.rgb, _nb, _outlineBlend);
+                    // Recompute water mask with new colour so ocean isn't affected
+                    _wm = smoothstep(0.05, 0.20, diffuseColor.b - diffuseColor.r);
+                }
                 // (2) Diffuse wave shading — crests brighter, troughs darker.
                 //     clamp keeps it realistic; visible regardless of camera angle.
                 if (_wm > 0.01) {
