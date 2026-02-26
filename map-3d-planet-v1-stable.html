@@ -257,15 +257,6 @@
         <div id="info-content"></div>
     </div>
 
-    <!-- Season indicator -->
-    <div id="season-display" style="
-        position:absolute; bottom:120px; left:12px;
-        color:#faf3e0; font-family:'Cinzel',serif; font-size:13px; font-weight:600;
-        background: rgba(5,8,18,0.75); border:1px solid rgba(212,175,55,0.3);
-        border-radius:5px; padding:4px 10px;
-        text-shadow: 1px 1px 3px #000; pointer-events:none; letter-spacing:0.05em;">
-    </div>
-
     <!-- Controls Info -->
     <div class="controls-info">
         <div><strong>Drag:</strong> Rotate globe</div>
@@ -741,17 +732,6 @@
         let markersVisible = true;
         let autoRotate     = true;
 
-        // ── Oberra calendar ──────────────────────────────────────────────────────
-        const DAY_MS        = 5 * 60 * 1000;                // 5 real minutes = 1 Oberra day
-        const YEAR_DAYS     = 384;                          // days in an Oberra year
-        const YEAR_MS       = YEAR_DAYS * DAY_MS;           // 384 real minutes = 1 full orbit
-        const ECLIPTIC_TILT = 23.5 * Math.PI / 180;        // axial tilt in radians
-        const SUN_DIST      = 500;                          // sun light position radius
-
-        let lastFrameTime = performance.now();
-        let dayAngle      = INIT_ROT_Y;                     // start from map-facing rotation
-        let yearAngle     = Math.PI / 2;                    // start at Sultra (summer solstice) — tilt immediately visible
-
         // ── Coordinate mapping ─────────────────────────────────────────────────────
         // THREE.js SphereGeometry formula: x = -cos(phi)*sin(theta), z = sin(phi)*sin(theta)
         // So u=0 → (-1,0,0). Our lon=0 (map x=0) must also map to (-1,0,0) — hence the -x.
@@ -1116,54 +1096,12 @@
         const _q = new THREE.Quaternion();
         const _v = new THREE.Vector3();
 
-        // ── Oberra season helpers ─────────────────────────────────────────────────
-        const SEASON_COLORS = {
-            Natali:   new THREE.Color(0xfff5d0),  // neutral warm white  (spring)
-            Sultra:   new THREE.Color(0xfff0a0),  // golden              (summer)
-            Garnest:  new THREE.Color(0xffe8b0),  // amber-warm          (harvest/fall)
-            Briscarn: new THREE.Color(0xeaf0ff),  // cool blue-white     (winter)
-        };
-
-        function getSeason(angle) {
-            const a = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-            if (a < Math.PI / 2)         return 'Natali';
-            if (a < Math.PI)             return 'Sultra';
-            if (a < 3 * Math.PI / 2)     return 'Garnest';
-            return 'Briscarn';
-        }
-
         function animate() {
             requestAnimationFrame(animate);
 
-            // ── Oberra day / year tick ────────────────────────────────────────────────
-            const now   = performance.now();
-            const delta = now - lastFrameTime;
-            lastFrameTime = now;
-
             if (!isDragging && autoRotate) {
-                dayAngle += (2 * Math.PI / DAY_MS) * delta;
-                planet.rotation.y = dayAngle;
-            } else if (isDragging) {
-                dayAngle = planet.rotation.y; // keep in sync after user drag
+                planet.rotation.y += 0.0002;
             }
-
-            // Year progresses regardless of pause / drag
-            yearAngle += (2 * Math.PI / YEAR_MS) * delta;
-
-            // ── Sun position: ecliptic orbit tilted 23.5° from equatorial plane ─────
-            sunLight.position.set(
-                SUN_DIST * Math.cos(yearAngle),
-                SUN_DIST * Math.sin(yearAngle) * Math.sin(ECLIPTIC_TILT),
-                SUN_DIST * Math.sin(yearAngle) * Math.cos(ECLIPTIC_TILT)
-            );
-
-            // ── Season colour tint ────────────────────────────────────────────────────
-            const season = getSeason(yearAngle);
-            sunLight.color.lerp(SEASON_COLORS[season], 0.005);
-
-            // ── Season UI ─────────────────────────────────────────────────────────────
-            const seasonEl = document.getElementById('season-display');
-            if (seasonEl) seasonEl.textContent = `☀ ${season}`;
 
             // Advance cloud shader time — storm vortices and global drift
             // are computed entirely on the GPU; cloud mesh just follows planet
