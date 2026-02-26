@@ -908,7 +908,7 @@
                     float band = smoothstep(-0.2, 0.0, NdotL) * (1.0 - smoothstep(0.0, 0.25, NdotL));
                     vec3 col = mix(vec3(0.9, 0.18, 0.02), vec3(1.0, 0.55, 0.1),
                                   smoothstep(-0.1, 0.1, NdotL));
-                    gl_FragColor = vec4(col, band * 0.55);
+                    gl_FragColor = vec4(col, band * 0.20);
                 }
             `,
             transparent: true,
