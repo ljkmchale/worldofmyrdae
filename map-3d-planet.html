@@ -390,19 +390,8 @@
         const planetRadius = 180;
         const segments     = 64;
         const planetGeometry = new THREE.SphereGeometry(planetRadius, segments, segments);
-
-        // Subtle terrain displacement
-        const posArray = planetGeometry.getAttribute('position').array;
-        for (let i = 0; i < posArray.length; i += 3) {
-            const x = posArray[i], y = posArray[i + 1], z = posArray[i + 2];
-            const len = Math.sqrt(x * x + y * y + z * z);
-            const nx = x / len, ny = y / len, nz = z / len;
-            const noise = Math.sin(x * 0.02) * Math.cos(y * 0.02) * 3 + Math.sin(x * 0.04) * 1.5;
-            const r = planetRadius + noise;
-            posArray[i] = nx * r; posArray[i + 1] = ny * r; posArray[i + 2] = nz * r;
-        }
-        planetGeometry.getAttribute('position').needsUpdate = true;
-        planetGeometry.computeVertexNormals();
+        // No terrain displacement — keeping the sphere analytically perfect so both
+        // duplicate seam vertices share identical outward normals → no dark seam line.
 
         const loader = new THREE.TextureLoader();
         const planetMaterial = new THREE.MeshStandardMaterial({
@@ -412,8 +401,51 @@
         });
 
         loader.load('images/Myrdae.jpg', (texture) => {
-            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            planetMaterial.map = texture;
+            // Cross-fade the left and right edges of the image so the seam
+            // on the back of the sphere blends smoothly instead of showing
+            // a hard join line where the two map edges meet.
+            const img = texture.image;
+            const W = img.width, H = img.height;
+            const texCanvas = document.createElement('canvas');
+            texCanvas.width = W; texCanvas.height = H;
+            const texCtx = texCanvas.getContext('2d');
+            texCtx.drawImage(img, 0, 0);
+
+            // ~15% blend zone — wide enough to fully hide the discontinuity
+            const blendW = Math.max(32, Math.floor(W * 0.15));
+            const imgd = texCtx.getImageData(0, 0, W, H);
+            const orig = new Uint8ClampedArray(imgd.data); // snapshot before edits
+            const out  = imgd.data;
+
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < blendW; x++) {
+                    // Smoothstep easing: t=0 at the edge, t=1 at the inner limit
+                    const tLin = x / blendW;
+                    const t    = tLin * tLin * (3 - 2 * tLin);
+                    const mx   = W - 1 - x;
+                    const li   = (y * W + x)  * 4;
+                    const ri   = (y * W + mx) * 4;
+                    for (let c = 0; c < 3; c++) {
+                        // Key fix: blend BOTH edges toward their shared average at t=0.
+                        // This guarantees pixel[0] === pixel[W-1] so the seam line
+                        // is completely invisible where the two edges meet on the sphere.
+                        const avg = (orig[li + c] + orig[ri + c]) * 0.5;
+                        out[li + c] = Math.round(avg * (1 - t) + orig[li + c] * t);
+                        out[ri + c] = Math.round(avg * (1 - t) + orig[ri + c] * t);
+                    }
+                }
+            }
+            texCtx.putImageData(imgd, 0, 0);
+
+            const seamlessTex = new THREE.CanvasTexture(texCanvas);
+            // Disable mipmap generation — WebGL's default mipmap builder doesn't respect
+            // RepeatWrapping at the seam boundary, so it produces a thin dark artifact line.
+            // LinearFilter with no mipmaps gives clean sampling without the seam.
+            seamlessTex.generateMipmaps = false;
+            seamlessTex.minFilter = THREE.LinearFilter;
+            seamlessTex.magFilter = THREE.LinearFilter;
+            seamlessTex.wrapS = THREE.RepeatWrapping;
+            planetMaterial.map = seamlessTex;
             planetMaterial.needsUpdate = true;
         }, undefined, () => {
             console.log("Texture load failed — using base color");
@@ -427,17 +459,18 @@
         // (atmosphere glow removed)
 
         // ── Cloud layer ─────────────────────────────────────────────────────────────
-        // Pixel-level fBm noise using summed sine/cosine octaves.
-        // u spans 0→2π so sin(u*k) wraps perfectly — zero visible seam on the sphere.
-        // 256×128 is fast to generate; GPU bilinear filtering makes it smooth.
+        // fBm background clouds + discrete storm systems with spiral arms, eye walls,
+        // and clear eyes. 512×256 gives enough resolution to see storm structure.
+        // u spans 0→2π so all sin/cos octaves wrap seamlessly.
         function generateCloudTexture(w, h) {
             const cvs = document.createElement('canvas');
             cvs.width = w; cvs.height = h;
             const ctx = cvs.getContext('2d');
             const img = ctx.createImageData(w, h);
             const d   = img.data;
-            // Octave [uFreq, vFreq, uPhase, vPhase]
-            const oct = [
+
+            // Background fBm — [uFreq, vFreq, uPhase, vPhase]
+            const oct  = [
                 [3,  2,  1.10, 0.50],
                 [5,  4,  2.30, 1.70],
                 [9,  7,  0.70, 2.90],
@@ -445,40 +478,108 @@
                 [33, 25, 1.60, 2.10],
                 [63, 49, 0.40, 1.50],
             ];
-            const amps = [1.00, 0.65, 0.45, 0.28, 0.16, 0.09];
+            const amps     = [1.00, 0.65, 0.45, 0.28, 0.16, 0.09];
             const totalAmp = amps.reduce((a, b) => a + b, 0);
+
+            // Storm systems — su/sv in sphere coords (u: 0→2π, v: 0→π)
+            // spin: +1 = counter-clockwise (N hemisphere), -1 = clockwise (S hemisphere)
+            // size: storm radius in radians  strength: 0–1 opacity boost
+            const storms = [
+                { su: 1.9, sv: 1.05, size: 0.32, spin:  1, strength: 0.95 }, // large N storm
+                { su: 4.3, sv: 2.10, size: 0.28, spin: -1, strength: 0.90 }, // large S storm
+                { su: 3.0, sv: 0.88, size: 0.20, spin:  1, strength: 0.75 }, // mid N
+                { su: 5.6, sv: 0.78, size: 0.24, spin:  1, strength: 0.80 }, // NW storm
+                { su: 0.7, sv: 2.25, size: 0.22, spin: -1, strength: 0.72 }, // SW storm
+                { su: 2.5, sv: 2.00, size: 0.16, spin: -1, strength: 0.65 }, // small S
+            ];
+
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
-                    const u = (x / w) * Math.PI * 2;   // wraps 0→2π
-                    const v = (y / h) * Math.PI;        // 0→π
+                    const u = (x / w) * Math.PI * 2;
+                    const v = (y / h) * Math.PI;
+
+                    // ── Base fBm background clouds ──────────────────────────────
                     let n = 0;
                     for (let o = 0; o < oct.length; o++) {
                         const [uf, vf, up, vp] = oct[o];
                         n += Math.sin(u * uf + up) * Math.cos(v * vf + vp) * amps[o];
                     }
-                    n = n / totalAmp;               // −1 … 1
-                    n = (n + 1) * 0.5;              // 0 … 1
-                    n = Math.max(0, (n - 0.46) / 0.54); // threshold ≈ 46% coverage
-                    n = Math.pow(n, 1.5);           // crisper cloud edges
+                    n = (n / totalAmp + 1) * 0.5; // 0–1
+
+                    // ── Storm systems ────────────────────────────────────────────
+                    let stormCloud  = 0;
+                    let stormDark   = 0; // accumulated darkness for storm centres
+
+                    // Pre-compute unit sphere position of this pixel
+                    const sinV = Math.sin(v), cosV = Math.cos(v);
+
+                    for (const s of storms) {
+                        const sinSV = Math.sin(s.sv), cosSV = Math.cos(s.sv);
+                        const dot   = sinV * sinSV * Math.cos(u - s.su) + cosV * cosSV;
+                        const dist  = Math.acos(Math.max(-1, Math.min(1, dot)));
+
+                        if (dist > s.size * 2.6) continue; // outside influence radius
+
+                        // Azimuthal angle around storm centre (with hemisphere spin)
+                        let du = u - s.su;
+                        if (du >  Math.PI) du -= Math.PI * 2;
+                        if (du < -Math.PI) du += Math.PI * 2;
+                        const azimuth = Math.atan2((v - s.sv) * s.spin, du);
+
+                        // Two spiral arms: cos(2θ − k·r) peaks where arms intersect
+                        const spiralTightness = 4.5;
+                        const spiralVal = (Math.cos(azimuth * 2 - spiralTightness * dist) + 1) * 0.5;
+
+                        // Gaussian envelope over the whole storm
+                        const sigma   = s.size * 0.48;
+                        const falloff = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+
+                        // Eye wall: bright ring just outside the clear eye
+                        const eyeR     = s.size * 0.14;
+                        const eyeWall  = Math.exp(-Math.pow(dist - eyeR, 2) / (0.012 * s.size * s.size));
+
+                        // Clear eye: gaussian hole at the very centre
+                        const eyeClear = 1 - Math.exp(-(dist * dist) / (2 * eyeR * eyeR * 0.6));
+
+                        const c = (spiralVal * 0.55 + eyeWall * 0.9 + 0.25) * falloff * eyeClear * s.strength;
+                        stormCloud = Math.max(stormCloud, c);
+
+                        // Darker, denser cloud in the storm body
+                        stormDark = Math.max(stormDark, falloff * eyeClear * s.strength * 0.45);
+                    }
+
+                    // ── Combine ──────────────────────────────────────────────────
+                    let cloud = Math.max(n * 0.68, Math.min(1, n * 0.4 + stormCloud));
+                    cloud = Math.max(0, (cloud - 0.43) / 0.57);
+                    cloud = Math.pow(cloud, 1.35);
+
+                    // Storm clouds are grey-blue rather than pure white
+                    const brightness = Math.round(255 * (1 - stormDark * cloud * 0.55));
+                    const blueBoost  = Math.round(255 * (1 - stormDark * cloud * 0.35));
+
                     const i = (y * w + x) * 4;
-                    d[i] = d[i+1] = d[i+2] = 255;
-                    d[i+3] = Math.round(n * 215);
+                    d[i]   = brightness;           // R — slightly muted
+                    d[i+1] = brightness;           // G
+                    d[i+2] = blueBoost;            // B — fractionally higher → cool grey
+                    d[i+3] = Math.round(cloud * 225);
                 }
             }
+
             ctx.putImageData(img, 0, 0);
             const tex = new THREE.CanvasTexture(cvs);
-            tex.minFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;       // prevents mipmap seam artifact
+            tex.minFilter       = THREE.LinearFilter;
+            tex.magFilter       = THREE.LinearFilter;
+            tex.wrapS           = THREE.RepeatWrapping;
             return tex;
         }
 
         const cloudMesh = new THREE.Mesh(
             new THREE.SphereGeometry(planetRadius + 3, 64, 64),
-            new THREE.MeshStandardMaterial({
-                map: generateCloudTexture(256, 128),
+            new THREE.MeshBasicMaterial({
+                map: generateCloudTexture(512, 256),
                 transparent: true,
                 depthWrite: false,
-                roughness: 1.0,
-                metalness: 0.0,
             })
         );
         scene.add(cloudMesh);
