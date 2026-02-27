@@ -1260,8 +1260,8 @@
             const r    = dotRadii[type];
             if (!r) return;
 
-            // Font — match per-location settings from the 2D map data
-            const fSize   = Math.min(Math.max(location.fontSize || 11, 9), 13);
+            // ── Font — fully respect all editor settings ──────────────────────
+            const fSize   = Math.max(location.fontSize || 11, 9);
             const fFamily = location.fontFamily
                 ? `"${location.fontFamily}", "Cinzel", serif`
                 : '"Cinzel", serif';
@@ -1269,74 +1269,85 @@
             const fWeight = location.fontWeight || 'normal';
             const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
 
-            // Split name on \n so multi-line labels render correctly
-            const lines      = location.name ? location.name.split('\n') : [];
-            const lineHeight = fSize * 1.35;
+            const lines   = location.name ? location.name.split('\n') : [];
+            const lineH   = fSize * 1.35;
 
-            // Measure the widest line for canvas width
-            const tmpCtx = document.createElement('canvas').getContext('2d');
-            tmpCtx.font  = fontStr;
-            const textW  = lines.length
+            const tmpCtx  = document.createElement('canvas').getContext('2d');
+            tmpCtx.font   = fontStr;
+            const textW   = lines.length
                 ? Math.max(...lines.map(l => tmpCtx.measureText(l).width))
                 : 0;
 
-            // Canvas height grows with line count; single-line stays at CANVAS_H
-            const canvasH = lines.length > 1
-                ? Math.ceil(Math.max(CANVAS_H, lines.length * lineHeight + 16))
-                : CANVAS_H;
-            const dotY    = Math.round(canvasH / 2);   // dot vertically centred
+            // ── Label offsets — expand canvas to fit label wherever it lands ──
+            // offX/Y are 2D map pixels; negative = label left/up relative to dot
+            const offX    = location.labelOffsetX || 0;
+            const offY    = location.labelOffsetY || 0;
 
-            const canvasW = Math.ceil(DOT_AREA + textW + 10);
+            // Base canvas height for the dot + multi-line text at zero offset
+            const baseH   = lines.length > 1
+                ? Math.ceil(Math.max(CANVAS_H, lines.length * lineH + 16))
+                : CANVAS_H;
+            const dotCY_base = Math.round(baseH / 2);
+
+            // Extra padding needed so offset text stays within canvas bounds
+            const topPad  = Math.max(0, -(dotCY_base + offY) + fSize + 4);
+            const botPad  = Math.max(0, (dotCY_base + offY + lines.length * lineH) - baseH + 4);
+            // For X: if offX is negative the label goes left; pad canvas left so dot stays visible
+            const leftPad = Math.max(0, -offX + 4);
+
+            const canvasH = baseH + topPad + botPad;
+            const canvasW = Math.ceil(leftPad + DOT_AREA + Math.max(offX, 0) + textW + 10);
+
+            // Actual dot position in the expanded canvas
+            const dotCX   = DOT_CX  + leftPad;
+            const dotCY   = dotCY_base + topPad;
+
             const canvas  = document.createElement('canvas');
             canvas.width  = canvasW;
             canvas.height = canvasH;
             const ctx     = canvas.getContext('2d');
 
-            // Draw marker shape
-            drawDot(ctx, type, DOT_CX, dotY, r);
+            // Draw marker dot at adjusted canvas position
+            drawDot(ctx, type, dotCX, dotCY, r);
 
-            // Draw label — cream fill + dark-brown outline (matches 2D map exactly)
-            if (lines.length) {
+            // Draw label with offsets applied — cream fill + dark-brown outline
+            if (lines.length && !location.hideLabel) {
+                const blockH        = (lines.length - 1) * lineH;
+                const firstBaseline = dotCY + offY - blockH / 2 + fSize * 0.38;
+                const textX         = leftPad + DOT_AREA + offX;
                 ctx.font      = fontStr;
                 ctx.lineJoin  = 'round';
                 ctx.lineWidth = Math.max(fSize * 0.22, 1.5);
-                // Vertically centre the text block around the dot
-                const blockH    = (lines.length - 1) * lineHeight;
-                const firstBaseline = dotY - blockH / 2 + fSize * 0.38;
                 ctx.strokeStyle = BROWN;
-                lines.forEach((line, i) => {
-                    ctx.strokeText(line, DOT_AREA, firstBaseline + i * lineHeight);
-                });
+                lines.forEach((line, i) => ctx.strokeText(line, textX, firstBaseline + i * lineH));
                 ctx.fillStyle = '#faf3e0';
-                lines.forEach((line, i) => {
-                    ctx.fillText(line, DOT_AREA, firstBaseline + i * lineHeight);
-                });
+                lines.forEach((line, i) => ctx.fillText(line,   textX, firstBaseline + i * lineH));
             }
 
             const pos    = coordsToSphere(location.x, location.y);
-            // worldH scales with canvas height so multi-line sprites aren't squashed
             const worldH = (spriteHeights[type] || 8) * (canvasH / CANVAS_H);
             const worldW = worldH * (canvasW / canvasH);
 
-            // Shift geometry so the dot column (DOT_CX) sits at the mesh origin,
-            // letting the label extend to the right — same as sprite.center did.
-            const xShift = worldW * (0.5 - DOT_CX / canvasW);
-            const geo = new THREE.PlaneGeometry(worldW, worldH);
-            geo.translate(xShift, 0, 0);
+            // Shift geometry so the dot (dotCX, dotCY) aligns with the mesh origin
+            // which sits at the sphere coordinate — handles both X and Y label offsets
+            const xShift = worldW * (0.5  - dotCX / canvasW);
+            const yShift = worldH * (dotCY / canvasH - 0.5);
+            const geo    = new THREE.PlaneGeometry(worldW, worldH);
+            geo.translate(xShift, yShift, 0);
 
             const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
-                map: new THREE.CanvasTexture(canvas),
-                transparent: true,
-                alphaTest: 0.01,
-                toneMapped: false,
-                depthWrite: false,
-                depthTest: false,   // always render on top of terrain
+                map:        new THREE.CanvasTexture(canvas),
+                transparent: true, alphaTest: 0.01,
+                toneMapped:  false, depthWrite: false, depthTest: false,
+                opacity:     location.opacity !== undefined ? location.opacity : 1.0,
             }));
-            mesh.renderOrder = 1;  // render after opaque planet
+            mesh.renderOrder = 1;
             mesh.position.copy(pos);
-            // Orient flat on the sphere: make the plane's +Z normal point outward
-            // from the sphere centre so the label lies flush against the surface.
             mesh.lookAt(pos.clone().multiplyScalar(2));
+            // Rotate label in-plane to match 2D map orientation
+            if (location.rotation) {
+                mesh.rotateZ(-location.rotation * Math.PI / 180);
+            }
             mesh.userData = location;
             markersGroup.add(mesh);
         }
