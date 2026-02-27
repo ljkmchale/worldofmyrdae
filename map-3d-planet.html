@@ -1143,6 +1143,56 @@
         function createMarker(location) {
             if (!location.x || !location.y || location.type === 'region') return;
             const type = location.type;
+
+            // ── Label-only water bodies (no dot, italic blue text) ──────────────
+            if (type === 'water' || type === 'river') {
+                const fSize   = Math.min(Math.max(location.fontSize || 10, 8), 12);
+                const fFamily = location.fontFamily
+                    ? `"${location.fontFamily}", "Cinzel", serif`
+                    : '"Cinzel", serif';
+                const fontStr = `italic normal ${fSize}px ${fFamily}`;
+                const lines   = (location.name || '').split('\n');
+                const tmpCtx  = document.createElement('canvas').getContext('2d');
+                tmpCtx.font   = fontStr;
+                const maxW    = Math.max(...lines.map(l => tmpCtx.measureText(l).width));
+                const lineH   = fSize * 1.4;
+                const PAD     = 6;
+                const canvasW = Math.ceil(maxW + PAD * 2);
+                const canvasH = Math.ceil(lines.length * lineH + PAD * 2);
+                const wCvs    = document.createElement('canvas');
+                wCvs.width    = canvasW;
+                wCvs.height   = canvasH;
+                const wCtx    = wCvs.getContext('2d');
+                wCtx.font        = fontStr;
+                wCtx.textAlign   = 'center';
+                wCtx.lineJoin    = 'round';
+                wCtx.lineWidth   = Math.max(fSize * 0.22, 1.4);
+                wCtx.strokeStyle = 'rgba(0,20,60,0.85)';
+                wCtx.fillStyle   = '#b8d8f0';
+                lines.forEach((line, i) => {
+                    const y = PAD + (i + 0.85) * lineH;
+                    wCtx.strokeText(line, canvasW / 2, y);
+                    wCtx.fillText(line,   canvasW / 2, y);
+                });
+                const pos    = coordsToSphere(location.x, location.y);
+                const worldH = canvasH * 0.16;   // ~same px-to-world ratio as other markers
+                const worldW = worldH * (canvasW / canvasH);
+                const wMesh  = new THREE.Mesh(
+                    new THREE.PlaneGeometry(worldW, worldH),
+                    new THREE.MeshBasicMaterial({
+                        map: new THREE.CanvasTexture(wCvs),
+                        transparent: true, alphaTest: 0.01,
+                        toneMapped: false, depthWrite: false, depthTest: false,
+                    })
+                );
+                wMesh.renderOrder = 1;
+                wMesh.position.copy(pos);
+                wMesh.lookAt(pos.clone().multiplyScalar(2));
+                wMesh.userData = location;
+                markersGroup.add(wMesh);
+                return;
+            }
+
             const r    = dotRadii[type];
             if (!r) return;
 
