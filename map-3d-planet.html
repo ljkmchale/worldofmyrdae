@@ -1178,7 +1178,9 @@
                     : 'rgba(0,20,60,0.85)';      // dark navy for water
 
                 // ── Font — fully respect all editor settings ──────────────────────
-                const fSize   = Math.max(location.fontSize || 10, 8);
+                // Regions use 75 % of their editor font size — still readable but less dominant
+                const rawSize = (location.fontSize || 10) * (type === 'region' ? 0.75 : 1.0);
+                const fSize   = Math.max(rawSize, 7);
                 const fFamily = resolveFont(location.fontFamily);
                 const fStyle  = (location.fontStyle || 'normal').toLowerCase();
                 const fWeight = location.fontWeight || '400';
