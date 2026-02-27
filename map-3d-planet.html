@@ -437,6 +437,13 @@
             color: 0xffffff,   // white so the texture colours aren't tinted green
             roughness: 0.75,
             metalness: 0.0,
+            // ── Stencil: paint ref=1 wherever the planet surface is drawn ──────
+            // Marker materials test stencil === 1, so label pixels that fall
+            // outside the sphere silhouette (into empty space) are discarded.
+            stencilWrite: true,
+            stencilFunc:  THREE.AlwaysStencilFunc,
+            stencilZPass: THREE.ReplaceStencilOp,
+            stencilRef:   1,
         });
 
         // ── Realistic water ───────────────────────────────────────────────────────
@@ -1271,8 +1278,12 @@
                     new THREE.MeshBasicMaterial({
                         map:        new THREE.CanvasTexture(wCvs),
                         transparent: true, alphaTest: 0.01,
-                        toneMapped:  false, depthWrite: false, depthTest: false,
+                        toneMapped:  false, depthWrite: false, depthTest: true,
                         opacity:     location.opacity !== undefined ? location.opacity : 1.0,
+                        // Only render inside the planet sphere (stencil written by planetMaterial)
+                        stencilWrite: false,
+                        stencilFunc:  THREE.EqualStencilFunc,
+                        stencilRef:   1,
                     })
                 );
                 wMesh.renderOrder = 1;
@@ -1366,8 +1377,12 @@
             const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
                 map:        new THREE.CanvasTexture(canvas),
                 transparent: true, alphaTest: 0.01,
-                toneMapped:  false, depthWrite: false, depthTest: false,
+                toneMapped:  false, depthWrite: false, depthTest: true,
                 opacity:     location.opacity !== undefined ? location.opacity : 1.0,
+                // Only render inside the planet sphere (stencil written by planetMaterial)
+                stencilWrite: false,
+                stencilFunc:  THREE.EqualStencilFunc,
+                stencilRef:   1,
             }));
             mesh.renderOrder = 1;
             mesh.position.copy(pos);
