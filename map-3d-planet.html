@@ -1140,6 +1140,22 @@
             }
         }
 
+        // ── Font family resolver ────────────────────────────────────────────────
+        // Maps editor font names to loaded CSS equivalents + fallback chains.
+        // "Garamond MT" and "Copperplate Gothic" are not standard web fonts;
+        // map them to the closest loaded Google Fonts so canvas renders correctly.
+        const FONT_CSS = {
+            'Garamond MT':        '"Cormorant Garamond", "Garamond MT", Georgia, serif',
+            'Copperplate Gothic': '"Cinzel Decorative", "Cinzel", "Copperplate Gothic", serif',
+            'Cinzel Decorative':  '"Cinzel Decorative", "Cinzel", serif',
+            'Cinzel':             '"Cinzel", serif',
+            'Simonetta':          '"Simonetta", serif',
+        };
+        function resolveFont(fontFamily) {
+            if (!fontFamily) return '"Cinzel", serif';
+            return FONT_CSS[fontFamily] || `"${fontFamily}", "Cinzel", serif`;
+        }
+
         function createMarker(location) {
             if (!location.x || !location.y) return;
             const type = location.type;
@@ -1156,9 +1172,7 @@
 
                 // ── Font — fully respect all editor settings ──────────────────────
                 const fSize   = Math.max(location.fontSize || 10, 8);
-                const fFamily = location.fontFamily
-                    ? `"${location.fontFamily}", "Cinzel Decorative", "Cinzel", serif`
-                    : '"Cinzel", serif';
+                const fFamily = resolveFont(location.fontFamily);
                 const fStyle  = (location.fontStyle || 'normal').toLowerCase();
                 const fWeight = location.fontWeight || '400';
                 const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
@@ -1171,9 +1185,15 @@
                 const PAD      = 6;
                 // textCurve: same convention as 2D map (value × 5 = pixel arc displacement)
                 const curveVal = location.textCurve ? parseFloat(location.textCurve) * 5 : 0;
-                const arcRoom  = Math.abs(curveVal);
+                const arcBow   = Math.abs(curveVal);
                 const canvasW  = Math.ceil(maxW + PAD * 2);
-                const canvasH  = Math.ceil(lines.length * lineH + PAD * 2 + arcRoom);
+                // For arc text the canvas must be tall enough to contain the full arc + glyph height.
+                // The midpoint glyph top = canvasH/2 - arcBow - fSize/2; needs to be >= PAD.
+                // So: canvasH >= 2*arcBow + fSize + PAD*2
+                const canvasH  = Math.ceil(Math.max(
+                    lines.length * lineH + PAD * 2,
+                    2 * arcBow + fSize + PAD * 2
+                ));
 
                 const wCvs    = document.createElement('canvas');
                 wCvs.width    = canvasW;
@@ -1197,6 +1217,8 @@
                     const circleCX   = canvasW / 2;
                     const circleCY   = canvasH / 2 + cy_l;
                     const startAngle = Math.atan2(-cy_l, -halfW);
+                    // d<0 → upward bow → characters step CCW (+1); d>0 → downward bow → CW (-1)
+                    const arcDir     = d < 0 ? 1 : -1;
                     wCtx.textBaseline = 'middle';
                     wCtx.textAlign    = 'center';
                     let arcAngle = startAngle;
@@ -1204,17 +1226,17 @@
                         const ch    = text[i];
                         const chW   = wCtx.measureText(ch).width;
                         const chAng = chW / R;
-                        arcAngle += chAng / 2;
+                        arcAngle += arcDir * chAng / 2;
                         wCtx.save();
                         wCtx.translate(
                             circleCX + R * Math.cos(arcAngle),
                             circleCY + R * Math.sin(arcAngle)
                         );
-                        wCtx.rotate(arcAngle + Math.PI / 2);
+                        wCtx.rotate(arcAngle + arcDir * Math.PI / 2);
                         wCtx.strokeText(ch, 0, 0);
                         wCtx.fillText(ch, 0, 0);
                         wCtx.restore();
-                        arcAngle += chAng / 2;
+                        arcAngle += arcDir * chAng / 2;
                     }
                 } else {
                     // ── Straight or multi-line text ───────────────────────────────
@@ -1270,9 +1292,7 @@
 
             // ── Font — fully respect all editor settings ──────────────────────
             const fSize   = Math.max(location.fontSize || 11, 9);
-            const fFamily = location.fontFamily
-                ? `"${location.fontFamily}", "Cinzel", serif`
-                : '"Cinzel", serif';
+            const fFamily = resolveFont(location.fontFamily);
             const fStyle  = (location.fontStyle || '').toLowerCase() === 'italic' ? 'italic' : 'normal';
             const fWeight = location.fontWeight || 'normal';
             const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
