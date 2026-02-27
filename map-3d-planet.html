@@ -1141,18 +1141,26 @@
         }
 
         function createMarker(location) {
-            if (!location.x || !location.y || location.type === 'region') return;
+            if (!location.x || !location.y) return;
             const type = location.type;
 
-            // ── Label-only water bodies (no dot — respects all font/style/rotation attributes) ──
-            if (type === 'water' || type === 'river') {
+            // ── Label-only: water, river, region (no dot marker) ─────────────────
+            if (type === 'water' || type === 'river' || type === 'region') {
+                // Color scheme per type
+                const fillColor   = (type === 'region')
+                    ? '#e8dfc0'                  // warm parchment for land regions
+                    : '#b8d8f0';                 // cool blue for water / rivers
+                const strokeColor = (type === 'region')
+                    ? 'rgba(40,25,10,0.85)'      // dark brown outline for regions
+                    : 'rgba(0,20,60,0.85)';      // dark navy for water
+
                 // ── Font — fully respect all editor settings ──────────────────────
                 const fSize   = Math.max(location.fontSize || 10, 8);
                 const fFamily = location.fontFamily
                     ? `"${location.fontFamily}", "Cinzel Decorative", "Cinzel", serif`
                     : '"Cinzel", serif';
-                const fStyle  = (location.fontStyle || 'italic').toLowerCase();
-                const fWeight = location.fontWeight || '300';
+                const fStyle  = (location.fontStyle || 'normal').toLowerCase();
+                const fWeight = location.fontWeight || '400';
                 const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
 
                 const lines    = (location.name || '').split('\n');
@@ -1174,8 +1182,8 @@
                 wCtx.font        = fontStr;
                 wCtx.lineJoin    = 'round';
                 wCtx.lineWidth   = Math.max(fSize * 0.22, 1.4);
-                wCtx.strokeStyle = 'rgba(0,20,60,0.85)';
-                wCtx.fillStyle   = '#b8d8f0';
+                wCtx.strokeStyle = strokeColor;
+                wCtx.fillStyle   = fillColor;
 
                 if (curveVal !== 0 && lines.length === 1) {
                     // ── Curved single-line text along a circular arc ─────────────
