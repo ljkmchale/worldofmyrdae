@@ -20,7 +20,28 @@
       "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue\")",
       "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id \\(Get-Process -Id $_OwningProcess\\).Id -Force -ErrorAction SilentlyContinue }; Write-Host ''done''\")",
       "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue; Write-Host ''node processes killed''\")",
-      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue; Write-Host ''cleared''\")"
+      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue; Write-Host ''cleared''\")",
+      "Bash(git fetch origin)",
+      "Bash(git stash push -m \"local changes: new locations + cloud/newline fixes\")",
+      "Bash(git pull origin master)",
+      "Bash(git stash pop)",
+      "Bash(git add js/locations-db.js map-3d-planet.html)",
+      "Bash(git commit:*)",
+      "Bash(git push origin master)",
+      "Bash(git add js/locations-db.js)",
+      "Bash(git add map-3d-planet.html map-3d-planet-v1-stable.html)",
+      "Bash(git push)",
+      "Bash(git add map-3d-planet.html)",
+      "Bash(node -e \"const d=require\\(''fs''\\).readFileSync\\(''C:\\\\\\\\Users\\\\\\\\Larry McHale\\\\\\\\.claude\\\\\\\\projects\\\\\\\\C--Users-Larry-McHale-Desktop-WorldofMyrdae--claude-worktrees-confident-antonelli\\\\\\\\093c9363-bc66-47df-bf5e-f069377faa17\\\\\\\\tool-results\\\\\\\\mcp-Claude_Preview-preview_console_logs-1772141654220.txt'',''utf8''\\); const arr=JSON.parse\\(d\\); const errs=arr.filter\\(x=>x.type===''error''||x.text.toLowerCase\\(\\).includes\\(''error''\\)||x.text.toLowerCase\\(\\).includes\\(''warn''\\)\\); console.log\\(JSON.stringify\\(errs.slice\\(0,10\\),null,2\\)\\);\")",
+      "Bash(node -e \":*)",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/js/locations-db.js'',''utf8''\\);const m=[...c.matchAll\\(/fontFamily\\\\s*:\\\\s*[''\"\"]\\([^''\"\"]+\\)[''\"\"]/g\\)].map\\(x=>x[1]\\);console.log\\(JSON.stringify\\([...new Set\\(m\\)],null,2\\)\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/js/locations-db.js'',''utf8''\\);const m=[...c.matchAll\\(/fontFamily[\"\"'']?\\\\s*:\\\\s*[\"\"'']\\([^\"\"'']+\\)[\"\"'']/g\\)].map\\(x=>x[1]\\);console.log\\(JSON.stringify\\([...new Set\\(m\\)],null,2\\)\\);console.log\\(''total matches:'',m.length\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/editor.html'',''utf8''\\);const m=c.match\\(/Garamond|Copperplate|font-face|googleapis/gi\\)||[];console.log\\([...new Set\\(m\\)].join\\(''\\\\n''\\)\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/editor.html'',''utf8''\\);const idx=c.indexOf\\(''googleapis''\\);console.log\\(c.substring\\(idx-20, idx+300\\)\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/editor.html'',''utf8''\\);const idx=c.indexOf\\(''Garamond MT''\\);if\\(idx>=0\\){console.log\\(c.substring\\(idx-100,idx+200\\)\\);}else{console.log\\(''not found, searching font-face...''\\);const m=[...c.matchAll\\(/@font-face[\\\\s\\\\S]{0,300}?}/g\\)].map\\(x=>x[0]\\);console.log\\(m.join\\(''\\\\n---\\\\n''\\)\\);}\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/js/locations-db.js'',''utf8''\\);const styles=[...c.matchAll\\(/fontStyle\\\\s*:\\\\s*[''\"\"]\\([^''\"\"]+\\)[''\"\"]/g\\)].map\\(x=>x[1]\\);const weights=[...c.matchAll\\(/fontWeight\\\\s*:\\\\s*[''\"\"]\\([^''\"\"]+\\)[''\"\"]/g\\)].map\\(x=>x[1]\\);console.log\\(''Styles:'',[...new Set\\(styles\\)]\\);console.log\\(''Weights:'',[...new Set\\(weights\\)]\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/js/locations-db.js'',''utf8''\\);const styles=[...c.matchAll\\(/fontStyle[''\"\"]?\\\\s*:\\\\s*/g\\)].length;const weights=[...c.matchAll\\(/fontWeight[''\"\"]?\\\\s*:\\\\s*/g\\)].length;console.log\\(''fontStyle count:'',styles,''fontWeight count:'',weights\\);const families=[...c.matchAll\\(/fontFamily[''\"\"]?\\\\s*:\\\\s*/g\\)].length;console.log\\(''fontFamily count:'',families\\);\")",
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''C:/Users/Larry McHale/Desktop/WorldofMyrdae/js/locations-db.js'',''utf8''\\);const styles=[...c.matchAll\\(/fontStyle[''\"\"]?\\\\s*:\\\\s*\\([^,\\\\n}]+\\)/g\\)].map\\(x=>x[1].trim\\(\\)\\);const weights=[...c.matchAll\\(/fontWeight[''\"\"]?\\\\s*:\\\\s*\\([^,\\\\n}]+\\)/g\\)].map\\(x=>x[1].trim\\(\\)\\);console.log\\(''Styles:'',[...new Set\\(styles\\)].join\\('', ''\\)\\);console.log\\(''Weights:'',[...new Set\\(weights\\)].join\\('', ''\\)\\);\")"
     ]
   }
 }
