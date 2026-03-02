@@ -1167,15 +1167,15 @@
             if (!location.x || !location.y) return;
             const type = location.type;
 
-            // ── Label-only: water, river, region (no dot marker) ─────────────────
-            if (type === 'water' || type === 'river' || type === 'region') {
+            // ── Label-only: water, river, region, nature (no dot marker) ────────
+            if (type === 'water' || type === 'river' || type === 'region' || type === 'nature') {
                 // Color scheme per type
-                const fillColor   = (type === 'region')
-                    ? '#e8dfc0'                  // warm parchment for land regions
-                    : '#b8d8f0';                 // cool blue for water / rivers
-                const strokeColor = (type === 'region')
-                    ? 'rgba(40,25,10,0.85)'      // dark brown outline for regions
-                    : 'rgba(0,20,60,0.85)';      // dark navy for water
+                const fillColor   = type === 'region' ? '#e8dfc0'          // warm parchment
+                                  : type === 'nature' ? '#c8e0a8'          // soft sage green
+                                  :                    '#b8d8f0';          // cool blue (water/river)
+                const strokeColor = type === 'region' ? 'rgba(40,25,10,0.85)'  // dark brown
+                                  : type === 'nature' ? 'rgba(20,50,10,0.85)'  // dark forest green
+                                  :                    'rgba(0,20,60,0.85)';   // dark navy (water)
 
                 // ── Font — fully respect all editor settings ──────────────────────
                 // Regions use 75 % of their editor font size — still readable but less dominant
@@ -1195,7 +1195,22 @@
                 // textCurve: same convention as 2D map (value × 5 = pixel arc displacement)
                 const curveVal = location.textCurve ? parseFloat(location.textCurve) * 5 : 0;
                 const arcBow   = Math.abs(curveVal);
-                const canvasW  = Math.ceil(maxW + PAD * 2);
+
+                // ── Arc-text canvas width ─────────────────────────────────────────────
+                // Glyphs travel along a circle of radius R.  As the arc traverses ~300°
+                // the x-range of glyph centres is [-R, +R] relative to the circle's CX.
+                // The canvas must be 2*R + one glyph-height wide so nothing is clipped.
+                // For straight/multi-line text the old formula (maxW + 2*PAD) is fine.
+                let arcR = 0;
+                if (curveVal !== 0 && lines.length === 1) {
+                    const _hw  = maxW / 2;
+                    const _cyl = (curveVal * curveVal - _hw * _hw) / (2 * curveVal);
+                    arcR = Math.sqrt(_hw * _hw + _cyl * _cyl);
+                }
+                const canvasW  = arcR > 0
+                    ? Math.ceil(2 * arcR + fSize + PAD * 2)
+                    : Math.ceil(maxW + PAD * 2);
+
                 // For arc text the canvas must be tall enough to contain the full arc + glyph height.
                 // The midpoint glyph top = canvasH/2 - arcBow - fSize/2; needs to be >= PAD.
                 // So: canvasH >= 2*arcBow + fSize + PAD*2
@@ -1249,9 +1264,13 @@
                     }
                 } else {
                     // ── Straight or multi-line text ───────────────────────────────
-                    wCtx.textAlign = 'center';
+                    // textBaseline='middle' + (i+0.5)*lineH centres each line in its
+                    // row, so the whole text block is vertically centred in the canvas
+                    // and the mesh origin (= sphere coordinate) aligns with the label.
+                    wCtx.textBaseline = 'middle';
+                    wCtx.textAlign    = 'center';
                     lines.forEach((line, i) => {
-                        const y = PAD + (i + 0.85) * lineH;
+                        const y = PAD + (i + 0.5) * lineH;
                         wCtx.strokeText(line, canvasW / 2, y);
                         wCtx.fillText(line,   canvasW / 2, y);
                     });
@@ -1275,6 +1294,26 @@
 
                 const worldH = canvasH * 0.16;
                 const worldW = worldH * (canvasW / canvasH);
+
+                // ── Water labels: lift northward so text sits ON the water body ────────
+                // In the 2D map, text baseline is AT the geographic coordinate and the text
+                // body extends upward/northward into the lake.  With textBaseline='middle'
+                // our canvas centres text at the canvas centre (= mesh centre = geographic
+                // coordinate), so the text bottom is blockH/2 SOUTH of the coordinate.
+                // Shift the mesh northward by exactly that amount so text bottom aligns
+                // with the coordinate and the whole label reads above/inside the lake.
+                // Formula: blockH/2 × (worldH/canvasH) = blockH × 0.08
+                if (type === 'water' && curveVal === 0) {
+                    const blockH     = (lines.length - 1) * lineH + fSize;
+                    const northShift = blockH * 0.08;
+                    const _n  = finalPos.clone().normalize();
+                    const _up = new THREE.Vector3(0, 1, 0);
+                    const _tX = new THREE.Vector3().crossVectors(_up, _n).normalize();
+                    const _tY = new THREE.Vector3().crossVectors(_n, _tX).normalize();
+                    finalPos.addScaledVector(_tY, northShift);
+                    finalPos.normalize().multiplyScalar(planetRadius + 2);
+                }
+
                 const wMesh  = new THREE.Mesh(
                     new THREE.PlaneGeometry(worldW, worldH),
                     new THREE.MeshBasicMaterial({
@@ -1337,7 +1376,9 @@
             const leftPad = Math.max(0, -offX + 4);
 
             const canvasH = baseH + topPad + botPad;
-            const canvasW = Math.ceil(leftPad + DOT_AREA + Math.max(offX, 0) + textW + 10);
+            // Text starts at dot-centre + offX (matching 2D map convention: offsetX is
+            // measured from the dot centre, not from a fixed left-margin constant).
+            const canvasW = Math.ceil(leftPad + DOT_CX + Math.max(offX, 0) + textW + 10);
 
             // Actual dot position in the expanded canvas
             const dotCX   = DOT_CX  + leftPad;
@@ -1355,7 +1396,7 @@
             if (lines.length && !location.hideLabel) {
                 const blockH        = (lines.length - 1) * lineH;
                 const firstBaseline = dotCY + offY - blockH / 2 + fSize * 0.38;
-                const textX         = leftPad + DOT_AREA + offX;
+                const textX         = leftPad + DOT_CX + offX;
                 ctx.font      = fontStr;
                 ctx.lineJoin  = 'round';
                 ctx.lineWidth = Math.max(fSize * 0.22, 1.5);
