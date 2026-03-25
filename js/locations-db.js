@@ -3498,8 +3498,8 @@ const WORLD_LOCATIONS = {
             "id": "covered-bastion",
             "name": "Covered\nBastion",
             "type": "poi",
-            "x": 61.1,
-            "y": 39.2,
+            "x": 61.25,
+            "y": 39.32,
             "region": "",
             "description": "Point of Interest",
             "fontFamily": "Garamond MT",
@@ -4543,6 +4543,25 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -29,
             "labelOffsetY": 21
+        },
+        {
+            "id": "hillsofwheldrake",
+            "name": "Hills of\nWheldrake",
+            "type": "region",
+            "x": 57.43,
+            "y": 27.87,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 17,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
         }
     ],
     "roads": [
@@ -6533,6 +6552,242 @@ const WORLD_LOCATIONS = {
                     36.43
                 ],
                 "ferndale"
+            ]
+        },
+        {
+            "id": "stouhg-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "stouhg",
+                [
+                    61.98,
+                    39.27
+                ],
+                "new-brimhaven"
+            ]
+        },
+        {
+            "id": "newbrimaven-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "new-brimhaven",
+                [
+                    60.23,
+                    39.84
+                ],
+                [
+                    59.35,
+                    41.13
+                ],
+                "olduktali"
+            ]
+        },
+        {
+            "id": "ferndale-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "ferndale",
+                [
+                    58.53,
+                    34.59
+                ],
+                [
+                    58.58,
+                    33.19
+                ],
+                "padstow"
+            ]
+        },
+        {
+            "id": "padstor-road-west",
+            "type": "major",
+            "curved": true,
+            "points": []
+        },
+        {
+            "id": "padstow-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "padstow",
+                [
+                    57.91,
+                    31.83
+                ],
+                "basctdelm"
+            ]
+        },
+        {
+            "id": "ferndale-road-south",
+            "type": "major",
+            "curved": true,
+            "name": "Halesworth\\nLoop",
+            "fontSize": 10,
+            "labelReverse": true,
+            "points": [
+                "ferndale",
+                [
+                    58.45,
+                    37.24
+                ],
+                [
+                    56.65,
+                    37.99
+                ],
+                "shademoor"
+            ]
+        },
+        {
+            "id": "olduktali-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "olduktali",
+                [
+                    58.38,
+                    40.86
+                ],
+                [
+                    58.09,
+                    39.02
+                ],
+                [
+                    56.71,
+                    38.64
+                ],
+                "shademoor"
+            ]
+        },
+        {
+            "id": "padstow-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "padstow",
+                [
+                    58.38,
+                    31.07
+                ],
+                "dibsley"
+            ]
+        },
+        {
+            "id": "padstow-road-south",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "padstow",
+                [
+                    58.25,
+                    32.97
+                ],
+                [
+                    57.07,
+                    33.95
+                ],
+                "murfield"
+            ]
+        },
+        {
+            "id": "murfield-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "murfield",
+                [
+                    56.51,
+                    35.97
+                ],
+                "shademoor"
+            ]
+        },
+        {
+            "id": "basctdelm-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "basctdelm",
+                [
+                    57.93,
+                    30.93
+                ],
+                "omelle"
+            ]
+        },
+        {
+            "id": "omelle-road-east",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "omelle",
+                [
+                    58.26,
+                    30.34
+                ],
+                [
+                    58.65,
+                    29.26
+                ],
+                "baryn"
+            ]
+        },
+        {
+            "id": "omelle-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "omelle",
+                [
+                    57.73,
+                    29.39
+                ],
+                "sharsley"
+            ]
+        },
+        {
+            "id": "sharsley-road-northeast",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "sharsley",
+                [
+                    57.39,
+                    28.8
+                ],
+                [
+                    57.64,
+                    27.93
+                ],
+                "haern"
+            ]
+        },
+        {
+            "id": "baryn-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "baryn",
+                [
+                    59.07,
+                    28.19
+                ],
+                [
+                    58.24,
+                    27.74
+                ],
+                "haern"
             ]
         }
     ],
