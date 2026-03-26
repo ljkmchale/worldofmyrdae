@@ -438,8 +438,8 @@ const MapOverlay = (function () {
                 const diamond = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
                 const pts = `${px},${py - r} ${px + r * 0.7},${py} ${px},${py + r} ${px - r * 0.7},${py}`;
                 diamond.setAttribute('points', pts);
-                diamond.setAttribute('fill', '#FF8C00');
-                diamond.setAttribute('stroke', brown);
+                diamond.setAttribute('fill', brown);
+                diamond.setAttribute('stroke', 'rgba(255, 255, 255, 0.6)');
                 diamond.setAttribute('stroke-width', '1.5');
                 markerGroup.appendChild(diamond);
                 addLabel(markerGroup, loc, px, py, r, natW);
