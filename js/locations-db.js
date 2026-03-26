@@ -1962,7 +1962,7 @@ const WORLD_LOCATIONS = {
         {
             "id": "gur-madihl",
             "name": "Gur\nMadihl",
-            "type": "city",
+            "type": "small-city",
             "x": 63.1,
             "y": 46.04,
             "region": "",
@@ -2271,7 +2271,7 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
-            "fontSize": 12,
+            "fontSize": 9,
             "fontWeight": "300",
             "fontStyle": "Italic",
             "markerSize": 0.25,
@@ -3389,8 +3389,8 @@ const WORLD_LOCATIONS = {
             "id": "graeton",
             "name": "Graeton",
             "type": "town",
-            "x": 48.66,
-            "y": 55.1,
+            "x": 48.8,
+            "y": 54.93,
             "region": "",
             "description": "Town",
             "fontFamily": "Garamond MT",
@@ -4562,6 +4562,136 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 0.5
+        },
+        {
+            "id": "riverside",
+            "name": "Riverside",
+            "type": "small-city",
+            "x": 54.65,
+            "y": 27.51,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -28,
+            "labelOffsetY": -13
+        },
+        {
+            "id": "falthalor",
+            "name": "Fal'thalor",
+            "type": "town",
+            "x": 53.49,
+            "y": 38.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -66,
+            "labelOffsetY": -10
+        },
+        {
+            "id": "dolkholdur",
+            "name": "Dol Kholdur",
+            "type": "landmark",
+            "x": 54.77,
+            "y": 43.7,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 13,
+            "labelOffsetY": 4,
+            "opacity": 1
+        },
+        {
+            "id": "beselcrest",
+            "name": "Beselcrest",
+            "type": "region",
+            "x": 49.4,
+            "y": 57.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "kholdurriver",
+            "name": "Kholdur River",
+            "type": "river",
+            "x": 48.96,
+            "y": 54.83,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": -25,
+            "opacity": 0.5
+        },
+        {
+            "id": "evostihl",
+            "name": "Evostihl",
+            "type": "town",
+            "x": 48.83,
+            "y": 49.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 6,
+            "labelOffsetY": 12
+        },
+        {
+            "id": "nulvara",
+            "name": "Nulvara",
+            "type": "town",
+            "x": 47,
+            "y": 50.71,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": -12
         }
     ],
     "roads": [
@@ -6788,6 +6918,217 @@ const WORLD_LOCATIONS = {
                     27.74
                 ],
                 "haern"
+            ]
+        },
+        {
+            "id": "dolkholdur-road",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "dolkholdur",
+                [
+                    54.75,
+                    42.34
+                ],
+                [
+                    53.87,
+                    42.02
+                ],
+                [
+                    54.06,
+                    39.75
+                ],
+                [
+                    53.38,
+                    39.06
+                ],
+                "falthalor"
+            ]
+        },
+        {
+            "id": "severdale-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "severdale",
+                [
+                    55.53,
+                    50.28
+                ],
+                [
+                    54.72,
+                    47.81
+                ],
+                "slagerum"
+            ]
+        },
+        {
+            "id": "hasfen-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "hasfen",
+                [
+                    52.11,
+                    59.34
+                ],
+                [
+                    50.42,
+                    57
+                ],
+                "yunberr"
+            ]
+        },
+        {
+            "id": "yunberr-road-north",
+            "type": "major",
+            "curved": true,
+            "name": "Kholdur Pass",
+            "fontSize": 10,
+            "labelOffset": 29,
+            "points": [
+                "yunberr",
+                [
+                    51.21,
+                    54.55
+                ],
+                [
+                    52.09,
+                    52.34
+                ],
+                "inshire"
+            ]
+        },
+        {
+            "id": "yunberr-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "yunberr",
+                [
+                    49.83,
+                    54.27
+                ],
+                "graeton"
+            ]
+        },
+        {
+            "id": "graeton-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "graeton",
+                [
+                    48.53,
+                    55.31
+                ],
+                [
+                    48.25,
+                    56.29
+                ],
+                "seaway-harbor"
+            ]
+        },
+        {
+            "id": "stonshore-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "stoneshore",
+                [
+                    48.98,
+                    60.05
+                ],
+                [
+                    47.96,
+                    59.71
+                ],
+                [
+                    47.89,
+                    56.74
+                ],
+                "seaway-harbor"
+            ]
+        },
+        {
+            "id": "inshire-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "inshire",
+                [
+                    51.97,
+                    48.27
+                ],
+                [
+                    54.34,
+                    48.65
+                ],
+                "slagerum"
+            ]
+        },
+        {
+            "id": "slagerum-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "slagerum",
+                [
+                    55.17,
+                    46.5
+                ],
+                "thelkholdur"
+            ]
+        },
+        {
+            "id": "inshire-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "inshire",
+                [
+                    49.93,
+                    48.64
+                ],
+                "evostihl"
+            ]
+        },
+        {
+            "id": "seawayharbor-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "seaway-harbor",
+                [
+                    46.59,
+                    54.81
+                ],
+                [
+                    46.39,
+                    52.47
+                ],
+                "nulvara"
+            ]
+        },
+        {
+            "id": "evostihl-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "evostihl",
+                [
+                    47.86,
+                    50.87
+                ],
+                "nulvara"
             ]
         }
     ],
