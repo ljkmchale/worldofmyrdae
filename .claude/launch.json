@@ -4,7 +4,7 @@
     {
       "name": "World of Myrdae",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["C:\\Users\\Larry McHale\\Desktop\\WorldofMyrdae\\.claude\\worktrees\\stupefied-engelbart\\server.js"],
+      "runtimeArgs": ["C:\Users\Larry McHale\Desktop\WorldofMyrdae\server.js"],
       "port": 3000,
       "autoPort": true
     }
