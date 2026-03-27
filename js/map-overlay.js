@@ -349,7 +349,7 @@ const MapOverlay = (function () {
         switch (loc.type) {
             case 'capital': {
                 // White ring (glow) behind
-                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.8)', 6);
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 1.0)', 4);
                 markerGroup.appendChild(glow);
 
                 // White filled circle, brown outline, star in center
@@ -376,7 +376,7 @@ const MapOverlay = (function () {
             }
             case 'city': {
                 // White ring (glow) behind
-                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.6)', 5);
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.95)', 3);
                 markerGroup.appendChild(glow);
 
                 // Original city marker: White filled circle, brown outline...
@@ -392,7 +392,7 @@ const MapOverlay = (function () {
             }
             case 'small-city': {
                 // Smaller city marker: white circle with brown outline, no center dot
-                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.5)', 3);
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.95)', 2);
                 markerGroup.appendChild(glow);
 
                 const outer = makeCircle(px, py, r, '#FFFFFF', brown, 1.5);
@@ -402,8 +402,8 @@ const MapOverlay = (function () {
                 break;
             }
             case 'town': {
-                // Smaller brown filled circle with 60% white ring
-                const dot = makeCircle(px, py, r, brown, 'rgba(255, 255, 255, 0.6)', 1.5);
+                // Smaller brown filled circle with solid white ring
+                const dot = makeCircle(px, py, r, brown, 'rgba(255, 255, 255, 0.95)', 1);
                 markerGroup.appendChild(dot);
                 addLabel(markerGroup, loc, px, py, r, natW);
                 break;
@@ -439,8 +439,8 @@ const MapOverlay = (function () {
                 const pts = `${px},${py - r} ${px + r * 0.7},${py} ${px},${py + r} ${px - r * 0.7},${py}`;
                 diamond.setAttribute('points', pts);
                 diamond.setAttribute('fill', brown);
-                diamond.setAttribute('stroke', 'rgba(255, 255, 255, 0.6)');
-                diamond.setAttribute('stroke-width', '1.5');
+                diamond.setAttribute('stroke', 'rgba(255, 255, 255, 0.95)');
+                diamond.setAttribute('stroke-width', '1');
                 markerGroup.appendChild(diamond);
                 addLabel(markerGroup, loc, px, py, r, natW);
                 break;
@@ -466,8 +466,8 @@ const MapOverlay = (function () {
                 square.setAttribute('width', side);
                 square.setAttribute('height', side);
                 square.setAttribute('fill', brown);
-                square.setAttribute('stroke', 'rgba(255, 255, 255, 0.6)');
-                square.setAttribute('stroke-width', '1.5');
+                square.setAttribute('stroke', 'rgba(255, 255, 255, 0.95)');
+                square.setAttribute('stroke-width', '1');
                 markerGroup.appendChild(square);
                 addLabel(markerGroup, loc, px, py, r, natW);
                 break;

@@ -4802,8 +4802,8 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetX": -56,
+            "labelOffsetY": -3
         },
         {
             "id": "bastionoforder",
@@ -4896,6 +4896,170 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -33,
             "labelOffsetY": 17
+        },
+        {
+            "id": "everlownlodge",
+            "name": "Everlown\nLodge",
+            "type": "landmark",
+            "x": 40.8,
+            "y": 41.86,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -60,
+            "labelOffsetY": 0,
+            "opacity": 1
+        },
+        {
+            "id": "scarden",
+            "name": "Scar Den",
+            "type": "town",
+            "x": 41.9,
+            "y": 38.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "waywardcrest",
+            "name": "Wayward Crest",
+            "type": "region",
+            "x": 44.29,
+            "y": 38.89,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": 10,
+            "opacity": 0.5
+        },
+        {
+            "id": "kelaad",
+            "name": "Kelaad",
+            "type": "town",
+            "x": 41.85,
+            "y": 35.52,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -15,
+            "labelOffsetY": 20
+        },
+        {
+            "id": "caelora",
+            "name": "Caelora",
+            "type": "small-city",
+            "x": 53.13,
+            "y": 36.23,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -57,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "darafee",
+            "name": "Darafee",
+            "type": "town",
+            "x": 52.65,
+            "y": 34.5,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -2
+        },
+        {
+            "id": "tarnsport",
+            "name": "Tarnsport",
+            "type": "town",
+            "x": 55.2,
+            "y": 30.1,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -65,
+            "labelOffsetY": -8
+        },
+        {
+            "id": "varenwood",
+            "name": "Varenwood",
+            "type": "nature",
+            "x": 52.4,
+            "y": 31.24,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "qaldynn",
+            "name": "Qal'dynn",
+            "type": "capital",
+            "x": 50.94,
+            "y": 33.2,
+            "region": "",
+            "description": "",
+            "fontFamily": "Garamond MT",
+            "fontSize": 16,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0
         }
     ],
     "roads": [
@@ -6969,7 +7133,7 @@ const WORLD_LOCATIONS = {
                 ],
                 [
                     56.65,
-                    37.99
+                    37.87
                 ],
                 "shademoor"
             ]
@@ -7375,6 +7539,168 @@ const WORLD_LOCATIONS = {
                     43.41
                 ],
                 "skrettel"
+            ]
+        },
+        {
+            "id": "amberleen-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "amberleen",
+                [
+                    45.63,
+                    46.32
+                ],
+                [
+                    43.71,
+                    47.18
+                ],
+                "sunfelpost"
+            ]
+        },
+        {
+            "id": "sundelpost-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "sunfelpost",
+                [
+                    42.91,
+                    46.94
+                ],
+                [
+                    43.38,
+                    49.53
+                ],
+                "gulward"
+            ]
+        },
+        {
+            "id": "sundelpost-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "sunfelpost",
+                [
+                    43.18,
+                    45.92
+                ],
+                [
+                    43.25,
+                    44.38
+                ],
+                "deterahn"
+            ]
+        },
+        {
+            "id": "bonegate-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "bonegate",
+                [
+                    40.85,
+                    43.51
+                ],
+                "everlownlodge"
+            ]
+        },
+        {
+            "id": "deterahn-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "deterahn",
+                [
+                    42.92,
+                    43.05
+                ],
+                [
+                    42.19,
+                    41.92
+                ],
+                [
+                    41.5,
+                    42.52
+                ],
+                "everlownlodge"
+            ]
+        },
+        {
+            "id": "everlownlodge-road-northeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "everlownlodge",
+                [
+                    41.07,
+                    41.18
+                ],
+                [
+                    41.94,
+                    41.42
+                ],
+                [
+                    42.2,
+                    39.61
+                ],
+                "scarden"
+            ]
+        },
+        {
+            "id": "everlownlodge-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "everlownlodge",
+                [
+                    40.71,
+                    39.72
+                ],
+                [
+                    40.9,
+                    37.56
+                ],
+                [
+                    41.1,
+                    35.93
+                ],
+                "kelaad"
+            ]
+        },
+        {
+            "id": "falthalor-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "falthalor",
+                [
+                    52.71,
+                    38.23
+                ],
+                [
+                    52.42,
+                    40.21
+                ],
+                "endorei"
+            ]
+        },
+        {
+            "id": "shademoor-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "shademoor",
+                [
+                    55.94,
+                    37.52
+                ],
+                [
+                    55.44,
+                    36.86
+                ],
+                "southern-arch"
             ]
         }
     ],
