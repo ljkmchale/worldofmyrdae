@@ -316,6 +316,7 @@ const Editor = (function () {
         const isTown = locType.toLowerCase() === 'town';
         const isPoi = locType.toLowerCase() === 'poi';
         const isRiver = locType.toLowerCase() === 'river';
+        const isLandmark = locType.toLowerCase() === 'landmark';
         const isNature = ['nature', 'region', 'water', 'landmark'].includes(locType.toLowerCase());
         const isCity = locType.toLowerCase() === 'city' || locType.toLowerCase() === 'small-city';
 
@@ -351,7 +352,7 @@ const Editor = (function () {
         };
 
         setIf('fontFamily', document.getElementById('loc-fontFamily').value, null,
-            isTown || isCity || isPoi || isRiver ? "Garamond MT" : (isNature ? "Cinzel Decorative" : undefined));
+            isTown || isCity || isPoi || isRiver || isLandmark ? "Garamond MT" : (isNature ? "Cinzel Decorative" : undefined));
         setIf('fontSize', document.getElementById('loc-fontSize').value, parseInt,
             isTown || isCity || isPoi || isRiver ? 14 : (isNature ? 12 : undefined));
         setIf('fontWeight', document.getElementById('loc-fontWeight').value, null,

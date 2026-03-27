@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "World of Myrdae",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["C:\Users\Larry McHale\Desktop\WorldofMyrdae\server.js"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
       "port": 3000,
       "autoPort": true
     }

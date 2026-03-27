@@ -3659,8 +3659,8 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetX": 4,
+            "labelOffsetY": 15
         },
         {
             "id": "southern-arch",
@@ -3733,8 +3733,8 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.15,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "labelOffsetX": 18,
-            "labelOffsetY": 5
+            "labelOffsetX": 4,
+            "labelOffsetY": 22
         },
         {
             "id": "baryn",
@@ -5060,6 +5060,361 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.15,
             "markerOffsetX": 0,
             "markerOffsetY": 0
+        },
+        {
+            "id": "onaren",
+            "name": "O'naren",
+            "type": "town",
+            "x": 50.05,
+            "y": 33.46,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -2,
+            "labelOffsetY": 18
+        },
+        {
+            "id": "abbeyofmontrest",
+            "name": "Abbey of\nMont Rest",
+            "type": "landmark",
+            "x": 49.1,
+            "y": 36.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 13,
+            "labelOffsetY": -5,
+            "opacity": 1
+        },
+        {
+            "id": "cradlecrestrise",
+            "name": "Cradlecrest\nRise",
+            "type": "region",
+            "x": 49.73,
+            "y": 35.16,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "200",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": -56,
+            "opacity": 0.5
+        },
+        {
+            "id": "mossholde",
+            "name": "Mossholde",
+            "type": "landmark",
+            "x": 48.09,
+            "y": 32.6,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -46,
+            "labelOffsetY": -15,
+            "opacity": 1
+        },
+        {
+            "id": "brokencitadel",
+            "name": "Broken\nCitadel",
+            "type": "poi",
+            "x": 47.82,
+            "y": 33.04,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -50,
+            "labelOffsetY": 4,
+            "opacity": 1
+        },
+        {
+            "id": "tomboftsanvoeg",
+            "name": "Tomb of\nTsan'voeg",
+            "type": "poi",
+            "x": 46.04,
+            "y": 35.53,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 9,
+            "labelOffsetY": 10,
+            "opacity": 1
+        },
+        {
+            "id": "yallona",
+            "name": "Y'allona\n(Sacred Valley)",
+            "type": "region",
+            "x": 46.72,
+            "y": 34.42,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "fardrift",
+            "name": "Fardrift",
+            "type": "town",
+            "x": 64.85,
+            "y": 26.76,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -46,
+            "labelOffsetY": -10
+        },
+        {
+            "id": "corilas",
+            "name": "Corilas",
+            "type": "small-city",
+            "x": 62.19,
+            "y": 25.5,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "wellen",
+            "name": "Wellen",
+            "type": "town",
+            "x": 61.19,
+            "y": 26.3,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 13
+        },
+        {
+            "id": "murcomb",
+            "name": "Murcomb",
+            "type": "town",
+            "x": 60.35,
+            "y": 24.65,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -3
+        },
+        {
+            "id": "howlerscove",
+            "name": "Howler's\nCove",
+            "type": "poi",
+            "x": 62.56,
+            "y": 32.76,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 9,
+            "labelOffsetY": -13,
+            "opacity": 0.7
+        },
+        {
+            "id": "dibarynriver",
+            "name": "Dibaryn\nRiver",
+            "type": "river",
+            "x": 58.92,
+            "y": 29.87,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": -53,
+            "opacity": 0.8
+        },
+        {
+            "id": "seameetmarsh",
+            "name": "Seameet Marsh",
+            "type": "nature",
+            "x": 59.81,
+            "y": 27.43,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "lendahlee",
+            "name": "Lendahlee",
+            "type": "town",
+            "x": 59.07,
+            "y": 25.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "vurnun",
+            "name": "Vurnun",
+            "type": "town",
+            "x": 55.6,
+            "y": 23.36,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "tibbers",
+            "name": "Tibbers",
+            "type": "town",
+            "x": 56.07,
+            "y": 25.7,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -53,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "wheldrake",
+            "name": "Wheldrake",
+            "type": "town",
+            "x": 56.18,
+            "y": 27.3,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -28,
+            "labelOffsetY": -11
+        },
+        {
+            "id": "frystarianhighlands",
+            "name": "Frystarian Highlands",
+            "type": "region",
+            "x": 57.61,
+            "y": 21.83,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 18,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "rotation": 43,
+            "opacity": 0.5
         }
     ],
     "roads": [
@@ -7701,6 +8056,213 @@ const WORLD_LOCATIONS = {
                     36.86
                 ],
                 "southern-arch"
+            ]
+        },
+        {
+            "id": "southernarch-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "southern-arch",
+                [
+                    54.35,
+                    35.73
+                ],
+                [
+                    53.58,
+                    35.81
+                ],
+                "caelora"
+            ]
+        },
+        {
+            "id": "falthalor-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "falthalor",
+                [
+                    53.68,
+                    37.15
+                ],
+                "caelora"
+            ]
+        },
+        {
+            "id": "nauldeaus-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nauldeaus",
+                [
+                    60.57,
+                    26.73
+                ],
+                "wellen"
+            ]
+        },
+        {
+            "id": "wellen-road-northeast",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "wellen",
+                [
+                    61.56,
+                    25.99
+                ],
+                [
+                    61.8,
+                    26.02
+                ],
+                "corilas"
+            ]
+        },
+        {
+            "id": "wellen-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "wellen",
+                [
+                    60.58,
+                    24.47
+                ],
+                "murcomb"
+            ]
+        },
+        {
+            "id": "murcomb-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "murcomb",
+                [
+                    59.75,
+                    24.65
+                ],
+                [
+                    59.27,
+                    24.94
+                ],
+                "lendahlee"
+            ]
+        },
+        {
+            "id": "hearn-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "haern",
+                [
+                    58.11,
+                    27.36
+                ],
+                [
+                    58.41,
+                    26.23
+                ],
+                [
+                    58.81,
+                    25.99
+                ],
+                "lendahlee"
+            ]
+        },
+        {
+            "id": "sharsley-road-northwest",
+            "type": "major",
+            "curved": true,
+            "name": "The North\\nLoop",
+            "fontSize": 10,
+            "labelReverse": true,
+            "points": [
+                "sharsley",
+                [
+                    56.31,
+                    28.63
+                ],
+                "wheldrake"
+            ]
+        },
+        {
+            "id": "sharsley-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "sharsley",
+                [
+                    56.11,
+                    30.18
+                ],
+                "tarnsport"
+            ]
+        },
+        {
+            "id": "wehldrake-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "wheldrake",
+                [
+                    55.29,
+                    27.84
+                ],
+                "riverside"
+            ]
+        },
+        {
+            "id": "wheldrake-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "wheldrake",
+                [
+                    56.03,
+                    26.9
+                ],
+                "tibbers"
+            ]
+        },
+        {
+            "id": "tibbers-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "tibbers",
+                [
+                    55.86,
+                    23.86
+                ],
+                "vurnun"
+            ]
+        },
+        {
+            "id": "hemmil-road-south",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 10,
+            "points": [
+                "hemmil",
+                [
+                    54.23,
+                    31.68
+                ],
+                [
+                    53.42,
+                    32.08
+                ],
+                [
+                    52.57,
+                    33.53
+                ],
+                "darafee"
             ]
         }
     ],

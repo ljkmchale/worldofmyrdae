@@ -876,6 +876,10 @@ p {
   stroke: rgba(0, 0, 0, 0.6);
 }
 
+.marker-type-landmark .marker-label {
+  font-family: 'Garamond MT', 'Cormorant Garamond', serif;
+}
+
 .marker-type-pass .marker-dot {
   fill: #aaa;
   stroke: rgba(0, 0, 0, 0.6);
@@ -1009,6 +1013,7 @@ p {
   /* Thinner, sharper outline */
   filter: drop-shadow(0 0 3px #3e2723);
   /* Dispersed Glow */
+  font-family: 'Garamond MT', 'Cormorant Garamond', serif;
   font-weight: 600;
 }
 
