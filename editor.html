@@ -247,6 +247,13 @@
                   class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Label Offset Y</label><input type="number" id="loc-labelOffsetY"
                   class="form-control" step="1" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Label Align</label>
+                <select id="loc-labelAlign" class="form-control" onchange="Editor.previewLocation()">
+                  <option value="">Default (Left)</option>
+                  <option value="middle">Center</option>
+                  <option value="end">Right</option>
+                </select>
+              </div>
               <div class="form-group"><label>Rotation (degrees)</label><input type="number" id="loc-rotation"
                   class="form-control" step="1" oninput="Editor.previewLocation()"></div>
               <div class="form-group"><label>Text Curve (Arc bend, e.g. -50 to 50)</label><input type="number"

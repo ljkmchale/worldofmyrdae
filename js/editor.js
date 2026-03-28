@@ -38,7 +38,7 @@ const Editor = (function () {
         ['loc-id', 'loc-name', 'loc-x', 'loc-y', 'loc-type', 'loc-region', 'loc-desc', 'loc-details',
             'loc-fontFamily', 'loc-fontSize', 'loc-fontWeight', 'loc-fontStyle',
             'loc-markerSize', 'loc-markerOffsetX', 'loc-markerOffsetY',
-            'loc-labelOffsetX', 'loc-labelOffsetY', 'loc-rotation', 'loc-opacity'].forEach(id => {
+            'loc-labelOffsetX', 'loc-labelOffsetY', 'loc-labelAlign', 'loc-rotation', 'loc-opacity'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', previewLocation);
             });
@@ -256,6 +256,7 @@ const Editor = (function () {
         document.getElementById('loc-markerOffsetY').value = loc.markerOffsetY || 0;
         document.getElementById('loc-labelOffsetX').value = loc.labelOffsetX || '';
         document.getElementById('loc-labelOffsetY').value = loc.labelOffsetY || '';
+        document.getElementById('loc-labelAlign').value = loc.labelAlign || '';
         document.getElementById('loc-rotation').value = loc.rotation || '';
         document.getElementById('loc-textCurve').value = loc.textCurve !== undefined ? loc.textCurve : '';
         document.getElementById('loc-opacity').value = loc.opacity !== undefined ? loc.opacity : '';
@@ -295,6 +296,7 @@ const Editor = (function () {
         document.getElementById('loc-markerOffsetY').value = '0';
         document.getElementById('loc-labelOffsetX').value = '';
         document.getElementById('loc-labelOffsetY').value = '';
+        document.getElementById('loc-labelAlign').value = '';
         document.getElementById('loc-rotation').value = '';
         document.getElementById('loc-textCurve').value = '';
         document.getElementById('loc-opacity').value = '';
@@ -368,6 +370,8 @@ const Editor = (function () {
             isTown || isCity ? 10 : (isPoi || isNature || isRiver ? 0 : undefined));
         setIf('labelOffsetY', document.getElementById('loc-labelOffsetY').value, parseInt,
             isTown ? 3 : (isCity ? 5 : (isPoi || isNature || isRiver ? 0 : undefined)));
+        const labelAlign = document.getElementById('loc-labelAlign').value;
+        if (labelAlign) locData.labelAlign = labelAlign;
         setIf('rotation', document.getElementById('loc-rotation').value, parseInt);
         setIf('textCurve', document.getElementById('loc-textCurve').value, parseFloat);
         setIf('opacity', document.getElementById('loc-opacity').value, parseFloat,

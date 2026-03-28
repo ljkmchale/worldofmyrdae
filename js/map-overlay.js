@@ -523,6 +523,7 @@ const MapOverlay = (function () {
         } else {
             labelX = px + offsetX;
             labelY = py + offsetY;
+            label.setAttribute('text-anchor', loc.labelAlign || 'start');
         }
         label.setAttribute('x', labelX);
         label.setAttribute('y', labelY);
