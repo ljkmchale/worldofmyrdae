@@ -1180,7 +1180,7 @@ const WORLD_LOCATIONS = {
             "y": 61,
             "region": "Mulbrook",
             "description": "Tomb",
-            "fontFamily": "Cinzel Decorative",
+            "fontFamily": "Geramond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5173,7 +5173,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 9,
-            "labelOffsetY": 10,
+            "labelOffsetY": 4,
             "opacity": 1
         },
         {
@@ -5711,6 +5711,44 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -52,
             "labelOffsetY": 4,
             "opacity": 1
+        },
+        {
+            "id": "everbloom",
+            "name": "Everbloom",
+            "type": "region",
+            "x": 47.41,
+            "y": 29.59,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 19,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 0.5
+        },
+        {
+            "id": "crossroads-lenshur",
+            "name": "crossroads-lenshur",
+            "type": "town",
+            "x": 52.39,
+            "y": 19.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
         }
     ],
     "roads": [
@@ -8586,6 +8624,113 @@ const WORLD_LOCATIONS = {
                     26.42
                 ],
                 "staghand"
+            ]
+        },
+        {
+            "id": "lenshur-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "lenshur",
+                [
+                    52.57,
+                    18.99
+                ],
+                [
+                    52.43,
+                    19.18
+                ],
+                "crossroads-lenshur"
+            ]
+        },
+        {
+            "id": "gristavel-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "gristavel",
+                [
+                    51.31,
+                    20.42
+                ],
+                [
+                    52.26,
+                    19.91
+                ],
+                "crossroads-lenshur"
+            ]
+        },
+        {
+            "id": "palason-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "palason",
+                [
+                    54.36,
+                    21.01
+                ],
+                [
+                    53.08,
+                    19.73
+                ],
+                [
+                    52.57,
+                    19.93
+                ],
+                "crossroads-lenshur"
+            ]
+        },
+        {
+            "id": "palason-road-south",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "palason",
+                [
+                    54.28,
+                    23.27
+                ],
+                [
+                    53.7,
+                    24.99
+                ],
+                "staghand"
+            ]
+        },
+        {
+            "id": "staghand-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "staghand",
+                [
+                    52.64,
+                    26.18
+                ],
+                "ringere"
+            ]
+        },
+        {
+            "id": "eringere-road-southwest",
+            "type": "major",
+            "curved": true,
+            "name": "The North\\nLoop",
+            "fontFamily": "Simonetta",
+            "fontSize": 10,
+            "labelOffset": 61,
+            "labelReverse": true,
+            "points": [
+                "ringere",
+                [
+                    51.42,
+                    26.43
+                ],
+                [
+                    50.43,
+                    27.5
+                ],
+                "northernarch"
             ]
         }
     ],
