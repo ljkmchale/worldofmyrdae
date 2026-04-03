@@ -372,19 +372,6 @@
         layerGroup: 'map-layer-group'
       });
 
-      // Initialize second map with sync callback
-      MapController.init('locations-container', 'locations-image', {
-        onTransform: (transformStr, scale, tx, ty) => {
-          // Sync overlay
-          const overlay = document.getElementById('locations-container-overlay');
-          if (overlay) {
-            overlay.style.transform = transformStr;
-            overlay.style.transformOrigin = '0 0';
-          }
-        }
-      });
-
-      // Init overlay on the main map only (not the Key Locations reference map)
       MapOverlay.init('map-container', 'map-image');
     });
 
@@ -495,9 +482,7 @@
     }
 
     const tracker1 = createCoordsTracker('map-container', 'map-image', 'map-coords', 'coords-toggle');
-    const tracker2 = createCoordsTracker('locations-container', 'locations-image', 'map-coords-2', 'coords-toggle-2');
     function toggleCoords() { tracker1.toggle(); }
-    function toggleCoords2() { tracker2.toggle(); }
   </script>
 </body>
 
