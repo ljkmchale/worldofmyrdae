@@ -4576,7 +4576,7 @@ const WORLD_LOCATIONS = {
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
-            "markerSize": 0.05,
+            "markerSize": 0.15,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
@@ -5558,7 +5558,7 @@ const WORLD_LOCATIONS = {
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
-            "markerSize": 0.2,
+            "markerSize": 0.15,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -49,
@@ -5749,62 +5749,6 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 10,
             "labelOffsetY": 3,
             "hideLabel": true
-        },
-        {
-            "id": "leterboun",
-            "name": "Leterboun",
-            "type": "landmark",
-            "x": 43.91,
-            "y": 32.7,
-            "region": "",
-            "description": "Nature",
-            "fontFamily": "Garamond MT",
-            "fontSize": 12,
-            "fontWeight": "300",
-            "fontStyle": "Italic",
-            "markerSize": 0.25,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": -8,
-            "opacity": 1
-        },
-        {
-            "id": "raselle",
-            "name": "Raselle",
-            "type": "small-city",
-            "x": 43.36,
-            "y": 31.02,
-            "region": "",
-            "description": "City",
-            "fontFamily": "Garamond MT",
-            "fontSize": 14,
-            "fontWeight": "300",
-            "fontStyle": "Italic",
-            "markerSize": 0.2,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": -25,
-            "labelOffsetY": -14
-        },
-        {
-            "id": "holderscove",
-            "name": "Holder's\nCove",
-            "type": "water",
-            "x": 42,
-            "y": 32.8,
-            "region": "",
-            "description": "Nature",
-            "fontFamily": "Garamond MT",
-            "fontSize": 11,
-            "fontWeight": "300",
-            "fontStyle": "Italic",
-            "markerSize": 0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 21,
-            "labelOffsetY": 11,
-            "opacity": 1
         }
     ],
     "roads": [
@@ -8787,36 +8731,6 @@ const WORLD_LOCATIONS = {
                     27.5
                 ],
                 "northernarch"
-            ]
-        },
-        {
-            "id": "leterboun-road-south",
-            "type": "minor",
-            "curved": true,
-            "points": [
-                "leterboun",
-                [
-                    42.86,
-                    32.97
-                ],
-                [
-                    42.75,
-                    34.82
-                ],
-                "kelaad"
-            ]
-        },
-        {
-            "id": "leterboun-road-north",
-            "type": "minor",
-            "curved": true,
-            "points": [
-                "leterboun",
-                [
-                    43.59,
-                    31.91
-                ],
-                "raselle"
             ]
         }
     ],

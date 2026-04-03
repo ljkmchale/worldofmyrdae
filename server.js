@@ -36,6 +36,9 @@ const server = http.createServer((req, res) => {
         reqPath = reqPath.split('?')[0];
     }
 
+    // Decode URL-encoded characters so filenames with spaces (e.g. %20) resolve correctly
+    reqPath = decodeURIComponent(reqPath);
+
     let filePath = path.join(PUBLIC_DIR, reqPath);
     const extname = String(path.extname(filePath)).toLowerCase();
 

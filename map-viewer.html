@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; }
+#viewer {
+  width:100vw; height:100vh;
+  background-image: url('/images/Myrdae_locations.jpg');
+  background-repeat: no-repeat;
+}
+#info { position:fixed; top:5px; left:5px; color:#fff; font:12px monospace; background:rgba(0,0,0,0.7); padding:4px 8px; z-index:10; }
+</style>
+</head>
+<body>
+<div id="info">Click to get % coords</div>
+<div id="viewer" id="viewer"></div>
+<script>
+const imgW = 12800, imgH = 7200;
+let bgScale = 3; // 300% zoom
+let bgX = 0, bgY = 0;
+
+function go(px, py) {
+  // px, py are percentages of the full image (0-100)
+  // Center that point on screen
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  bgX = cx - (px/100 * imgW * bgScale / imgW * imgW * bgScale / imgW);
+  // simpler:
+  bgX = cx - (px/100 * imgW) * (bgScale * window.innerWidth / imgW);
+  bgY = cy - (py/100 * imgH) * (bgScale * window.innerWidth / imgW);
+  applyBg();
+}
+
+function applyBg() {
+  const scaledW = imgW * bgScale * window.innerWidth / imgW; // = bgScale * vw
+  const d = document.getElementById('viewer');
+  d.style.backgroundSize = `${bgScale * 100}%`;
+  d.style.backgroundPosition = `${bgX}px ${bgY}px`;
+}
+
+// Navigate to a % position
+window.goTo = function(px, py, scale) {
+  bgScale = scale || bgScale;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const renderedW = vw * bgScale;
+  const renderedH = renderedW * (imgH/imgW);
+  bgX = vw/2 - (px/100) * renderedW;
+  bgY = vh/2 - (py/100) * renderedH;
+  applyBg();
+  document.getElementById('info').textContent = `Center: ${px}%, ${py}% | Scale: ${bgScale}x | bgPos: ${Math.round(bgX)},${Math.round(bgY)}`;
+}
+
+document.getElementById('viewer').addEventListener('click', function(e) {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const renderedW = vw * bgScale;
+  const renderedH = renderedW * (imgH/imgW);
+  const imgPixX = (e.clientX - bgX);
+  const imgPixY = (e.clientY - bgY);
+  const pctX = (imgPixX / renderedW * 100).toFixed(2);
+  const pctY = (imgPixY / renderedH * 100).toFixed(2);
+  document.getElementById('info').textContent = `Clicked: x=${pctX}%, y=${pctY}% | Scale:${bgScale}x`;
+});
+
+// Start at overview
+goTo(50, 45, 1.2);
+</script>
+</body>
+</html>

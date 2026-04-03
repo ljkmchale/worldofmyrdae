@@ -82,8 +82,9 @@ const MapController = (function () {
             }
 
             const transformStr = `translate3d(${state.pointX}px, ${state.pointY}px, 0) scale(${state.scale})`;
-            mapImg.style.transform = transformStr;
-            mapImg.style.transformOrigin = '0 0';
+            const transformTarget = options.layerGroup ? document.getElementById(options.layerGroup) : mapImg;
+            transformTarget.style.transform = transformStr;
+            transformTarget.style.transformOrigin = '0 0';
 
             if (options.onTransform) {
                 options.onTransform(transformStr, state.scale, state.pointX, state.pointY);

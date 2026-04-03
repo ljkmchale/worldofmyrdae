@@ -319,9 +319,8 @@ const MapOverlay = (function () {
         const darkBrown = '#1b1612'; // Almost Black
 
         // Region/water/river type or zero markerSize: label only, no marker shape
-        // Pass radius=0 so collision detection never overrides user-specified label offsets
         if (loc.type === 'region' || loc.type === 'river' || sizeMultiplier === 0) {
-            addLabel(markerGroup, loc, px, py, 0, natW);
+            addLabel(markerGroup, loc, px, py, baseRadius, natW);
             markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
             markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
             markerGroup.addEventListener('mouseleave', hideTooltip);
