@@ -312,7 +312,7 @@
             <button class="map-btn" id="overlay-toggle" onclick="toggleOverlay()" title="Toggle Locations">
               <i class="fa-solid fa-location-dot"></i>
             </button>
-            <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Toggle Territories">
+            <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Show Territories" style="opacity:0.5;">
               <i class="fa-solid fa-flag"></i>
             </button>
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
@@ -345,7 +345,7 @@
             <!-- Main map -->
             <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
             <!-- Territories layer (z-index: 2, above map, below location markers) -->
-            <img src="images/Myrdae (v.4.1.i - Territories - Medium).jpg" alt="Territories of Myrdae" id="territories-layer" draggable="false">
+            <img src="images/Myrdae (v.4.1.i - Territories - Medium).jpg" alt="Territories of Myrdae" id="territories-layer" draggable="false" style="display:none;">
             <!-- Location/road overlay SVG is auto-inserted here by map-overlay.js (z-index: 10) -->
           </div>
         </div>
