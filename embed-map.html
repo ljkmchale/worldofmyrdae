@@ -94,6 +94,21 @@
             -webkit-font-smoothing: subpixel-antialiased;
         }
 
+        #territories-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Keep location/road SVG overlay above the territories image */
+        .map-overlay {
+            z-index: 10;
+        }
+
         .map-coords {
             position: absolute;
             bottom: 0.75rem;
@@ -259,6 +274,9 @@
             <button class="map-btn" id="overlay-toggle" onclick="toggleOverlay()" title="Toggle Locations">
                 <i class="fa-solid fa-location-dot"></i>
             </button>
+            <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Toggle Territories">
+                <i class="fa-solid fa-flag"></i>
+            </button>
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
@@ -285,7 +303,14 @@
         </div>
 
         <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
-        <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+        <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
+            <!-- Sub-terrain layer goes here (z-index: 1) -->
+            <!-- Main map -->
+            <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+            <!-- Territories layer (z-index: 2, above map, below location markers) -->
+            <img src="images/Myrdae (v.4.1.i - Territories - Medium).jpg" alt="Territories of Myrdae" id="territories-layer" draggable="false">
+            <!-- Location/road overlay SVG is auto-inserted here by map-overlay.js (z-index: 10) -->
+        </div>
     </div>
 
     <script src="js/locations-db.js"></script>
@@ -297,20 +322,30 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await CampaignData.init();
 
-            // Initialize primary map with sync callback
+            // Initialize primary map — overlay SVG lives inside map-layer-group, moves with it automatically
             MapController.init('map-container', 'map-image', {
-                onTransform: (transformStr, scale, tx, ty) => {
-                    const overlay = document.getElementById('map-container-overlay');
-                    if (overlay) {
-                        overlay.style.transform = transformStr;
-                        overlay.style.transformOrigin = '0 0';
-                    }
-                }
+                layerGroup: 'map-layer-group'
             });
 
             // Init overlay (locations, roads, etc.)
             MapOverlay.init('map-container', 'map-image');
         });
+
+        function toggleTerritories() {
+            const img = document.getElementById('territories-layer');
+            const btn = document.getElementById('territories-toggle');
+            if (!img || !btn) return;
+            const isCurrentlyVisible = img.style.display === 'block';
+            if (isCurrentlyVisible) {
+                img.style.display = 'none';
+                btn.style.opacity = '0.5';
+                btn.title = 'Show Territories';
+            } else {
+                img.style.display = 'block';
+                btn.style.opacity = '1';
+                btn.title = 'Hide Territories';
+            }
+        }
 
         function toggleOverlay() {
             const visible = MapOverlay.toggle('map-container');
