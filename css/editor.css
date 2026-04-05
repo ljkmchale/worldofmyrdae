@@ -1,0 +1,113 @@
+/* editor.css */
+
+.editor-tabs {
+  display: flex;
+  border-bottom: 1px solid #333;
+}
+
+.editor-tab {
+  flex: 1;
+  background: #1a1a1a;
+  color: #888;
+  border: none;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.editor-tab:hover {
+  background: #222;
+  color: #ccc;
+}
+
+.editor-tab.active {
+  background: #050508;
+  color: var(--color-gold);
+  border-bottom: 2px solid var(--color-gold);
+}
+
+.form-group {
+  margin-bottom: 0.75rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-bottom: 0.25rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.form-control {
+  width: 100%;
+  background: #222;
+  border: 1px solid #444;
+  color: #eee;
+  padding: 0.4rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+
+.form-inline {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #4a3e20;
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+.btn-primary:hover {
+  background: var(--color-gold);
+  color: #000;
+}
+
+.btn-secondary {
+  background: #333;
+  color: #ccc;
+  border-color: #555;
+}
+
+.btn-secondary:hover {
+  background: #444;
+  color: #fff;
+}
+
+.list-item {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.list-item:hover {
+  background: #1a1a1a;
+  color: var(--color-gold);
+}
+
+.list-item.active {
+  color: var(--color-gold);
+  font-weight: bold;
+}

@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="3D Planet Map of Myrdae">
+    <title>Planet Myrdae</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Base styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dnd-theme.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000510;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body::before,
+        body::after {
+            display: none !important;
+        }
+
+        #canvas-3d {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Loading screen */
+        #loading-screen {
+            position: absolute;
+            inset: 0;
+            background: #000510;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: opacity 0.8s ease;
+        }
+
+        #loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading-screen h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin: 0 0 1.5rem 0;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+        }
+
+        #loading-screen p {
+            color: rgba(212, 175, 55, 0.5);
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            animation: loadingPulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.4; }
+            50%       { opacity: 1; }
+        }
+
+        .map-controls-3d {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .map-btn-3d {
+            width: 38px;
+            height: 38px;
+            background: rgba(5, 8, 18, 0.88);
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .map-btn-3d:hover {
+            background: var(--color-gold);
+            color: #000;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: rgba(5, 8, 18, 0.96);
+            border: 1px solid var(--color-gold);
+            border-radius: 8px;
+            padding: 1.25rem;
+            z-index: 110;
+            width: 280px;
+            pointer-events: auto;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.05);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .info-panel h4 {
+            margin: 0 0 0.5rem 0;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--color-gold-bright);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .info-panel p {
+            margin: 0.35rem 0;
+            font-size: 0.875rem;
+            color: #ccc;
+            line-height: 1.45;
+        }
+
+        .info-panel p strong {
+            color: var(--color-gold);
+        }
+
+        .location-type {
+            font-size: 0.85rem;
+            color: var(--color-gold);
+            text-transform: capitalize;
+        }
+
+        .info-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--color-gold);
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .info-close:hover {
+            color: #fff;
+        }
+
+        .controls-info {
+            position: absolute;
+            bottom: 0.75rem;
+            left: 0.75rem;
+            background: rgba(5, 8, 18, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 6px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .controls-info div {
+            margin: 0.2rem 0;
+        }
+
+        .controls-info strong {
+            color: var(--color-gold);
+        }
+
+        /* Hover tooltip */
+        #hover-tooltip {
+            position: absolute;
+            background: rgba(5, 8, 18, 0.93);
+            border: 1px solid rgba(212, 175, 55, 0.55);
+            border-radius: 4px;
+            padding: 0.3rem 0.65rem;
+            pointer-events: none;
+            z-index: 200;
+            display: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+        }
+
+        #hover-tooltip .tt-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        #hover-tooltip .tt-type {
+            font-size: 0.68rem;
+            color: var(--color-gold);
+            text-transform: capitalize;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading screen -->
+    <div id="loading-screen">
+        <h1>Myrdae</h1>
+        <p>Charting the Realm&hellip;</p>
+    </div>
+
+    <canvas id="canvas-3d"></canvas>
+
+    <!-- Hover tooltip -->
+    <div id="hover-tooltip">
+        <div class="tt-name" id="tt-name"></div>
+        <div class="tt-type" id="tt-type"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="map-controls-3d">
+        <button class="map-btn-3d" onclick="resetCamera()" title="Reset Camera">
+            <i class="fa-solid fa-house"></i>
+        </button>
+        <button class="map-btn-3d" onclick="toggleLocations()" title="Toggle Location Markers" id="loc-toggle">
+            <i class="fa-solid fa-location-dot"></i>
+        </button>
+        <button class="map-btn-3d" onclick="toggleRotation()" title="Pause / Resume Rotation" id="rot-toggle">
+            <i class="fa-solid fa-pause"></i>
+        </button>
+        <button class="map-btn-3d" onclick="toggleTimeControls()" title="Adjust Season &amp; Time" id="time-btn">
+            <i class="fa-solid fa-clock"></i>
+        </button>
+    </div>
+
+    <!-- Time / Season controls panel -->
+    <div id="time-controls" style="
+        display:none; position:absolute; top:12px; right:58px;
+        background:rgba(5,8,18,0.92); border:1px solid rgba(212,175,55,0.4);
+        border-radius:8px; padding:14px 16px; width:240px;
+        font-family:'Cinzel',serif; color:#faf3e0; z-index:99;
+        box-shadow:0 4px 24px rgba(0,0,0,0.7);">
+        <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; margin-bottom:12px; color:#d4af37;">TIME CONTROLS</div>
+        <div style="margin-bottom:14px;">
+            <div style="font-size:11px; margin-bottom:5px;">Day of Year &nbsp;<span id="tc-day-label" style="color:#d4af37;"></span></div>
+            <input type="range" id="tc-day" min="1" max="384" value="1" style="width:100%; accent-color:#d4af37; cursor:pointer;">
+        </div>
+        <div>
+            <div style="font-size:11px; margin-bottom:5px;">Hour &nbsp;<span id="tc-hour-label" style="color:#d4af37;"></span></div>
+            <input type="range" id="tc-hour" min="0" max="23" value="0" style="width:100%; accent-color:#d4af37; cursor:pointer;">
+        </div>
+    </div>
+
+    <!-- Info Panel (Hidden by default) -->
+    <div class="info-panel" id="info-panel" style="display: none;">
+        <button class="info-close" onclick="hideInfo()">×</button>
+        <div id="info-content"></div>
+    </div>
+
+    <!-- Moon alignment indicator -->
+    <div id="moon-display" style="
+        position:absolute; bottom:158px; left:12px;
+        color:#faf3e0; font-family:'Cinzel',serif; font-size:13px; font-weight:600;
+        background: rgba(5,8,18,0.75); border:1px solid rgba(212,175,55,0.3);
+        border-radius:5px; padding:4px 10px;
+        text-shadow: 1px 1px 3px #000; pointer-events:none; letter-spacing:0.05em;">
+    </div>
+
+    <!-- Season indicator -->
+    <div id="season-display" style="
+        position:absolute; bottom:120px; left:12px;
+        color:#faf3e0; font-family:'Cinzel',serif; font-size:13px; font-weight:600;
+        background: rgba(5,8,18,0.75); border:1px solid rgba(212,175,55,0.3);
+        border-radius:5px; padding:4px 10px;
+        text-shadow: 1px 1px 3px #000; pointer-events:none; letter-spacing:0.05em;">
+    </div>
+
+    <!-- Controls Info -->
+    <div class="controls-info">
+        <div><strong>Drag:</strong> Rotate globe</div>
+        <div><strong>Scroll:</strong> Zoom in / out</div>
+        <div><strong>Click:</strong> View location details</div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/locations-db.js"></script>
+    <script src="js/campaign-data.js"></script>
+
+    <script>
+        // ── Scene setup ────────────────────────────────────────────────────────────
+        const canvas = document.getElementById('canvas-3d');
+        const scene  = new THREE.Scene();
+        scene.background = new THREE.Color(0x000510);
+        scene.fog        = new THREE.Fog(0x000510, 2000, 5000);
+
+        // Tighter FOV gives a more "globe" look vs the wide-angle distortion of 75°
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.z = 420;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+
+        // ── Lighting ───────────────────────────────────────────────────────────────
+        // Low ambient so the night side is visibly dark
+        const ambientLight = new THREE.AmbientLight(0x1a2a4a, 0.35);
+        scene.add(ambientLight);
+
+        // Bright warm sun — positioned upper-left so the terminator line is clearly visible
+        const sunLight = new THREE.DirectionalLight(0xfff5d0, 2.2);
+        sunLight.position.set(-350, 200, 300);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width  = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        scene.add(sunLight);
+
+        // Very faint blue fill on the night side — stops it going pure black
+        const fillLight = new THREE.DirectionalLight(0x1a2a6a, 0.12);
+        fillLight.position.set(350, -100, -300);
+        scene.add(fillLight);
+
+        // ── Starfield ──────────────────────────────────────────────────────────────
+        // Stars are placed on a sphere shell (min 2500 units from origin) so they are
+        // always further away than the planet and can never overlap it.
+        // A circular canvas texture stops PointsMaterial rendering squares.
+        (function buildStarfield() {
+            // Circular soft-dot texture — makes points round instead of square
+            const starCanvas = document.createElement('canvas');
+            starCanvas.width = starCanvas.height = 32;
+            const sCtx = starCanvas.getContext('2d');
+            const grad = sCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            grad.addColorStop(0,   'rgba(255,255,255,1)');
+            grad.addColorStop(0.4, 'rgba(255,255,255,0.6)');
+            grad.addColorStop(1,   'rgba(255,255,255,0)');
+            sCtx.fillStyle = grad;
+            sCtx.fillRect(0, 0, 32, 32);
+            const starTex = new THREE.CanvasTexture(starCanvas);
+
+            const COUNT     = 8000;
+            const positions = new Float32Array(COUNT * 3);
+            const colors    = new Float32Array(COUNT * 3);
+
+            for (let i = 0; i < COUNT; i++) {
+                // Uniform distribution on a sphere shell between 2500–4500 units
+                const theta = Math.random() * Math.PI * 2;
+                const phi   = Math.acos(2 * Math.random() - 1);
+                const r     = 2500 + Math.random() * 2000;
+                positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = r * Math.cos(phi);
+
+                const rng = Math.random();
+                if (rng < 0.07) {
+                    colors[i * 3] = 1.0; colors[i * 3 + 1] = 0.88; colors[i * 3 + 2] = 0.6;
+                } else if (rng < 0.14) {
+                    colors[i * 3] = 0.7; colors[i * 3 + 1] = 0.85; colors[i * 3 + 2] = 1.0;
+                } else {
+                    const v = 0.6 + Math.random() * 0.4;
+                    colors[i * 3] = v; colors[i * 3 + 1] = v; colors[i * 3 + 2] = v;
+                }
+            }
+
+            const geom = new THREE.BufferGeometry();
+            geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geom.setAttribute('color',    new THREE.BufferAttribute(colors,    3));
+            const starPoints = new THREE.Points(geom, new THREE.PointsMaterial({
+                size: 2.5,
+                sizeAttenuation: false,
+                vertexColors: true,
+                map: starTex,
+                transparent: true,
+                alphaTest: 0.01,
+                depthWrite: false,  // stars never write depth — planet always renders on top
+            }));
+            starPoints.renderOrder = -1;
+            scene.add(starPoints);
+
+            // A handful of brighter feature stars
+            const bCount     = 60;
+            const bPositions = new Float32Array(bCount * 3);
+            for (let i = 0; i < bCount; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi   = Math.acos(2 * Math.random() - 1);
+                const r     = 2600 + Math.random() * 1800;
+                bPositions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+                bPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                bPositions[i * 3 + 2] = r * Math.cos(phi);
+            }
+            const bGeom = new THREE.BufferGeometry();
+            bGeom.setAttribute('position', new THREE.BufferAttribute(bPositions, 3));
+            const brightPoints = new THREE.Points(bGeom, new THREE.PointsMaterial({
+                size: 4,
+                sizeAttenuation: false,
+                color: 0xffffff,
+                map: starTex,
+                transparent: true,
+                alphaTest: 0.01,
+                depthWrite: false,
+            }));
+            brightPoints.renderOrder = -1;
+            scene.add(brightPoints);
+        })();
+
+        // ── Planet ─────────────────────────────────────────────────────────────────
+        const planetRadius = 180;
+        const segments     = 64;
+        const planetGeometry = new THREE.SphereGeometry(planetRadius, segments, segments);
+        // No terrain displacement — keeping the sphere analytically perfect so both
+        // duplicate seam vertices share identical outward normals → no dark seam line.
+
+        const loader = new THREE.TextureLoader();
+        const planetMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,   // white so the texture colours aren't tinted green
+            roughness: 0.75,
+            metalness: 0.0,
+            // ── Stencil: paint ref=1 wherever the planet surface is drawn ──────
+            // Marker materials test stencil === 1, so label pixels that fall
+            // outside the sphere silhouette (into empty space) are discarded.
+            stencilWrite: true,
+            stencilFunc:  THREE.AlwaysStencilFunc,
+            stencilZPass: THREE.ReplaceStencilOp,
+            stencilRef:   1,
+        });
+
+        // ── Realistic water ───────────────────────────────────────────────────────
+        // Four patches injected into MeshStandardMaterial's shader:
+        // (1) detect ocean pixels, pre-compute wave values for reuse
+        // (2) diffuse brightness variation — wave crests lighter, troughs darker
+        //     → visible at ANY angle/zoom, not just the specular hot-spot
+        // (3) roughness → 0.04 on water for sharp specular sun glint
+        // (4) normal perturbation for specular shimmer
+        planetMaterial.onBeforeCompile = function (shader) {
+            planetMaterial.userData.shader = shader;
+            shader.uniforms.waveTime = { value: 0.0 };
+            shader.fragmentShader = 'uniform float waveTime;\n' + shader.fragmentShader;
+
+            // (1) Water mask + wave pre-computation (variables declared at main() scope
+            //     so they are accessible in every later chunk).
+            //     Also colour-correct ocean toward blue: reduce G, nudge B up.
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <map_fragment>',
+                `#include <map_fragment>
+                // Ocean pixels: B≈0.49 R≈0.25 → B-R≈0.24; land/snow ≈ 0
+                float _wm = smoothstep(0.05, 0.20, diffuseColor.b - diffuseColor.r);
+                float _t  = waveTime * 0.00018;
+                // Large-scale swells (6-11 UV cycles across planet)
+                float _wvX = sin(vUv.x *  6.0 + _t * 0.70) * 0.55
+                           + sin(vUv.x * 11.0 - vUv.y *  7.0 + _t * 1.10) * 0.35;
+                float _wvY = cos(vUv.y *  7.0 + _t * 0.50) * 0.55
+                           + cos(vUv.y * 10.0 + vUv.x *  6.0 + _t * 0.90) * 0.35;
+                float _waveH = (_wvX + _wvY) * 0.25; // normalised ~[-0.55, 0.55]
+                // ── Black outline removal ───────────────────────────────────────
+                // Baked coastline outlines are near-black land pixels.  Sample
+                // 4 neighbours and blend the dark pixel toward their average.
+                float _pixLum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+                if (_pixLum < 0.15 && _wm < 0.3) {
+                    float _off = 0.0015;
+                    vec3 _nb = (texture2D(map, vUv + vec2( _off,  0.0)).rgb
+                              + texture2D(map, vUv + vec2(-_off,  0.0)).rgb
+                              + texture2D(map, vUv + vec2( 0.0,  _off)).rgb
+                              + texture2D(map, vUv + vec2( 0.0, -_off)).rgb) * 0.25;
+                    float _outlineBlend = smoothstep(0.12, 0.02, _pixLum);
+                    diffuseColor.rgb = mix(diffuseColor.rgb, _nb, _outlineBlend);
+                    // Recompute water mask with new colour so ocean isn't affected
+                    _wm = smoothstep(0.05, 0.20, diffuseColor.b - diffuseColor.r);
+                }
+                // (2) Diffuse wave shading — crests brighter, troughs darker.
+                //     clamp keeps it realistic; visible regardless of camera angle.
+                if (_wm > 0.01) {
+                    // Remap to deep royal blue — preserve luminance so depth
+                    // variation (dark deep / lighter shallow) stays readable
+                    float _lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+                    // deep ocean blue target, scaled by original luminance
+                    vec3 _blue = vec3(0.08, 0.30, 0.72) * (_lum / 0.38);
+                    diffuseColor.rgb = mix(diffuseColor.rgb, _blue, _wm * 0.72);
+                    // Wave brightness on top
+                    diffuseColor.rgb *= clamp(1.0 + _waveH * 0.28, 0.74, 1.26);
+                }`
+            );
+
+            // (3) Low roughness → sharp specular glint on water
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <roughnessmap_fragment>',
+                `#include <roughnessmap_fragment>
+                roughnessFactor = mix(roughnessFactor, 0.55, _wm);`
+            );
+
+            // (4) Normal perturbation using pre-computed swell values + fine shimmer
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <normal_fragment_maps>',
+                `#include <normal_fragment_maps>
+                if (_wm > 0.01) {
+                    float _nx = _wvX * 0.10
+                              + (sin(vUv.x * 42.0 + _t * 2.3) +
+                                 sin(vUv.x * 26.0 - vUv.y * 14.0 + _t)) * 0.018;
+                    float _ny = _wvY * 0.10
+                              + (cos(vUv.y * 39.0 + _t * 1.8) +
+                                 cos(vUv.y * 23.0 + vUv.x * 17.0 + _t * 1.4)) * 0.018;
+                    normal = normalize(normal + vec3(_nx, _ny, 0.0) * _wm);
+                }`
+            );
+        };
+
+        loader.load('images/Myrdae.jpg', (texture) => {
+            // Cross-fade the left and right edges of the image so the seam
+            // on the back of the sphere blends smoothly instead of showing
+            // a hard join line where the two map edges meet.
+            const img = texture.image;
+            const W = img.width, H = img.height;
+            const texCanvas = document.createElement('canvas');
+            texCanvas.width = W; texCanvas.height = H;
+            const texCtx = texCanvas.getContext('2d');
+            texCtx.drawImage(img, 0, 0);
+
+            // ~15% blend zone — wide enough to fully hide the discontinuity
+            const blendW = Math.max(32, Math.floor(W * 0.15));
+            const imgd = texCtx.getImageData(0, 0, W, H);
+            const orig = new Uint8ClampedArray(imgd.data); // snapshot before edits
+            const out  = imgd.data;
+
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < blendW; x++) {
+                    // Smoothstep easing: t=0 at the edge, t=1 at the inner limit
+                    const tLin = x / blendW;
+                    const t    = tLin * tLin * (3 - 2 * tLin);
+                    const mx   = W - 1 - x;
+                    const li   = (y * W + x)  * 4;
+                    const ri   = (y * W + mx) * 4;
+                    for (let c = 0; c < 3; c++) {
+                        // Key fix: blend BOTH edges toward their shared average at t=0.
+                        // This guarantees pixel[0] === pixel[W-1] so the seam line
+                        // is completely invisible where the two edges meet on the sphere.
+                        const avg = (orig[li + c] + orig[ri + c]) * 0.5;
+                        out[li + c] = Math.round(avg * (1 - t) + orig[li + c] * t);
+                        out[ri + c] = Math.round(avg * (1 - t) + orig[ri + c] * t);
+                    }
+                }
+            }
+            texCtx.putImageData(imgd, 0, 0);
+
+            const seamlessTex = new THREE.CanvasTexture(texCanvas);
+            // Disable mipmap generation — WebGL's default mipmap builder doesn't respect
+            // RepeatWrapping at the seam boundary, so it produces a thin dark artifact line.
+            // LinearFilter with no mipmaps gives clean sampling without the seam.
+            seamlessTex.generateMipmaps = false;
+            seamlessTex.minFilter = THREE.LinearFilter;
+            seamlessTex.magFilter = THREE.LinearFilter;
+            seamlessTex.wrapS = THREE.RepeatWrapping;
+            planetMaterial.map = seamlessTex;
+            planetMaterial.needsUpdate = true;
+        }, undefined, () => {
+            console.log("Texture load failed — using base color");
+        });
+
+        const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+        planet.castShadow    = true;
+        planet.receiveShadow = true;
+        scene.add(planet);
+
+        // (atmosphere glow removed)
+
+        // ── Cloud layer ─────────────────────────────────────────────────────────────
+        // Real-time GPU ShaderMaterial — no baked texture.
+        // vPos (normalised vertex position = sphere surface point) is used as the
+        // noise input so the coverage is seamless with zero UV-seam artifacts.
+        // Storm vortices are applied as Rodrigues rotations that grow with time,
+        // making each storm visibly spin at its own rate rather than just translate.
+        // DEAD CODE — kept for reference only, replaced by ShaderMaterial below.
+        function generateCloudTexture_UNUSED(w, h) {
+            const cvs = document.createElement('canvas');
+            cvs.width = w; cvs.height = h;
+            const ctx = cvs.getContext('2d');
+            const img = ctx.createImageData(w, h);
+            const d   = img.data;
+
+            // Background fBm — [uFreq, vFreq, uPhase, vPhase]
+            const oct  = [
+                [3,  2,  1.10, 0.50],
+                [5,  4,  2.30, 1.70],
+                [9,  7,  0.70, 2.90],
+                [17, 13, 3.10, 0.30],
+                [33, 25, 1.60, 2.10],
+                [63, 49, 0.40, 1.50],
+            ];
+            const amps     = [1.00, 0.65, 0.45, 0.28, 0.16, 0.09];
+            const totalAmp = amps.reduce((a, b) => a + b, 0);
+
+            // Storm systems — su/sv in sphere coords (u: 0→2π, v: 0→π)
+            // spin: +1 = counter-clockwise (N hemisphere), -1 = clockwise (S hemisphere)
+            // size: storm radius in radians  strength: 0–1 opacity boost
+            const storms = [
+                { su: 1.9, sv: 1.05, size: 0.32, spin:  1, strength: 0.95 }, // large N storm
+                { su: 4.3, sv: 2.10, size: 0.28, spin: -1, strength: 0.90 }, // large S storm
+                { su: 3.0, sv: 0.88, size: 0.20, spin:  1, strength: 0.75 }, // mid N
+                { su: 5.6, sv: 0.78, size: 0.24, spin:  1, strength: 0.80 }, // NW storm
+                { su: 0.7, sv: 2.25, size: 0.22, spin: -1, strength: 0.72 }, // SW storm
+                { su: 2.5, sv: 2.00, size: 0.16, spin: -1, strength: 0.65 }, // small S
+            ];
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const u = (x / w) * Math.PI * 2;
+                    const v = (y / h) * Math.PI;
+
+                    // ── Base fBm background clouds ──────────────────────────────
+                    let n = 0;
+                    for (let o = 0; o < oct.length; o++) {
+                        const [uf, vf, up, vp] = oct[o];
+                        n += Math.sin(u * uf + up) * Math.cos(v * vf + vp) * amps[o];
+                    }
+                    n = (n / totalAmp + 1) * 0.5; // 0–1
+
+                    // ── Storm systems ────────────────────────────────────────────
+                    let stormCloud  = 0;
+                    let stormDark   = 0; // accumulated darkness for storm centres
+
+                    // Pre-compute unit sphere position of this pixel
+                    const sinV = Math.sin(v), cosV = Math.cos(v);
+
+                    for (const s of storms) {
+                        const sinSV = Math.sin(s.sv), cosSV = Math.cos(s.sv);
+                        const dot   = sinV * sinSV * Math.cos(u - s.su) + cosV * cosSV;
+                        const dist  = Math.acos(Math.max(-1, Math.min(1, dot)));
+
+                        if (dist > s.size * 2.6) continue; // outside influence radius
+
+                        // Azimuthal angle around storm centre (with hemisphere spin)
+                        let du = u - s.su;
+                        if (du >  Math.PI) du -= Math.PI * 2;
+                        if (du < -Math.PI) du += Math.PI * 2;
+                        const azimuth = Math.atan2((v - s.sv) * s.spin, du);
+
+                        // Two spiral arms: cos(2θ − k·r) peaks where arms intersect
+                        const spiralTightness = 4.5;
+                        const spiralVal = (Math.cos(azimuth * 2 - spiralTightness * dist) + 1) * 0.5;
+
+                        // Gaussian envelope over the whole storm
+                        const sigma   = s.size * 0.48;
+                        const falloff = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+
+                        // Eye wall: bright ring just outside the clear eye
+                        const eyeR     = s.size * 0.14;
+                        const eyeWall  = Math.exp(-Math.pow(dist - eyeR, 2) / (0.012 * s.size * s.size));
+
+                        // Clear eye: gaussian hole at the very centre
+                        const eyeClear = 1 - Math.exp(-(dist * dist) / (2 * eyeR * eyeR * 0.6));
+
+                        const c = (spiralVal * 0.55 + eyeWall * 0.9 + 0.25) * falloff * eyeClear * s.strength;
+                        stormCloud = Math.max(stormCloud, c);
+
+                        // Darker, denser cloud in the storm body
+                        stormDark = Math.max(stormDark, falloff * eyeClear * s.strength * 0.45);
+                    }
+
+                    // ── Combine ──────────────────────────────────────────────────
+                    let cloud = Math.max(n * 0.68, Math.min(1, n * 0.4 + stormCloud));
+                    cloud = Math.max(0, (cloud - 0.43) / 0.57);
+                    cloud = Math.pow(cloud, 1.35);
+
+                    // Storm clouds are grey-blue rather than pure white
+                    const brightness = Math.round(255 * (1 - stormDark * cloud * 0.55));
+                    const blueBoost  = Math.round(255 * (1 - stormDark * cloud * 0.35));
+
+                    const i = (y * w + x) * 4;
+                    d[i]   = brightness;           // R — slightly muted
+                    d[i+1] = brightness;           // G
+                    d[i+2] = blueBoost;            // B — fractionally higher → cool grey
+                    d[i+3] = Math.round(cloud * 225);
+                }
+            }
+
+            ctx.putImageData(img, 0, 0);
+            const tex = new THREE.CanvasTexture(cvs);
+            tex.generateMipmaps = false;       // prevents mipmap seam artifact
+            tex.minFilter       = THREE.LinearFilter;
+            tex.magFilter       = THREE.LinearFilter;
+            tex.wrapS           = THREE.RepeatWrapping;
+            return tex;
+        }
+
+        // ShaderMaterial — vPos is the normalised surface point on the unit sphere.
+        // All storm centres / drift are computed in local mesh space so dragging the
+        // globe also moves the weather correctly.
+        const cloudMaterial = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0.0 } },
+            transparent: true,
+            depthWrite: false,
+            vertexShader: `
+                varying vec3 vPos;
+                void main() {
+                    vPos = normalize(position);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                precision mediump float;
+                varying vec3 vPos;
+                uniform float time;
+
+                // ── 3D value noise ──────────────────────────────────────────────
+                float h(vec3 p) {
+                    p = fract(p * vec3(127.1, 311.7, 74.7));
+                    p += dot(p, p.yxz + 19.19);
+                    return fract(p.x * p.z);
+                }
+                float n3(vec3 p) {
+                    vec3 i = floor(p), f = fract(p);
+                    vec3 u = f * f * (3.0 - 2.0 * f);
+                    return mix(
+                        mix(mix(h(i),               h(i+vec3(1.,0.,0.)), u.x),
+                            mix(h(i+vec3(0.,1.,0.)),h(i+vec3(1.,1.,0.)), u.x), u.y),
+                        mix(mix(h(i+vec3(0.,0.,1.)),h(i+vec3(1.,0.,1.)), u.x),
+                            mix(h(i+vec3(0.,1.,1.)),h(i+vec3(1.,1.,1.)), u.x), u.y), u.z);
+                }
+                float fbm(vec3 p) {
+                    float v = 0.0, a = 0.52;
+                    for (int i = 0; i < 8; i++) { v += n3(p) * a; p *= 2.03; a *= 0.50; }
+                    return v;
+                }
+
+                // Y-axis global drift
+                vec3 rotY(vec3 p, float a) {
+                    float c = cos(a), s = sin(a);
+                    return vec3(p.x*c - p.z*s, p.y, p.x*s + p.z*c);
+                }
+
+                // ── Compact hurricane spiral ────────────────────────────────────
+                // Returns 0–1 cloud density contribution.
+                // windDir: +1 = CCW (N hemisphere), -1 = CW (S hemisphere)
+                float storm(vec3 pos, vec3 cen, float radius, float spinTime, float windDir) {
+                    vec3 d = pos - cen;
+                    float dist = length(d);
+                    if (dist > radius) return 0.0;
+                    float nd = dist / radius;   // 0 = eye centre, 1 = outer edge
+
+                    // Tangent-plane basis at storm centre
+                    vec3 ax  = normalize(cen);
+                    vec3 ref = (abs(ax.y) < 0.85) ? vec3(0., 1., 0.) : vec3(1., 0., 0.);
+                    vec3 ex  = normalize(cross(ax, ref));
+                    vec3 ey  = cross(ax, ex);
+                    float az = atan(dot(d, ey), dot(d, ex));
+
+                    // 2 spiral arms, ~1 full turn from centre to edge.
+                    // Wider arms = clearly visible even at foreshortened polar angles.
+                    float phase = az * 2.0 + nd * windDir * 6.3 - spinTime;
+                    float arm   = pow(max(0.0, cos(phase)), 3.5);
+
+                    // ① Persistent circular eyewall ring just outside the clear eye
+                    //   (dense regardless of arm direction — the defining hurricane feature)
+                    float eyeRing = smoothstep(0.08, 0.18, nd) * (1.0 - smoothstep(0.22, 0.40, nd));
+
+                    // ② Spiral rainbands curving outward from the eyewall
+                    float eyeFactor = smoothstep(0.0, 0.14, nd);
+                    float radFalloff = pow(1.0 - nd, 1.5);
+                    float bands = eyeFactor * arm * radFalloff;
+
+                    return clamp(eyeRing * 0.85 + bands * 0.80, 0.0, 1.0);
+                }
+
+                // Radial falloff mask — 1.0 at storm centre, 0.0 at edge
+                float stormMask(vec3 pos, vec3 cen, float radius) {
+                    float nd = clamp(length(pos - cen) / radius, 0.0, 1.0);
+                    return 1.0 - nd * nd;
+                }
+
+                void main() {
+                    vec3 p = vPos;
+
+                    // Slow global cloud drift
+                    p = rotY(p, time * 0.00008);
+
+                    // ── Organic background clouds ───────────────────────────────
+                    vec3 q = p * 5.5;
+                    vec3 w1 = vec3(fbm(q + vec3(1.7, 9.2, 3.8)),
+                                   fbm(q + vec3(8.3, 2.8, 5.1)),
+                                   fbm(q + vec3(4.5, 6.7, 1.2)));
+                    float cloud = fbm(q + w1 * 0.85);
+                    cloud = cloud * 0.68 + fbm(p * 14.0 + vec3(50.0, 30.0, 10.0)) * 0.32;
+                    cloud = smoothstep(0.52, 0.74, cloud);
+
+                    // ── Suppress background inside each storm so eye & arms pop ─
+                    // Background is damped (not zero) so clouds blend naturally at
+                    // the outer edge but the organised spiral structure dominates.
+                    // Polar / high-latitude storm systems (|y| > 0.55).
+                    // c1, c3, c5 face the camera at initial rotation; c2, c4 visible on back.
+                    vec3 c1 = normalize(vec3( 0.20, 0.92,-0.30));   // N-pole, camera-facing
+                    vec3 c2 = normalize(vec3(-0.65, 0.75, 0.10));   // N-pole, far side
+                    vec3 c3 = normalize(vec3( 0.50,-0.75,-0.45));   // S high-lat, camera-facing
+                    vec3 c4 = normalize(vec3(-0.40,-0.88, 0.25));   // S-pole, far side
+                    vec3 c5 = normalize(vec3( 0.45,-0.55,-0.70));   // S mid-high, camera-facing
+                    float suppress = max(max(max(stormMask(p,c1,0.38), stormMask(p,c2,0.34)),
+                                             max(stormMask(p,c3,0.36), stormMask(p,c4,0.34))),
+                                             stormMask(p,c5,0.30));
+                    cloud *= (1.0 - suppress * 0.80);
+
+                    // ── Storm spirals replace the cleared zone ──────────────────
+                    cloud += storm(p, c1, 0.34, time*0.00045,  1.0) * 2.5;
+                    cloud += storm(p, c2, 0.30, time*0.00038, -1.0) * 2.5;
+                    cloud += storm(p, c3, 0.32, time*0.00032,  1.0) * 2.5;
+                    cloud += storm(p, c4, 0.30, time*0.00040,  1.0) * 2.5;
+                    cloud += storm(p, c5, 0.28, time*0.00030, -1.0) * 2.5;
+                    cloud = clamp(cloud, 0.0, 1.0);
+
+                    // Dense cores very slightly grey-blue, thin wisps pure white
+                    float density = smoothstep(0.5, 1.0, cloud);
+                    vec3 col = mix(vec3(1.0, 1.0, 1.0), vec3(0.88, 0.91, 0.96), density * 0.20);
+
+                    gl_FragColor = vec4(col, cloud);
+                }
+            `
+        });
+
+        const cloudMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 3, 64, 64),
+            cloudMaterial
+        );
+        scene.add(cloudMesh);
+
+        // ── Moon meshes ───────────────────────────────────────────────────────────
+        // MeshStandardMaterial so sunLight gives natural phase shading automatically.
+        const endeloMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(8, 32, 32),
+            new THREE.MeshStandardMaterial({ color: 0xc8102e, roughness: 0.85, metalness: 0.05 })
+        );
+        scene.add(endeloMesh);
+
+        const tudaraMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(6, 32, 32),
+            new THREE.MeshStandardMaterial({ color: 0x0066cc, roughness: 0.85, metalness: 0.05 })
+        );
+        scene.add(tudaraMesh);
+
+        // ── Inner atmosphere limb haze ────────────────────────────────────────────
+        // FrontSide sphere sitting just above the surface: adds a blue tint to
+        // the planet's edges as seen from the camera (same effect as looking through
+        // more atmosphere near the horizon — prominent in the Earth-from-space look).
+        const innerAtmMaterial = new THREE.ShaderMaterial({
+            uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
+            vertexShader: `
+                varying vec3 vWorldNormal;
+                varying vec3 vCamDir;
+                void main() {
+                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+                    vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                    vCamDir = cameraPosition - worldPos.xyz;
+                    gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vWorldNormal;
+                varying vec3 vCamDir;
+                uniform vec3 sunDir;
+                void main() {
+                    vec3 n = normalize(vWorldNormal);
+                    vec3 v = normalize(vCamDir);
+                    // Fresnel: strong at grazing angles (limb), zero facing camera
+                    float fresnel = 1.0 - max(0.0, dot(n, v));
+                    fresnel = pow(fresnel, 3.5);
+                    float dayFac = smoothstep(-0.1, 0.6, dot(n, normalize(sunDir)));
+                    vec3 col = mix(vec3(0.05, 0.12, 0.55), vec3(0.18, 0.50, 1.0), dayFac);
+                    gl_FragColor = vec4(col, fresnel * dayFac * 0.60);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide,
+            blending: THREE.AdditiveBlending,
+        });
+        const innerAtmMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius * 1.02, 64, 32),
+            innerAtmMaterial
+        );
+        scene.add(innerAtmMesh);
+
+        // ── Twilight colour band ──────────────────────────────────────────────────
+        // Thin orange-red stripe hugging the terminator line (NdotL ≈ 0).
+        const twilightMaterial = new THREE.ShaderMaterial({
+            uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
+            vertexShader: `
+                varying vec3 vWorldNormal;
+                void main() {
+                    vWorldNormal = normalize(mat3(modelMatrix) * normal);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vWorldNormal;
+                uniform vec3 sunDir;
+                void main() {
+                    float NdotL = dot(normalize(vWorldNormal), normalize(sunDir));
+                    float band = smoothstep(-0.2, 0.0, NdotL) * (1.0 - smoothstep(0.0, 0.25, NdotL));
+                    vec3 col = mix(vec3(0.9, 0.18, 0.02), vec3(1.0, 0.55, 0.1),
+                                  smoothstep(-0.1, 0.1, NdotL));
+                    gl_FragColor = vec4(col, band * 0.20);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide,
+        });
+        const twilightMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 2, 64, 32),
+            twilightMaterial
+        );
+        scene.add(twilightMesh);
+
+        // ── Seasonal polar ice caps ───────────────────────────────────────────────
+        // One sphere covers both poles; icy region controlled by two uniforms that
+        // expand / shrink with yearAngle. Rotates with planet so poles stay aligned.
+        const iceMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                northCapAngle: { value: 0.22 },  // radians of latitude coverage at north
+                southCapAngle: { value: 0.22 },  // radians of latitude coverage at south
+            },
+            vertexShader: `
+                varying vec3 vPos;
+                void main() {
+                    vPos = normalize(position);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vPos;
+                uniform float northCapAngle;
+                uniform float southCapAngle;
+                void main() {
+                    float lat = asin(clamp(vPos.y, -1.0, 1.0));
+                    float northEdge = 1.5708 - northCapAngle;
+                    float southEdge = -(1.5708 - southCapAngle);
+                    float northIce = smoothstep(northEdge - 0.04, northEdge + 0.04, lat);
+                    float southIce = smoothstep(southEdge + 0.04, southEdge - 0.04, lat);
+                    float ice = max(northIce, southIce);
+                    if (ice < 0.01) discard;
+                    gl_FragColor = vec4(0.88, 0.95, 1.0, ice * 0.82);
+                }
+            `,
+            transparent: true,
+            depthWrite: false,
+            side: THREE.FrontSide,
+        });
+        const iceMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(planetRadius + 1, 64, 32),
+            iceMaterial
+        );
+        scene.add(iceMesh);
+
+        // ── Groups ─────────────────────────────────────────────────────────────────
+        const roadsGroup   = new THREE.Group();
+        const markersGroup = new THREE.Group();
+        scene.add(roadsGroup);
+        scene.add(markersGroup);
+
+        // Initial rotation — THREE.js SphereGeometry UV maps u=0 → (-x face), so
+        // coordsToSphere uses -x to match. Continent center is at map x≈64.3 (lon≈4.04 rad),
+        // which sits at 3D pos (0.69, 0, -0.72). rotation.y=3.91 brings it front-facing.
+        const INIT_ROT_X = 0.15;
+        const INIT_ROT_Y = 3.91;
+        planet.rotation.set(INIT_ROT_X, INIT_ROT_Y, 0);
+        syncGroups();
+
+        let markersVisible = true;
+        let autoRotate     = true;
+
+        // ── Oberra calendar ──────────────────────────────────────────────────────
+        const DAY_MS        = 5 * 60 * 1000;                // 5 real minutes = 1 Oberra day
+        const YEAR_DAYS     = 384;                          // days in an Oberra year
+        const YEAR_MS       = YEAR_DAYS * DAY_MS;           // 384 real minutes = 1 full orbit
+        const ECLIPTIC_TILT = 23.5 * Math.PI / 180;        // axial tilt in radians
+        const SUN_DIST      = 500;                          // sun light position radius
+
+        // ── Moon orbital constants ────────────────────────────────────────────────
+        // Beat period = P_e * P_t / (P_e - P_t) = 96*48/(96-48) = 96 days → 4 Salvus/year ✓
+        const ENDELO_PERIOD = 96 * DAY_MS;          // Endelo'ar: 96 Oberra days per orbit
+        const TUDARA_PERIOD = 48 * DAY_MS;          // Tudara:    48 Oberra days per orbit
+        const ENDELO_INCL   = 8  * Math.PI / 180;  // Endelo'ar orbital inclination
+        const TUDARA_INCL   = 5  * Math.PI / 180;  // Tudara orbital inclination
+        const ENDELO_DIST   = 350;                  // scene units from Oberra centre
+        const TUDARA_DIST   = 260;
+
+        let endeloAngle = 0;           // Endelo'ar starts at reference angle
+        let tudaraAngle = Math.PI;     // Tudara starts opposite — visually separated on load
+
+        let lastFrameTime = performance.now();
+        let dayAngle      = INIT_ROT_Y;                     // start from map-facing rotation
+        let yearAngle     = Math.PI / 2;                    // start at Sultra (summer solstice) — tilt immediately visible
+
+        // ── Coordinate mapping ─────────────────────────────────────────────────────
+        // THREE.js SphereGeometry formula: x = -cos(phi)*sin(theta), z = sin(phi)*sin(theta)
+        // So u=0 → (-1,0,0). Our lon=0 (map x=0) must also map to (-1,0,0) — hence the -x.
+        function coordsToSphere(x, y, offset = 2) {
+            const lon = (x / 100) * Math.PI * 2;
+            const lat = ((1 - y / 100) * Math.PI) - (Math.PI / 2);
+            const r   = planetRadius + offset;
+            return new THREE.Vector3(
+                -r * Math.cos(lat) * Math.cos(lon),
+                 r * Math.sin(lat),
+                 r * Math.cos(lat) * Math.sin(lon)
+            );
+        }
+
+        // ── Markers — matching 2D map style ───────────────────────────────────────
+        // Canvas constants: dot sits in the left portion, label extends right.
+        const BROWN      = '#3e2723';
+        const DARK_BROWN = '#1b1612';
+        const DOT_CX     = 16;   // dot centre x inside canvas
+        const DOT_CY     = 25;   // dot centre y (canvas height = 50)
+        const CANVAS_H   = 50;
+        const DOT_AREA   = 34;   // pixels reserved left of label text
+
+        // Dot drawing radius per type (canvas pixels)
+        const dotRadii = {
+            capital:  6, city:  6, 'small-city': 7, town: 6,
+            village:  4, port:  7, ruins:  7, landmark:  9,
+            poi:  5, nature:  5,
+        };
+
+        // Sprite world-unit height per type (controls visual size on globe)
+        const spriteHeights = {
+            capital:  8, city:  8, 'small-city':  9, town: 8,
+            village:  6, port:  9, ruins:  8, landmark:  8,
+            poi:  7, nature:  7,
+        };
+
+        function drawStar(ctx, cx, cy, r, color) {
+            const pts = 5, step = (Math.PI * 2) / pts, half = step / 2;
+            ctx.beginPath();
+            for (let i = 0; i < pts; i++) {
+                const ox = cx + Math.cos(i * step - Math.PI / 2) * r;
+                const oy = cy + Math.sin(i * step - Math.PI / 2) * r;
+                const ix = cx + Math.cos(i * step + half - Math.PI / 2) * (r * 0.42);
+                const iy = cy + Math.sin(i * step + half - Math.PI / 2) * (r * 0.42);
+                i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
+                ctx.lineTo(ix, iy);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawDot(ctx, type, cx, cy, r) {
+            switch (type) {
+                case 'capital': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.65)'; ctx.lineWidth = 5; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 2.5; ctx.stroke();
+                    drawStar(ctx, cx, cy, r * 0.54, BROWN);
+                    break;
+                }
+                case 'city': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 4; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+                    ctx.fillStyle = BROWN; ctx.fill();
+                    break;
+                }
+                case 'small-city': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r + 3, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 3; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 1.5; ctx.stroke();
+                    break;
+                }
+                case 'town': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = BROWN; ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+                    break;
+                }
+                case 'village': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#A0522D'; ctx.fill();
+                    ctx.strokeStyle = DARK_BROWN; ctx.lineWidth = 1; ctx.stroke();
+                    break;
+                }
+                case 'port': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#E8F4FD'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 1.5; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+                    ctx.fillStyle = '#4682B4'; ctx.fill();
+                    break;
+                }
+                case 'ruins': {
+                    ctx.setLineDash([r * 0.7, r * 0.5]);
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#888888'; ctx.lineWidth = 1.5; ctx.stroke();
+                    ctx.setLineDash([]);
+                    break;
+                }
+                case 'landmark': {
+                    ctx.beginPath();
+                    ctx.moveTo(cx,           cy - r);
+                    ctx.lineTo(cx + r * 0.65, cy);
+                    ctx.lineTo(cx,           cy + r);
+                    ctx.lineTo(cx - r * 0.65, cy);
+                    ctx.closePath();
+                    ctx.fillStyle = '#FF8C00'; ctx.fill();
+                    ctx.strokeStyle = BROWN; ctx.lineWidth = 1.5; ctx.stroke();
+                    break;
+                }
+                case 'poi': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff69b4'; ctx.fill();
+                    ctx.strokeStyle = DARK_BROWN; ctx.lineWidth = 1; ctx.stroke();
+                    break;
+                }
+                case 'nature': {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#228b22'; ctx.fill();
+                    ctx.strokeStyle = DARK_BROWN; ctx.lineWidth = 1; ctx.stroke();
+                    break;
+                }
+                default: {
+                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#aaaaaa'; ctx.fill();
+                }
+            }
+        }
+
+        // ── Font family resolver ────────────────────────────────────────────────
+        // Maps editor font names to loaded CSS equivalents + fallback chains.
+        // "Garamond MT" and "Copperplate Gothic" are not standard web fonts;
+        // map them to the closest loaded Google Fonts so canvas renders correctly.
+        const FONT_CSS = {
+            'Garamond MT':        '"Cormorant Garamond", "Garamond MT", Georgia, serif',
+            'Copperplate Gothic': '"Cinzel Decorative", "Cinzel", "Copperplate Gothic", serif',
+            'Cinzel Decorative':  '"Cinzel Decorative", "Cinzel", serif',
+            'Cinzel':             '"Cinzel", serif',
+            'Simonetta':          '"Simonetta", serif',
+        };
+        function resolveFont(fontFamily) {
+            if (!fontFamily) return '"Cinzel", serif';
+            return FONT_CSS[fontFamily] || `"${fontFamily}", "Cinzel", serif`;
+        }
+
+        function createMarker(location) {
+            if (!location.x || !location.y) return;
+            const type = location.type;
+
+            // ── Label-only: water, river, region, nature (no dot marker) ────────
+            if (type === 'water' || type === 'river' || type === 'region' || type === 'nature') {
+                // Color scheme per type
+                const fillColor   = type === 'region' ? '#e8dfc0'          // warm parchment
+                                  : type === 'nature' ? '#c8e0a8'          // soft sage green
+                                  :                    '#b8d8f0';          // cool blue (water/river)
+                const strokeColor = type === 'region' ? 'rgba(40,25,10,0.85)'  // dark brown
+                                  : type === 'nature' ? 'rgba(20,50,10,0.85)'  // dark forest green
+                                  :                    'rgba(0,20,60,0.85)';   // dark navy (water)
+
+                // ── Font — fully respect all editor settings ──────────────────────
+                // Regions use 75 % of their editor font size — still readable but less dominant
+                const rawSize = (location.fontSize || 10) * (type === 'region' ? 0.75 : 1.0);
+                const fSize   = Math.max(rawSize, 7);
+                const fFamily = resolveFont(location.fontFamily);
+                const fStyle  = (location.fontStyle || 'normal').toLowerCase();
+                const fWeight = location.fontWeight || '400';
+                const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
+
+                const lines    = (location.name || '').split('\n');
+                const tmpCtx   = document.createElement('canvas').getContext('2d');
+                tmpCtx.font    = fontStr;
+                const maxW     = Math.max(...lines.map(l => tmpCtx.measureText(l).width));
+                const lineH    = fSize * 1.4;
+                const PAD      = 6;
+                // textCurve: same convention as 2D map (value × 5 = pixel arc displacement)
+                const curveVal = location.textCurve ? parseFloat(location.textCurve) * 5 : 0;
+                const arcBow   = Math.abs(curveVal);
+
+                // ── Arc-text canvas width ─────────────────────────────────────────────
+                // Glyphs travel along a circle of radius R.  As the arc traverses ~300°
+                // the x-range of glyph centres is [-R, +R] relative to the circle's CX.
+                // The canvas must be 2*R + one glyph-height wide so nothing is clipped.
+                // For straight/multi-line text the old formula (maxW + 2*PAD) is fine.
+                let arcR = 0;
+                if (curveVal !== 0 && lines.length === 1) {
+                    const _hw  = maxW / 2;
+                    const _cyl = (curveVal * curveVal - _hw * _hw) / (2 * curveVal);
+                    arcR = Math.sqrt(_hw * _hw + _cyl * _cyl);
+                }
+                const canvasW  = arcR > 0
+                    ? Math.ceil(2 * arcR + fSize + PAD * 2)
+                    : Math.ceil(maxW + PAD * 2);
+
+                // For arc text the canvas must be tall enough to contain the full arc + glyph height.
+                // The midpoint glyph top = canvasH/2 - arcBow - fSize/2; needs to be >= PAD.
+                // So: canvasH >= 2*arcBow + fSize + PAD*2
+                const canvasH  = Math.ceil(Math.max(
+                    lines.length * lineH + PAD * 2,
+                    2 * arcBow + fSize + PAD * 2
+                ));
+
+                const wCvs    = document.createElement('canvas');
+                wCvs.width    = canvasW;
+                wCvs.height   = canvasH;
+                const wCtx    = wCvs.getContext('2d');
+                wCtx.font        = fontStr;
+                wCtx.lineJoin    = 'round';
+                wCtx.lineWidth   = Math.max(fSize * 0.22, 1.4);
+                wCtx.strokeStyle = strokeColor;
+                wCtx.fillStyle   = fillColor;
+
+                if (curveVal !== 0 && lines.length === 1) {
+                    // ── Curved single-line text along a circular arc ─────────────
+                    const text  = lines[0];
+                    const textW = wCtx.measureText(text).width;
+                    const d     = curveVal;
+                    const halfW = textW / 2;
+                    // Circle through (0,0), (textW/2, d), (textW, 0)
+                    const cy_l  = (d * d - halfW * halfW) / (2 * d);
+                    const R     = Math.sqrt(halfW * halfW + cy_l * cy_l);
+                    const circleCX   = canvasW / 2;
+                    const circleCY   = canvasH / 2 + cy_l;
+                    const startAngle = Math.atan2(-cy_l, -halfW);
+                    // d<0 → upward bow → characters step CCW (+1); d>0 → downward bow → CW (-1)
+                    const arcDir     = d < 0 ? 1 : -1;
+                    wCtx.textBaseline = 'middle';
+                    wCtx.textAlign    = 'center';
+                    let arcAngle = startAngle;
+                    for (let i = 0; i < text.length; i++) {
+                        const ch    = text[i];
+                        const chW   = wCtx.measureText(ch).width;
+                        const chAng = chW / R;
+                        arcAngle += arcDir * chAng / 2;
+                        wCtx.save();
+                        wCtx.translate(
+                            circleCX + R * Math.cos(arcAngle),
+                            circleCY + R * Math.sin(arcAngle)
+                        );
+                        wCtx.rotate(arcAngle + arcDir * Math.PI / 2);
+                        wCtx.strokeText(ch, 0, 0);
+                        wCtx.fillText(ch, 0, 0);
+                        wCtx.restore();
+                        arcAngle += arcDir * chAng / 2;
+                    }
+                } else {
+                    // ── Straight or multi-line text ───────────────────────────────
+                    // textBaseline='middle' + (i+0.5)*lineH centres each line in its
+                    // row, so the whole text block is vertically centred in the canvas
+                    // and the mesh origin (= sphere coordinate) aligns with the label.
+                    wCtx.textBaseline = 'middle';
+                    wCtx.textAlign    = 'center';
+                    lines.forEach((line, i) => {
+                        const y = PAD + (i + 0.5) * lineH;
+                        wCtx.strokeText(line, canvasW / 2, y);
+                        wCtx.fillText(line,   canvasW / 2, y);
+                    });
+                }
+
+                // ── Sphere position with labelOffset ─────────────────────────────
+                const pos    = coordsToSphere(location.x, location.y);
+                let finalPos = pos.clone();
+                const offX   = location.labelOffsetX || 0;
+                const offY   = location.labelOffsetY || 0;
+                if (offX !== 0 || offY !== 0) {
+                    const normal  = pos.clone().normalize();
+                    const worldUp = new THREE.Vector3(0, 1, 0);
+                    const tangX   = new THREE.Vector3().crossVectors(worldUp, normal).normalize();
+                    const tangY   = new THREE.Vector3().crossVectors(normal, tangX).normalize();
+                    const scale   = 0.05;  // offset units → world units
+                    finalPos.addScaledVector(tangX,  offX * scale);
+                    finalPos.addScaledVector(tangY, -offY * scale);
+                    finalPos.normalize().multiplyScalar(planetRadius + 2);
+                }
+
+                const worldH = canvasH * 0.16;
+                const worldW = worldH * (canvasW / canvasH);
+
+                // ── Water labels: lift northward so text sits ON the water body ────────
+                // In the 2D map, text baseline is AT the geographic coordinate and the text
+                // body extends upward/northward into the lake.  With textBaseline='middle'
+                // our canvas centres text at the canvas centre (= mesh centre = geographic
+                // coordinate), so the text bottom is blockH/2 SOUTH of the coordinate.
+                // Shift the mesh northward by exactly that amount so text bottom aligns
+                // with the coordinate and the whole label reads above/inside the lake.
+                // Formula: blockH/2 × (worldH/canvasH) = blockH × 0.08
+                if (type === 'water' && curveVal === 0) {
+                    const blockH     = (lines.length - 1) * lineH + fSize;
+                    const northShift = blockH * 0.08;
+                    const _n  = finalPos.clone().normalize();
+                    const _up = new THREE.Vector3(0, 1, 0);
+                    const _tX = new THREE.Vector3().crossVectors(_up, _n).normalize();
+                    const _tY = new THREE.Vector3().crossVectors(_n, _tX).normalize();
+                    finalPos.addScaledVector(_tY, northShift);
+                    finalPos.normalize().multiplyScalar(planetRadius + 2);
+                }
+
+                const wMesh  = new THREE.Mesh(
+                    new THREE.PlaneGeometry(worldW, worldH),
+                    new THREE.MeshBasicMaterial({
+                        map:        new THREE.CanvasTexture(wCvs),
+                        transparent: true, alphaTest: 0.01,
+                        toneMapped:  false, depthWrite: false, depthTest: true,
+                        opacity:     location.opacity !== undefined ? location.opacity : 1.0,
+                        // Only render inside the planet sphere (stencil written by planetMaterial)
+                        stencilWrite: false,
+                        stencilFunc:  THREE.EqualStencilFunc,
+                        stencilRef:   1,
+                    })
+                );
+                wMesh.renderOrder = 1;
+                wMesh.position.copy(finalPos);
+                wMesh.lookAt(finalPos.clone().multiplyScalar(2));
+                // ── Rotate in-plane to match the feature's angle on the 2D map ──
+                if (location.rotation) {
+                    wMesh.rotateZ(-location.rotation * Math.PI / 180);
+                }
+                wMesh.userData = location;
+                markersGroup.add(wMesh);
+                return;
+            }
+
+            const r    = dotRadii[type];
+            if (!r) return;
+
+            // ── Font — fully respect all editor settings ──────────────────────
+            const fSize   = Math.max(location.fontSize || 11, 9);
+            const fFamily = resolveFont(location.fontFamily);
+            const fStyle  = (location.fontStyle || '').toLowerCase() === 'italic' ? 'italic' : 'normal';
+            const fWeight = location.fontWeight || 'normal';
+            const fontStr = `${fStyle} ${fWeight} ${fSize}px ${fFamily}`;
+
+            const lines   = location.name ? location.name.split('\n') : [];
+            const lineH   = fSize * 1.35;
+
+            const tmpCtx  = document.createElement('canvas').getContext('2d');
+            tmpCtx.font   = fontStr;
+            const textW   = lines.length
+                ? Math.max(...lines.map(l => tmpCtx.measureText(l).width))
+                : 0;
+
+            // ── Label offsets — expand canvas to fit label wherever it lands ──
+            // offX/Y are 2D map pixels; negative = label left/up relative to dot
+            const offX    = location.labelOffsetX || 0;
+            const offY    = location.labelOffsetY || 0;
+
+            // Base canvas height for the dot + multi-line text at zero offset
+            const baseH   = lines.length > 1
+                ? Math.ceil(Math.max(CANVAS_H, lines.length * lineH + 16))
+                : CANVAS_H;
+            const dotCY_base = Math.round(baseH / 2);
+
+            // Extra padding needed so offset text stays within canvas bounds
+            const topPad  = Math.max(0, -(dotCY_base + offY) + fSize + 4);
+            const botPad  = Math.max(0, (dotCY_base + offY + lines.length * lineH) - baseH + 4);
+            // For X: if offX is negative the label goes left; pad canvas left so dot stays visible
+            const leftPad = Math.max(0, -offX + 4);
+
+            const canvasH = baseH + topPad + botPad;
+            // Text starts at dot-centre + offX (matching 2D map convention: offsetX is
+            // measured from the dot centre, not from a fixed left-margin constant).
+            const canvasW = Math.ceil(leftPad + DOT_CX + Math.max(offX, 0) + textW + 10);
+
+            // Actual dot position in the expanded canvas
+            const dotCX   = DOT_CX  + leftPad;
+            const dotCY   = dotCY_base + topPad;
+
+            const canvas  = document.createElement('canvas');
+            canvas.width  = canvasW;
+            canvas.height = canvasH;
+            const ctx     = canvas.getContext('2d');
+
+            // Draw marker dot at adjusted canvas position
+            drawDot(ctx, type, dotCX, dotCY, r);
+
+            // Draw label with offsets applied — cream fill + dark-brown outline
+            if (lines.length && !location.hideLabel) {
+                const blockH        = (lines.length - 1) * lineH;
+                const firstBaseline = dotCY + offY - blockH / 2 + fSize * 0.38;
+                const textX         = leftPad + DOT_CX + offX;
+                ctx.font      = fontStr;
+                ctx.lineJoin  = 'round';
+                ctx.lineWidth = Math.max(fSize * 0.22, 1.5);
+                ctx.strokeStyle = BROWN;
+                lines.forEach((line, i) => ctx.strokeText(line, textX, firstBaseline + i * lineH));
+                ctx.fillStyle = '#faf3e0';
+                lines.forEach((line, i) => ctx.fillText(line,   textX, firstBaseline + i * lineH));
+            }
+
+            const pos    = coordsToSphere(location.x, location.y);
+            const worldH = (spriteHeights[type] || 8) * (canvasH / CANVAS_H);
+            const worldW = worldH * (canvasW / canvasH);
+
+            // Shift geometry so the dot (dotCX, dotCY) aligns with the mesh origin
+            // which sits at the sphere coordinate — handles both X and Y label offsets
+            const xShift = worldW * (0.5  - dotCX / canvasW);
+            const yShift = worldH * (dotCY / canvasH - 0.5);
+            const geo    = new THREE.PlaneGeometry(worldW, worldH);
+            geo.translate(xShift, yShift, 0);
+
+            const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+                map:        new THREE.CanvasTexture(canvas),
+                transparent: true, alphaTest: 0.01,
+                toneMapped:  false, depthWrite: false, depthTest: true,
+                opacity:     location.opacity !== undefined ? location.opacity : 1.0,
+                // Only render inside the planet sphere (stencil written by planetMaterial)
+                stencilWrite: false,
+                stencilFunc:  THREE.EqualStencilFunc,
+                stencilRef:   1,
+            }));
+            mesh.renderOrder = 1;
+            mesh.position.copy(pos);
+            mesh.lookAt(pos.clone().multiplyScalar(2));
+            // Rotate label in-plane to match 2D map orientation
+            if (location.rotation) {
+                mesh.rotateZ(-location.rotation * Math.PI / 180);
+            }
+            mesh.userData = location;
+            markersGroup.add(mesh);
+        }
+
+        // ── Mouse controls ─────────────────────────────────────────────────────────
+        let isDragging = false;
+        let hasDragged = false;   // Fix: mouseup clears isDragging before click fires
+        let prevX = 0, prevY = 0;
+
+        document.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            hasDragged = false;
+            prevX = e.clientX;
+            prevY = e.clientY;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - prevX;
+                const dy = e.clientY - prevY;
+                if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasDragged = true;
+                planet.rotation.y += dx * 0.007;
+                planet.rotation.x += dy * 0.007;
+                syncGroups();
+                prevX = e.clientX;
+                prevY = e.clientY;
+                hideTooltip();
+                return;
+            }
+            updateTooltip(e);
+        });
+
+        document.addEventListener('mouseup', () => { isDragging = false; });
+
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            camera.position.z += e.deltaY * 0.2;
+            camera.position.z = Math.max(210, Math.min(900, camera.position.z));
+        }, { passive: false });
+
+        // ── Raycasting & tooltip ───────────────────────────────────────────────────
+        const raycaster = new THREE.Raycaster();
+        const mouse     = new THREE.Vector2();
+        const tooltip   = document.getElementById('hover-tooltip');
+
+        function updateTooltip(e) {
+            mouse.x = (e.clientX / window.innerWidth)  *  2 - 1;
+            mouse.y = (e.clientY / window.innerHeight) * -2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(markersGroup.children);
+
+            if (hits.length > 0) {
+                const loc = hits[0].object.userData;
+                document.getElementById('tt-name').textContent = loc.name;
+                document.getElementById('tt-type').textContent = loc.type;
+                tooltip.style.left    = (e.clientX + 14) + 'px';
+                tooltip.style.top     = (e.clientY - 10) + 'px';
+                tooltip.style.display = 'block';
+                document.body.style.cursor = 'pointer';
+            } else {
+                hideTooltip();
+            }
+        }
+
+        function hideTooltip() {
+            tooltip.style.display      = 'none';
+            document.body.style.cursor = '';
+        }
+
+        document.addEventListener('click', (e) => {
+            if (hasDragged) return;   // Don't treat a drag-release as a click
+
+            mouse.x = (e.clientX / window.innerWidth)  *  2 - 1;
+            mouse.y = (e.clientY / window.innerHeight) * -2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(markersGroup.children);
+
+            if (hits.length > 0) {
+                const loc     = hits[0].object.userData;
+                const content = document.getElementById('info-content');
+                content.innerHTML = `
+                    <h4><i class="fa-solid fa-location-dot"></i> ${loc.name}</h4>
+                    <p><strong>Type:</strong> <span class="location-type">${loc.type}</span></p>
+                    <p><strong>Coordinates:</strong> X: ${loc.x.toFixed(1)}, Y: ${loc.y.toFixed(1)}</p>
+                    ${loc.region      ? `<p><strong>Region:</strong> ${loc.region}</p>` : ''}
+                    ${loc.description ? `<p>${loc.description}</p>` : ''}
+                `;
+                document.getElementById('info-panel').style.display = 'block';
+            }
+        });
+
+        // ── Helpers ────────────────────────────────────────────────────────────────
+        function syncGroups() {
+            markersGroup.rotation.copy(planet.rotation);
+            roadsGroup.rotation.copy(planet.rotation);
+        }
+
+        function resetCamera() {
+            camera.position.z = 420;
+            planet.rotation.set(INIT_ROT_X, INIT_ROT_Y, 0);
+            syncGroups();
+        }
+
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+            const icon = document.querySelector('#rot-toggle i');
+            icon.className = autoRotate ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+            document.getElementById('rot-toggle').style.opacity = autoRotate ? '1' : '0.5';
+        }
+
+        function toggleLocations() {
+            markersVisible = !markersVisible;
+            markersGroup.visible = markersVisible;
+            document.getElementById('loc-toggle').style.opacity = markersVisible ? '1' : '0.5';
+        }
+
+        function hideInfo() {
+            document.getElementById('info-panel').style.display = 'none';
+        }
+
+        function toggleTimeControls() {
+            const panel = document.getElementById('time-controls');
+            const opening = panel.style.display === 'none';
+            panel.style.display = opening ? 'block' : 'none';
+            document.getElementById('time-btn').style.opacity = opening ? '1' : '0.6';
+            if (opening) syncTimeSliders();
+        }
+
+        function syncTimeSliders() {
+            const yearFrac = ((yearAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const day = Math.max(1, Math.floor((yearFrac / (2 * Math.PI)) * 384) + 1);
+            const dayFrac2 = ((dayAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const hour = Math.floor((dayFrac2 / (2 * Math.PI)) * 24);
+            const daySlider = document.getElementById('tc-day');
+            const hourSlider = document.getElementById('tc-hour');
+            if (daySlider)  { daySlider.value  = day;  updateDayLabel(day); }
+            if (hourSlider) { hourSlider.value = hour; updateHourLabel(hour); }
+        }
+
+        function getDaySeasonLabel(day) {
+            if (day <= 96)  return `${day}  ·  Natali`;
+            if (day <= 192) return `${day}  ·  Sultra`;
+            if (day <= 288) return `${day}  ·  Garnest`;
+            return `${day}  ·  Briscarn`;
+        }
+
+        function updateDayLabel(day) {
+            const el = document.getElementById('tc-day-label');
+            if (el) el.textContent = getDaySeasonLabel(day);
+        }
+
+        function updateHourLabel(hour) {
+            const el = document.getElementById('tc-hour-label');
+            if (el) el.textContent = String(hour).padStart(2, '0') + ':00';
+        }
+
+        document.getElementById('tc-day').addEventListener('input', function () {
+            const day = parseInt(this.value);
+            updateDayLabel(day);
+            yearAngle = ((day - 1) / 384) * 2 * Math.PI;
+        });
+
+        document.getElementById('tc-hour').addEventListener('input', function () {
+            const hour = parseInt(this.value);
+            updateHourLabel(hour);
+            dayAngle = (hour / 24) * 2 * Math.PI;
+        });
+
+        // ── Init ───────────────────────────────────────────────────────────────────
+        async function init() {
+            await CampaignData.init();
+            await document.fonts.ready;   // ensure fonts are loaded before canvas text measurement
+
+            const locations = CampaignData.getLocations();
+            locations.forEach(createMarker);
+            console.log('Markers:', markersGroup.children.length);
+
+            // Fade out loading screen once data is ready
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.classList.add('fade-out');
+            setTimeout(() => { loadingScreen.style.display = 'none'; }, 900);
+
+            animate();
+        }
+
+        // ── Animation loop ─────────────────────────────────────────────────────────
+        // Pre-allocated to avoid per-frame GC pressure
+        const _q = new THREE.Quaternion();
+        const _v = new THREE.Vector3();
+
+        // ── Oberra season helpers ─────────────────────────────────────────────────
+        const SEASON_COLORS = {
+            Natali:   new THREE.Color(0xfff5d0),  // neutral warm white  (spring)
+            Sultra:   new THREE.Color(0xfff0a0),  // golden              (summer)
+            Garnest:  new THREE.Color(0xffe8b0),  // amber-warm          (harvest/fall)
+            Briscarn: new THREE.Color(0xeaf0ff),  // cool blue-white     (winter)
+        };
+
+        function getSeason(angle) {
+            const a = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            if (a < Math.PI / 2)         return 'Natali';
+            if (a < Math.PI)             return 'Sultra';
+            if (a < 3 * Math.PI / 2)     return 'Garnest';
+            return 'Briscarn';
+        }
+
+        // ── Moon phase detection ──────────────────────────────────────────────────
+        // dot(moonDir, sunDir): +1 = moon near sun (New), -1 = moon opposite sun (Full)
+        function getMoonPhase(moonPos) {
+            const sunDir  = sunLight.position.clone().normalize();
+            const moonDir = moonPos.clone().normalize();
+            const dot = moonDir.dot(sunDir);
+            if (dot < -0.7) return 'Full';
+            if (dot >  0.7) return 'New';
+            if (Math.abs(dot) < 0.3) return 'Half';
+            return 'Visible';
+        }
+
+        // Alignment lookup: key = "TudaraPhase+EndeloPhase"
+        const ALIGNMENT_TABLE = {
+            'Full+Full':       'Salvus',
+            'Full+New':        'Vigorius',
+            'New+New':         'Absentia',
+            'New+Full':        'Brutali',
+            'Half+Half':       'True Harmony',
+            'Visible+Full':    'Illuminot',
+            'Full+Visible':    'Lunaus',
+            'Visible+New':     'Parsuli',
+            'New+Visible':     'Parsuli',
+            'Visible+Visible': 'Harmony',
+        };
+
+        function getAlignment(tudaraPhase, endeloPhase) {
+            return ALIGNMENT_TABLE[`${tudaraPhase}+${endeloPhase}`] || '';
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // ── Oberra day / year tick ────────────────────────────────────────────────
+            const now   = performance.now();
+            const delta = now - lastFrameTime;
+            lastFrameTime = now;
+
+            if (!isDragging && autoRotate) {
+                dayAngle += (2 * Math.PI / DAY_MS) * delta;
+                planet.rotation.y = dayAngle;
+            } else if (isDragging) {
+                dayAngle = planet.rotation.y; // keep in sync after user drag
+            }
+
+            // Year progresses regardless of pause / drag
+            yearAngle += (2 * Math.PI / YEAR_MS) * delta;
+
+            // ── Moon orbits ───────────────────────────────────────────────────────────
+            endeloAngle += (2 * Math.PI / ENDELO_PERIOD) * delta;
+            tudaraAngle += (2 * Math.PI / TUDARA_PERIOD) * delta;
+
+            endeloMesh.position.set(
+                ENDELO_DIST * Math.cos(endeloAngle),
+                ENDELO_DIST * Math.sin(endeloAngle) * Math.sin(ENDELO_INCL),
+                ENDELO_DIST * Math.sin(endeloAngle) * Math.cos(ENDELO_INCL)
+            );
+            tudaraMesh.position.set(
+                TUDARA_DIST * Math.cos(tudaraAngle),
+                TUDARA_DIST * Math.sin(tudaraAngle) * Math.sin(TUDARA_INCL),
+                TUDARA_DIST * Math.sin(tudaraAngle) * Math.cos(TUDARA_INCL)
+            );
+
+            // ── Phase detection & alignment UI ────────────────────────────────────────
+            const endeloPhase = getMoonPhase(endeloMesh.position);
+            const tudaraPhase = getMoonPhase(tudaraMesh.position);
+            const alignName   = getAlignment(tudaraPhase, endeloPhase);
+            const moonEl      = document.getElementById('moon-display');
+            if (moonEl && alignName) {
+                const eMark = endeloPhase === 'New' ? '○' : '●';
+                const tMark = tudaraPhase === 'New' ? '○' : '●';
+                moonEl.innerHTML =
+                    `${alignName} ` +
+                    `<span style="color:#e84040">${eMark} Endelo'ar</span> ` +
+                    `<span style="color:#4499ff">${tMark} Tudara</span>`;
+            }
+
+            // ── Sun position: ecliptic orbit tilted 23.5° from equatorial plane ─────
+            sunLight.position.set(
+                SUN_DIST * Math.cos(yearAngle),
+                SUN_DIST * Math.sin(yearAngle) * Math.sin(ECLIPTIC_TILT),
+                SUN_DIST * Math.sin(yearAngle) * Math.cos(ECLIPTIC_TILT)
+            );
+
+            // ── Season colour tint ────────────────────────────────────────────────────
+            const season = getSeason(yearAngle);
+            sunLight.color.lerp(SEASON_COLORS[season], 0.005);
+
+            // ── Atmosphere / twilight / ice — update sun direction & cap sizes ────────
+            const sunDirVec = sunLight.position.clone().normalize();
+            twilightMaterial.uniforms.sunDir.value.copy(sunDirVec);
+            innerAtmMaterial.uniforms.sunDir.value.copy(sunDirVec);
+
+            // Ice caps grow in the winter hemisphere, shrink in summer
+            const sinYear = Math.sin(yearAngle);
+            iceMaterial.uniforms.northCapAngle.value = 0.22 - 0.16 * sinYear;
+            iceMaterial.uniforms.southCapAngle.value = 0.22 + 0.16 * sinYear;
+            iceMesh.rotation.copy(planet.rotation); // follow planet pole axis
+
+            // ── Season + time UI ──────────────────────────────────────────────────────
+            const dayFrac    = ((dayAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const hour       = Math.floor((dayFrac / (2 * Math.PI)) * 24);
+            const yearFrac   = ((yearAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            const dayOfSeason = (Math.floor((yearFrac / (2 * Math.PI)) * 384) % 96) + 1;
+            const seasonEl = document.getElementById('season-display');
+            if (seasonEl) seasonEl.textContent =
+                `☀ ${season}  ·  Day ${dayOfSeason}  ·  Hour ${String(hour).padStart(2, '0')}`;
+
+            // Advance cloud shader time — storm vortices and global drift
+            // are computed entirely on the GPU; cloud mesh just follows planet
+            // rotation so dragging the globe moves weather correctly.
+            cloudMaterial.uniforms.time.value += 1.0;
+            cloudMesh.rotation.copy(planet.rotation);
+            if (planetMaterial.userData.shader)
+                planetMaterial.userData.shader.uniforms.waveTime.value += 1.0;
+
+            // Always keep groups in sync with current planet rotation
+            syncGroups();
+
+            // Back-face cull: depthTest is off so we manually hide markers on the
+            // far hemisphere to stop them showing through the planet.
+            // Skipped during drag to avoid per-frame overhead while rotating.
+            if (markersVisible && !isDragging) {
+                _q.setFromEuler(planet.rotation);
+                markersGroup.children.forEach(mesh => {
+                    _v.copy(mesh.position).applyQuaternion(_q);
+                    mesh.visible = _v.z > 0;
+                });
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // ── Resize ─────────────────────────────────────────────────────────────────
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init().catch((err) => {
+            console.error('Init error:', err);
+            document.getElementById('loading-screen').style.display = 'none';
+            animate();
+        });
+    </script>
+</body>
+
+</html>
