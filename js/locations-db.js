@@ -4015,7 +4015,7 @@ const WORLD_LOCATIONS = {
             "name": "Hath'lao\nSwamp",
             "type": "nature",
             "x": 25.38,
-            "y": 28.14,
+            "y": 27.61,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -4027,6 +4027,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
+            "labelAlign": "middle",
             "opacity": 0.5
         },
         {
@@ -4052,7 +4053,7 @@ const WORLD_LOCATIONS = {
             "name": "Celedon\nForest",
             "type": "nature",
             "x": 25.77,
-            "y": 30.8,
+            "y": 29.73,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -4064,6 +4065,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
+            "labelAlign": "middle",
             "opacity": 0.5
         },
         {
@@ -4242,7 +4244,7 @@ const WORLD_LOCATIONS = {
             "name": "Wetlands of\nCamburne",
             "type": "nature",
             "x": 22.19,
-            "y": 31.33,
+            "y": 30.31,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -4254,6 +4256,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
+            "labelAlign": "middle",
             "opacity": 0.5
         },
         {
@@ -4420,6 +4423,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
+            "labelAlign": "middle",
             "opacity": 0.8
         },
         {
@@ -5931,6 +5935,98 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1
+        },
+        {
+            "id": "tidelessspan",
+            "name": "Tideless\nSpan",
+            "type": "water",
+            "x": 39.47,
+            "y": 34,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 27,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "oldport",
+            "name": "Oldport",
+            "type": "small-city",
+            "x": 37.94,
+            "y": 35.51,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -25,
+            "labelOffsetY": -14
+        },
+        {
+            "id": "ingress",
+            "name": "Ingress",
+            "type": "city",
+            "x": 37.62,
+            "y": 31.7,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.2,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 25
+        },
+        {
+            "id": "kaldaros",
+            "name": "Kaldaros",
+            "type": "town",
+            "x": 44.8,
+            "y": 28.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "lasborin",
+            "name": "Lasborin",
+            "type": "town",
+            "x": 46.18,
+            "y": 22.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 12
         }
     ],
     "roads": [
@@ -9037,6 +9133,83 @@ const WORLD_LOCATIONS = {
                     25.01
                 ],
                 "ormsdal"
+            ]
+        },
+        {
+            "id": "raselle-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "raselle",
+                [
+                    44.05,
+                    30.66
+                ],
+                [
+                    44.32,
+                    28.96
+                ],
+                "kaldaros"
+            ]
+        },
+        {
+            "id": "kaldaros-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "kaldaros",
+                [
+                    45.73,
+                    26.2
+                ],
+                "sahvall"
+            ]
+        },
+        {
+            "id": "sahvall-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "sahvall",
+                [
+                    45.44,
+                    24.17
+                ],
+                [
+                    45.53,
+                    23.12
+                ],
+                "lasborin"
+            ]
+        },
+        {
+            "id": "lasborin-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "lasborin",
+                [
+                    45.82,
+                    21.9
+                ],
+                "eruvic"
+            ]
+        },
+        {
+            "id": "lasborin-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "lasborin",
+                [
+                    47.24,
+                    22.59
+                ],
+                [
+                    47.78,
+                    21.02
+                ],
+                "syori"
             ]
         }
     ],
