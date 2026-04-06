@@ -234,11 +234,6 @@ const Editor = (function () {
         typeOrder.forEach(renderGroup);
         // Any types not in typeOrder
         Object.keys(grouped).forEach(renderGroup);
-
-        // If only one result, auto-select it
-        if (q && visible.length === 1) {
-            list.value = visible[0].id;
-        }
     }
 
     function filterLocationList(query) {
@@ -519,11 +514,6 @@ const Editor = (function () {
             }
             list.appendChild(opt);
         });
-
-        // If only one result, auto-select it
-        if (q && visible.length === 1) {
-            list.value = visible[0].id;
-        }
     }
 
     function filterRoadList(query) {
