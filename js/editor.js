@@ -74,8 +74,12 @@ const Editor = (function () {
         document.getElementById(`tab-${tabName}`).style.display = 'block';
 
         if (tabName === 'locations') {
+            const s = document.getElementById('location-search');
+            if (s) s.value = '';
             renderLocationList();
         } else if (tabName === 'roads') {
+            const s = document.getElementById('road-search');
+            if (s) s.value = '';
             renderRoadList();
         }
     }
@@ -177,8 +181,9 @@ const Editor = (function () {
         updateLocationDropdowns();
     }
 
-    function renderLocationList() {
+    function renderLocationList(filter = '') {
         const list = document.getElementById('location-list');
+        const q = filter.trim().toLowerCase();
         list.innerHTML = '<option value="">-- Select a Location --</option>';
 
         // Group locations by type
@@ -189,8 +194,17 @@ const Editor = (function () {
             ruins: 'Ruins', region: 'Region Labels', water: 'Water Labels', river: 'River Labels'
         };
 
+        // Filter first, then group
+        const visible = q
+            ? state.locations.filter(loc =>
+                (loc.name || '').toLowerCase().includes(q) ||
+                (loc.id || '').toLowerCase().includes(q) ||
+                (loc.type || '').toLowerCase().includes(q) ||
+                (loc.region || '').toLowerCase().includes(q))
+            : state.locations;
+
         const grouped = {};
-        state.locations.forEach(loc => {
+        visible.forEach(loc => {
             const type = loc.type || 'other';
             if (!grouped[type]) grouped[type] = [];
             grouped[type].push(loc);
@@ -206,7 +220,7 @@ const Editor = (function () {
             renderedTypes.add(type);
             const label = typeLabels[type] || (type.charAt(0).toUpperCase() + type.slice(1));
             const optgroup = document.createElement('optgroup');
-            optgroup.label = `── ${label} ──`;
+            optgroup.label = q ? `── ${label} ──` : `── ${label} ──`;
             grouped[type].forEach(loc => {
                 const opt = document.createElement('option');
                 opt.value = loc.id;
@@ -220,6 +234,15 @@ const Editor = (function () {
         typeOrder.forEach(renderGroup);
         // Any types not in typeOrder
         Object.keys(grouped).forEach(renderGroup);
+
+        // If only one result, auto-select it
+        if (q && visible.length === 1) {
+            list.value = visible[0].id;
+        }
+    }
+
+    function filterLocationList(query) {
+        renderLocationList(query);
     }
 
     function selectLocation(id) {
@@ -471,12 +494,20 @@ const Editor = (function () {
 
     // --- Roads ---
 
-    function renderRoadList() {
+    function renderRoadList(filter = '') {
         const list = document.getElementById('road-list');
+        const q = filter.trim().toLowerCase();
         list.innerHTML = '<option value="">-- Select a Road --</option>';
 
-        // Sort roads by name/id
-        const sorted = [...state.roads].sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+        // Filter then sort
+        const visible = q
+            ? state.roads.filter(r =>
+                (r.name || '').toLowerCase().includes(q) ||
+                (r.id || '').toLowerCase().includes(q) ||
+                (r.type || '').toLowerCase().includes(q))
+            : state.roads;
+
+        const sorted = [...visible].sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
 
         sorted.forEach(road => {
             const opt = document.createElement('option');
@@ -488,6 +519,15 @@ const Editor = (function () {
             }
             list.appendChild(opt);
         });
+
+        // If only one result, auto-select it
+        if (q && visible.length === 1) {
+            list.value = visible[0].id;
+        }
+    }
+
+    function filterRoadList(query) {
+        renderRoadList(query);
     }
 
     function selectRoad(id) {
@@ -1160,6 +1200,8 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         deleteLocation,
         cancelLocation,
         previewLocation,
+        filterLocationList,
+        filterRoadList,
 
         // Roads
         selectRoad,

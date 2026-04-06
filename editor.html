@@ -144,6 +144,13 @@
       <div id="tab-locations" class="tab-content active" style="padding: 1rem;">
         <p style="font-size: 0.8rem; color: #888;">Click on the map to place a new location.</p>
 
+        <div style="position:relative; margin-bottom:0.4rem;">
+          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; pointer-events:none;"></i>
+          <input type="text" id="location-search" placeholder="Search locations…" autocomplete="off"
+            style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
+            oninput="Editor.filterLocationList(this.value)">
+        </div>
+
         <select id="location-list" class="form-control"
           style="margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1rem; background-color: #1a1614; color: #d4af37; border: 1px solid #584433; padding: 0.5rem; cursor: pointer; width: 100%;"
           onchange="if(this.value) { Editor.selectLocation(this.value); } else { Editor.cancelLocation(); }">
@@ -275,6 +282,13 @@
       <!-- Roads Tab Content -->
       <div id="tab-roads" class="tab-content" style="padding: 1rem; display: none;">
         <p style="font-size: 0.8rem; color: #888;">Select a road to edit, or click 'New Road' to start plotting.</p>
+
+        <div style="position:relative; margin-bottom:0.4rem;">
+          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; pointer-events:none;"></i>
+          <input type="text" id="road-search" placeholder="Search roads…" autocomplete="off"
+            style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
+            oninput="Editor.filterRoadList(this.value)">
+        </div>
 
         <select id="road-list" class="form-control"
           style="margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1rem; background-color: #1a1614; color: #d4af37; border: 1px solid #584433; padding: 0.5rem; cursor: pointer; width: 100%;"
