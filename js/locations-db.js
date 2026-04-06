@@ -5768,10 +5768,10 @@ const WORLD_LOCATIONS = {
         },
         {
             "id": "everbloom",
-            "name": "Everbloom",
+            "name": "Mount\nEverbloom",
             "type": "region",
             "x": 47.41,
-            "y": 29.59,
+            "y": 28.3,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -5944,8 +5944,8 @@ const WORLD_LOCATIONS = {
             "y": 34,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Cinzel Decorative",
-            "fontSize": 27,
+            "fontFamily": "Garamont MT",
+            "fontSize": 41,
             "fontWeight": "300",
             "fontStyle": "Italic",
             "markerSize": 0,
@@ -6027,6 +6027,157 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 12
+        },
+        {
+            "id": "tegenwaldwilds",
+            "name": "Tegenwald\nWilds",
+            "type": "nature",
+            "x": 49.29,
+            "y": 26.4,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "stinson",
+            "name": "Stinson",
+            "type": "small-city",
+            "x": 43.12,
+            "y": 23.71,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -54,
+            "labelOffsetY": 0
+        },
+        {
+            "id": "eastmare",
+            "name": "Eastmare",
+            "type": "town",
+            "x": 39.74,
+            "y": 30.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 12
+        },
+        {
+            "id": "harelbek",
+            "name": "Harelbek",
+            "type": "small-city",
+            "x": 36.44,
+            "y": 48.34,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "braelen",
+            "name": "Braelen",
+            "type": "town",
+            "x": 35.97,
+            "y": 44.1,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "serpentsplunge",
+            "name": "Serpent's\nPlunge",
+            "type": "water",
+            "x": 37.19,
+            "y": 33.2,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamont MT",
+            "fontSize": 15,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "sarbaugh",
+            "name": "Sarbaugh",
+            "type": "region",
+            "x": 46.53,
+            "y": 17,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 18,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "aerley-syori-ormsdal-crossroads",
+            "name": "aerley-syori-ormsdal-crossroads",
+            "type": "town",
+            "x": 49.37,
+            "y": 23.26,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
         }
     ],
     "roads": [
@@ -9210,6 +9361,87 @@ const WORLD_LOCATIONS = {
                     21.02
                 ],
                 "syori"
+            ]
+        },
+        {
+            "id": "gristavel-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "gristavel",
+                [
+                    50.13,
+                    19.95
+                ],
+                [
+                    49.58,
+                    20.74
+                ],
+                "syori"
+            ]
+        },
+        {
+            "id": "syori-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "syori",
+                [
+                    48.63,
+                    20.49
+                ],
+                [
+                    49.06,
+                    18.69
+                ],
+                "brekka"
+            ]
+        },
+        {
+            "id": "ormsdal-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "ormsdal",
+                [
+                    49.42,
+                    24.5
+                ],
+                "aerley-syori-ormsdal-crossroads"
+            ]
+        },
+        {
+            "id": "syori-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "syori",
+                [
+                    49.34,
+                    21.39
+                ],
+                [
+                    49.26,
+                    22.82
+                ],
+                "aerley-syori-ormsdal-crossroads"
+            ]
+        },
+        {
+            "id": "aerley-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "aerley",
+                [
+                    49.02,
+                    23.42
+                ],
+                [
+                    49.16,
+                    23.55
+                ],
+                "aerley-syori-ormsdal-crossroads"
             ]
         }
     ],
