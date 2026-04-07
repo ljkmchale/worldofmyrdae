@@ -4088,7 +4088,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.8
         },
         {
             "id": "lake-glenmantle",
@@ -4386,8 +4386,9 @@ const WORLD_LOCATIONS = {
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "labelOffsetX": -60,
-            "labelOffsetY": 0,
+            "labelOffsetX": -12,
+            "labelOffsetY": -11,
+            "labelAlign": "end",
             "opacity": 1
         },
         {
@@ -6619,7 +6620,7 @@ const WORLD_LOCATIONS = {
             "name": "Mount\nEthea",
             "type": "region",
             "x": 22.94,
-            "y": 28.42,
+            "y": 28.55,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -6669,6 +6670,285 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -12,
             "labelOffsetY": -12
+        },
+        {
+            "id": "habell",
+            "name": "Habell",
+            "type": "town",
+            "x": 24.6,
+            "y": 22.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -21,
+            "labelOffsetY": -11
+        },
+        {
+            "id": "berest",
+            "name": "Berest",
+            "type": "town",
+            "x": 26.9,
+            "y": 24.2,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "dregwaypost",
+            "name": "Dregway\nPost",
+            "type": "poi",
+            "x": 19.7,
+            "y": 21.1,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 15,
+            "labelOffsetY": 0,
+            "opacity": 1
+        },
+        {
+            "id": "aelspire",
+            "name": "Aelspire",
+            "type": "region",
+            "x": 22.83,
+            "y": 21,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "tovar",
+            "name": "Tovar",
+            "type": "town",
+            "x": 26.56,
+            "y": 22.47,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "tovarspan",
+            "name": "Tovar Span",
+            "type": "poi",
+            "x": 26.64,
+            "y": 21.2,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 11,
+            "labelOffsetY": 4,
+            "opacity": 1
+        },
+        {
+            "id": "pukett",
+            "name": "Pukett",
+            "type": "town",
+            "x": 25.37,
+            "y": 20.39,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -47,
+            "labelOffsetY": -2
+        },
+        {
+            "id": "urbank",
+            "name": "Urbank",
+            "type": "landmark",
+            "x": 26.9,
+            "y": 19.9,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -44,
+            "labelOffsetY": -5,
+            "opacity": 1
+        },
+        {
+            "id": "aesenfell",
+            "name": "Aesenfell",
+            "type": "town",
+            "x": 24,
+            "y": 19,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "frostwold",
+            "name": "Frostwold",
+            "type": "region",
+            "x": 22.95,
+            "y": 17.62,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "solwindglaes",
+            "name": "Solwind\nGlaes",
+            "type": "town",
+            "x": 25.73,
+            "y": 16.2,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -6
+        },
+        {
+            "id": "alconny",
+            "name": "Alconny",
+            "type": "town",
+            "x": 29.6,
+            "y": 19,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "whitewood",
+            "name": "Whitewood",
+            "type": "region",
+            "x": 28.37,
+            "y": 17.6,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "thaelshore",
+            "name": "Thaelshore",
+            "type": "town",
+            "x": 15.18,
+            "y": 17.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -70,
+            "labelOffsetY": -6
+        },
+        {
+            "id": "porpen",
+            "name": "Porpen",
+            "type": "city",
+            "x": 13.53,
+            "y": 19.8,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.17,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -52,
+            "labelOffsetY": -1
         }
     ],
     "roads": [
@@ -10343,6 +10623,372 @@ const WORLD_LOCATIONS = {
                     37.6
                 ],
                 "timberdown"
+            ]
+        },
+        {
+            "id": "tirncall-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "tirncall",
+                [
+                    24.24,
+                    30.82
+                ],
+                [
+                    23.89,
+                    31.91
+                ],
+                [
+                    23.6,
+                    32.03
+                ],
+                "menmythorn"
+            ]
+        },
+        {
+            "id": "adsuren-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "adsuren",
+                [
+                    24.34,
+                    27.07
+                ],
+                [
+                    24.03,
+                    26
+                ],
+                [
+                    22.79,
+                    25.02
+                ],
+                "insloe"
+            ]
+        },
+        {
+            "id": "abereth-road-east",
+            "type": "major",
+            "curved": true,
+            "name": "Ridgeclimb",
+            "fontSize": 9,
+            "labelReverse": true,
+            "points": [
+                "abereth",
+                [
+                    27.85,
+                    26.09
+                ],
+                [
+                    27.47,
+                    24.66
+                ],
+                "berest"
+            ]
+        },
+        {
+            "id": "lullin-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "lullin",
+                [
+                    26.51,
+                    25.53
+                ],
+                [
+                    26.54,
+                    24.57
+                ],
+                "berest"
+            ]
+        },
+        {
+            "id": "broadmererest-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "broadmere-rest",
+                [
+                    20.38,
+                    29.09
+                ],
+                [
+                    19.93,
+                    27.4
+                ],
+                "nesulport"
+            ]
+        },
+        {
+            "id": "nesulport-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "nesulport",
+                [
+                    20.06,
+                    25.81
+                ],
+                "Kodderl"
+            ]
+        },
+        {
+            "id": "caldwynn-road-east",
+            "type": "major",
+            "curved": true,
+            "name": "Celemere Pass",
+            "fontSize": 14,
+            "points": [
+                "caldwynn",
+                [
+                    25.38,
+                    31.99
+                ],
+                [
+                    26.04,
+                    32.49
+                ],
+                [
+                    26.55,
+                    31.79
+                ],
+                [
+                    26.93,
+                    31.07
+                ],
+                [
+                    27.63,
+                    30.56
+                ],
+                [
+                    27.79,
+                    29.47
+                ],
+                "dryrock"
+            ]
+        },
+        {
+            "id": "berest-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "berest",
+                [
+                    25.22,
+                    22.89
+                ],
+                "habell"
+            ]
+        },
+        {
+            "id": "habell-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "habell",
+                [
+                    23.97,
+                    22.9
+                ],
+                [
+                    23.18,
+                    23.93
+                ],
+                "insloe"
+            ]
+        },
+        {
+            "id": "insloe-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "insloe",
+                [
+                    21.67,
+                    24.34
+                ],
+                "Kodderl"
+            ]
+        },
+        {
+            "id": "kodderl-road-northwest",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "Kodderl",
+                [
+                    20.38,
+                    23.05
+                ],
+                [
+                    19.8,
+                    22.02
+                ],
+                "dregwaypost"
+            ]
+        },
+        {
+            "id": "berest-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "berest",
+                [
+                    26.47,
+                    23.52
+                ],
+                "tovar"
+            ]
+        },
+        {
+            "id": "tovar-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "tovar",
+                [
+                    26.75,
+                    21.86
+                ],
+                "tovarspan"
+            ]
+        },
+        {
+            "id": "dreghye-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "dreghye",
+                [
+                    19.26,
+                    22.82
+                ],
+                [
+                    19.15,
+                    21.71
+                ],
+                "dregwaypost"
+            ]
+        },
+        {
+            "id": "dregwaypost-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "dregwaypost",
+                [
+                    20.26,
+                    20.62
+                ],
+                [
+                    20.61,
+                    19.3
+                ],
+                [
+                    21.55,
+                    18.92
+                ],
+                "frostwellport"
+            ]
+        },
+        {
+            "id": "frostwellport-road-east",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "frostwellport",
+                [
+                    22.03,
+                    18.34
+                ],
+                [
+                    22.48,
+                    19.25
+                ],
+                [
+                    23.27,
+                    19.6
+                ],
+                "aesenfell"
+            ]
+        },
+        {
+            "id": "tovar-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "tovar",
+                [
+                    26.3,
+                    21.96
+                ],
+                [
+                    25.31,
+                    21.38
+                ],
+                "pukett"
+            ]
+        },
+        {
+            "id": "pukett-road-east",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "pukett",
+                [
+                    25.57,
+                    19.65
+                ],
+                "urbank"
+            ]
+        },
+        {
+            "id": "tovarspan-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "tovarspan",
+                [
+                    26.49,
+                    20.78
+                ],
+                "urbank"
+            ]
+        },
+        {
+            "id": "urbank-road-east",
+            "type": "minor",
+            "curved": true,
+            "name": "Upper Eustera Trail",
+            "fontSize": 10,
+            "points": [
+                "urbank",
+                [
+                    27.5,
+                    19.19
+                ],
+                [
+                    28.8,
+                    19.89
+                ],
+                "alconny"
             ]
         }
     ],

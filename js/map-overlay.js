@@ -392,12 +392,12 @@ const MapOverlay = (function () {
                 break;
             }
             case 'small-city': {
-                // Smaller city marker: white circle with brown outline, no center dot
-                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.95)', 2);
-                markerGroup.appendChild(glow);
-
-                const outer = makeCircle(px, py, r, '#FFFFFF', brown, 1.5);
+                // Brown filled circle with white outline ring, white circle in center
+                const outer = makeCircle(px, py, r, brown, 'rgba(255, 255, 255, 0.95)', 1);
                 markerGroup.appendChild(outer);
+
+                const inner = makeCircle(px, py, r * 0.55, '#FFFFFF', brown, 1);
+                markerGroup.appendChild(inner);
 
                 addLabel(markerGroup, loc, px, py, r, natW);
                 break;
