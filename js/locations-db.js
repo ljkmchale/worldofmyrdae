@@ -4246,7 +4246,7 @@ const WORLD_LOCATIONS = {
             "name": "Wetlands of\nCamburne",
             "type": "nature",
             "x": 22.19,
-            "y": 30.31,
+            "y": 30.64,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -4452,7 +4452,7 @@ const WORLD_LOCATIONS = {
             "name": "Eletold\nWood",
             "type": "nature",
             "x": 21.4,
-            "y": 27.6,
+            "y": 26.61,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -4464,6 +4464,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
+            "labelAlign": "middle",
             "opacity": 0.5
         },
         {
@@ -6880,7 +6881,7 @@ const WORLD_LOCATIONS = {
             "id": "alconny",
             "name": "Alconny",
             "type": "town",
-            "x": 29.6,
+            "x": 29.95,
             "y": 19,
             "region": "",
             "description": "Town",
@@ -6949,6 +6950,346 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": -1
+        },
+        {
+            "id": "claymere",
+            "name": "Claymere",
+            "type": "town",
+            "x": 17.79,
+            "y": 19.2,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 4,
+            "labelOffsetY": -8
+        },
+        {
+            "id": "ruinsofdruegend",
+            "name": "Ruins of\nDruegend",
+            "type": "poi",
+            "x": 17.6,
+            "y": 20.3,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5,
+            "opacity": 1
+        },
+        {
+            "id": "fawrese",
+            "name": "Fa'wrese",
+            "type": "town",
+            "x": 14.64,
+            "y": 21.29,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -60,
+            "labelOffsetY": 12
+        },
+        {
+            "id": "grobh",
+            "name": "Grobh",
+            "type": "town",
+            "x": 16.02,
+            "y": 19.63,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -11,
+            "labelOffsetY": 19
+        },
+        {
+            "id": "couleepeninula",
+            "name": "Coulee Peninsula",
+            "type": "region",
+            "x": 16.34,
+            "y": 19.01,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 18,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "eusteraridge",
+            "name": "Eustera Ridge",
+            "type": "region",
+            "x": 33.48,
+            "y": 22.98,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 36,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": 13,
+            "textCurve": -21,
+            "opacity": 0.5
+        },
+        {
+            "id": "bonlightpass",
+            "name": "Bonlight\nPass",
+            "type": "landmark",
+            "x": 30.8,
+            "y": 20.5,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -7,
+            "opacity": 1
+        },
+        {
+            "id": "bonfaduhr",
+            "name": "Bonfaduhr\n(Oreguard)",
+            "type": "small-city",
+            "x": 31.4,
+            "y": 22.61,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -7
+        },
+        {
+            "id": "tariat",
+            "name": "Tariat",
+            "type": "town",
+            "x": 30.96,
+            "y": 26,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "bronzebellyfort",
+            "name": "Bronzebelly\nFort",
+            "type": "landmark",
+            "x": 31.2,
+            "y": 24.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": -5,
+            "opacity": 1
+        },
+        {
+            "id": "deadwingmountains",
+            "name": "Deadwing Mountains",
+            "type": "region",
+            "x": 29.52,
+            "y": 16.02,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 26,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": 36,
+            "textCurve": -48,
+            "opacity": 0.5
+        },
+        {
+            "id": "nebendie",
+            "name": "Nebendie",
+            "type": "town",
+            "x": 25.63,
+            "y": 12.43,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "avalvein",
+            "name": "Avalvein",
+            "type": "city",
+            "x": 29.06,
+            "y": 7.79,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.17,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -55,
+            "labelOffsetY": -9
+        },
+        {
+            "id": "blisteredkeep",
+            "name": "Blistered\nKeep",
+            "type": "landmark",
+            "x": 27.8,
+            "y": 11.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -18,
+            "labelOffsetY": -27,
+            "opacity": 1
+        },
+        {
+            "id": "seorneasor",
+            "name": "Seorneasor\n(Sterwood)",
+            "type": "small-city",
+            "x": 30.46,
+            "y": 8.5,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.2,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "mahralkal",
+            "name": "Mah'ralkal",
+            "type": "town",
+            "x": 29.92,
+            "y": 10.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 9,
+            "labelOffsetY": 17
+        },
+        {
+            "id": "snowlightfort",
+            "name": "Snowlight\nFort",
+            "type": "landmark",
+            "x": 31.39,
+            "y": 16.52,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -12,
+            "labelOffsetY": -12,
+            "labelAlign": "end",
+            "opacity": 1
+        },
+        {
+            "id": "icespring",
+            "name": "Icespring",
+            "type": "small-city",
+            "x": 31.8,
+            "y": 16.5,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.2,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
         }
     ],
     "roads": [
@@ -10989,6 +11330,374 @@ const WORLD_LOCATIONS = {
                     19.89
                 ],
                 "alconny"
+            ]
+        },
+        {
+            "id": "dregwaypost-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "dregwaypost",
+                [
+                    19.5,
+                    20.71
+                ],
+                [
+                    18.8,
+                    20.26
+                ],
+                [
+                    18.24,
+                    19.53
+                ],
+                [
+                    17.98,
+                    19.31
+                ],
+                "claymere"
+            ]
+        },
+        {
+            "id": "claymere-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "claymere",
+                [
+                    17.88,
+                    19.75
+                ],
+                "ruinsofdruegend"
+            ]
+        },
+        {
+            "id": "claymere-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "claymere",
+                [
+                    17.51,
+                    19.14
+                ],
+                [
+                    16.94,
+                    19.76
+                ],
+                [
+                    16.17,
+                    19.52
+                ],
+                "grobh"
+            ]
+        },
+        {
+            "id": "grobh-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "grobh",
+                [
+                    15.68,
+                    19.76
+                ],
+                [
+                    14.92,
+                    21.12
+                ],
+                "fawrese"
+            ]
+        },
+        {
+            "id": "fawrese-road-northwest",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "fawrese",
+                [
+                    14.31,
+                    21.17
+                ],
+                "porpen"
+            ]
+        },
+        {
+            "id": "porpen-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "porpen",
+                [
+                    13.77,
+                    18.63
+                ],
+                [
+                    14.78,
+                    18.25
+                ],
+                "thaelshore"
+            ]
+        },
+        {
+            "id": "menmythorn-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "menmythorn",
+                [
+                    22.97,
+                    30.65
+                ],
+                [
+                    21.47,
+                    31.89
+                ],
+                [
+                    20.76,
+                    30.33
+                ],
+                "broadmere-rest"
+            ]
+        },
+        {
+            "id": "alconny-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "alconny",
+                [
+                    30.01,
+                    19.82
+                ],
+                [
+                    30.77,
+                    20.15
+                ],
+                "bonlightpass"
+            ]
+        },
+        {
+            "id": "strolsworth-road-east",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "strolsworth",
+                [
+                    29.5,
+                    27.01
+                ],
+                [
+                    30.66,
+                    25.88
+                ],
+                "tariat"
+            ]
+        },
+        {
+            "id": "tariat-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "tariat",
+                [
+                    31.01,
+                    25.62
+                ],
+                [
+                    31.22,
+                    24.72
+                ],
+                "bronzebellyfort"
+            ]
+        },
+        {
+            "id": "bronzebellyfort-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "bronzebellyfort",
+                [
+                    31.31,
+                    23.85
+                ],
+                "bonfaduhr"
+            ]
+        },
+        {
+            "id": "aesenfell-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "aesenfell",
+                [
+                    24.05,
+                    17.99
+                ],
+                [
+                    24.58,
+                    17.57
+                ],
+                [
+                    25.8,
+                    17.03
+                ],
+                "solwindglaes"
+            ]
+        },
+        {
+            "id": "alconny-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "alconny",
+                [
+                    30.04,
+                    18.42
+                ],
+                [
+                    30.8,
+                    18.14
+                ],
+                [
+                    31.11,
+                    16.75
+                ],
+                "snowlightfort"
+            ]
+        },
+        {
+            "id": "snowlightfort-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "snowlightfort",
+                [
+                    31.5,
+                    16.35
+                ],
+                "icespring"
+            ]
+        },
+        {
+            "id": "solwindglaes-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "solwindglaes",
+                [
+                    25.24,
+                    15.15
+                ],
+                [
+                    25.2,
+                    13.76
+                ],
+                [
+                    25.34,
+                    13.06
+                ],
+                "nebendie"
+            ]
+        },
+        {
+            "id": "nedbendie-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "nebendie",
+                [
+                    25.78,
+                    11.83
+                ],
+                [
+                    26.66,
+                    11.89
+                ],
+                [
+                    27.45,
+                    10.83
+                ],
+                "blisteredkeep"
+            ]
+        },
+        {
+            "id": "blisteredkeep-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "blisteredkeep",
+                [
+                    28.21,
+                    10.56
+                ],
+                [
+                    28.99,
+                    11.13
+                ],
+                [
+                    29.52,
+                    10.65
+                ],
+                "mahralkal"
+            ]
+        },
+        {
+            "id": "mahrolkal-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mahralkal",
+                [
+                    29.86,
+                    10.2
+                ],
+                [
+                    28.91,
+                    8.37
+                ],
+                "avalvein"
+            ]
+        },
+        {
+            "id": "mahralkal-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mahralkal",
+                [
+                    30.41,
+                    10.49
+                ],
+                [
+                    30.57,
+                    9.79
+                ],
+                [
+                    30.48,
+                    8.81
+                ],
+                "seorneasor"
+            ]
+        },
+        {
+            "id": "snowlightfort-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "snowlightfort",
+                [
+                    31.19,
+                    15.22
+                ],
+                [
+                    30.41,
+                    13.64
+                ],
+                [
+                    29.52,
+                    13.05
+                ],
+                "mahralkal"
             ]
         }
     ],
