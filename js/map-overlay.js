@@ -358,7 +358,7 @@ const MapOverlay = (function () {
                 markerGroup.appendChild(outer);
                 // 8-pointed star
                 const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                const starR = r * 1.0;
+                const starR = r * 1.15;
                 const innerR = starR * 0.4;
                 let points = '';
                 for (let i = 0; i < 8; i++) {

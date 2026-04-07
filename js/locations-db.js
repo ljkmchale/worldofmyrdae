@@ -3858,7 +3858,7 @@ const WORLD_LOCATIONS = {
             "fontSize": 16,
             "fontWeight": "300",
             "fontStyle": "Italic",
-            "markerSize": 0.15,
+            "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
@@ -7125,7 +7125,7 @@ const WORLD_LOCATIONS = {
             "id": "bronzebellyfort",
             "name": "Bronzebelly\nFort",
             "type": "landmark",
-            "x": 31.2,
+            "x": 31.34,
             "y": 24.3,
             "region": "",
             "description": "Nature",
@@ -7290,6 +7290,122 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5
+        },
+        {
+            "id": "fjordnahl",
+            "name": "Fjord'nahl",
+            "type": "small-city",
+            "x": 35.03,
+            "y": 13.87,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.2,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 5
+        },
+        {
+            "id": "manuspeninsula",
+            "name": "Manus Peninsula",
+            "type": "region",
+            "x": 34.82,
+            "y": 10.18,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 18,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": 47,
+            "opacity": 0.5
+        },
+        {
+            "id": "peakoftibul",
+            "name": "Peak of Tibul",
+            "type": "poi",
+            "x": 36.3,
+            "y": 23.5,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -2,
+            "labelOffsetY": -10,
+            "opacity": 1
+        },
+        {
+            "id": "ashindel",
+            "name": "Ashindel",
+            "type": "town",
+            "x": 33.04,
+            "y": 29.06,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -60,
+            "labelOffsetY": 8
+        },
+        {
+            "id": "whistgrove",
+            "name": "Whistgrove",
+            "type": "nature",
+            "x": 33.03,
+            "y": 26.96,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "glenleahwoods",
+            "name": "Glenleah\nWoods",
+            "type": "nature",
+            "x": 30.85,
+            "y": 31.5,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
         }
     ],
     "roads": [
@@ -11698,6 +11814,39 @@ const WORLD_LOCATIONS = {
                     13.05
                 ],
                 "mahralkal"
+            ]
+        },
+        {
+            "id": "icespring-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "icespring",
+                [
+                    31.82,
+                    15.06
+                ],
+                [
+                    32.62,
+                    14.41
+                ],
+                [
+                    33.04,
+                    14.44
+                ],
+                [
+                    33.98,
+                    15.33
+                ],
+                [
+                    34.65,
+                    14.57
+                ],
+                [
+                    34.69,
+                    14.09
+                ],
+                "fjordnahl"
             ]
         }
     ],
