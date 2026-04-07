@@ -3858,7 +3858,7 @@ const WORLD_LOCATIONS = {
             "fontSize": 16,
             "fontWeight": "300",
             "fontStyle": "Italic",
-            "markerSize": 0.2,
+            "markerSize": 0.15,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
@@ -3964,15 +3964,16 @@ const WORLD_LOCATIONS = {
             "y": 25.6,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Cinzel Decorative",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "labelOffsetX": -36,
-            "labelOffsetY": -15,
+            "labelOffsetX": 34,
+            "labelOffsetY": -12,
+            "labelAlign": "end",
             "opacity": 1
         },
         {
@@ -4053,8 +4054,8 @@ const WORLD_LOCATIONS = {
             "id": "celedon-forest",
             "name": "Celedon\nForest",
             "type": "nature",
-            "x": 25.77,
-            "y": 29.73,
+            "x": 25.91,
+            "y": 30.42,
             "region": "",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
@@ -4077,8 +4078,8 @@ const WORLD_LOCATIONS = {
             "y": 32.26,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Cinzel Decorative",
-            "fontSize": 8,
+            "fontFamily": "Garamond MT",
+            "fontSize": 10,
             "fontWeight": "300",
             "fontStyle": "Italic",
             "markerSize": 0,
@@ -4097,8 +4098,8 @@ const WORLD_LOCATIONS = {
             "y": 33.75,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Cinzel Decorative",
-            "fontSize": 6,
+            "fontFamily": "Garamond MT",
+            "fontSize": 8,
             "fontWeight": "300",
             "fontStyle": "Italic",
             "markerSize": 0,
@@ -4117,8 +4118,8 @@ const WORLD_LOCATIONS = {
             "y": 33.74,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Cinzel Decorative",
-            "fontSize": 8,
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
             "markerSize": 0,
@@ -4411,11 +4412,11 @@ const WORLD_LOCATIONS = {
             "id": "daerswell-inlet",
             "name": "Daerswell Inlet",
             "type": "water",
-            "x": 17.2,
-            "y": 26.2,
+            "x": 17.87,
+            "y": 25.36,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Cinzel Decorative",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4425,7 +4426,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.8
+            "opacity": 1
         },
         {
             "id": "dreghye",
@@ -6510,7 +6511,164 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.7
+            "opacity": 1
+        },
+        {
+            "id": "caldwellriver",
+            "name": "Caldwell River",
+            "type": "river",
+            "x": 23.62,
+            "y": 37.14,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": -53,
+            "opacity": 0.8
+        },
+        {
+            "id": "gilburoughtimers",
+            "name": "Gilburough\nTimers",
+            "type": "nature",
+            "x": 25.07,
+            "y": 36.6,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "gilburoughriver",
+            "name": "Gilburough River",
+            "type": "river",
+            "x": 26.89,
+            "y": 36.8,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.81
+        },
+        {
+            "id": "wehgynriver",
+            "name": "Wehgyn River",
+            "type": "river",
+            "x": 24.65,
+            "y": 27.21,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 13,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": -71,
+            "opacity": 0.8
+        },
+        {
+            "id": "frostwellport",
+            "name": "Frostwell\nPort",
+            "type": "town",
+            "x": 21.7,
+            "y": 18.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -39,
+            "labelOffsetY": -18,
+            "opacity": 1
+        },
+        {
+            "id": "mountethea",
+            "name": "Mount\nEthea",
+            "type": "region",
+            "x": 22.94,
+            "y": 28.42,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "Kodderl",
+            "name": "Kodderl",
+            "type": "small-city",
+            "x": 21.03,
+            "y": 23.78,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -8,
+            "labelOffsetY": -13
+        },
+        {
+            "id": "insloe",
+            "name": "Insloe",
+            "type": "town",
+            "x": 22.6,
+            "y": 24.14,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -12,
+            "labelOffsetY": -12
         }
     ],
     "roads": [
@@ -9981,6 +10139,210 @@ const WORLD_LOCATIONS = {
                     37.76
                 ],
                 "layden-proth-kilnock-crossroad"
+            ]
+        },
+        {
+            "id": "proth-road-northwest",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "proth",
+                [
+                    21.03,
+                    38.05
+                ],
+                [
+                    20.67,
+                    37.33
+                ],
+                [
+                    19.9,
+                    36.72
+                ],
+                "leoning"
+            ]
+        },
+        {
+            "id": "leoning-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "leoning",
+                [
+                    19.62,
+                    35.57
+                ],
+                "sheperds-keep"
+            ]
+        },
+        {
+            "id": "timbertown-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "timberdown",
+                [
+                    24.02,
+                    36.72
+                ],
+                [
+                    24.5,
+                    35.03
+                ],
+                "unstead"
+            ]
+        },
+        {
+            "id": "caldwynn-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "caldwynn",
+                [
+                    24.6,
+                    31.88
+                ],
+                "tirncall"
+            ]
+        },
+        {
+            "id": "gibuldon-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "gibuldon",
+                [
+                    28.31,
+                    27.77
+                ],
+                [
+                    28.03,
+                    27.63
+                ],
+                [
+                    27.93,
+                    27.04
+                ],
+                [
+                    28.04,
+                    25.99
+                ],
+                "abereth"
+            ]
+        },
+        {
+            "id": "gibuldon-road-south",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "gibuldon",
+                [
+                    28.29,
+                    28.82
+                ],
+                "dryrock"
+            ]
+        },
+        {
+            "id": "tirncall-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "tirncall",
+                [
+                    24.44,
+                    29.97
+                ],
+                [
+                    24.04,
+                    29.36
+                ],
+                "adsuren"
+            ]
+        },
+        {
+            "id": "shepherdskeep-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "sheperds-keep",
+                [
+                    20.34,
+                    33.12
+                ],
+                "evyndar"
+            ]
+        },
+        {
+            "id": "evyndar-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "evyndar",
+                [
+                    20.22,
+                    30.96
+                ],
+                "broadmere-rest"
+            ]
+        },
+        {
+            "id": "leoning-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "leoning",
+                [
+                    20.75,
+                    36.61
+                ],
+                [
+                    21.43,
+                    35.04
+                ],
+                [
+                    21.87,
+                    34.64
+                ],
+                [
+                    22.56,
+                    34.69
+                ],
+                "babbleglen"
+            ]
+        },
+        {
+            "id": "kilnock-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "kilnock",
+                [
+                    23.52,
+                    34.77
+                ],
+                [
+                    22.76,
+                    35.09
+                ],
+                "babbleglen"
+            ]
+        },
+        {
+            "id": "layden-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "layden",
+                [
+                    23.17,
+                    38.69
+                ],
+                [
+                    23.65,
+                    37.6
+                ],
+                "timberdown"
             ]
         }
     ],
