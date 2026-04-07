@@ -280,20 +280,21 @@ const WORLD_LOCATIONS = {
             "id": "ripshod-bay",
             "name": "Ripshod Bay",
             "type": "water",
-            "x": 72.4,
-            "y": 37.8,
+            "x": 72.11,
+            "y": 37.13,
             "region": "Ripshod Bay",
             "description": "Ripshod Bay",
             "fontFamily": "Garamond MT",
             "fontSize": 18,
-            "fontStyle": "Italic",
             "fontWeight": "300",
-            "opacity": 0.5,
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
-            "labelOffsetY": 0
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
         },
         {
             "id": "tratta",
@@ -683,8 +684,8 @@ const WORLD_LOCATIONS = {
         },
         {
             "id": "talbesar",
-            "name": "Tal'besar",
-            "type": "town",
+            "name": "Tal'besar\nRuins",
+            "type": "ruins",
             "x": 73.1,
             "y": 64.7,
             "region": "Blustery Waste",
@@ -4621,7 +4622,7 @@ const WORLD_LOCATIONS = {
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
-            "markerSize": 0.05,
+            "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
@@ -6220,6 +6221,296 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1
+        },
+        {
+            "id": "everlight",
+            "name": "Everlight",
+            "type": "town",
+            "x": 73.85,
+            "y": 66.1,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 14
+        },
+        {
+            "id": "glidderingfalls",
+            "name": "Gliddering\nFalls",
+            "type": "landmark",
+            "x": 72.89,
+            "y": 69.49,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.15,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 7,
+            "labelOffsetY": 7,
+            "opacity": 1
+        },
+        {
+            "id": "nesbit",
+            "name": "Nesbit",
+            "type": "town",
+            "x": 39.1,
+            "y": 29.3,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -50,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "greymill",
+            "name": "Greymill",
+            "type": "town",
+            "x": 40.6,
+            "y": 27.3,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -62,
+            "labelOffsetY": 9
+        },
+        {
+            "id": "theemburerilocean",
+            "name": "The Embueril\nOcean",
+            "type": "water",
+            "x": 84.7,
+            "y": 78.1,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 54,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "dalasorstrait",
+            "name": "Dalasor\nStrait",
+            "type": "water",
+            "x": 48.1,
+            "y": 86.4,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 24,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "theseaofmarilia",
+            "name": "The Sea of Marilia",
+            "type": "water",
+            "x": 42.64,
+            "y": 75.11,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 30,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "theseaofsondera",
+            "name": "The Sea of Sondera",
+            "type": "water",
+            "x": 37.77,
+            "y": 55.2,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 34,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "thedelisnorocean",
+            "name": "The Delisnor\nOcean",
+            "type": "water",
+            "x": 12,
+            "y": 54.39,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 49,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "midrambay",
+            "name": "Midram\nBay",
+            "type": "water",
+            "x": 20.52,
+            "y": 44.49,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "bindwatch",
+            "name": "Bindwatch",
+            "type": "town",
+            "x": 21.22,
+            "y": 41.31,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -69,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "midrambasin",
+            "name": "Midram\nBasin",
+            "type": "water",
+            "x": 22.47,
+            "y": 42.29,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "wynspanhills",
+            "name": "Wynspan\nHills",
+            "type": "nature",
+            "x": 21.38,
+            "y": 40.1,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
+            "id": "layden-proth-kilnock-crossroad",
+            "name": "layden-proth-kilnock-crossroad",
+            "type": "town",
+            "x": 22.89,
+            "y": 37.52,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "whistlebay",
+            "name": "Whistlebay",
+            "type": "water",
+            "x": 18.95,
+            "y": 33.26,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.7
         }
     ],
     "roads": [
@@ -7047,7 +7338,7 @@ const WORLD_LOCATIONS = {
         },
         {
             "id": "scarbrook-road",
-            "type": "minor",
+            "type": "major",
             "curved": true,
             "points": [
                 "scarbrook",
@@ -9484,6 +9775,212 @@ const WORLD_LOCATIONS = {
                     23.55
                 ],
                 "aerley-syori-ormsdal-crossroads"
+            ]
+        },
+        {
+            "id": "everlight-road-south",
+            "type": "major",
+            "curved": true,
+            "name": "Muerg's\\nPass",
+            "fontSize": 12,
+            "labelReverse": true,
+            "points": [
+                "everlight",
+                [
+                    73.24,
+                    67.67
+                ],
+                "scarbrook"
+            ]
+        },
+        {
+            "id": "onaren-road-west",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "onaren",
+                [
+                    49.37,
+                    33.49
+                ],
+                [
+                    48.39,
+                    32.64
+                ],
+                "mossholde"
+            ]
+        },
+        {
+            "id": "onaren-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "onaren",
+                [
+                    49.06,
+                    34.07
+                ],
+                "abbeyofmontrest"
+            ]
+        },
+        {
+            "id": "abbeyofmontrest-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "abbeyofmontrest",
+                [
+                    49.1,
+                    37.13
+                ],
+                "bastionoforder"
+            ]
+        },
+        {
+            "id": "srenesari-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "srenesari",
+                [
+                    49.84,
+                    30.49
+                ],
+                [
+                    49.3,
+                    31.66
+                ],
+                [
+                    48.25,
+                    31.9
+                ],
+                "mossholde"
+            ]
+        },
+        {
+            "id": "mossholde-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mossholde",
+                [
+                    46.93,
+                    32.24
+                ],
+                [
+                    45.96,
+                    33.01
+                ],
+                [
+                    45.02,
+                    32.45
+                ],
+                [
+                    44.29,
+                    33.41
+                ],
+                "leterboun"
+            ]
+        },
+        {
+            "id": "mossholde-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "mossholde",
+                [
+                    48.05,
+                    33.19
+                ],
+                [
+                    48.47,
+                    33.68
+                ],
+                [
+                    48.27,
+                    35.7
+                ],
+                "abbeyofmontrest"
+            ]
+        },
+        {
+            "id": "olmorrey-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "olmorrey",
+                [
+                    21.44,
+                    43.52
+                ],
+                [
+                    21.22,
+                    41.6
+                ],
+                "bindwatch"
+            ]
+        },
+        {
+            "id": "bindarch-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "bindwatch",
+                [
+                    21.12,
+                    40.53
+                ],
+                "proth"
+            ]
+        },
+        {
+            "id": "bindwatch-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "bindwatch",
+                [
+                    21.68,
+                    40.95
+                ],
+                "gristlow"
+            ]
+        },
+        {
+            "id": "proth-road-northeast",
+            "type": "major",
+            "curved": true,
+            "name": "Celemere Pass",
+            "fontSize": 13,
+            "points": [
+                "proth",
+                [
+                    21.78,
+                    37.99
+                ],
+                [
+                    23.07,
+                    37.64
+                ],
+                [
+                    23.33,
+                    35.66
+                ],
+                "kilnock"
+            ]
+        },
+        {
+            "id": "layden-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "layden",
+                [
+                    23.04,
+                    37.76
+                ],
+                "layden-proth-kilnock-crossroad"
             ]
         }
     ],

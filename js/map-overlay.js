@@ -535,7 +535,10 @@ const MapOverlay = (function () {
         label.setAttribute('class', 'marker-label');
         label.setAttribute('font-size', loc.fontSize || Math.max(natW * 0.005, 9));
 
-        if (loc.fontFamily) {
+        // Water/river default font is Garamond MT; override with loc.fontFamily if set
+        if (loc.type === 'water' || loc.type === 'river') {
+            label.style.fontFamily = loc.fontFamily || 'Garamond MT, Cormorant Garamond, serif';
+        } else if (loc.fontFamily) {
             label.style.fontFamily = loc.fontFamily;
         }
         if (loc.fontWeight) {
