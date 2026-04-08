@@ -7937,6 +7937,61 @@ const WORLD_LOCATIONS = {
             "rotation": 39,
             "textCurve": 35,
             "opacity": 1
+        },
+        {
+            "id": "waypoint",
+            "name": "Waypoint",
+            "type": "town",
+            "x": 29.81,
+            "y": 45.62,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 12,
+            "labelOffsetY": 6
+        },
+        {
+            "id": "kilgrenney",
+            "name": "Kilgrenney",
+            "type": "town",
+            "x": 31.3,
+            "y": 42.52,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -74,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "oakrest",
+            "name": "Oakrest",
+            "type": "landmark",
+            "x": 32.53,
+            "y": 43.77,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 14,
+            "labelOffsetY": 0,
+            "opacity": 1
         }
     ],
     "roads": [
@@ -13438,6 +13493,141 @@ const WORLD_LOCATIONS = {
             "fontSize": 13,
             "points": [
                 "denskelber"
+            ]
+        },
+        {
+            "id": "dhachaomhnoir-road-east",
+            "type": "major",
+            "curved": true,
+            "name": "Trace of Aelbon",
+            "fontSize": 13,
+            "points": [
+                "dhachaomhnoir",
+                [
+                    28.07,
+                    46.68
+                ],
+                [
+                    28.79,
+                    46.34
+                ],
+                [
+                    29.55,
+                    45.57
+                ],
+                "waypoint"
+            ]
+        },
+        {
+            "id": "waypoint-road-east",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "waypoint",
+                [
+                    30,
+                    46.38
+                ],
+                [
+                    30.87,
+                    45.82
+                ],
+                [
+                    31.25,
+                    46.09
+                ],
+                [
+                    31.69,
+                    45.63
+                ],
+                "elspire"
+            ]
+        },
+        {
+            "id": "elspire-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "elspire",
+                [
+                    31.86,
+                    45.68
+                ],
+                [
+                    32.56,
+                    45.04
+                ],
+                "oakrest"
+            ]
+        },
+        {
+            "id": "waypoint-roadnorth",
+            "type": "major",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "waypoint",
+                [
+                    30.55,
+                    44.82
+                ],
+                [
+                    30.76,
+                    43.21
+                ],
+                "kilgrenney"
+            ]
+        },
+        {
+            "id": "kilgrenney-road-north",
+            "type": "major",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "kilgrenney",
+                [
+                    32.2,
+                    41.84
+                ],
+                "blackfield"
+            ]
+        },
+        {
+            "id": "oakrest-road-north",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "oakrest",
+                [
+                    32.58,
+                    43.14
+                ],
+                [
+                    33.13,
+                    42.02
+                ],
+                "larnwik"
+            ]
+        },
+        {
+            "id": "oakrest-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "oakrest",
+                [
+                    32.23,
+                    43.18
+                ],
+                [
+                    31.37,
+                    43.04
+                ],
+                "kilgrenney"
             ]
         }
     ],
