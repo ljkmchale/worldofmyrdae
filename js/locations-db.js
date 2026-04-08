@@ -7662,6 +7662,281 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 1
+        },
+        {
+            "id": "spareway",
+            "name": "Spareway",
+            "type": "landmark",
+            "x": 35.3,
+            "y": 44.9,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -55,
+            "labelOffsetY": 0,
+            "opacity": 1
+        },
+        {
+            "id": "elspire",
+            "name": "Elspire",
+            "type": "town",
+            "x": 31.77,
+            "y": 45.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "greymossswamp",
+            "name": "Greymoss\nSwamp",
+            "type": "nature",
+            "x": 28.08,
+            "y": 44.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "kithriver",
+            "name": "Kith River",
+            "type": "river",
+            "x": 28.66,
+            "y": 42.92,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": -27,
+            "opacity": 0.8
+        },
+        {
+            "id": "denskelber",
+            "name": "Denskelber",
+            "type": "landmark",
+            "x": 26.7,
+            "y": 44.03,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 9,
+            "labelOffsetY": 0,
+            "opacity": 1
+        },
+        {
+            "id": "carnsby-kith-denskelber-crossroad",
+            "name": "carnsby-kith-denskelber-crossroad",
+            "type": "town",
+            "x": 26.3,
+            "y": 45,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "aelbonforest",
+            "name": "Aelbon\nForest",
+            "type": "nature",
+            "x": 29.5,
+            "y": 43.3,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Sell Your Soul",
+            "fontSize": 16,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "theshatteredtites",
+            "name": "The Shattered\nTides",
+            "type": "water",
+            "x": 25,
+            "y": 71.5,
+            "region": "",
+            "description": "",
+            "fontFamily": "Quintessential",
+            "fontSize": 28,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "celimann",
+            "name": "Celimann",
+            "type": "small-city",
+            "x": 27.37,
+            "y": 73.31,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -37,
+            "labelOffsetY": 21
+        },
+        {
+            "id": "scalerunhills",
+            "name": "Scale Run\nHills",
+            "type": "region",
+            "x": 31,
+            "y": 73.3,
+            "region": "",
+            "description": "",
+            "fontFamily": "Sell Your Soul",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "theseepingmorass",
+            "name": "The Seeping\nMorass",
+            "type": "nature",
+            "x": 32.3,
+            "y": 75.4,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Sell Your Soul",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "Mountwick",
+            "name": "Mount\nWick",
+            "type": "region",
+            "x": 35.25,
+            "y": 83.17,
+            "region": "",
+            "description": "",
+            "fontFamily": "Penumbra Sans Std",
+            "fontSize": 20,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "veinspeartomb",
+            "name": "Veinspear Tomb",
+            "type": "poi",
+            "x": 42.85,
+            "y": 87.88,
+            "region": "",
+            "description": "Point of Interest",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -96,
+            "labelOffsetY": 10,
+            "opacity": 1
+        },
+        {
+            "id": "nanthisahraridge",
+            "name": "Nanthisah'ra Ridge",
+            "type": "region",
+            "x": 41.09,
+            "y": 90.34,
+            "region": "",
+            "description": "",
+            "fontFamily": "Penumbra Sans Std",
+            "fontSize": 16,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": 39,
+            "textCurve": 35,
+            "opacity": 1
         }
     ],
     "roads": [
@@ -13011,6 +13286,159 @@ const WORLD_LOCATIONS = {
             ],
             "fontFamily": "Simonetta",
             "fontStyle": "Italic"
+        },
+        {
+            "id": "harelbek-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "harelbek",
+                [
+                    36.01,
+                    46.45
+                ],
+                [
+                    35.29,
+                    45.57
+                ],
+                "spareway"
+            ]
+        },
+        {
+            "id": "spareway-road-east",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "spareway",
+                [
+                    35.58,
+                    43.9
+                ],
+                "braelen"
+            ]
+        },
+        {
+            "id": "spareway-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "spareway",
+                [
+                    35.08,
+                    42.55
+                ],
+                [
+                    33.26,
+                    41.56
+                ],
+                "larnwik"
+            ]
+        },
+        {
+            "id": "morrey-road-west",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "morrey",
+                [
+                    21.74,
+                    44.61
+                ],
+                [
+                    22.28,
+                    46.06
+                ],
+                [
+                    23.37,
+                    45.57
+                ],
+                "carnsby"
+            ]
+        },
+        {
+            "id": "carnsby-road-north",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "carnsby",
+                [
+                    23.89,
+                    43.16
+                ],
+                [
+                    24.44,
+                    40.74
+                ],
+                [
+                    23.91,
+                    38.52
+                ],
+                "timberdown"
+            ]
+        },
+        {
+            "id": "carnsby-road-south",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "carnsby",
+                [
+                    23.73,
+                    45.49
+                ],
+                [
+                    24.94,
+                    45.76
+                ],
+                "kelmouth"
+            ]
+        },
+        {
+            "id": "carnsby-road-east",
+            "type": "major",
+            "curved": true,
+            "name": "Sutherford\\nMarch",
+            "fontSize": 13,
+            "labelOffset": 37,
+            "points": [
+                "carnsby",
+                [
+                    24.28,
+                    44.4
+                ],
+                [
+                    25.26,
+                    44.43
+                ],
+                [
+                    26.39,
+                    44.84
+                ],
+                "kith"
+            ]
+        },
+        {
+            "id": "denskelber-road-south",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "denskelber",
+                [
+                    26.47,
+                    44.29
+                ],
+                "carnsby-kith-denskelber-crossroad"
+            ]
+        },
+        {
+            "id": "denskelber-road-south",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 13,
+            "points": [
+                "denskelber"
+            ]
         }
     ],
     "regions": []

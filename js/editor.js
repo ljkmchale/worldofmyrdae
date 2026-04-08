@@ -333,12 +333,16 @@ const Editor = (function () {
         }
 
         const locType = document.getElementById('loc-type').value;
-        const isTown = locType.toLowerCase() === 'town';
-        const isPoi = locType.toLowerCase() === 'poi';
-        const isRiver = locType.toLowerCase() === 'river';
-        const isLandmark = locType.toLowerCase() === 'landmark';
-        const isNature = ['nature', 'region', 'water', 'landmark'].includes(locType.toLowerCase());
-        const isCity = locType.toLowerCase() === 'city' || locType.toLowerCase() === 'small-city';
+        const _lt = locType.toLowerCase();
+        const isSettlement = ['city', 'small-city', 'town', 'capital'].includes(_lt);
+        const isTown     = _lt === 'town';
+        const isCity     = _lt === 'city' || _lt === 'small-city' || _lt === 'capital';
+        const isPoi      = ['poi', 'landmark', 'ruins'].includes(_lt);
+        const isRiver    = _lt === 'river';
+        const isLandmark = _lt === 'landmark';
+        const isWater    = _lt === 'water';
+        const isNature   = _lt === 'nature';
+        const isRegion   = _lt === 'region';
 
         let defaultDesc = "";
         if (isTown) defaultDesc = "Town";
@@ -371,29 +375,47 @@ const Editor = (function () {
             }
         };
 
-        setIf('fontFamily', document.getElementById('loc-fontFamily').value, null,
-            isTown || isCity || isPoi || isRiver || isLandmark ? "Garamond MT" : (isNature ? "Cinzel Decorative" : undefined));
+        // Font family defaults by type
+        const defaultFontFamily =
+            isSettlement          ? "Simonetta" :
+            isPoi                 ? "Simonetta" :
+            isRiver               ? "Simonetta" :
+            isWater               ? "Quintessential" :
+            isNature              ? "Sell Your Soul" :
+            isRegion              ? "Sell Your Soul" :
+            undefined;
+
+        // Font style defaults by type
+        const defaultFontStyle =
+            isSettlement          ? "Normal" :
+            isPoi                 ? "Italic" :
+            isRiver               ? "Italic" :
+            isWater               ? "Normal" :
+            isNature              ? "Normal" :
+            isRegion              ? "Normal" :
+            "Normal";
+
+        setIf('fontFamily', document.getElementById('loc-fontFamily').value, null, defaultFontFamily);
         setIf('fontSize', document.getElementById('loc-fontSize').value, parseInt,
-            isTown || isCity || isPoi || isRiver ? 14 : (isNature ? 12 : undefined));
+            isSettlement || isPoi || isRiver ? 14 : (isNature || isRegion || isWater ? 12 : undefined));
         setIf('fontWeight', document.getElementById('loc-fontWeight').value, null,
-            isTown || isCity || isPoi || isNature || isRiver ? "300" : undefined);
-        setIf('fontStyle', document.getElementById('loc-fontStyle').value, null,
-            isTown || isCity || isPoi || isNature || isRiver ? "Italic" : undefined);
+            isSettlement || isPoi || isNature || isRegion || isWater || isRiver ? "300" : undefined);
+        setIf('fontStyle', document.getElementById('loc-fontStyle').value, null, defaultFontStyle);
         setIf('markerSize', document.getElementById('loc-markerSize').value, parseFloat, 0.25);
         setIf('markerOffsetX', document.getElementById('loc-markerOffsetX').value, parseInt,
-            isTown || isCity || isPoi || isNature || isRiver ? 16 : undefined);
+            isSettlement || isPoi || isNature || isRegion || isWater || isRiver ? 16 : undefined);
         setIf('markerOffsetY', document.getElementById('loc-markerOffsetY').value, parseInt,
-            isTown || isCity || isPoi || isNature || isRiver ? 0 : undefined);
+            isSettlement || isPoi || isNature || isRegion || isWater || isRiver ? 0 : undefined);
         setIf('labelOffsetX', document.getElementById('loc-labelOffsetX').value, parseInt,
-            isTown || isCity ? 10 : (isPoi || isNature || isRiver ? 0 : undefined));
+            isSettlement ? 10 : (isPoi || isNature || isRegion || isWater || isRiver ? 0 : undefined));
         setIf('labelOffsetY', document.getElementById('loc-labelOffsetY').value, parseInt,
-            isTown ? 3 : (isCity ? 5 : (isPoi || isNature || isRiver ? 0 : undefined)));
+            isTown ? 3 : (isCity ? 5 : (isPoi || isNature || isRegion || isWater || isRiver ? 0 : undefined)));
         const labelAlign = document.getElementById('loc-labelAlign').value;
         if (labelAlign) locData.labelAlign = labelAlign;
         setIf('rotation', document.getElementById('loc-rotation').value, parseInt);
         setIf('textCurve', document.getElementById('loc-textCurve').value, parseFloat);
         setIf('opacity', document.getElementById('loc-opacity').value, parseFloat,
-            isPoi || isNature || isRiver ? 0.5 : undefined);
+            isPoi || isRiver || isWater ? 0.5 : (isNature || isRegion ? 1 : undefined));
 
         if (document.getElementById('loc-hideLabel').checked) {
             locData.hideLabel = true;
