@@ -5980,7 +5980,7 @@ const WORLD_LOCATIONS = {
         },
         {
             "id": "ingress",
-            "name": "Ingress",
+            "name": "Ingriss",
             "type": "city",
             "x": 37.62,
             "y": 31.7,
@@ -7406,6 +7406,64 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 0.5
+        },
+        {
+            "id": "eastmare-greymill-stinson-crossroad",
+            "name": "eastmare-greymill-stinson-crossroad",
+            "type": "town",
+            "x": 40.49,
+            "y": 29.6,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "hideLabel": true
+        },
+        {
+            "id": "tibulrise",
+            "name": "Tibul Rise",
+            "type": "region",
+            "x": 37.44,
+            "y": 23.93,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamont MT",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": -0.05,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "rotation": -12,
+            "opacity": 1
+        },
+        {
+            "id": "mablihod",
+            "name": "Mablihod",
+            "type": "town",
+            "x": 30.9,
+            "y": 33.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
         }
     ],
     "roads": [
@@ -11847,6 +11905,205 @@ const WORLD_LOCATIONS = {
                     14.09
                 ],
                 "fjordnahl"
+            ]
+        },
+        {
+            "id": "eastmare-road-north",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "eastmare",
+                [
+                    40.32,
+                    30.27
+                ],
+                "eastmare-greymill-stinson-crossroad"
+            ]
+        },
+        {
+            "id": "greymill-road-south",
+            "type": "major",
+            "curved": true,
+            "points": [
+                "greymill",
+                [
+                    40.62,
+                    28.81
+                ],
+                "eastmare-greymill-stinson-crossroad"
+            ]
+        },
+        {
+            "id": "stinson-road-south",
+            "type": "major",
+            "curved": true,
+            "name": "Barrford Pass",
+            "fontSize": 14,
+            "labelOffset": 43,
+            "labelReverse": true,
+            "points": [
+                "stinson",
+                [
+                    43.03,
+                    24.67
+                ],
+                [
+                    43.02,
+                    25.67
+                ],
+                [
+                    42.93,
+                    26.9
+                ],
+                [
+                    42.24,
+                    27.48
+                ],
+                [
+                    41.48,
+                    29.95
+                ],
+                "eastmare-greymill-stinson-crossroad"
+            ]
+        },
+        {
+            "id": "greymill-road-northeast",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "greymill",
+                [
+                    40.55,
+                    25.03
+                ],
+                [
+                    42.48,
+                    24.78
+                ],
+                "stinson"
+            ]
+        },
+        {
+            "id": "greymill-road-west",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "greymill",
+                [
+                    40.05,
+                    26.23
+                ],
+                [
+                    38.81,
+                    25.54
+                ],
+                [
+                    38.48,
+                    24.81
+                ],
+                [
+                    37.83,
+                    23.81
+                ],
+                [
+                    36.26,
+                    24.78
+                ],
+                "peakoftibul"
+            ]
+        },
+        {
+            "id": "eastmare-road-northwest",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "eastmare",
+                [
+                    39.92,
+                    29.98
+                ],
+                "nesbit"
+            ]
+        },
+        {
+            "id": "ingress-road-west",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "ingress",
+                [
+                    37.89,
+                    30.71
+                ],
+                [
+                    39.48,
+                    31.12
+                ],
+                "eastmare"
+            ]
+        },
+        {
+            "id": "ingriss-road-northwest",
+            "type": "major",
+            "curved": true,
+            "name": "Midpath",
+            "fontSize": 14,
+            "labelReverse": true,
+            "points": [
+                "ingress",
+                [
+                    37.48,
+                    29.78
+                ],
+                [
+                    33.33,
+                    29.94
+                ],
+                "ashindel"
+            ]
+        },
+        {
+            "id": "ashindel-road-northwest",
+            "type": "major",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "ashindel",
+                [
+                    32.61,
+                    28.73
+                ],
+                [
+                    31.25,
+                    25.98
+                ],
+                "tariat"
+            ]
+        },
+        {
+            "id": "ashindel-road-south",
+            "type": "minor",
+            "curved": true,
+            "fontSize": 14,
+            "points": [
+                "ashindel",
+                [
+                    32.4,
+                    29.5
+                ],
+                [
+                    32.34,
+                    32.65
+                ],
+                [
+                    30.91,
+                    33.37
+                ],
+                "mablihod"
             ]
         }
     ],
