@@ -8,23 +8,19 @@
 const WORLD_LOCATIONS = {
     "locations": [
         {
-            "id": "b",
+            "id": "otesurr-mountains",
             "name": "Otesurr\nMountains",
             "type": "region",
             "x": 81.7,
             "y": 25.6,
             "region": "Otesurr Mountains",
             "description": "The Otesurr Mountains are a vast mountain range in the far northeast of Myrdae.",
-            "fontFamily": "Penumbra Sans Std",
             "fontSize": 20,
-            "fontWeight": "300",
-            "fontStyle": "Italic",
+            "opacity": 0.5,
             "markerSize": 0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "opacity": 0.5
+            "fontFamily": "Cinzel Decorative"
         },
         {
             "id": "lurdoba",
@@ -34,15 +30,15 @@ const WORLD_LOCATIONS = {
             "y": 31.7,
             "region": "Otesurr Mountains",
             "description": "A tundra city in the far northeast.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 10,
             "markerOffsetY": 0,
             "labelOffsetX": -2,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "kallilos",
@@ -52,15 +48,15 @@ const WORLD_LOCATIONS = {
             "y": 32.3,
             "region": "Otesurr Mountains",
             "description": "A town off the coast of The Broken Deep.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 12,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "sari-lenora",
@@ -70,15 +66,15 @@ const WORLD_LOCATIONS = {
             "y": 34.4,
             "region": "Otesurr Mountains",
             "description": "A rugged northern settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "clador",
@@ -88,15 +84,15 @@ const WORLD_LOCATIONS = {
             "y": 36.3,
             "region": "Otesurr Mountains",
             "description": "A rugged mountain settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "buvero",
@@ -106,15 +102,15 @@ const WORLD_LOCATIONS = {
             "y": 35.9,
             "region": "Otesurr Mountains",
             "description": "A rugged mountain settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -20,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "sulura",
@@ -124,15 +120,15 @@ const WORLD_LOCATIONS = {
             "y": 35.4,
             "region": "Otesurr Mountains",
             "description": "A tundra town in the far northeast.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.2,
             "markerOffsetX": 10,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "sunbay",
@@ -142,15 +138,15 @@ const WORLD_LOCATIONS = {
             "y": 37.1,
             "region": "Otesurr Mountains",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "sands-of-the-dead",
@@ -160,17 +156,17 @@ const WORLD_LOCATIONS = {
             "y": 39.04,
             "region": "Sands of the Dead",
             "description": "Sands of the Dead",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Garamond MT",
             "fontSize": 16,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "ahnassa",
@@ -180,15 +176,15 @@ const WORLD_LOCATIONS = {
             "y": 38.2,
             "region": "Otesurr Mountains",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "hesfal",
@@ -198,15 +194,15 @@ const WORLD_LOCATIONS = {
             "y": 40.5,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -48,
-            "labelOffsetY": 9,
-            "fontStyle": "Normal"
+            "labelOffsetY": 9
         },
         {
             "id": "boneforge",
@@ -216,15 +212,15 @@ const WORLD_LOCATIONS = {
             "y": 41.2,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -5,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "deadfield",
@@ -234,15 +230,15 @@ const WORLD_LOCATIONS = {
             "y": 42,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "torpoint",
@@ -252,15 +248,15 @@ const WORLD_LOCATIONS = {
             "y": 42.8,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -47,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "sulport",
@@ -270,15 +266,15 @@ const WORLD_LOCATIONS = {
             "y": 38.2,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "ripshod-bay",
@@ -288,17 +284,17 @@ const WORLD_LOCATIONS = {
             "y": 37.13,
             "region": "Ripshod Bay",
             "description": "Ripshod Bay",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "tratta",
@@ -308,15 +304,15 @@ const WORLD_LOCATIONS = {
             "y": 35.9,
             "region": "Sands of the Dead",
             "description": "A coastal settlement.",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.2,
             "markerOffsetX": 11,
             "markerOffsetY": 0,
             "labelOffsetX": -20,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "del-bris",
@@ -326,15 +322,15 @@ const WORLD_LOCATIONS = {
             "y": 38.7,
             "region": "Ripshod Bay",
             "description": "Ripshod Bay",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 5,
-            "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "labelOffsetY": 16
         },
         {
             "id": "yearning-slough",
@@ -344,17 +340,17 @@ const WORLD_LOCATIONS = {
             "y": 38.2,
             "region": "Yearning Slough",
             "description": "Yearning Slough",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "greenvale",
@@ -364,15 +360,15 @@ const WORLD_LOCATIONS = {
             "y": 40.5,
             "region": "Yearning Slough",
             "description": "Ripshod Bay",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
-            "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "labelOffsetY": 16
         },
         {
             "id": "lehnthruakk",
@@ -383,15 +379,15 @@ const WORLD_LOCATIONS = {
             "region": "Yearning Slough",
             "description": "Ripshod Bay",
             "link": "https://docs.google.com/document/d/1OMJ-Jq5iTfG6oabmr79bWLPphvwfWL_xM2qEPPPjamE/edit?tab=t.0",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -82,
-            "labelOffsetY": 9,
-            "fontStyle": "Normal"
+            "labelOffsetY": 9
         },
         {
             "id": "zovraesdrias-hollow",
@@ -401,7 +397,7 @@ const WORLD_LOCATIONS = {
             "y": 38.8,
             "region": "Yearning Slough",
             "description": "",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontStyle": "Italic",
             "fontWeight": "300",
@@ -419,15 +415,15 @@ const WORLD_LOCATIONS = {
             "y": 45,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "thrargael",
@@ -437,15 +433,15 @@ const WORLD_LOCATIONS = {
             "y": 47.6,
             "region": "Yearning Slough",
             "description": "Capital of the Kingdom of Myrdae",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.13,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "labelOffsetY": 16
         },
         {
             "id": "ancientarena",
@@ -455,7 +451,7 @@ const WORLD_LOCATIONS = {
             "y": 43.8,
             "region": "Yearning Slough",
             "description": "Capital of the Kingdom of Myrdae",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontStyle": "Italic",
             "fontWeight": "300",
@@ -469,14 +465,14 @@ const WORLD_LOCATIONS = {
             "id": "blistered-highland",
             "name": "Blistered Highland",
             "type": "region",
-            "x": 77.35,
-            "y": 45.2,
+            "x": 77.2,
+            "y": 44.91,
             "region": "Blistered Highland",
             "description": "Blistered Highland",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Copperplate Gothic",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -492,15 +488,15 @@ const WORLD_LOCATIONS = {
             "y": 43.5,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -35,
-            "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "labelOffsetY": 0
         },
         {
             "id": "the-withered-spire",
@@ -510,7 +506,7 @@ const WORLD_LOCATIONS = {
             "y": 47.2,
             "region": "Yearning Slough",
             "description": "Capital of the Kingdom of Myrdae",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontStyle": "Italic",
             "fontWeight": "300",
@@ -528,15 +524,15 @@ const WORLD_LOCATIONS = {
             "y": 49.5,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -45,
-            "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "labelOffsetY": -1
         },
         {
             "id": "cragflight",
@@ -546,7 +542,7 @@ const WORLD_LOCATIONS = {
             "y": 50.9,
             "region": "Blistered Highland",
             "description": "",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontStyle": "Italic",
             "fontWeight": "300",
@@ -564,15 +560,15 @@ const WORLD_LOCATIONS = {
             "y": 53.65,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -55,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "irebend",
@@ -582,15 +578,15 @@ const WORLD_LOCATIONS = {
             "y": 53.1,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 12,
-            "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "labelOffsetY": -5
         },
         {
             "id": "bareford",
@@ -600,15 +596,15 @@ const WORLD_LOCATIONS = {
             "y": 54.9,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -65,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "porthbay",
@@ -618,15 +614,15 @@ const WORLD_LOCATIONS = {
             "y": 56.2,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -15,
-            "labelOffsetY": -15,
-            "fontStyle": "Normal"
+            "labelOffsetY": -15
         },
         {
             "id": "dragonstone",
@@ -636,7 +632,7 @@ const WORLD_LOCATIONS = {
             "y": 57.7,
             "region": "Blistered Highland",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontStyle": "Italic",
             "fontWeight": "300",
@@ -654,17 +650,17 @@ const WORLD_LOCATIONS = {
             "y": 57.62,
             "region": "Dragonspine Mountains",
             "description": "Dragonspine Mountains",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Copperplate Gothic",
             "fontSize": 24,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": 11,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "blustery-waste",
@@ -674,17 +670,17 @@ const WORLD_LOCATIONS = {
             "y": 65.2,
             "region": "Blustery Waste",
             "description": "Blustery Waste",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Copperplate Gothic",
             "fontSize": 20,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "talbesar",
@@ -695,7 +691,7 @@ const WORLD_LOCATIONS = {
             "region": "Blustery Waste",
             "description": "Small Town",
             "link": "https://docs.google.com/document/d/1DiuIO2qtBG5l-wQECq-OqyMS2hc44vLnqJmNPQFi1AA/edit?tab=t.0",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -713,15 +709,15 @@ const WORLD_LOCATIONS = {
             "y": 67.8,
             "region": "Blustery Waste",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -65,
-            "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "labelOffsetY": -5
         },
         {
             "id": "eye-of-arbescar",
@@ -731,17 +727,17 @@ const WORLD_LOCATIONS = {
             "y": 68.72,
             "region": "Eye of Arbescar",
             "description": "Eye of Arbescar",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "glaspero",
@@ -751,15 +747,15 @@ const WORLD_LOCATIONS = {
             "y": 68.3,
             "region": "Arbescar",
             "description": "Small Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -40,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "marrowdale",
@@ -769,15 +765,15 @@ const WORLD_LOCATIONS = {
             "y": 69.7,
             "region": "Arbescar",
             "description": "Capital",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.1,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "labelOffsetY": 10
         },
         {
             "id": "farview",
@@ -787,15 +783,15 @@ const WORLD_LOCATIONS = {
             "y": 72.1,
             "region": "Arbescar",
             "description": "Port Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "dire-of-arbescar",
@@ -805,15 +801,15 @@ const WORLD_LOCATIONS = {
             "y": 73.5,
             "region": "Dire of Arbescar",
             "description": "Dire of Arbescar",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "nebisill",
@@ -823,15 +819,15 @@ const WORLD_LOCATIONS = {
             "y": 72.7,
             "region": "Arbescar",
             "description": "Port Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -50,
-            "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "labelOffsetY": -5
         },
         {
             "id": "siltbay",
@@ -841,16 +837,16 @@ const WORLD_LOCATIONS = {
             "y": 66.52,
             "region": "Arbescar",
             "description": "Port Town",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 40,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "longwood",
@@ -860,16 +856,16 @@ const WORLD_LOCATIONS = {
             "y": 68.75,
             "region": "Arbescar",
             "description": "Forest",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "nebisill-grove",
@@ -879,16 +875,16 @@ const WORLD_LOCATIONS = {
             "y": 70.91,
             "region": "Arbescar",
             "description": "Grove",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "mulshear",
@@ -898,15 +894,15 @@ const WORLD_LOCATIONS = {
             "y": 74.22,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "mulbrook",
@@ -916,7 +912,7 @@ const WORLD_LOCATIONS = {
             "y": 72.69,
             "region": "Mulbrook",
             "description": "Grove",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 16,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -936,36 +932,36 @@ const WORLD_LOCATIONS = {
             "y": 75.7,
             "region": "Mulbrook",
             "description": "Swamps",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontStyle": "Italic",
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "opacity": 0.5,
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
-            "labelOffsetY": 0,
-            "opacity": 1
+            "labelOffsetY": 0
         },
         {
             "id": "silvermead-knolls",
             "name": "Silvermead\nKnolls",
-            "type": "region",
+            "type": "nature",
             "x": 64.09,
             "y": 71.06,
             "region": "Mulbrook",
             "description": "Knolls",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.7
+            "opacity": 0.5
         },
         {
             "id": "hillside-woods",
@@ -975,16 +971,16 @@ const WORLD_LOCATIONS = {
             "y": 73.66,
             "region": "Mulbrook",
             "description": "Woods",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "bickerfeld",
@@ -994,15 +990,15 @@ const WORLD_LOCATIONS = {
             "y": 70.2,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "nuwharf",
@@ -1012,15 +1008,15 @@ const WORLD_LOCATIONS = {
             "y": 69.4,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "silvermead",
@@ -1030,15 +1026,15 @@ const WORLD_LOCATIONS = {
             "y": 69.7,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "eldeff",
@@ -1048,15 +1044,15 @@ const WORLD_LOCATIONS = {
             "y": 69.35,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "adamont",
@@ -1066,15 +1062,15 @@ const WORLD_LOCATIONS = {
             "y": 66.35,
             "region": "Mulbrook",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "trailpoint",
@@ -1085,15 +1081,15 @@ const WORLD_LOCATIONS = {
             "region": "Mulbrook",
             "description": "Town",
             "link": "https://docs.google.com/document/d/1fhbQ8CwQYQ7D055Y0pOuxjnBlbhu3zEqUR4rVGeRHuo/edit?tab=t.0",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 5,
-            "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "labelOffsetY": 16
         },
         {
             "id": "farnsby-port",
@@ -1103,15 +1099,15 @@ const WORLD_LOCATIONS = {
             "y": 65.4,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -30,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "bistron",
@@ -1121,15 +1117,15 @@ const WORLD_LOCATIONS = {
             "y": 64,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "edgewind",
@@ -1139,15 +1135,15 @@ const WORLD_LOCATIONS = {
             "y": 61.35,
             "region": "Mulbrook",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -25,
-            "labelOffsetY": -15,
-            "fontStyle": "Normal"
+            "labelOffsetY": -15
         },
         {
             "id": "boldshire",
@@ -1157,15 +1153,15 @@ const WORLD_LOCATIONS = {
             "y": 60.2,
             "region": "Mulbrook",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
+            "fontStyle": "Italic",
             "fontWeight": "300",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -25,
-            "labelOffsetY": -15,
-            "fontStyle": "Normal"
+            "labelOffsetY": -15
         },
         {
             "id": "caristone-forest",
@@ -1175,10 +1171,10 @@ const WORLD_LOCATIONS = {
             "y": 60.19,
             "region": "Mulbrook",
             "description": "Woods",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
@@ -1195,7 +1191,7 @@ const WORLD_LOCATIONS = {
             "y": 61,
             "region": "Mulbrook",
             "description": "Tomb",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Geramond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1214,15 +1210,15 @@ const WORLD_LOCATIONS = {
             "y": 43.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -5,
-            "labelOffsetY": 20,
-            "fontStyle": "Normal"
+            "labelOffsetY": 20
         },
         {
             "id": "ngundeer",
@@ -1232,15 +1228,15 @@ const WORLD_LOCATIONS = {
             "y": 45.9,
             "region": "Searing Flats",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "fakul",
@@ -1250,15 +1246,15 @@ const WORLD_LOCATIONS = {
             "y": 46.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -27,
-            "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "labelOffsetY": -9
         },
         {
             "id": "scarwatch-hold",
@@ -1268,7 +1264,7 @@ const WORLD_LOCATIONS = {
             "y": 42.4,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1287,15 +1283,15 @@ const WORLD_LOCATIONS = {
             "y": 48.4,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -41,
-            "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "labelOffsetY": 10
         },
         {
             "id": "searing-flats",
@@ -1305,17 +1301,17 @@ const WORLD_LOCATIONS = {
             "y": 47.79,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Copperplate Gothic",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 1,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "jagged-waste-crags",
@@ -1325,10 +1321,10 @@ const WORLD_LOCATIONS = {
             "y": 49.4,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 36,
+            "fontFamily": "Copperplate Gothic",
+            "fontSize": 24,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 1,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -1346,10 +1342,10 @@ const WORLD_LOCATIONS = {
             "y": 43.51,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 17,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -1365,15 +1361,15 @@ const WORLD_LOCATIONS = {
             "y": 41.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -5,
-            "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "labelOffsetY": 18
         },
         {
             "id": "alburest",
@@ -1383,15 +1379,15 @@ const WORLD_LOCATIONS = {
             "y": 42.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 8,
-            "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "labelOffsetY": 10
         },
         {
             "id": "olestack",
@@ -1401,15 +1397,15 @@ const WORLD_LOCATIONS = {
             "y": 45.5,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -1,
-            "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "labelOffsetY": -11
         },
         {
             "id": "lochlorn",
@@ -1419,16 +1415,16 @@ const WORLD_LOCATIONS = {
             "y": 41.92,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 9,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "igborne",
@@ -1438,15 +1434,15 @@ const WORLD_LOCATIONS = {
             "y": 46.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -41,
-            "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "labelOffsetY": 17
         },
         {
             "id": "simmerhorn",
@@ -1456,15 +1452,15 @@ const WORLD_LOCATIONS = {
             "y": 46.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -36,
-            "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "labelOffsetY": 17
         },
         {
             "id": "ulkef",
@@ -1474,15 +1470,15 @@ const WORLD_LOCATIONS = {
             "y": 48.7,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -48,
-            "labelOffsetY": 1,
-            "fontStyle": "Normal"
+            "labelOffsetY": 1
         },
         {
             "id": "rosevale",
@@ -1492,15 +1488,15 @@ const WORLD_LOCATIONS = {
             "y": 49.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -7,
-            "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "labelOffsetY": -9
         },
         {
             "id": "sandgrave",
@@ -1510,15 +1506,15 @@ const WORLD_LOCATIONS = {
             "y": 51.5,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -6,
-            "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "labelOffsetY": -14
         },
         {
             "id": "destons-outpost",
@@ -1528,7 +1524,7 @@ const WORLD_LOCATIONS = {
             "y": 51.1,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1547,15 +1543,15 @@ const WORLD_LOCATIONS = {
             "y": 51.05,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -57,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "staghaven",
@@ -1565,15 +1561,15 @@ const WORLD_LOCATIONS = {
             "y": 53.5,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 8,
-            "labelOffsetY": 11,
-            "fontStyle": "Normal"
+            "labelOffsetY": 11
         },
         {
             "id": "witherwood",
@@ -1583,10 +1579,10 @@ const WORLD_LOCATIONS = {
             "y": 52.88,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 14,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -1603,15 +1599,15 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "Town",
             "link": "https://docs.google.com/document/d/1J553Gt1bLDE58Cfx2Lt2zUh4pT6XlRj__qlzz2GMyXg/edit?tab=t.0",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -64,
-            "labelOffsetY": 7,
-            "fontStyle": "Normal"
+            "labelOffsetY": 7
         },
         {
             "id": "willow-lodge",
@@ -1621,7 +1617,7 @@ const WORLD_LOCATIONS = {
             "y": 53.1,
             "region": "",
             "description": "Outpost",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1640,7 +1636,7 @@ const WORLD_LOCATIONS = {
             "y": 51.3,
             "region": "",
             "description": "Outpost",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1659,7 +1655,7 @@ const WORLD_LOCATIONS = {
             "y": 56.5,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1681,25 +1677,25 @@ const WORLD_LOCATIONS = {
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -57,
-            "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "labelOffsetY": -6
         },
         {
-            "id": "mount-emberstran",
-            "name": "Mount\nEmberstran",
+            "id": "mount-emberstrand",
+            "name": "Mount\nEmberstrand",
             "type": "region",
             "x": 63.09,
             "y": 55.5,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 24,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -1716,7 +1712,7 @@ const WORLD_LOCATIONS = {
             "y": 65.2,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1735,15 +1731,15 @@ const WORLD_LOCATIONS = {
             "y": 63.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -40,
-            "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "labelOffsetY": 17
         },
         {
             "id": "ulgrey",
@@ -1753,15 +1749,15 @@ const WORLD_LOCATIONS = {
             "y": 60.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -56,
-            "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "labelOffsetY": 0
         },
         {
             "id": "tower-of-zibeus",
@@ -1771,7 +1767,7 @@ const WORLD_LOCATIONS = {
             "y": 61.7,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1786,20 +1782,19 @@ const WORLD_LOCATIONS = {
             "id": "kahlbits-veil",
             "name": "Kahlbit's\nVeil",
             "type": "nature",
-            "x": 63.98,
-            "y": 62.11,
+            "x": 64.1,
+            "y": 62.98,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "labelAlign": "middle",
             "opacity": 1
         },
         {
@@ -1810,17 +1805,17 @@ const WORLD_LOCATIONS = {
             "y": 61.9,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 30,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "silverhill",
@@ -1830,7 +1825,7 @@ const WORLD_LOCATIONS = {
             "y": 45.5,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -1849,15 +1844,15 @@ const WORLD_LOCATIONS = {
             "y": 42.55,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -58,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "wrynn",
@@ -1867,15 +1862,15 @@ const WORLD_LOCATIONS = {
             "y": 40.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -13,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "ghogam",
@@ -1885,15 +1880,15 @@ const WORLD_LOCATIONS = {
             "y": 41.5,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "ofwood",
@@ -1903,15 +1898,15 @@ const WORLD_LOCATIONS = {
             "y": 38.96,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "crimson-pins",
@@ -1921,16 +1916,16 @@ const WORLD_LOCATIONS = {
             "y": 37.94,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "mirstone",
@@ -1940,15 +1935,15 @@ const WORLD_LOCATIONS = {
             "y": 43.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "stouhg",
@@ -1958,15 +1953,15 @@ const WORLD_LOCATIONS = {
             "y": 41.5,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -38,
-            "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "labelOffsetY": 19
         },
         {
             "id": "offwood-crossroad",
@@ -1976,15 +1971,15 @@ const WORLD_LOCATIONS = {
             "y": 40.74,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 1,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.01,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "gur-madihl",
@@ -1994,28 +1989,28 @@ const WORLD_LOCATIONS = {
             "y": 46.04,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -37,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "stonewood",
             "name": "Stonewood",
             "type": "nature",
-            "x": 64.69,
+            "x": 64.6,
             "y": 46.65,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2031,7 +2026,7 @@ const WORLD_LOCATIONS = {
             "y": 41.19,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 11,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2051,7 +2046,7 @@ const WORLD_LOCATIONS = {
             "y": 53.58,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2071,7 +2066,7 @@ const WORLD_LOCATIONS = {
             "y": 54.6,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2090,7 +2085,7 @@ const WORLD_LOCATIONS = {
             "y": 51.73,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2109,16 +2104,16 @@ const WORLD_LOCATIONS = {
             "y": 69.19,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "emberstran",
@@ -2129,15 +2124,15 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "City",
             "link": "https://docs.google.com/document/d/1oECFiNos1Qqa1CfGo-2DJWbyet9SOF_gMKd3ZR2kY6c/edit?tab=t.0",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -53,
-            "labelOffsetY": 22,
-            "fontStyle": "Normal"
+            "labelOffsetY": 22
         },
         {
             "id": "stonetrace",
@@ -2147,7 +2142,7 @@ const WORLD_LOCATIONS = {
             "y": 56.08,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2166,7 +2161,7 @@ const WORLD_LOCATIONS = {
             "y": 57.2,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2187,10 +2182,10 @@ const WORLD_LOCATIONS = {
             "y": 55.06,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 17,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2208,15 +2203,15 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "Town",
             "link": "https://docs.google.com/document/d/1tfgzGJK9ZZcaoiva1lfVAgR0xmbe_2Mn0uFoVj9bFLQ/edit?tab=t.0",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -53,
-            "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "labelOffsetY": 18
         },
         {
             "id": "lasdale",
@@ -2226,15 +2221,15 @@ const WORLD_LOCATIONS = {
             "y": 53.05,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -54,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "glofdale",
@@ -2244,15 +2239,15 @@ const WORLD_LOCATIONS = {
             "y": 55.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -55,
-            "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "labelOffsetY": -6
         },
         {
             "id": "crosswind",
@@ -2262,7 +2257,7 @@ const WORLD_LOCATIONS = {
             "y": 57.46,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2281,15 +2276,15 @@ const WORLD_LOCATIONS = {
             "y": 58.42,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -53,
-            "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "labelOffsetY": -12
         },
         {
             "id": "husing-wolds",
@@ -2299,16 +2294,16 @@ const WORLD_LOCATIONS = {
             "y": 56.08,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 9,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "northern-stoneflow",
@@ -2318,7 +2313,7 @@ const WORLD_LOCATIONS = {
             "y": 52.25,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2338,7 +2333,7 @@ const WORLD_LOCATIONS = {
             "y": 51.7,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2358,15 +2353,15 @@ const WORLD_LOCATIONS = {
             "y": 49.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "castle-montavein",
@@ -2376,7 +2371,7 @@ const WORLD_LOCATIONS = {
             "y": 48.5,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2395,15 +2390,15 @@ const WORLD_LOCATIONS = {
             "y": 50.48,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 14,
-            "fontStyle": "Normal"
+            "labelOffsetY": 14
         },
         {
             "id": "the-wispy-vale",
@@ -2413,10 +2408,10 @@ const WORLD_LOCATIONS = {
             "y": 47.76,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 17,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2433,15 +2428,15 @@ const WORLD_LOCATIONS = {
             "y": 47.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "labelOffsetY": -3
         },
         {
             "id": "meadowgarde",
@@ -2451,9 +2446,10 @@ const WORLD_LOCATIONS = {
             "y": 51.73,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 20,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2461,21 +2457,20 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -39,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "shademeadow",
             "name": "Shademeadow",
             "type": "nature",
             "x": 54.5,
-            "y": 54.35,
+            "y": 54.52,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 19,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2492,15 +2487,15 @@ const WORLD_LOCATIONS = {
             "y": 62.84,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -39,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "paendley",
@@ -2510,15 +2505,15 @@ const WORLD_LOCATIONS = {
             "y": 63.28,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -60,
-            "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "labelOffsetY": 10
         },
         {
             "id": "culburn",
@@ -2528,15 +2523,15 @@ const WORLD_LOCATIONS = {
             "y": 65.39,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "glimmerstone",
@@ -2546,15 +2541,15 @@ const WORLD_LOCATIONS = {
             "y": 64.1,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -49,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "derly-river",
@@ -2564,7 +2559,7 @@ const WORLD_LOCATIONS = {
             "y": 68.09,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2579,22 +2574,22 @@ const WORLD_LOCATIONS = {
         {
             "id": "weald-of-whispers",
             "name": "Weald\nof\nWhispers",
-            "type": "nature",
+            "type": "region",
             "x": 59.52,
-            "y": 70.14,
+            "y": 70.47,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
             "fontWeight": "300",
-            "fontStyle": "Normal",
-            "markerSize": 0,
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "passaria",
@@ -2604,7 +2599,7 @@ const WORLD_LOCATIONS = {
             "y": 68.09,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2623,15 +2618,15 @@ const WORLD_LOCATIONS = {
             "y": 73.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -2,
-            "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "labelOffsetY": -9
         },
         {
             "id": "everdrift",
@@ -2641,7 +2636,7 @@ const WORLD_LOCATIONS = {
             "y": 73.63,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2662,9 +2657,10 @@ const WORLD_LOCATIONS = {
             "y": 73.37,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 24,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2673,8 +2669,7 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": 72,
             "textCurve": -130,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "nurador",
@@ -2684,15 +2679,15 @@ const WORLD_LOCATIONS = {
             "y": 67.71,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -27,
-            "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "labelOffsetY": 19
         },
         {
             "id": "driftbend",
@@ -2702,15 +2697,15 @@ const WORLD_LOCATIONS = {
             "y": 74.96,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -66,
-            "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "labelOffsetY": 12
         },
         {
             "id": "brokenfall",
@@ -2720,15 +2715,15 @@ const WORLD_LOCATIONS = {
             "y": 73.93,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -70,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "crossroad-boldshire-edgewind-bistron",
@@ -2738,16 +2733,16 @@ const WORLD_LOCATIONS = {
             "y": 61.7,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "coastline-location-siltbay",
@@ -2757,16 +2752,16 @@ const WORLD_LOCATIONS = {
             "y": 62.86,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "next-to-glimmerstone-location",
@@ -2776,16 +2771,16 @@ const WORLD_LOCATIONS = {
             "y": 65.23,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "next-to-glimmerstone-location-1",
@@ -2795,16 +2790,16 @@ const WORLD_LOCATIONS = {
             "y": 66.19,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "next-to-glimmerstone-location-3",
@@ -2814,16 +2809,16 @@ const WORLD_LOCATIONS = {
             "y": 65.26,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "unknown-location-10",
@@ -2833,16 +2828,16 @@ const WORLD_LOCATIONS = {
             "y": 69.7,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "unknown-location-11",
@@ -2852,16 +2847,16 @@ const WORLD_LOCATIONS = {
             "y": 71.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "vanapur-mountains",
@@ -2871,9 +2866,10 @@ const WORLD_LOCATIONS = {
             "y": 71.49,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 18,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -2882,8 +2878,7 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": 65,
             "textCurve": 60,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "climbor",
@@ -2893,15 +2888,15 @@ const WORLD_LOCATIONS = {
             "y": 69.97,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -1,
-            "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "labelOffsetY": 19
         },
         {
             "id": "felden",
@@ -2911,15 +2906,15 @@ const WORLD_LOCATIONS = {
             "y": 67.2,
             "region": "",
             "description": "Small City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -40,
-            "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "labelOffsetY": 16
         },
         {
             "id": "greyrun",
@@ -2929,7 +2924,7 @@ const WORLD_LOCATIONS = {
             "y": 61.73,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "400",
             "fontStyle": "Italic",
@@ -2950,7 +2945,7 @@ const WORLD_LOCATIONS = {
             "y": 60.9,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 10,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -2971,16 +2966,16 @@ const WORLD_LOCATIONS = {
             "y": 62.64,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "Beveress",
@@ -2990,15 +2985,15 @@ const WORLD_LOCATIONS = {
             "y": 60.06,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -22,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "stoneflow",
@@ -3008,7 +3003,7 @@ const WORLD_LOCATIONS = {
             "y": 62.55,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3028,7 +3023,7 @@ const WORLD_LOCATIONS = {
             "y": 62.5,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3047,15 +3042,15 @@ const WORLD_LOCATIONS = {
             "y": 59.74,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -48,
-            "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "labelOffsetY": -8
         },
         {
             "id": "stoneshore",
@@ -3065,15 +3060,15 @@ const WORLD_LOCATIONS = {
             "y": 61.12,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -73,
-            "labelOffsetY": 11,
-            "fontStyle": "Normal"
+            "labelOffsetY": 11
         },
         {
             "id": "steenlodge",
@@ -3083,15 +3078,15 @@ const WORLD_LOCATIONS = {
             "y": 64.1,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "gevakaln",
@@ -3101,15 +3096,15 @@ const WORLD_LOCATIONS = {
             "y": 64.68,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -69,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "duskwaren",
@@ -3119,15 +3114,15 @@ const WORLD_LOCATIONS = {
             "y": 65.29,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "heildward",
@@ -3137,15 +3132,15 @@ const WORLD_LOCATIONS = {
             "y": 66.1,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -36,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "basinpass",
@@ -3155,15 +3150,15 @@ const WORLD_LOCATIONS = {
             "y": 66.26,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -67,
-            "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "labelOffsetY": -5
         },
         {
             "id": "morimyr",
@@ -3173,15 +3168,15 @@ const WORLD_LOCATIONS = {
             "y": 67.67,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "tarrarin",
@@ -3191,15 +3186,15 @@ const WORLD_LOCATIONS = {
             "y": 74.34,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 2,
-            "fontStyle": "Normal"
+            "labelOffsetY": 2
         },
         {
             "id": "witguard",
@@ -3209,15 +3204,15 @@ const WORLD_LOCATIONS = {
             "y": 70.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -59,
-            "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "labelOffsetY": -11
         },
         {
             "id": "pelveron",
@@ -3227,15 +3222,15 @@ const WORLD_LOCATIONS = {
             "y": 72.3,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -59,
-            "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "labelOffsetY": 0
         },
         {
             "id": "silviora",
@@ -3245,15 +3240,15 @@ const WORLD_LOCATIONS = {
             "y": 73.4,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "tyrynader",
@@ -3263,15 +3258,15 @@ const WORLD_LOCATIONS = {
             "y": 70.8,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -52,
-            "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "labelOffsetY": -8
         },
         {
             "id": "unknown-12",
@@ -3281,7 +3276,7 @@ const WORLD_LOCATIONS = {
             "y": 71.6,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3301,15 +3296,15 @@ const WORLD_LOCATIONS = {
             "y": 68.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "greywater-bay",
@@ -3319,17 +3314,17 @@ const WORLD_LOCATIONS = {
             "y": 60.02,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "distancion-mountains",
@@ -3339,9 +3334,10 @@ const WORLD_LOCATIONS = {
             "y": 48.51,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 50,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -3350,8 +3346,7 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": 35,
             "textCurve": -21,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "thelkholdur",
@@ -3361,15 +3356,15 @@ const WORLD_LOCATIONS = {
             "y": 44.9,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "inshire",
@@ -3379,15 +3374,15 @@ const WORLD_LOCATIONS = {
             "y": 50.81,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "yunberr",
@@ -3397,15 +3392,15 @@ const WORLD_LOCATIONS = {
             "y": 55.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "seaway-harbor",
@@ -3415,7 +3410,7 @@ const WORLD_LOCATIONS = {
             "y": 56.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3434,15 +3429,15 @@ const WORLD_LOCATIONS = {
             "y": 54.93,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -6,
-            "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "labelOffsetY": 17
         },
         {
             "id": "uktali-monastery",
@@ -3452,7 +3447,7 @@ const WORLD_LOCATIONS = {
             "y": 43.2,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3471,15 +3466,15 @@ const WORLD_LOCATIONS = {
             "y": 41,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
-            "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "labelOffsetY": -14
         },
         {
             "id": "new-brimhaven",
@@ -3489,15 +3484,15 @@ const WORLD_LOCATIONS = {
             "y": 39.86,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -13,
-            "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "labelOffsetY": 21
         },
         {
             "id": "ferndale",
@@ -3507,15 +3502,15 @@ const WORLD_LOCATIONS = {
             "y": 35.6,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "basctdelm",
@@ -3525,15 +3520,15 @@ const WORLD_LOCATIONS = {
             "y": 31.66,
             "region": "",
             "description": "",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 16,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -72,
-            "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "labelOffsetY": 21
         },
         {
             "id": "covered-bastion",
@@ -3543,7 +3538,7 @@ const WORLD_LOCATIONS = {
             "y": 39.32,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3562,7 +3557,7 @@ const WORLD_LOCATIONS = {
             "y": 39.65,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3581,16 +3576,16 @@ const WORLD_LOCATIONS = {
             "y": 33.58,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "seaglow",
@@ -3600,7 +3595,7 @@ const WORLD_LOCATIONS = {
             "y": 35.04,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3620,15 +3615,15 @@ const WORLD_LOCATIONS = {
             "y": 37.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -74,
-            "labelOffsetY": 11,
-            "fontStyle": "Normal"
+            "labelOffsetY": 11
         },
         {
             "id": "murfield",
@@ -3638,15 +3633,15 @@ const WORLD_LOCATIONS = {
             "y": 34.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "nasmere-keep",
@@ -3656,7 +3651,7 @@ const WORLD_LOCATIONS = {
             "y": 36,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3675,15 +3670,15 @@ const WORLD_LOCATIONS = {
             "y": 32.4,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "dibsley",
@@ -3693,15 +3688,15 @@ const WORLD_LOCATIONS = {
             "y": 30.58,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 4,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "southern-arch",
@@ -3711,7 +3706,7 @@ const WORLD_LOCATIONS = {
             "y": 36.01,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3731,17 +3726,17 @@ const WORLD_LOCATIONS = {
             "y": 31.41,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "hemmil",
@@ -3751,15 +3746,15 @@ const WORLD_LOCATIONS = {
             "y": 31.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -55,
-            "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "labelOffsetY": 21
         },
         {
             "id": "nauldeaus",
@@ -3769,15 +3764,15 @@ const WORLD_LOCATIONS = {
             "y": 28.68,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 4,
-            "labelOffsetY": 22,
-            "fontStyle": "Normal"
+            "labelOffsetY": 22
         },
         {
             "id": "baryn",
@@ -3787,15 +3782,15 @@ const WORLD_LOCATIONS = {
             "y": 28.93,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -46,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "labelOffsetY": -3
         },
         {
             "id": "omelle",
@@ -3805,15 +3800,15 @@ const WORLD_LOCATIONS = {
             "y": 30.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -51,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "sharsley",
@@ -3823,15 +3818,15 @@ const WORLD_LOCATIONS = {
             "y": 28.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -59,
-            "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "labelOffsetY": 12
         },
         {
             "id": "haern",
@@ -3841,15 +3836,15 @@ const WORLD_LOCATIONS = {
             "y": 27.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "labelOffsetY": -5
         },
         {
             "id": "gibuldon",
@@ -3859,15 +3854,15 @@ const WORLD_LOCATIONS = {
             "y": 28.2,
             "region": "",
             "description": "",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 16,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
-            "labelOffsetY": 24,
-            "fontStyle": "Normal"
+            "labelOffsetY": 24
         },
         {
             "id": "dryrock",
@@ -3877,15 +3872,15 @@ const WORLD_LOCATIONS = {
             "y": 29,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -52,
-            "labelOffsetY": 13,
-            "fontStyle": "Normal"
+            "labelOffsetY": 13
         },
         {
             "id": "abereth",
@@ -3895,15 +3890,15 @@ const WORLD_LOCATIONS = {
             "y": 26.01,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -14,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "strolsworth",
@@ -3913,15 +3908,15 @@ const WORLD_LOCATIONS = {
             "y": 26.53,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -14,
-            "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "labelOffsetY": 18
         },
         {
             "id": "loch-cerule",
@@ -3931,17 +3926,17 @@ const WORLD_LOCATIONS = {
             "y": 27.57,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 8,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "lullin",
@@ -3951,15 +3946,15 @@ const WORLD_LOCATIONS = {
             "y": 25.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -22,
-            "labelOffsetY": 24,
-            "fontStyle": "Normal"
+            "labelOffsetY": 24
         },
         {
             "id": "fruthuder-keep",
@@ -3969,7 +3964,7 @@ const WORLD_LOCATIONS = {
             "y": 25.6,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -3989,15 +3984,15 @@ const WORLD_LOCATIONS = {
             "y": 28.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "caldwynn",
@@ -4007,15 +4002,15 @@ const WORLD_LOCATIONS = {
             "y": 32.15,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "hathlao-swamp",
@@ -4025,17 +4020,17 @@ const WORLD_LOCATIONS = {
             "y": 27.61,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "tirncall",
@@ -4045,15 +4040,15 @@ const WORLD_LOCATIONS = {
             "y": 30.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 15,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "celedon-forest",
@@ -4063,17 +4058,17 @@ const WORLD_LOCATIONS = {
             "y": 30.42,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "lake-miremantle",
@@ -4083,17 +4078,17 @@ const WORLD_LOCATIONS = {
             "y": 32.26,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 10,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.8,
-            "fontStyle": "Normal"
+            "opacity": 0.8
         },
         {
             "id": "lake-glenmantle",
@@ -4103,17 +4098,17 @@ const WORLD_LOCATIONS = {
             "y": 33.75,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 8,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "celemere",
@@ -4123,17 +4118,17 @@ const WORLD_LOCATIONS = {
             "y": 33.74,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "unstead",
@@ -4143,15 +4138,15 @@ const WORLD_LOCATIONS = {
             "y": 34.43,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "kilnock",
@@ -4161,15 +4156,15 @@ const WORLD_LOCATIONS = {
             "y": 35.24,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -13,
-            "labelOffsetY": 20,
-            "fontStyle": "Normal"
+            "labelOffsetY": 20
         },
         {
             "id": "babbleglen",
@@ -4179,15 +4174,15 @@ const WORLD_LOCATIONS = {
             "y": 34.27,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "gilburough-cascades",
@@ -4197,7 +4192,7 @@ const WORLD_LOCATIONS = {
             "y": 35.3,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4216,17 +4211,17 @@ const WORLD_LOCATIONS = {
             "y": 31.31,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 9,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -41,
             "labelOffsetY": -10,
             "rotation": -43,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "menmythorn",
@@ -4236,35 +4231,35 @@ const WORLD_LOCATIONS = {
             "y": 31.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -16,
-            "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "labelOffsetY": -9
         },
         {
             "id": "wetlands-of-camburne",
             "name": "Wetlands of\nCamburne",
             "type": "nature",
-            "x": 22.05,
+            "x": 22.19,
             "y": 30.64,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 13,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "evyndar",
@@ -4274,15 +4269,15 @@ const WORLD_LOCATIONS = {
             "y": 32.27,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -52,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "labelOffsetY": -3
         },
         {
             "id": "leoning",
@@ -4292,15 +4287,15 @@ const WORLD_LOCATIONS = {
             "y": 36.16,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -58,
-            "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "labelOffsetY": -1
         },
         {
             "id": "layden",
@@ -4310,15 +4305,15 @@ const WORLD_LOCATIONS = {
             "y": 38.17,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -4,
-            "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "labelOffsetY": 19
         },
         {
             "id": "proth",
@@ -4328,15 +4323,15 @@ const WORLD_LOCATIONS = {
             "y": 39.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "timberdown",
@@ -4346,7 +4341,7 @@ const WORLD_LOCATIONS = {
             "y": 37.7,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4365,7 +4360,7 @@ const WORLD_LOCATIONS = {
             "y": 33.9,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4384,7 +4379,7 @@ const WORLD_LOCATIONS = {
             "y": 30.2,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4404,15 +4399,15 @@ const WORLD_LOCATIONS = {
             "y": 26.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -64,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "daerswell-inlet",
@@ -4422,48 +4417,10 @@ const WORLD_LOCATIONS = {
             "y": 25.36,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 18,
             "fontWeight": "300",
-            "markerSize": 0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0,
-            "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "dreghye",
-            "name": "Dreghye",
-            "type": "town",
-            "x": 18.75,
-            "y": 23.2,
-            "region": "",
-            "description": "Town",
-            "fontFamily": "Simonetta",
-            "fontSize": 14,
-            "fontWeight": "300",
-            "markerSize": 0.25,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": -56,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "eletold-wood",
-            "name": "Eletold\nWood",
-            "type": "nature",
-            "x": 21.4,
-            "y": 26.61,
-            "region": "",
-            "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
-            "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -4473,6 +4430,44 @@ const WORLD_LOCATIONS = {
             "opacity": 1
         },
         {
+            "id": "dreghye",
+            "name": "Dreghye",
+            "type": "town",
+            "x": 18.75,
+            "y": 23.2,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -56,
+            "labelOffsetY": -3
+        },
+        {
+            "id": "eletold-wood",
+            "name": "Eletold\nWood",
+            "type": "nature",
+            "x": 21.4,
+            "y": 26.61,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
             "id": "olmorrey",
             "name": "Ol'morrey",
             "type": "small-city",
@@ -4480,15 +4475,15 @@ const WORLD_LOCATIONS = {
             "y": 43.88,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -66,
-            "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "labelOffsetY": -1
         },
         {
             "id": "gristlow",
@@ -4498,15 +4493,15 @@ const WORLD_LOCATIONS = {
             "y": 41.51,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -1,
-            "labelOffsetY": -7,
-            "fontStyle": "Normal"
+            "labelOffsetY": -7
         },
         {
             "id": "morrey",
@@ -4516,15 +4511,15 @@ const WORLD_LOCATIONS = {
             "y": 44.7,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -1,
-            "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "labelOffsetY": -14
         },
         {
             "id": "carnsby",
@@ -4534,15 +4529,15 @@ const WORLD_LOCATIONS = {
             "y": 45,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -54,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "labelOffsetY": -3
         },
         {
             "id": "kelmouth",
@@ -4552,15 +4547,15 @@ const WORLD_LOCATIONS = {
             "y": 46.94,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -65,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "kith",
@@ -4570,15 +4565,15 @@ const WORLD_LOCATIONS = {
             "y": 46,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -33,
-            "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "labelOffsetY": 10
         },
         {
             "id": "dhachaomhnoir",
@@ -4588,28 +4583,28 @@ const WORLD_LOCATIONS = {
             "y": 46.51,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -29,
-            "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "labelOffsetY": 21
         },
         {
             "id": "hillsofwheldrake",
             "name": "Hills of\nWheldrake",
             "type": "region",
             "x": 57.43,
-            "y": 27.49,
+            "y": 27.87,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 24,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 17,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -4626,15 +4621,15 @@ const WORLD_LOCATIONS = {
             "y": 27.51,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "falthalor",
@@ -4644,15 +4639,15 @@ const WORLD_LOCATIONS = {
             "y": 38.4,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -66,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "dolkholdur",
@@ -4662,7 +4657,7 @@ const WORLD_LOCATIONS = {
             "y": 43.7,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4677,20 +4672,19 @@ const WORLD_LOCATIONS = {
             "id": "beselcrest",
             "name": "Beselcrest",
             "type": "region",
-            "x": 49.41,
-            "y": 56.74,
+            "x": 49.4,
+            "y": 57.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "labelAlign": "middle",
             "opacity": 0.5
         },
         {
@@ -4698,10 +4692,10 @@ const WORLD_LOCATIONS = {
             "name": "Kholdur River",
             "type": "river",
             "x": 48.96,
-            "y": 54.54,
+            "y": 54.83,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 10,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4710,9 +4704,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "labelAlign": "middle",
             "rotation": -25,
-            "opacity": 0.8
+            "opacity": 0.5
         },
         {
             "id": "evostihl",
@@ -4722,15 +4715,15 @@ const WORLD_LOCATIONS = {
             "y": 49.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 6,
-            "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "labelOffsetY": 12
         },
         {
             "id": "nulvara",
@@ -4740,15 +4733,15 @@ const WORLD_LOCATIONS = {
             "y": 50.71,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
-            "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "labelOffsetY": -12
         },
         {
             "id": "grandpeaks",
@@ -4758,17 +4751,17 @@ const WORLD_LOCATIONS = {
             "y": 43.19,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 16,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "skrettel",
@@ -4778,15 +4771,15 @@ const WORLD_LOCATIONS = {
             "y": 43,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "snowcreepriver",
@@ -4796,7 +4789,7 @@ const WORLD_LOCATIONS = {
             "y": 47.54,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 10,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4816,15 +4809,15 @@ const WORLD_LOCATIONS = {
             "y": 47.93,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -57,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "trasobahn",
@@ -4834,10 +4827,10 @@ const WORLD_LOCATIONS = {
             "y": 49.85,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
-            "fontSize": 14,
+            "fontFamily": "Garamond MT",
+            "fontSize": 19,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -4854,15 +4847,15 @@ const WORLD_LOCATIONS = {
             "y": 40.22,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -56,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "labelOffsetY": -3
         },
         {
             "id": "bastionoforder",
@@ -4872,7 +4865,7 @@ const WORLD_LOCATIONS = {
             "y": 37.4,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4891,15 +4884,15 @@ const WORLD_LOCATIONS = {
             "y": 50.85,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -67,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "sunfelpost",
@@ -4909,7 +4902,7 @@ const WORLD_LOCATIONS = {
             "y": 46.2,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4928,15 +4921,15 @@ const WORLD_LOCATIONS = {
             "y": 44.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -60,
-            "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "labelOffsetY": -12
         },
         {
             "id": "bonegate",
@@ -4946,15 +4939,15 @@ const WORLD_LOCATIONS = {
             "y": 43.76,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -33,
-            "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "labelOffsetY": 17
         },
         {
             "id": "everlownlodge",
@@ -4964,7 +4957,7 @@ const WORLD_LOCATIONS = {
             "y": 41.86,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -4983,28 +4976,28 @@ const WORLD_LOCATIONS = {
             "y": 38.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "waywardcrest",
             "name": "Wayward Crest",
             "type": "region",
-            "x": 45.04,
-            "y": 39.03,
+            "x": 44.81,
+            "y": 38.89,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
-            "fontSize": 21,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 17,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -5022,15 +5015,15 @@ const WORLD_LOCATIONS = {
             "y": 35.52,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -15,
-            "labelOffsetY": 20,
-            "fontStyle": "Normal"
+            "labelOffsetY": 20
         },
         {
             "id": "caelora",
@@ -5040,15 +5033,15 @@ const WORLD_LOCATIONS = {
             "y": 36.23,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -57,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "darafee",
@@ -5058,15 +5051,15 @@ const WORLD_LOCATIONS = {
             "y": 34.5,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -2,
-            "fontStyle": "Normal"
+            "labelOffsetY": -2
         },
         {
             "id": "tarnsport",
@@ -5076,35 +5069,34 @@ const WORLD_LOCATIONS = {
             "y": 30.1,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -65,
-            "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "labelOffsetY": -8
         },
         {
             "id": "varenwood",
             "name": "Varenwood",
             "type": "nature",
             "x": 52.4,
-            "y": 30.57,
+            "y": 31.24,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 20,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "qaldynn",
@@ -5114,13 +5106,13 @@ const WORLD_LOCATIONS = {
             "y": 33.2,
             "region": "",
             "description": "",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 16,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "fontStyle": "Normal"
+            "markerOffsetY": 0
         },
         {
             "id": "onaren",
@@ -5130,15 +5122,15 @@ const WORLD_LOCATIONS = {
             "y": 33.46,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -2,
-            "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "labelOffsetY": 18
         },
         {
             "id": "abbeyofmontrest",
@@ -5148,7 +5140,7 @@ const WORLD_LOCATIONS = {
             "y": 36.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5167,10 +5159,10 @@ const WORLD_LOCATIONS = {
             "y": 35,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
             "fontWeight": "200",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -5188,7 +5180,7 @@ const WORLD_LOCATIONS = {
             "y": 32.6,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5207,7 +5199,7 @@ const WORLD_LOCATIONS = {
             "y": 33.04,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5226,7 +5218,7 @@ const WORLD_LOCATIONS = {
             "y": 35.53,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5245,10 +5237,10 @@ const WORLD_LOCATIONS = {
             "y": 34.42,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 14,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -5265,15 +5257,15 @@ const WORLD_LOCATIONS = {
             "y": 26.76,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -46,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "corilas",
@@ -5283,15 +5275,15 @@ const WORLD_LOCATIONS = {
             "y": 25.5,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "wellen",
@@ -5301,15 +5293,15 @@ const WORLD_LOCATIONS = {
             "y": 26.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 13,
-            "fontStyle": "Normal"
+            "labelOffsetY": 13
         },
         {
             "id": "murcomb",
@@ -5319,15 +5311,15 @@ const WORLD_LOCATIONS = {
             "y": 24.65,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "labelOffsetY": -3
         },
         {
             "id": "howlerscove",
@@ -5337,7 +5329,7 @@ const WORLD_LOCATIONS = {
             "y": 32.76,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5356,7 +5348,7 @@ const WORLD_LOCATIONS = {
             "y": 30.06,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5373,20 +5365,19 @@ const WORLD_LOCATIONS = {
             "name": "Seameet Marsh",
             "type": "nature",
             "x": 59.81,
-            "y": 26.77,
+            "y": 27.43,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "lendahlee",
@@ -5396,15 +5387,15 @@ const WORLD_LOCATIONS = {
             "y": 25.4,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "vurnun",
@@ -5414,15 +5405,15 @@ const WORLD_LOCATIONS = {
             "y": 23.36,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "tibbers",
@@ -5432,15 +5423,15 @@ const WORLD_LOCATIONS = {
             "y": 25.7,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -53,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "wheldrake",
@@ -5450,15 +5441,15 @@ const WORLD_LOCATIONS = {
             "y": 27.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
-            "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "labelOffsetY": -11
         },
         {
             "id": "frystarianhighlands",
@@ -5468,10 +5459,10 @@ const WORLD_LOCATIONS = {
             "y": 21.83,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 26,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 18,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -5489,17 +5480,17 @@ const WORLD_LOCATIONS = {
             "y": 27.93,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "blustaririver",
@@ -5509,7 +5500,7 @@ const WORLD_LOCATIONS = {
             "y": 27.9,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5530,15 +5521,15 @@ const WORLD_LOCATIONS = {
             "y": 18.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "gristavel",
@@ -5548,15 +5539,15 @@ const WORLD_LOCATIONS = {
             "y": 20.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 5,
-            "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "labelOffsetY": -9
         },
         {
             "id": "palason",
@@ -5566,14 +5557,14 @@ const WORLD_LOCATIONS = {
             "y": 22.1,
             "region": "",
             "description": "",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 15,
             "fontWeight": "300",
+            "fontStyle": "italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "kolgrafellthicket",
@@ -5583,17 +5574,17 @@ const WORLD_LOCATIONS = {
             "y": 23.58,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 18,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 11,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "ringere",
@@ -5603,15 +5594,15 @@ const WORLD_LOCATIONS = {
             "y": 26.43,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -2,
-            "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "labelOffsetY": 18
         },
         {
             "id": "eruvic",
@@ -5621,15 +5612,15 @@ const WORLD_LOCATIONS = {
             "y": 20.87,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -49,
-            "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "labelOffsetY": -1
         },
         {
             "id": "sahvall",
@@ -5639,15 +5630,15 @@ const WORLD_LOCATIONS = {
             "y": 24.54,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "jordarr",
@@ -5657,15 +5648,15 @@ const WORLD_LOCATIONS = {
             "y": 28.07,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -56,
-            "labelOffsetY": -2,
-            "fontStyle": "Normal"
+            "labelOffsetY": -2
         },
         {
             "id": "northernarch",
@@ -5675,7 +5666,7 @@ const WORLD_LOCATIONS = {
             "y": 28.56,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5695,7 +5686,7 @@ const WORLD_LOCATIONS = {
             "y": 24.97,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5714,15 +5705,15 @@ const WORLD_LOCATIONS = {
             "y": 18.02,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "aerley",
@@ -5732,15 +5723,15 @@ const WORLD_LOCATIONS = {
             "y": 23.72,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -48,
-            "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "labelOffsetY": -11
         },
         {
             "id": "staghand",
@@ -5750,15 +5741,15 @@ const WORLD_LOCATIONS = {
             "y": 25.7,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "stagled",
@@ -5768,7 +5759,7 @@ const WORLD_LOCATIONS = {
             "y": 25.29,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5787,10 +5778,10 @@ const WORLD_LOCATIONS = {
             "y": 28.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 19,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -5807,16 +5798,16 @@ const WORLD_LOCATIONS = {
             "y": 19.4,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "leterboun",
@@ -5826,7 +5817,7 @@ const WORLD_LOCATIONS = {
             "y": 32.7,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -5845,15 +5836,15 @@ const WORLD_LOCATIONS = {
             "y": 31.02,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -25,
-            "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "labelOffsetY": -14
         },
         {
             "id": "holderscove",
@@ -5863,17 +5854,17 @@ const WORLD_LOCATIONS = {
             "y": 32.8,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 11,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 21,
             "labelOffsetY": 11,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "srenesari",
@@ -5883,15 +5874,15 @@ const WORLD_LOCATIONS = {
             "y": 29.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "ormsdal",
@@ -5901,15 +5892,15 @@ const WORLD_LOCATIONS = {
             "y": 24.91,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 5,
-            "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "labelOffsetY": -12
         },
         {
             "id": "syori",
@@ -5919,15 +5910,15 @@ const WORLD_LOCATIONS = {
             "y": 20.8,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
-            "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "labelOffsetY": -10
         },
         {
             "id": "thehighsea",
@@ -5937,122 +5928,10 @@ const WORLD_LOCATIONS = {
             "y": 15,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 30,
             "fontWeight": "300",
-            "markerSize": 0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0,
-            "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "tidelessspan",
-            "name": "Tideless\nSpan",
-            "type": "water",
-            "x": 39.47,
-            "y": 34,
-            "region": "",
-            "description": "Nature",
-            "fontFamily": "Quintessential",
-            "fontSize": 41,
-            "fontWeight": "300",
-            "markerSize": 0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0,
-            "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "oldport",
-            "name": "Oldport",
-            "type": "small-city",
-            "x": 37.94,
-            "y": 35.51,
-            "region": "",
-            "description": "City",
-            "fontFamily": "Simonetta",
-            "fontSize": 14,
-            "fontWeight": "300",
-            "markerSize": 0.25,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": -25,
-            "labelOffsetY": -14,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "ingress",
-            "name": "Ingriss",
-            "type": "city",
-            "x": 37.62,
-            "y": 31.7,
-            "region": "",
-            "description": "City",
-            "fontFamily": "Simonetta",
-            "fontSize": 14,
-            "fontWeight": "300",
-            "markerSize": 0.2,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 25,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "kaldaros",
-            "name": "Kaldaros",
-            "type": "town",
-            "x": 44.8,
-            "y": 28.4,
-            "region": "",
-            "description": "Town",
-            "fontFamily": "Simonetta",
-            "fontSize": 14,
-            "fontWeight": "300",
-            "markerSize": 0.25,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "lasborin",
-            "name": "Lasborin",
-            "type": "town",
-            "x": 46.18,
-            "y": 22.9,
-            "region": "",
-            "description": "Town",
-            "fontFamily": "Simonetta",
-            "fontSize": 14,
-            "fontWeight": "300",
-            "markerSize": 0.25,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 10,
-            "labelOffsetY": 12,
-            "fontStyle": "Normal"
-        },
-        {
-            "id": "tegenwaldwilds",
-            "name": "Tegenwald\nWilds",
-            "type": "nature",
-            "x": 49.29,
-            "y": 26.4,
-            "region": "",
-            "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 18,
-            "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6062,6 +5941,118 @@ const WORLD_LOCATIONS = {
             "opacity": 1
         },
         {
+            "id": "tidelessspan",
+            "name": "Tideless\nSpan",
+            "type": "water",
+            "x": 39.47,
+            "y": 34,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Garamont MT",
+            "fontSize": 41,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 1
+        },
+        {
+            "id": "oldport",
+            "name": "Oldport",
+            "type": "small-city",
+            "x": 37.94,
+            "y": 35.51,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": -25,
+            "labelOffsetY": -14
+        },
+        {
+            "id": "ingress",
+            "name": "Ingriss",
+            "type": "city",
+            "x": 37.62,
+            "y": 31.7,
+            "region": "",
+            "description": "City",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.2,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 25
+        },
+        {
+            "id": "kaldaros",
+            "name": "Kaldaros",
+            "type": "town",
+            "x": 44.8,
+            "y": 28.4,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3
+        },
+        {
+            "id": "lasborin",
+            "name": "Lasborin",
+            "type": "town",
+            "x": 46.18,
+            "y": 22.9,
+            "region": "",
+            "description": "Town",
+            "fontFamily": "Garamond MT",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 12
+        },
+        {
+            "id": "tegenwaldwilds",
+            "name": "Tegenwald\nWilds",
+            "type": "nature",
+            "x": 49.29,
+            "y": 26.4,
+            "region": "",
+            "description": "Nature",
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "labelAlign": "middle",
+            "opacity": 0.5
+        },
+        {
             "id": "stinson",
             "name": "Stinson",
             "type": "small-city",
@@ -6069,15 +6060,15 @@ const WORLD_LOCATIONS = {
             "y": 23.71,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -54,
-            "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "labelOffsetY": 0
         },
         {
             "id": "eastmare",
@@ -6087,15 +6078,15 @@ const WORLD_LOCATIONS = {
             "y": 30.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "labelOffsetY": 12
         },
         {
             "id": "harelbek",
@@ -6105,15 +6096,15 @@ const WORLD_LOCATIONS = {
             "y": 48.34,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "braelen",
@@ -6123,15 +6114,15 @@ const WORLD_LOCATIONS = {
             "y": 44.1,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "serpentsplunge",
@@ -6141,17 +6132,17 @@ const WORLD_LOCATIONS = {
             "y": 33.2,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamont MT",
             "fontSize": 15,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "sarbaugh",
@@ -6161,17 +6152,17 @@ const WORLD_LOCATIONS = {
             "y": 17,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 18,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "aerley-syori-ormsdal-crossroads",
@@ -6181,16 +6172,16 @@ const WORLD_LOCATIONS = {
             "y": 23.26,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "thefowningspine",
@@ -6200,9 +6191,10 @@ const WORLD_LOCATIONS = {
             "y": 11.25,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 28,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6211,8 +6203,7 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": -10,
             "textCurve": -44,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "thebrokendeep",
@@ -6222,17 +6213,17 @@ const WORLD_LOCATIONS = {
             "y": 28.46,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 28,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "everlight",
@@ -6242,15 +6233,15 @@ const WORLD_LOCATIONS = {
             "y": 66.1,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 14,
-            "fontStyle": "Normal"
+            "labelOffsetY": 14
         },
         {
             "id": "glidderingfalls",
@@ -6260,7 +6251,7 @@ const WORLD_LOCATIONS = {
             "y": 69.49,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 10,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6279,15 +6270,15 @@ const WORLD_LOCATIONS = {
             "y": 29.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -50,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "greymill",
@@ -6297,15 +6288,15 @@ const WORLD_LOCATIONS = {
             "y": 27.3,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 9,
-            "fontStyle": "Normal"
+            "labelOffsetY": 9
         },
         {
             "id": "theemburerilocean",
@@ -6315,17 +6306,17 @@ const WORLD_LOCATIONS = {
             "y": 78.1,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 54,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "dalasorstrait",
@@ -6335,17 +6326,17 @@ const WORLD_LOCATIONS = {
             "y": 86.4,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 24,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "theseaofmarilia",
@@ -6355,17 +6346,17 @@ const WORLD_LOCATIONS = {
             "y": 75.11,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 30,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "theseaofsondera",
@@ -6375,17 +6366,17 @@ const WORLD_LOCATIONS = {
             "y": 55.2,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 34,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "thedelisnorocean",
@@ -6395,17 +6386,17 @@ const WORLD_LOCATIONS = {
             "y": 54.39,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 49,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "midrambay",
@@ -6415,17 +6406,17 @@ const WORLD_LOCATIONS = {
             "y": 44.49,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "bindwatch",
@@ -6435,15 +6426,15 @@ const WORLD_LOCATIONS = {
             "y": 41.31,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -69,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "midrambasin",
@@ -6453,17 +6444,17 @@ const WORLD_LOCATIONS = {
             "y": 42.29,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 10,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "wynspanhills",
@@ -6473,17 +6464,17 @@ const WORLD_LOCATIONS = {
             "y": 40.1,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 10,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "layden-proth-kilnock-crossroad",
@@ -6493,16 +6484,16 @@ const WORLD_LOCATIONS = {
             "y": 37.52,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "whistlebay",
@@ -6512,17 +6503,17 @@ const WORLD_LOCATIONS = {
             "y": 33.26,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Quintessential",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "caldwellriver",
@@ -6532,7 +6523,7 @@ const WORLD_LOCATIONS = {
             "y": 37.14,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6553,17 +6544,17 @@ const WORLD_LOCATIONS = {
             "y": 36.6,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "gilburoughriver",
@@ -6573,7 +6564,7 @@ const WORLD_LOCATIONS = {
             "y": 36.8,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6593,7 +6584,7 @@ const WORLD_LOCATIONS = {
             "y": 27.21,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6614,29 +6605,29 @@ const WORLD_LOCATIONS = {
             "y": 18.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -39,
             "labelOffsetY": -18,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "mountethea",
             "name": "Mount\nEthea",
             "type": "region",
-            "x": 23.09,
-            "y": 28.64,
+            "x": 22.94,
+            "y": 28.55,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6653,15 +6644,15 @@ const WORLD_LOCATIONS = {
             "y": 23.78,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -8,
-            "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "labelOffsetY": -13
         },
         {
             "id": "insloe",
@@ -6671,15 +6662,15 @@ const WORLD_LOCATIONS = {
             "y": 24.14,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -12,
-            "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "labelOffsetY": -12
         },
         {
             "id": "habell",
@@ -6689,15 +6680,15 @@ const WORLD_LOCATIONS = {
             "y": 22.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -21,
-            "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "labelOffsetY": -11
         },
         {
             "id": "berest",
@@ -6707,15 +6698,15 @@ const WORLD_LOCATIONS = {
             "y": 24.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "dregwaypost",
@@ -6725,7 +6716,7 @@ const WORLD_LOCATIONS = {
             "y": 21.1,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6744,10 +6735,10 @@ const WORLD_LOCATIONS = {
             "y": 21,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6764,15 +6755,15 @@ const WORLD_LOCATIONS = {
             "y": 22.47,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "tovarspan",
@@ -6782,7 +6773,7 @@ const WORLD_LOCATIONS = {
             "y": 21.2,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6801,15 +6792,15 @@ const WORLD_LOCATIONS = {
             "y": 20.39,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -47,
-            "labelOffsetY": -2,
-            "fontStyle": "Normal"
+            "labelOffsetY": -2
         },
         {
             "id": "urbank",
@@ -6819,7 +6810,7 @@ const WORLD_LOCATIONS = {
             "y": 19.9,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -6838,15 +6829,15 @@ const WORLD_LOCATIONS = {
             "y": 19,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "frostwold",
@@ -6856,10 +6847,10 @@ const WORLD_LOCATIONS = {
             "y": 17.62,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6876,15 +6867,15 @@ const WORLD_LOCATIONS = {
             "y": 16.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "labelOffsetY": -6
         },
         {
             "id": "alconny",
@@ -6894,15 +6885,15 @@ const WORLD_LOCATIONS = {
             "y": 19,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "whitewood",
@@ -6912,10 +6903,10 @@ const WORLD_LOCATIONS = {
             "y": 17.6,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 16,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6932,15 +6923,15 @@ const WORLD_LOCATIONS = {
             "y": 17.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -70,
-            "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "labelOffsetY": -6
         },
         {
             "id": "porpen",
@@ -6950,15 +6941,15 @@ const WORLD_LOCATIONS = {
             "y": 19.8,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.17,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -52,
-            "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "labelOffsetY": -1
         },
         {
             "id": "claymere",
@@ -6968,15 +6959,15 @@ const WORLD_LOCATIONS = {
             "y": 19.2,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 4,
-            "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "labelOffsetY": -8
         },
         {
             "id": "ruinsofdruegend",
@@ -6986,7 +6977,7 @@ const WORLD_LOCATIONS = {
             "y": 20.3,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7005,15 +6996,15 @@ const WORLD_LOCATIONS = {
             "y": 21.29,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -60,
-            "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "labelOffsetY": 12
         },
         {
             "id": "grobh",
@@ -7023,15 +7014,15 @@ const WORLD_LOCATIONS = {
             "y": 19.63,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -11,
-            "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "labelOffsetY": 19
         },
         {
             "id": "couleepeninula",
@@ -7041,10 +7032,10 @@ const WORLD_LOCATIONS = {
             "y": 19.01,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 18,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -7057,14 +7048,14 @@ const WORLD_LOCATIONS = {
             "id": "eusteraridge",
             "name": "Eustera Ridge",
             "type": "region",
-            "x": 33.62,
-            "y": 23.14,
+            "x": 33.48,
+            "y": 22.98,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
-            "fontSize": 42,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 36,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -7083,7 +7074,7 @@ const WORLD_LOCATIONS = {
             "y": 20.5,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7102,15 +7093,15 @@ const WORLD_LOCATIONS = {
             "y": 22.61,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -7,
-            "fontStyle": "Normal"
+            "labelOffsetY": -7
         },
         {
             "id": "tariat",
@@ -7120,15 +7111,15 @@ const WORLD_LOCATIONS = {
             "y": 26,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "bronzebellyfort",
@@ -7138,7 +7129,7 @@ const WORLD_LOCATIONS = {
             "y": 24.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7157,10 +7148,10 @@ const WORLD_LOCATIONS = {
             "y": 16.02,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
-            "fontSize": 31,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 26,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -7179,15 +7170,15 @@ const WORLD_LOCATIONS = {
             "y": 12.43,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "avalvein",
@@ -7197,15 +7188,15 @@ const WORLD_LOCATIONS = {
             "y": 7.79,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.17,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -55,
-            "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "labelOffsetY": -9
         },
         {
             "id": "blisteredkeep",
@@ -7215,7 +7206,7 @@ const WORLD_LOCATIONS = {
             "y": 11.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7234,15 +7225,15 @@ const WORLD_LOCATIONS = {
             "y": 8.5,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "mahralkal",
@@ -7252,15 +7243,15 @@ const WORLD_LOCATIONS = {
             "y": 10.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 9,
-            "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "labelOffsetY": 17
         },
         {
             "id": "snowlightfort",
@@ -7270,7 +7261,7 @@ const WORLD_LOCATIONS = {
             "y": 16.52,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7290,15 +7281,15 @@ const WORLD_LOCATIONS = {
             "y": 16.5,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "fjordnahl",
@@ -7308,15 +7299,15 @@ const WORLD_LOCATIONS = {
             "y": 13.87,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "manuspeninsula",
@@ -7326,10 +7317,10 @@ const WORLD_LOCATIONS = {
             "y": 10.18,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 18,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -7347,7 +7338,7 @@ const WORLD_LOCATIONS = {
             "y": 23.5,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7366,15 +7357,15 @@ const WORLD_LOCATIONS = {
             "y": 29.06,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -60,
-            "labelOffsetY": 8,
-            "fontStyle": "Normal"
+            "labelOffsetY": 8
         },
         {
             "id": "whistgrove",
@@ -7384,37 +7375,37 @@ const WORLD_LOCATIONS = {
             "y": 26.96,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 17,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 9,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "glenleahwoods",
             "name": "Glenleah\nWoods",
             "type": "nature",
             "x": 30.85,
-            "y": 31.24,
+            "y": 31.5,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 17,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 10,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 0.5
         },
         {
             "id": "eastmare-greymill-stinson-crossroad",
@@ -7424,16 +7415,16 @@ const WORLD_LOCATIONS = {
             "y": 29.6,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "hideLabel": true,
-            "fontStyle": "Normal"
+            "hideLabel": true
         },
         {
             "id": "tibulrise",
@@ -7443,9 +7434,10 @@ const WORLD_LOCATIONS = {
             "y": 23.93,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Garamont MT",
             "fontSize": 12,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": -0.05,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -7453,8 +7445,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -12,
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "mablihod",
@@ -7464,15 +7455,15 @@ const WORLD_LOCATIONS = {
             "y": 33.9,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "tariatriver",
@@ -7482,7 +7473,7 @@ const WORLD_LOCATIONS = {
             "y": 25.8,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7499,14 +7490,14 @@ const WORLD_LOCATIONS = {
             "id": "bluffsofdunmoore",
             "name": "Bluffs of\nDunmoore",
             "type": "region",
-            "x": 33.75,
-            "y": 36.99,
+            "x": 33.84,
+            "y": 37.1,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Penumbra Sans Std",
+            "fontFamily": "Cinzel Decorative",
             "fontSize": 22,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -7523,7 +7514,7 @@ const WORLD_LOCATIONS = {
             "y": 36.94,
             "region": "",
             "description": "Point of Interest",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7542,15 +7533,15 @@ const WORLD_LOCATIONS = {
             "y": 36.92,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 8,
-            "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "labelOffsetY": -8
         },
         {
             "id": "blackfield",
@@ -7560,15 +7551,15 @@ const WORLD_LOCATIONS = {
             "y": 40.17,
             "region": "",
             "description": "City",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -73,
-            "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5
         },
         {
             "id": "bluffhunt",
@@ -7578,7 +7569,7 @@ const WORLD_LOCATIONS = {
             "y": 36.3,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 12,
             "fontWeight": "300",
             "fontStyle": "Italic",
@@ -7597,15 +7588,15 @@ const WORLD_LOCATIONS = {
             "y": 38.97,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "labelOffsetY": 15
         },
         {
             "id": "larnwik",
@@ -7615,34 +7606,34 @@ const WORLD_LOCATIONS = {
             "y": 40.7,
             "region": "",
             "description": "Town",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Italic",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "labelOffsetY": 16
         },
         {
             "id": "tinderhill",
             "name": "Tinderhill",
-            "type": "region",
+            "type": "nature",
             "x": 35.75,
             "y": 42.64,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 17,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.7
+            "opacity": 0.5
         },
         {
             "id": "edgewood",
@@ -7652,16 +7643,16 @@ const WORLD_LOCATIONS = {
             "y": 45.9,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 15,
+            "fontFamily": "Cinzel Decorative",
+            "fontSize": 12,
             "fontWeight": "300",
-            "fontStyle": "Normal",
+            "fontStyle": "Italic",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 0.5
         }
     ],
     "roads": [
@@ -7680,9 +7671,7 @@ const WORLD_LOCATIONS = {
                     32
                 ],
                 "kallilos"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "kallilos-road",
@@ -7699,9 +7688,7 @@ const WORLD_LOCATIONS = {
                     33.6
                 ],
                 "sari-lenora"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sari-lenora-road",
@@ -7718,9 +7705,7 @@ const WORLD_LOCATIONS = {
                     36
                 ],
                 "clador"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "clador-road-1",
@@ -7741,9 +7726,7 @@ const WORLD_LOCATIONS = {
                     36
                 ],
                 "buvero"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "clador-road-south",
@@ -7778,9 +7761,7 @@ const WORLD_LOCATIONS = {
                     41.6
                 ],
                 "deadfield"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "buvero-road",
@@ -7801,9 +7782,7 @@ const WORLD_LOCATIONS = {
                     36.3
                 ],
                 "sulura"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sunbay-road",
@@ -7816,9 +7795,7 @@ const WORLD_LOCATIONS = {
                     38
                 ],
                 "ahnassa"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ahnassa-road",
@@ -7835,9 +7812,7 @@ const WORLD_LOCATIONS = {
                     39.7
                 ],
                 "hesfal"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hesfal-road",
@@ -7854,9 +7829,7 @@ const WORLD_LOCATIONS = {
                     38.8
                 ],
                 "sulport"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "deadfield-road-northeast",
@@ -7873,9 +7846,7 @@ const WORLD_LOCATIONS = {
                     40.9
                 ],
                 "boneforge"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "boneforge-road",
@@ -7895,9 +7866,7 @@ const WORLD_LOCATIONS = {
                     41.1
                 ],
                 "hesfal"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "deadfield-road-southeast",
@@ -7910,9 +7879,7 @@ const WORLD_LOCATIONS = {
                     42.4
                 ],
                 "torpoint"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "deadfield-road-south",
@@ -7925,9 +7892,7 @@ const WORLD_LOCATIONS = {
                     42.9
                 ],
                 "gunikk"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ginikk-road",
@@ -7940,9 +7905,7 @@ const WORLD_LOCATIONS = {
                     46.2
                 ],
                 "thrargael"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "thrargael-road-northwest",
@@ -7971,9 +7934,7 @@ const WORLD_LOCATIONS = {
                     44.4
                 ],
                 "nalt"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "torpoint-road",
@@ -7990,9 +7951,7 @@ const WORLD_LOCATIONS = {
                     43.2
                 ],
                 "deepspring"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "deepspring-road",
@@ -8009,9 +7968,7 @@ const WORLD_LOCATIONS = {
                     45
                 ],
                 "ngundeer"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ngundeer-road",
@@ -8028,9 +7985,7 @@ const WORLD_LOCATIONS = {
                     46.3
                 ],
                 "fakul"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hesfal-road-south",
@@ -8043,9 +7998,7 @@ const WORLD_LOCATIONS = {
                     41.7
                 ],
                 "scarwatch-hold"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ngundeer-road-south",
@@ -8062,9 +8015,7 @@ const WORLD_LOCATIONS = {
                     46.9
                 ],
                 "kylnn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sulport-road-north",
@@ -8077,9 +8028,7 @@ const WORLD_LOCATIONS = {
                     37.3
                 ],
                 "tratta"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tratta-road",
@@ -8096,9 +8045,7 @@ const WORLD_LOCATIONS = {
                     37.1
                 ],
                 ""
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "delbris-road",
@@ -8111,9 +8058,7 @@ const WORLD_LOCATIONS = {
                     39.3
                 ],
                 "greenvale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "greenvale-road",
@@ -8133,9 +8078,7 @@ const WORLD_LOCATIONS = {
                     41
                 ],
                 "wuldrif"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wuldrif-road-east",
@@ -8148,9 +8091,7 @@ const WORLD_LOCATIONS = {
                     42.1
                 ],
                 "alburest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "alburest-road",
@@ -8163,9 +8104,7 @@ const WORLD_LOCATIONS = {
                     44.1
                 ],
                 "olestack"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "olestack-road-southeast",
@@ -8178,9 +8117,7 @@ const WORLD_LOCATIONS = {
                     45.7
                 ],
                 "igborne"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "igburne-road",
@@ -8193,9 +8130,7 @@ const WORLD_LOCATIONS = {
                     46.5
                 ],
                 "ulkef"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "olestack-road-southwest",
@@ -8208,9 +8143,7 @@ const WORLD_LOCATIONS = {
                     46.9
                 ],
                 "simmerhorn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ulkef-road",
@@ -8223,9 +8156,7 @@ const WORLD_LOCATIONS = {
                     49.2
                 ],
                 "rosevale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "thrargael-road-south",
@@ -8238,9 +8169,7 @@ const WORLD_LOCATIONS = {
                     47.8
                 ],
                 "runest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "rosevale-road-east",
@@ -8257,9 +8186,7 @@ const WORLD_LOCATIONS = {
                     51.1
                 ],
                 "sandgrave"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sandgrave-road-east",
@@ -8272,9 +8199,7 @@ const WORLD_LOCATIONS = {
                     51.9
                 ],
                 "runest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "runest-road-south",
@@ -8287,9 +8212,7 @@ const WORLD_LOCATIONS = {
                     50
                 ],
                 "cragflight"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "runest-road-southeast",
@@ -8310,9 +8233,7 @@ const WORLD_LOCATIONS = {
                     53.2
                 ],
                 "severyll"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "severyll-road",
@@ -8333,9 +8254,7 @@ const WORLD_LOCATIONS = {
                     53.9
                 ],
                 "irebend"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ire'bend-road",
@@ -8352,9 +8271,7 @@ const WORLD_LOCATIONS = {
                     54.5
                 ],
                 "bareford"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bareford-road",
@@ -8371,9 +8288,7 @@ const WORLD_LOCATIONS = {
                     56.5
                 ],
                 "porthbay"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "rosevale-road-south",
@@ -8390,9 +8305,7 @@ const WORLD_LOCATIONS = {
                     50.6
                 ],
                 "destons-outpost"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "destonsoutpost-road-east",
@@ -8409,9 +8322,7 @@ const WORLD_LOCATIONS = {
                     52.5
                 ],
                 "sandgrave"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "destonsoutpost-road-south",
@@ -8428,9 +8339,7 @@ const WORLD_LOCATIONS = {
                     53.1
                 ],
                 "staghaven"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "middock-road",
@@ -8443,9 +8352,7 @@ const WORLD_LOCATIONS = {
                     52.2
                 ],
                 "willow-lodge"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "willowlodge-road",
@@ -8462,9 +8369,7 @@ const WORLD_LOCATIONS = {
                     54.6
                 ],
                 "tynevale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "boldshire-road",
@@ -8477,9 +8382,7 @@ const WORLD_LOCATIONS = {
                     60.7
                 ],
                 "crossroad-boldshire-edgewind-bistron"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "cross-road-1",
@@ -8496,9 +8399,7 @@ const WORLD_LOCATIONS = {
                     63.5
                 ],
                 "bistron"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "edgewind-road",
@@ -8511,9 +8412,7 @@ const WORLD_LOCATIONS = {
                     61.4
                 ],
                 "crossroad-boldshire-edgewind-bistron"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bistron-road-east",
@@ -8530,9 +8429,7 @@ const WORLD_LOCATIONS = {
                     65.6
                 ],
                 "trailpoint"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "trailpoint-road",
@@ -8545,9 +8442,7 @@ const WORLD_LOCATIONS = {
                     65.6
                 ],
                 "farnsby-port"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "trailpoint-road-south",
@@ -8564,9 +8459,7 @@ const WORLD_LOCATIONS = {
                     68.2
                 ],
                 "nuwharf"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "talbesar-road",
@@ -8583,9 +8476,7 @@ const WORLD_LOCATIONS = {
                     67.1
                 ],
                 "scarbrook"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "scarbrook-road",
@@ -8602,9 +8493,7 @@ const WORLD_LOCATIONS = {
                     68.9
                 ],
                 "marrowdale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "glaspero-road",
@@ -8617,9 +8506,7 @@ const WORLD_LOCATIONS = {
                     68.8
                 ],
                 "marrowdale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "farview-road",
@@ -8636,9 +8523,7 @@ const WORLD_LOCATIONS = {
                     70.4
                 ],
                 "marrowdale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nebisill-road",
@@ -8655,9 +8540,7 @@ const WORLD_LOCATIONS = {
                     70.6
                 ],
                 "marrowdale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mulshear-road",
@@ -8674,9 +8557,7 @@ const WORLD_LOCATIONS = {
                     71.1
                 ],
                 "bickerfeld"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bickerfeld-road",
@@ -8701,9 +8582,7 @@ const WORLD_LOCATIONS = {
                     69.8
                 ],
                 "silvermead"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "silvermead-road",
@@ -8720,9 +8599,7 @@ const WORLD_LOCATIONS = {
                     71
                 ],
                 "eldeff"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ulgrey-road-southeast",
@@ -8739,9 +8616,7 @@ const WORLD_LOCATIONS = {
                     62.56
                 ],
                 "harbok"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ulgrey-road-southwest",
@@ -8764,9 +8639,7 @@ const WORLD_LOCATIONS = {
                     63.97
                 ],
                 "trailpoint"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ulgrey-road-northeast",
@@ -8787,9 +8660,7 @@ const WORLD_LOCATIONS = {
                     57.45
                 ],
                 "dunduar"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wuldrif-road-west",
@@ -8814,9 +8685,7 @@ const WORLD_LOCATIONS = {
                     41.09
                 ],
                 "ghogam"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ofwood-road",
@@ -8829,9 +8698,7 @@ const WORLD_LOCATIONS = {
                     39.75
                 ],
                 "offwood-crossroad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "crulfeld-road-northwest",
@@ -8844,9 +8711,7 @@ const WORLD_LOCATIONS = {
                     41.72
                 ],
                 "ghogam"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ghogam-road",
@@ -8859,9 +8724,7 @@ const WORLD_LOCATIONS = {
                     40.78
                 ],
                 "wrynn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wrynn-road",
@@ -8874,9 +8737,7 @@ const WORLD_LOCATIONS = {
                     40.87
                 ],
                 "stouhg"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mirstone-road",
@@ -8893,9 +8754,7 @@ const WORLD_LOCATIONS = {
                     43.4
                 ],
                 "crulfeld"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "simmerhorn-road-west",
@@ -8912,9 +8771,7 @@ const WORLD_LOCATIONS = {
                     45.5
                 ],
                 "silverhill"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "silverhill-road",
@@ -8931,16 +8788,14 @@ const WORLD_LOCATIONS = {
                     46.6
                 ],
                 "gur-madihl"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "emberstran-road-east",
             "type": "major",
             "curved": true,
             "name": "Glimmercoast Way",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "labelOffset": 31,
             "labelSide": "bottom",
@@ -8964,14 +8819,13 @@ const WORLD_LOCATIONS = {
                     58.37
                 ],
                 "ahndashere"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "emberstan-road-north",
             "type": "minor",
             "curved": true,
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "points": [
                 "emberstran",
@@ -8980,15 +8834,14 @@ const WORLD_LOCATIONS = {
                     56.1
                 ],
                 "stonetrace"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "stonetrace-road",
             "type": "minor",
             "curved": true,
             "name": "North Kahlbit\\nTrace",
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "labelReverse": true,
             "points": [
@@ -9002,14 +8855,13 @@ const WORLD_LOCATIONS = {
                     52.95
                 ],
                 "lasdale"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "lasdale-road-south",
             "type": "minor",
             "curved": true,
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "points": [
                 "lasdale",
@@ -9022,14 +8874,13 @@ const WORLD_LOCATIONS = {
                     54.79
                 ],
                 "glofdale"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "glofdale-road",
             "type": "minor",
             "curved": true,
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "points": [
                 "glofdale",
@@ -9038,14 +8889,13 @@ const WORLD_LOCATIONS = {
                     56.4
                 ],
                 "crosswind"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ahndashere-road",
             "type": "major",
             "curved": true,
-            "fontFamily": "Simonetta",
+            "fontFamily": "Garamond MT",
             "fontSize": 13,
             "points": [
                 "ahndashere",
@@ -9054,8 +8904,7 @@ const WORLD_LOCATIONS = {
                     57.31
                 ],
                 "crosswind"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "crosswind-road",
@@ -9068,9 +8917,7 @@ const WORLD_LOCATIONS = {
                     57.64
                 ],
                 "flatgarde"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mistforge-road-north",
@@ -9083,9 +8930,7 @@ const WORLD_LOCATIONS = {
                     49.7
                 ],
                 "castle-montavein"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mistforge-road-west",
@@ -9102,9 +8947,7 @@ const WORLD_LOCATIONS = {
                     50.59
                 ],
                 "severdale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mistforge-road-south",
@@ -9125,9 +8968,7 @@ const WORLD_LOCATIONS = {
                     52.54
                 ],
                 "lasdale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "driftbend-road",
@@ -9145,9 +8986,7 @@ const WORLD_LOCATIONS = {
                     73.12
                 ],
                 "terandell"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "terandell-road",
@@ -9165,18 +9004,14 @@ const WORLD_LOCATIONS = {
                     73.87
                 ],
                 "brokenfall"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "1771877532713-road",
             "type": "minor",
             "curved": true,
             "fontSize": 12,
-            "points": [],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            "points": []
         },
         {
             "id": "culburn-road",
@@ -9189,9 +9024,7 @@ const WORLD_LOCATIONS = {
                     66.82
                 ],
                 "next-to-glimmerstone-location"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "glimmerstone-road",
@@ -9204,9 +9037,7 @@ const WORLD_LOCATIONS = {
                     64.72
                 ],
                 "next-to-glimmerstone-location"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "glimmerstone-unnamed-road-1",
@@ -9223,9 +9054,7 @@ const WORLD_LOCATIONS = {
                     66.07
                 ],
                 "next-to-glimmerstone-location-1"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "unnamed-road-2",
@@ -9238,9 +9067,7 @@ const WORLD_LOCATIONS = {
                     65.43
                 ],
                 "next-to-glimmerstone-location-3"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nurador-road-northwest",
@@ -9257,9 +9084,7 @@ const WORLD_LOCATIONS = {
                     66.05
                 ],
                 "next-to-glimmerstone-location-3"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nurador-road-northeast",
@@ -9276,9 +9101,7 @@ const WORLD_LOCATIONS = {
                     66.75
                 ],
                 "next-to-glimmerstone-location-1"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "paendley-road-east",
@@ -9299,9 +9122,7 @@ const WORLD_LOCATIONS = {
                     64.95
                 ],
                 "next-to-glimmerstone-location-3"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nurador-road-southeast",
@@ -9322,9 +9143,7 @@ const WORLD_LOCATIONS = {
                     71.04
                 ],
                 "unknown-location-11"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "brokenfall-road",
@@ -9341,9 +9160,7 @@ const WORLD_LOCATIONS = {
                     72.19
                 ],
                 "unknown-location-11"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ulgrey-road-northwest",
@@ -9365,9 +9182,7 @@ const WORLD_LOCATIONS = {
                     58.09
                 ],
                 "emberstran"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "flatgarde-road-south",
@@ -9384,9 +9199,7 @@ const WORLD_LOCATIONS = {
                     61.84
                 ],
                 "crossroads-1"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "beveress-road-south",
@@ -9399,9 +9212,7 @@ const WORLD_LOCATIONS = {
                     61.17
                 ],
                 "paendley"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "flatgarde-road-southwest",
@@ -9418,9 +9229,7 @@ const WORLD_LOCATIONS = {
                     60.09
                 ],
                 "Beveress"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "beveress-road-west",
@@ -9433,9 +9242,7 @@ const WORLD_LOCATIONS = {
                     59.77
                 ],
                 "hasfen"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hasfen-road",
@@ -9459,9 +9266,7 @@ const WORLD_LOCATIONS = {
                     60.75
                 ],
                 "stoneshore"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "paendley-road-southwest",
@@ -9478,9 +9283,7 @@ const WORLD_LOCATIONS = {
                     64.69
                 ],
                 "duskwaren"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "duskwaren-road",
@@ -9493,9 +9296,7 @@ const WORLD_LOCATIONS = {
                     66.69
                 ],
                 "heildward"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "heilward-road-west",
@@ -9508,9 +9309,7 @@ const WORLD_LOCATIONS = {
                     66.27
                 ],
                 "felden"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "heildward-road-southeast",
@@ -9523,9 +9322,7 @@ const WORLD_LOCATIONS = {
                     66.96
                 ],
                 "morimyr"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "morimyr-road",
@@ -9538,9 +9335,7 @@ const WORLD_LOCATIONS = {
                     69.34
                 ],
                 "climbor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "felden-road-south",
@@ -9557,9 +9352,7 @@ const WORLD_LOCATIONS = {
                     68.38
                 ],
                 "climbor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nurador-road-west",
@@ -9576,9 +9369,7 @@ const WORLD_LOCATIONS = {
                     69.42
                 ],
                 "unknown-location-10"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "unknown-road-10",
@@ -9595,9 +9386,7 @@ const WORLD_LOCATIONS = {
                     70.3
                 ],
                 "climbor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "witguard-road-south",
@@ -9610,9 +9399,7 @@ const WORLD_LOCATIONS = {
                     71.11
                 ],
                 "unknown-12"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "pelveron-road-northeast",
@@ -9625,9 +9412,7 @@ const WORLD_LOCATIONS = {
                     72.04
                 ],
                 "unknown-12"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "pelveron-road-southeast",
@@ -9640,9 +9425,7 @@ const WORLD_LOCATIONS = {
                     72.64
                 ],
                 "silviora"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "pelveron-road",
@@ -9655,9 +9438,7 @@ const WORLD_LOCATIONS = {
                     74.16
                 ],
                 "tarrarin"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "silviora-road-west",
@@ -9670,9 +9451,7 @@ const WORLD_LOCATIONS = {
                     74.02
                 ],
                 "tarrarin"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "witguard-road-west",
@@ -9693,9 +9472,7 @@ const WORLD_LOCATIONS = {
                     70.67
                 ],
                 "tyrynader"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "climbor-road-northwest",
@@ -9712,9 +9489,7 @@ const WORLD_LOCATIONS = {
                     70.85
                 ],
                 "witguard"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "climbor-road-southwest",
@@ -9731,9 +9506,7 @@ const WORLD_LOCATIONS = {
                     71.37
                 ],
                 "unknown-12"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tyrynder-road-north",
@@ -9746,9 +9519,7 @@ const WORLD_LOCATIONS = {
                     68.87
                 ],
                 "Valenlun"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "valenlun-road-northeast",
@@ -9765,9 +9536,7 @@ const WORLD_LOCATIONS = {
                     66.24
                 ],
                 "basinpass"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "valenlun-road-northwest",
@@ -9788,9 +9557,7 @@ const WORLD_LOCATIONS = {
                     65.14
                 ],
                 "gevakaln"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "felden-road-west",
@@ -9807,9 +9574,7 @@ const WORLD_LOCATIONS = {
                     66.19
                 ],
                 "basinpass"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "basinpass-road-north",
@@ -9822,9 +9587,7 @@ const WORLD_LOCATIONS = {
                     64.93
                 ],
                 "steenlodge"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "steenloadge-road-north",
@@ -9841,9 +9604,7 @@ const WORLD_LOCATIONS = {
                     61.75
                 ],
                 "stoneshore"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hasfen-road-south",
@@ -9860,9 +9621,7 @@ const WORLD_LOCATIONS = {
                     61.55
                 ],
                 "corebb-keep"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "newbrimhaven-road",
@@ -9884,9 +9643,7 @@ const WORLD_LOCATIONS = {
                     36.43
                 ],
                 "ferndale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "stouhg-road-west",
@@ -9899,9 +9656,7 @@ const WORLD_LOCATIONS = {
                     39.27
                 ],
                 "new-brimhaven"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "newbrimaven-road-south",
@@ -9918,9 +9673,7 @@ const WORLD_LOCATIONS = {
                     41.13
                 ],
                 "olduktali"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ferndale-road-north",
@@ -9937,17 +9690,13 @@ const WORLD_LOCATIONS = {
                     33.19
                 ],
                 "padstow"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "padstor-road-west",
             "type": "major",
             "curved": true,
-            "points": [],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            "points": []
         },
         {
             "id": "padstow-road-west",
@@ -9960,9 +9709,7 @@ const WORLD_LOCATIONS = {
                     31.83
                 ],
                 "basctdelm"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ferndale-road-south",
@@ -9982,9 +9729,7 @@ const WORLD_LOCATIONS = {
                     37.87
                 ],
                 "shademoor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "olduktali-road-west",
@@ -10006,9 +9751,7 @@ const WORLD_LOCATIONS = {
                     38.64
                 ],
                 "shademoor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "padstow-road-north",
@@ -10022,9 +9765,7 @@ const WORLD_LOCATIONS = {
                     31.07
                 ],
                 "dibsley"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "padstow-road-south",
@@ -10042,9 +9783,7 @@ const WORLD_LOCATIONS = {
                     33.95
                 ],
                 "murfield"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "murfield-road-north",
@@ -10058,9 +9797,7 @@ const WORLD_LOCATIONS = {
                     35.97
                 ],
                 "shademoor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "basctdelm-road-north",
@@ -10074,9 +9811,7 @@ const WORLD_LOCATIONS = {
                     30.93
                 ],
                 "omelle"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "omelle-road-east",
@@ -10094,9 +9829,7 @@ const WORLD_LOCATIONS = {
                     29.26
                 ],
                 "baryn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "omelle-road-west",
@@ -10110,9 +9843,7 @@ const WORLD_LOCATIONS = {
                     29.39
                 ],
                 "sharsley"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sharsley-road-northeast",
@@ -10130,9 +9861,7 @@ const WORLD_LOCATIONS = {
                     27.93
                 ],
                 "haern"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "baryn-road-northwest",
@@ -10150,9 +9879,7 @@ const WORLD_LOCATIONS = {
                     27.74
                 ],
                 "haern"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "dolkholdur-road",
@@ -10178,9 +9905,7 @@ const WORLD_LOCATIONS = {
                     39.06
                 ],
                 "falthalor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "severdale-road-west",
@@ -10198,9 +9923,7 @@ const WORLD_LOCATIONS = {
                     47.81
                 ],
                 "slagerum"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hasfen-road-north",
@@ -10218,9 +9941,7 @@ const WORLD_LOCATIONS = {
                     57
                 ],
                 "yunberr"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "yunberr-road-north",
@@ -10240,9 +9961,7 @@ const WORLD_LOCATIONS = {
                     52.34
                 ],
                 "inshire"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "yunberr-road-west",
@@ -10256,9 +9975,7 @@ const WORLD_LOCATIONS = {
                     54.27
                 ],
                 "graeton"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "graeton-road-west",
@@ -10276,9 +9993,7 @@ const WORLD_LOCATIONS = {
                     56.29
                 ],
                 "seaway-harbor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "stonshore-road-north",
@@ -10300,9 +10015,7 @@ const WORLD_LOCATIONS = {
                     56.74
                 ],
                 "seaway-harbor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "inshire-road-north",
@@ -10320,9 +10033,7 @@ const WORLD_LOCATIONS = {
                     48.65
                 ],
                 "slagerum"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "slagerum-road-north",
@@ -10336,9 +10047,7 @@ const WORLD_LOCATIONS = {
                     46.5
                 ],
                 "thelkholdur"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "inshire-road-west",
@@ -10351,9 +10060,7 @@ const WORLD_LOCATIONS = {
                     48.64
                 ],
                 "evostihl"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "seawayharbor-road-north",
@@ -10370,9 +10077,7 @@ const WORLD_LOCATIONS = {
                     52.47
                 ],
                 "nulvara"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "evostihl-road-west",
@@ -10385,9 +10090,7 @@ const WORLD_LOCATIONS = {
                     50.87
                 ],
                 "nulvara"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nulvara-road-north",
@@ -10404,9 +10107,7 @@ const WORLD_LOCATIONS = {
                     48.32
                 ],
                 "amberleen"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "evostihl-road-north",
@@ -10431,9 +10132,7 @@ const WORLD_LOCATIONS = {
                     43.41
                 ],
                 "skrettel"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "amberleen-road-west",
@@ -10450,9 +10149,7 @@ const WORLD_LOCATIONS = {
                     47.18
                 ],
                 "sunfelpost"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sundelpost-road-south",
@@ -10469,9 +10166,7 @@ const WORLD_LOCATIONS = {
                     49.53
                 ],
                 "gulward"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sundelpost-road-north",
@@ -10488,9 +10183,7 @@ const WORLD_LOCATIONS = {
                     44.38
                 ],
                 "deterahn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bonegate-road-north",
@@ -10503,9 +10196,7 @@ const WORLD_LOCATIONS = {
                     43.51
                 ],
                 "everlownlodge"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "deterahn-road-west",
@@ -10526,9 +10217,7 @@ const WORLD_LOCATIONS = {
                     42.52
                 ],
                 "everlownlodge"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "everlownlodge-road-northeast",
@@ -10549,9 +10238,7 @@ const WORLD_LOCATIONS = {
                     39.61
                 ],
                 "scarden"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "everlownlodge-road-north",
@@ -10572,9 +10259,7 @@ const WORLD_LOCATIONS = {
                     35.93
                 ],
                 "kelaad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "falthalor-road-south",
@@ -10591,9 +10276,7 @@ const WORLD_LOCATIONS = {
                     40.21
                 ],
                 "endorei"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "shademoor-road-west",
@@ -10611,9 +10294,7 @@ const WORLD_LOCATIONS = {
                     36.86
                 ],
                 "southern-arch"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "southernarch-road-west",
@@ -10631,9 +10312,7 @@ const WORLD_LOCATIONS = {
                     35.81
                 ],
                 "caelora"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "falthalor-road-north",
@@ -10647,9 +10326,7 @@ const WORLD_LOCATIONS = {
                     37.15
                 ],
                 "caelora"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nauldeaus-road-north",
@@ -10662,9 +10339,7 @@ const WORLD_LOCATIONS = {
                     26.73
                 ],
                 "wellen"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wellen-road-northeast",
@@ -10681,9 +10356,7 @@ const WORLD_LOCATIONS = {
                     26.02
                 ],
                 "corilas"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wellen-road-northwest",
@@ -10696,9 +10369,7 @@ const WORLD_LOCATIONS = {
                     24.47
                 ],
                 "murcomb"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "murcomb-road-south",
@@ -10715,9 +10386,7 @@ const WORLD_LOCATIONS = {
                     24.94
                 ],
                 "lendahlee"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hearn-road-north",
@@ -10738,9 +10407,7 @@ const WORLD_LOCATIONS = {
                     25.99
                 ],
                 "lendahlee"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sharsley-road-northwest",
@@ -10756,9 +10423,7 @@ const WORLD_LOCATIONS = {
                     28.63
                 ],
                 "wheldrake"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sharsley-road-west",
@@ -10772,9 +10437,7 @@ const WORLD_LOCATIONS = {
                     30.18
                 ],
                 "tarnsport"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wehldrake-road-west",
@@ -10788,9 +10451,7 @@ const WORLD_LOCATIONS = {
                     27.84
                 ],
                 "riverside"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "wheldrake-road-north",
@@ -10804,9 +10465,7 @@ const WORLD_LOCATIONS = {
                     26.9
                 ],
                 "tibbers"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tibbers-road-north",
@@ -10820,9 +10479,7 @@ const WORLD_LOCATIONS = {
                     23.86
                 ],
                 "vurnun"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hemmil-road-south",
@@ -10844,9 +10501,7 @@ const WORLD_LOCATIONS = {
                     33.53
                 ],
                 "darafee"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "vurnun-road-northwest",
@@ -10860,9 +10515,7 @@ const WORLD_LOCATIONS = {
                     21.94
                 ],
                 "palason"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "riverside-road-west",
@@ -10875,9 +10528,7 @@ const WORLD_LOCATIONS = {
                     26.42
                 ],
                 "staghand"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "lenshur-road-south",
@@ -10894,9 +10545,7 @@ const WORLD_LOCATIONS = {
                     19.18
                 ],
                 "crossroads-lenshur"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "gristavel-road-east",
@@ -10913,9 +10562,7 @@ const WORLD_LOCATIONS = {
                     19.91
                 ],
                 "crossroads-lenshur"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "palason-road-north",
@@ -10936,9 +10583,7 @@ const WORLD_LOCATIONS = {
                     19.93
                 ],
                 "crossroads-lenshur"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "palason-road-south",
@@ -10955,9 +10600,7 @@ const WORLD_LOCATIONS = {
                     24.99
                 ],
                 "staghand"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "staghand-road-west",
@@ -10970,9 +10613,7 @@ const WORLD_LOCATIONS = {
                     26.18
                 ],
                 "ringere"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "eringere-road-southwest",
@@ -10994,8 +10635,7 @@ const WORLD_LOCATIONS = {
                     27.5
                 ],
                 "northernarch"
-            ],
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "leterboun-road-south",
@@ -11012,9 +10652,7 @@ const WORLD_LOCATIONS = {
                     34.82
                 ],
                 "kelaad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "leterboun-road-north",
@@ -11027,9 +10665,7 @@ const WORLD_LOCATIONS = {
                     31.91
                 ],
                 "raselle"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "caelora-road-north",
@@ -11042,9 +10678,7 @@ const WORLD_LOCATIONS = {
                     34.42
                 ],
                 "darafee"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "darafee-road-west",
@@ -11065,9 +10699,7 @@ const WORLD_LOCATIONS = {
                     34.92
                 ],
                 "qaldynn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "qaldynn-road-west",
@@ -11077,9 +10709,7 @@ const WORLD_LOCATIONS = {
             "points": [
                 "qaldynn",
                 "onaren"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "qaldynn-road-north",
@@ -11097,9 +10727,7 @@ const WORLD_LOCATIONS = {
                     30.9
                 ],
                 "srenesari"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "srenesari-road-north",
@@ -11113,9 +10741,7 @@ const WORLD_LOCATIONS = {
                     29.28
                 ],
                 "northernarch"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "eringere-road-north",
@@ -11133,9 +10759,7 @@ const WORLD_LOCATIONS = {
                     25.01
                 ],
                 "ormsdal"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "raselle-road-north",
@@ -11152,9 +10776,7 @@ const WORLD_LOCATIONS = {
                     28.96
                 ],
                 "kaldaros"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "kaldaros-road-north",
@@ -11167,9 +10789,7 @@ const WORLD_LOCATIONS = {
                     26.2
                 ],
                 "sahvall"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "sahvall-road-north",
@@ -11186,9 +10806,7 @@ const WORLD_LOCATIONS = {
                     23.12
                 ],
                 "lasborin"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "lasborin-road-north",
@@ -11201,9 +10819,7 @@ const WORLD_LOCATIONS = {
                     21.9
                 ],
                 "eruvic"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "lasborin-road-east",
@@ -11220,9 +10836,7 @@ const WORLD_LOCATIONS = {
                     21.02
                 ],
                 "syori"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "gristavel-road-west",
@@ -11239,9 +10853,7 @@ const WORLD_LOCATIONS = {
                     20.74
                 ],
                 "syori"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "syori-road-north",
@@ -11258,9 +10870,7 @@ const WORLD_LOCATIONS = {
                     18.69
                 ],
                 "brekka"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ormsdal-road-north",
@@ -11273,9 +10883,7 @@ const WORLD_LOCATIONS = {
                     24.5
                 ],
                 "aerley-syori-ormsdal-crossroads"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "syori-road-south",
@@ -11292,9 +10900,7 @@ const WORLD_LOCATIONS = {
                     22.82
                 ],
                 "aerley-syori-ormsdal-crossroads"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "aerley-road-east",
@@ -11311,9 +10917,7 @@ const WORLD_LOCATIONS = {
                     23.55
                 ],
                 "aerley-syori-ormsdal-crossroads"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "everlight-road-south",
@@ -11329,9 +10933,7 @@ const WORLD_LOCATIONS = {
                     67.67
                 ],
                 "scarbrook"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "onaren-road-west",
@@ -11348,9 +10950,7 @@ const WORLD_LOCATIONS = {
                     32.64
                 ],
                 "mossholde"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "onaren-road-south",
@@ -11363,9 +10963,7 @@ const WORLD_LOCATIONS = {
                     34.07
                 ],
                 "abbeyofmontrest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "abbeyofmontrest-road-south",
@@ -11378,9 +10976,7 @@ const WORLD_LOCATIONS = {
                     37.13
                 ],
                 "bastionoforder"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "srenesari-road-south",
@@ -11401,9 +10997,7 @@ const WORLD_LOCATIONS = {
                     31.9
                 ],
                 "mossholde"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mossholde-road-east",
@@ -11428,9 +11022,7 @@ const WORLD_LOCATIONS = {
                     33.41
                 ],
                 "leterboun"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mossholde-road-south",
@@ -11451,9 +11043,7 @@ const WORLD_LOCATIONS = {
                     35.7
                 ],
                 "abbeyofmontrest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "olmorrey-road-north",
@@ -11470,9 +11060,7 @@ const WORLD_LOCATIONS = {
                     41.6
                 ],
                 "bindwatch"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bindarch-road-north",
@@ -11485,9 +11073,7 @@ const WORLD_LOCATIONS = {
                     40.53
                 ],
                 "proth"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bindwatch-road-east",
@@ -11500,9 +11086,7 @@ const WORLD_LOCATIONS = {
                     40.95
                 ],
                 "gristlow"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "proth-road-northeast",
@@ -11525,9 +11109,7 @@ const WORLD_LOCATIONS = {
                     35.66
                 ],
                 "kilnock"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "layden-road-northwest",
@@ -11541,9 +11123,7 @@ const WORLD_LOCATIONS = {
                     37.76
                 ],
                 "layden-proth-kilnock-crossroad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "proth-road-northwest",
@@ -11564,9 +11144,7 @@ const WORLD_LOCATIONS = {
                     36.72
                 ],
                 "leoning"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "leoning-road-north",
@@ -11579,9 +11157,7 @@ const WORLD_LOCATIONS = {
                     35.57
                 ],
                 "sheperds-keep"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "timbertown-road-north",
@@ -11598,9 +11174,7 @@ const WORLD_LOCATIONS = {
                     35.03
                 ],
                 "unstead"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "caldwynn-road-north",
@@ -11613,9 +11187,7 @@ const WORLD_LOCATIONS = {
                     31.88
                 ],
                 "tirncall"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "gibuldon-road-north",
@@ -11640,9 +11212,7 @@ const WORLD_LOCATIONS = {
                     25.99
                 ],
                 "abereth"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "gibuldon-road-south",
@@ -11655,9 +11225,7 @@ const WORLD_LOCATIONS = {
                     28.82
                 ],
                 "dryrock"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tirncall-road-north",
@@ -11674,9 +11242,7 @@ const WORLD_LOCATIONS = {
                     29.36
                 ],
                 "adsuren"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "shepherdskeep-road-north",
@@ -11689,9 +11255,7 @@ const WORLD_LOCATIONS = {
                     33.12
                 ],
                 "evyndar"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "evyndar-road-north",
@@ -11704,9 +11268,7 @@ const WORLD_LOCATIONS = {
                     30.96
                 ],
                 "broadmere-rest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "leoning-road-east",
@@ -11731,9 +11293,7 @@ const WORLD_LOCATIONS = {
                     34.69
                 ],
                 "babbleglen"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "kilnock-road-east",
@@ -11750,9 +11310,7 @@ const WORLD_LOCATIONS = {
                     35.09
                 ],
                 "babbleglen"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "layden-road",
@@ -11769,9 +11327,7 @@ const WORLD_LOCATIONS = {
                     37.6
                 ],
                 "timberdown"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tirncall-road-east",
@@ -11792,9 +11348,7 @@ const WORLD_LOCATIONS = {
                     32.03
                 ],
                 "menmythorn"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "adsuren-road-north",
@@ -11815,9 +11369,7 @@ const WORLD_LOCATIONS = {
                     25.02
                 ],
                 "insloe"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "abereth-road-east",
@@ -11837,9 +11389,7 @@ const WORLD_LOCATIONS = {
                     24.66
                 ],
                 "berest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "lullin-road-northwest",
@@ -11857,9 +11407,7 @@ const WORLD_LOCATIONS = {
                     24.57
                 ],
                 "berest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "broadmererest-road-north",
@@ -11877,9 +11425,7 @@ const WORLD_LOCATIONS = {
                     27.4
                 ],
                 "nesulport"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nesulport-road-north",
@@ -11893,9 +11439,7 @@ const WORLD_LOCATIONS = {
                     25.81
                 ],
                 "Kodderl"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "caldwynn-road-east",
@@ -11930,9 +11474,7 @@ const WORLD_LOCATIONS = {
                     29.47
                 ],
                 "dryrock"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "berest-road-west",
@@ -11946,9 +11488,7 @@ const WORLD_LOCATIONS = {
                     22.89
                 ],
                 "habell"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "habell-road-west",
@@ -11966,9 +11506,7 @@ const WORLD_LOCATIONS = {
                     23.93
                 ],
                 "insloe"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "insloe-road-west",
@@ -11982,9 +11520,7 @@ const WORLD_LOCATIONS = {
                     24.34
                 ],
                 "Kodderl"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "kodderl-road-northwest",
@@ -12002,9 +11538,7 @@ const WORLD_LOCATIONS = {
                     22.02
                 ],
                 "dregwaypost"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "berest-road-north",
@@ -12018,9 +11552,7 @@ const WORLD_LOCATIONS = {
                     23.52
                 ],
                 "tovar"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tovar-road-north",
@@ -12034,9 +11566,7 @@ const WORLD_LOCATIONS = {
                     21.86
                 ],
                 "tovarspan"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "dreghye-road-north",
@@ -12054,9 +11584,7 @@ const WORLD_LOCATIONS = {
                     21.71
                 ],
                 "dregwaypost"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "dregwaypost-road-north",
@@ -12078,9 +11606,7 @@ const WORLD_LOCATIONS = {
                     18.92
                 ],
                 "frostwellport"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "frostwellport-road-east",
@@ -12102,9 +11628,7 @@ const WORLD_LOCATIONS = {
                     19.6
                 ],
                 "aesenfell"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tovar-road-northwest",
@@ -12122,9 +11646,7 @@ const WORLD_LOCATIONS = {
                     21.38
                 ],
                 "pukett"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "pukett-road-east",
@@ -12138,9 +11660,7 @@ const WORLD_LOCATIONS = {
                     19.65
                 ],
                 "urbank"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tovarspan-road-north",
@@ -12154,9 +11674,7 @@ const WORLD_LOCATIONS = {
                     20.78
                 ],
                 "urbank"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "urbank-road-east",
@@ -12175,9 +11693,7 @@ const WORLD_LOCATIONS = {
                     19.89
                 ],
                 "alconny"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "dregwaypost-road-west",
@@ -12202,9 +11718,7 @@ const WORLD_LOCATIONS = {
                     19.31
                 ],
                 "claymere"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "claymere-road-south",
@@ -12217,9 +11731,7 @@ const WORLD_LOCATIONS = {
                     19.75
                 ],
                 "ruinsofdruegend"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "claymere-road-west",
@@ -12240,9 +11752,7 @@ const WORLD_LOCATIONS = {
                     19.52
                 ],
                 "grobh"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "grobh-road-west",
@@ -12259,9 +11769,7 @@ const WORLD_LOCATIONS = {
                     21.12
                 ],
                 "fawrese"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "fawrese-road-northwest",
@@ -12274,9 +11782,7 @@ const WORLD_LOCATIONS = {
                     21.17
                 ],
                 "porpen"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "porpen-road-east",
@@ -12293,9 +11799,7 @@ const WORLD_LOCATIONS = {
                     18.25
                 ],
                 "thaelshore"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "menmythorn-road-west",
@@ -12316,9 +11820,7 @@ const WORLD_LOCATIONS = {
                     30.33
                 ],
                 "broadmere-rest"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "alconny-road-south",
@@ -12335,9 +11837,7 @@ const WORLD_LOCATIONS = {
                     20.15
                 ],
                 "bonlightpass"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "strolsworth-road-east",
@@ -12354,9 +11854,7 @@ const WORLD_LOCATIONS = {
                     25.88
                 ],
                 "tariat"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "tariat-road-north",
@@ -12373,9 +11871,7 @@ const WORLD_LOCATIONS = {
                     24.72
                 ],
                 "bronzebellyfort"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bronzebellyfort-road-north",
@@ -12388,9 +11884,7 @@ const WORLD_LOCATIONS = {
                     23.85
                 ],
                 "bonfaduhr"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "aesenfell-road-north",
@@ -12411,9 +11905,7 @@ const WORLD_LOCATIONS = {
                     17.03
                 ],
                 "solwindglaes"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "alconny-road-north",
@@ -12434,9 +11926,7 @@ const WORLD_LOCATIONS = {
                     16.75
                 ],
                 "snowlightfort"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "snowlightfort-road-east",
@@ -12449,9 +11939,7 @@ const WORLD_LOCATIONS = {
                     16.35
                 ],
                 "icespring"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "solwindglaes-road",
@@ -12472,9 +11960,7 @@ const WORLD_LOCATIONS = {
                     13.06
                 ],
                 "nebendie"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "nedbendie-road-east",
@@ -12495,9 +11981,7 @@ const WORLD_LOCATIONS = {
                     10.83
                 ],
                 "blisteredkeep"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "blisteredkeep-road-east",
@@ -12518,9 +12002,7 @@ const WORLD_LOCATIONS = {
                     10.65
                 ],
                 "mahralkal"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mahrolkal-road-north",
@@ -12537,9 +12019,7 @@ const WORLD_LOCATIONS = {
                     8.37
                 ],
                 "avalvein"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mahralkal-road-east",
@@ -12560,9 +12040,7 @@ const WORLD_LOCATIONS = {
                     8.81
                 ],
                 "seorneasor"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "snowlightfort-road-north",
@@ -12583,9 +12061,7 @@ const WORLD_LOCATIONS = {
                     13.05
                 ],
                 "mahralkal"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "icespring-road-east",
@@ -12618,9 +12094,7 @@ const WORLD_LOCATIONS = {
                     14.09
                 ],
                 "fjordnahl"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "eastmare-road-north",
@@ -12633,9 +12107,7 @@ const WORLD_LOCATIONS = {
                     30.27
                 ],
                 "eastmare-greymill-stinson-crossroad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "greymill-road-south",
@@ -12648,9 +12120,7 @@ const WORLD_LOCATIONS = {
                     28.81
                 ],
                 "eastmare-greymill-stinson-crossroad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "stinson-road-south",
@@ -12683,9 +12153,7 @@ const WORLD_LOCATIONS = {
                     29.95
                 ],
                 "eastmare-greymill-stinson-crossroad"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "greymill-road-northeast",
@@ -12703,9 +12171,7 @@ const WORLD_LOCATIONS = {
                     24.78
                 ],
                 "stinson"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "greymill-road-west",
@@ -12735,9 +12201,7 @@ const WORLD_LOCATIONS = {
                     24.78
                 ],
                 "peakoftibul"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "eastmare-road-northwest",
@@ -12751,9 +12215,7 @@ const WORLD_LOCATIONS = {
                     29.98
                 ],
                 "nesbit"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ingress-road-west",
@@ -12771,9 +12233,7 @@ const WORLD_LOCATIONS = {
                     31.12
                 ],
                 "eastmare"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ingriss-road-northwest",
@@ -12793,9 +12253,7 @@ const WORLD_LOCATIONS = {
                     29.94
                 ],
                 "ashindel"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ashindel-road-northwest",
@@ -12813,9 +12271,7 @@ const WORLD_LOCATIONS = {
                     25.98
                 ],
                 "tariat"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "ashindel-road-south",
@@ -12837,9 +12293,7 @@ const WORLD_LOCATIONS = {
                     33.37
                 ],
                 "mablihod"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "mablihod-road-northwest",
@@ -12863,9 +12317,7 @@ const WORLD_LOCATIONS = {
                     29.64
                 ],
                 "dryrock"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "oldport-road",
@@ -12898,9 +12350,7 @@ const WORLD_LOCATIONS = {
                     38.63
                 ],
                 "hennibon"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "hennibon-road-west",
@@ -12918,9 +12368,7 @@ const WORLD_LOCATIONS = {
                     40.26
                 ],
                 "larnwik"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "larnwik-road-west",
@@ -12934,9 +12382,7 @@ const WORLD_LOCATIONS = {
                     40.82
                 ],
                 "blackfield"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "blackfield-road-north",
@@ -12952,9 +12398,7 @@ const WORLD_LOCATIONS = {
                     39.04
                 ],
                 "elondale"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "elondale-road-north",
@@ -12968,9 +12412,7 @@ const WORLD_LOCATIONS = {
                     34.53
                 ],
                 "mablihod"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "elondale-road-east",
@@ -12988,9 +12430,7 @@ const WORLD_LOCATIONS = {
                     36.15
                 ],
                 "bluffhunt"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         },
         {
             "id": "bluffhunt-road-south",
@@ -13008,9 +12448,7 @@ const WORLD_LOCATIONS = {
                     38.57
                 ],
                 "hennibon"
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+            ]
         }
     ],
     "regions": []

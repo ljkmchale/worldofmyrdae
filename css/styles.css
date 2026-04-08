@@ -27,6 +27,39 @@
   font-display: swap;
 }
 
+/* Quintessential — large bodies of water */
+/* unicode-range limited to letters only; punctuation falls back to Cormorant Garamond */
+@font-face {
+  font-family: 'Quintessential';
+  src: url('../fonts/Quintessential-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020, U+0027, U+0041-005A, U+0061-007A, U+00C0-00FF, U+0100-017F;
+}
+
+/* Sell Your Soul — nature areas & miscellaneous regions */
+/* unicode-range limited to letters only; punctuation falls back to Cormorant Garamond */
+@font-face {
+  font-family: 'Sell Your Soul';
+  src: url('../fonts/Sell Your Soul.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020, U+0027, U+0041-005A, U+0061-007A, U+00C0-00FF, U+0100-017F;
+}
+
+/* Penumbra Sans Std — mountain ranges */
+/* unicode-range limited to letters only; punctuation falls back to Cormorant Garamond */
+@font-face {
+  font-family: 'Penumbra Sans Std';
+  src: url('../fonts/PenumbraSansStd-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020, U+0027, U+0041-005A, U+0061-007A, U+00C0-00FF, U+0100-017F;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap');
 
 /* ---------- CSS Custom Properties ---------- */

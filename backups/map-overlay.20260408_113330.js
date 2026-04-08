@@ -234,7 +234,7 @@ const MapOverlay = (function () {
         text.setAttribute('font-size', region.fontSize || Math.max(natW * 0.008, 12));
 
         if (region.fontFamily) {
-            text.style.fontFamily = resolveFontStack(region.fontFamily);
+            text.style.fontFamily = region.fontFamily;
         }
         if (region.fontWeight) {
             text.style.fontWeight = region.fontWeight;
@@ -502,19 +502,6 @@ const MapOverlay = (function () {
     }
 
     /** Helper: add a text label next to a marker */
-    // Fonts that lack standard punctuation glyphs — always pair with a fallback
-    const FONT_FALLBACKS = {
-        'Sell Your Soul':    'Sell Your Soul, Cormorant Garamond, serif',
-        'Penumbra Sans Std': 'Penumbra Sans Std, Cormorant Garamond, serif',
-        'Quintessential':    'Quintessential, Cormorant Garamond, serif',
-        'Simonetta':         'Simonetta, Cormorant Garamond, serif',
-    };
-    function resolveFontStack(family) {
-        if (!family) return family;
-        const base = family.split(',')[0].trim();
-        return FONT_FALLBACKS[base] || family;
-    }
-
     function addLabel(markerGroup, loc, px, py, radius, natW) {
         // Skip label rendering if hideLabel is set
         if (loc.hideLabel) return;
@@ -548,31 +535,11 @@ const MapOverlay = (function () {
         label.setAttribute('class', 'marker-label');
         label.setAttribute('font-size', loc.fontSize || Math.max(natW * 0.005, 9));
 
-        // Type-based default fonts; loc.fontFamily overrides if explicitly set
-        const _settlementTypes = ['city', 'capital', 'small-city', 'town'];
-        const _poiTypes        = ['poi', 'landmark', 'ruins'];
-        const _nameDesc        = ((loc.name || '') + ' ' + (loc.description || '')).toLowerCase();
-        if (_settlementTypes.includes(loc.type)) {
-            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Simonetta');
-            if (!loc.fontStyle) label.style.fontStyle = 'normal';
-        } else if (_poiTypes.includes(loc.type)) {
-            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Simonetta');
-            label.style.fontStyle  = loc.fontStyle  || 'italic';
-        } else if (loc.type === 'water') {
-            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Quintessential');
-            if (!loc.fontStyle) label.style.fontStyle = 'normal';
-        } else if (loc.type === 'river') {
-            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Simonetta');
-            label.style.fontStyle  = loc.fontStyle  || 'italic';
-        } else if (loc.type === 'nature') {
-            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Sell Your Soul');
-            if (!loc.fontStyle) label.style.fontStyle = 'normal';
-        } else if (loc.type === 'region') {
-            const _isMountain = _nameDesc.includes('mountain');
-            label.style.fontFamily = resolveFontStack(loc.fontFamily || (_isMountain ? 'Penumbra Sans Std' : 'Sell Your Soul'));
-            if (!loc.fontStyle) label.style.fontStyle = 'normal';
+        // Water/river default font is Garamond MT; override with loc.fontFamily if set
+        if (loc.type === 'water' || loc.type === 'river') {
+            label.style.fontFamily = loc.fontFamily || 'Garamond MT, Cormorant Garamond, serif';
         } else if (loc.fontFamily) {
-            label.style.fontFamily = resolveFontStack(loc.fontFamily);
+            label.style.fontFamily = loc.fontFamily;
         }
         if (loc.fontWeight) {
             label.style.fontWeight = loc.fontWeight;
@@ -879,10 +846,9 @@ const MapOverlay = (function () {
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('font-size', fontSize);
 
-                // Default road font: Simonetta italic; road.fontFamily overrides if set
-                text.style.fontFamily = resolveFontStack(road.fontFamily || 'Simonetta');
-                text.style.fontStyle  = road.fontStyle  || 'italic';
+                if (road.fontFamily) text.style.fontFamily = road.fontFamily;
                 if (road.fontWeight) text.style.fontWeight = road.fontWeight;
+                if (road.fontStyle) text.style.fontStyle = road.fontStyle;
 
                 // Default road label styling (matches POI text)
                 text.setAttribute('fill', '#faf3e0');
