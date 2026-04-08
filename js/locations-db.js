@@ -6316,16 +6316,16 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "Nature",
             "fontFamily": "Quintessential",
-            "fontSize": 54,
+            "fontSize": 81,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "dalasorstrait",
@@ -6396,16 +6396,16 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "Nature",
             "fontFamily": "Quintessential",
-            "fontSize": 49,
+            "fontSize": 81,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1,
-            "fontStyle": "Normal"
+            "opacity": 1
         },
         {
             "id": "midrambay",
