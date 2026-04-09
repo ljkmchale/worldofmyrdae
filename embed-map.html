@@ -886,9 +886,9 @@
             await sleep(50);
 
             // Final resting positions for each entity — all offset from Old Gates, beams aimed at it
-            const muergFinalX = originX - 2,    muergFinalY = originY + 3;
-            const ashFinalX   = originX - 5,    ashFinalY   = originY + 5;
-            const hostFinalX  = originX - 10,   hostFinalY  = originY + 4;
+            const muergFinalX = originX - 3,    muergFinalY = originY + 5;
+            const ashFinalX   = originX - 6,    ashFinalY   = originY + 7;
+            const hostFinalX  = originX - 11,   hostFinalY  = originY + 5;
 
             // Muerg leads — straight to Old Gates
             entity.style.left = `${muergFinalX}%`;
@@ -915,7 +915,7 @@
               const pxDy = (originY - fromY) / 100 * container.offsetHeight;
               const dist = Math.sqrt(pxDx * pxDx + pxDy * pxDy);
               const angle = Math.atan2(-pxDx, pxDy) * 180 / Math.PI;
-              const h = dist > 10 ? Math.max(Math.round(dist * 1.2), Math.round(beamH * 0.55)) : beamH;
+              const h = Math.round(dist);
               beamEl.style.left = `${fromX}%`;
               beamEl.style.top  = `${fromY}%`;
               beamEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
