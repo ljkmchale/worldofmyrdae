@@ -376,6 +376,31 @@
       opacity: 0;
     }
 
+    /* Lava flow pouring toward Emberstan — wide, blurred, pool-like */
+    #lava-flow {
+      position: absolute;
+      width: 28px;
+      height: 0;
+      background: linear-gradient(to bottom,
+        rgba(255,130,0,0.95) 0%,
+        rgba(255,70,0,0.8)   25%,
+        rgba(220,30,0,0.55)  55%,
+        rgba(180,10,0,0)     100%
+      );
+      filter: blur(5px);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      transform-origin: top center;
+      z-index: 261;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    @keyframes lava-flow-ripple {
+      0%, 100% { opacity: 0.82; }
+      50%       { opacity: 1;    }
+    }
+
     @keyframes lava-erupt {
       0% {
         transform: translate(-50%, -50%);
@@ -769,6 +794,8 @@
           <!-- Lava eruption at the Severed Crease -->
           <div id="lava-pool"></div>
           <div id="lava-sparks"></div>
+          <!-- Lava flow pouring toward Emberstan -->
+          <div id="lava-flow"></div>
           <!-- Divine glow — golden-white light gathering before the burst -->
           <div id="awakening-glow" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:298;pointer-events:none;opacity:0;"></div>
           <!-- Muerg — the descending earth god -->
@@ -951,6 +978,7 @@
       const hostBeam     = document.getElementById('host-beam');
       const lavaPool     = document.getElementById('lava-pool');
       const lavaSparks   = document.getElementById('lava-sparks');
+      const lavaFlow     = document.getElementById('lava-flow');
       const container    = document.getElementById('map-container');
       const mapImg       = document.getElementById('map-image');
       const titleCard    = document.getElementById('awakening-title');
@@ -971,6 +999,7 @@
       hostBeam.style.transition = 'none'; hostBeam.style.height = '0'; hostBeam.style.opacity = '0';
       lavaPool.style.transition = 'none'; lavaPool.style.animation = ''; lavaPool.style.opacity = '0';
       lavaSparks.style.transition = 'none'; lavaSparks.style.animation = ''; lavaSparks.style.opacity = '0';
+      lavaFlow.style.transition = 'none'; lavaFlow.style.animation = ''; lavaFlow.style.height = '0'; lavaFlow.style.width = '28px'; lavaFlow.style.opacity = '0';
 
       // ── Phase 0: Zoom out to see the full world ──
       await MapController.zoomOutFull('map-container');
@@ -1112,8 +1141,26 @@
       lavaPool.style.animation   = 'lava-pool-pulse 0.55s ease-in-out infinite';
       lavaSparks.style.animation = 'lava-erupt 0.7s ease-out infinite';
 
+      // Lava pours down the mountainside toward Emberstan (x:63.09, y:55.5)
+      const emberX = 63.09;
+      const emberY = +((55.5 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
+      const flowDx   = (emberX - originX) / 100 * container.offsetWidth;
+      const flowDy   = (emberY - originY) / 100 * container.offsetHeight;
+      const flowDist = Math.round(Math.sqrt(flowDx * flowDx + flowDy * flowDy) * 1.3);
+      const flowAngle = Math.atan2(-flowDx, flowDy) * 180 / Math.PI;
+      lavaFlow.style.left   = `${originX}%`;
+      lavaFlow.style.top    = `${originY}%`;
+      lavaFlow.style.transform = `translateX(-50%) rotate(${flowAngle}deg)`;
+      lavaFlow.style.animation = 'lava-flow-ripple 1.3s ease-in-out infinite';
+      lavaFlow.style.transition = 'opacity 0.6s ease-in, height 2.2s ease-out';
+      lavaFlow.style.opacity = '0.9';
+      lavaFlow.style.height = `${flowDist}px`;
+
       container.style.animation = 'awakening-tremor 0.35s ease-in-out infinite';
       await sleep(1200);
+      // Pool spreads wider as tremors intensify
+      lavaFlow.style.transition = 'width 1.8s ease-out';
+      lavaFlow.style.width = '60px';
       container.style.animation = 'awakening-tremor 0.18s ease-in-out infinite';
       await sleep(1000);
       container.style.animation = 'awakening-heavy-tremor 0.09s ease-in-out infinite';
@@ -1129,6 +1176,7 @@
       // Lava fades as the new sealed world is revealed
       lavaPool.style.transition = 'opacity 2.5s ease-out'; lavaPool.style.opacity = '0';
       lavaSparks.style.transition = 'opacity 2s ease-out'; lavaSparks.style.opacity = '0';
+      lavaFlow.style.transition = 'opacity 3s ease-out'; lavaFlow.style.opacity = '0';
 
       // Aftershock
       container.style.animation = 'awakening-heavy-tremor 0.14s ease-in-out infinite';
@@ -1142,6 +1190,7 @@
       preMap.style.transition = 'none'; preMap.style.transform = '';
       lavaPool.style.transition = 'none'; lavaPool.style.animation = ''; lavaPool.style.opacity = '0';
       lavaSparks.style.transition = 'none'; lavaSparks.style.animation = ''; lavaSparks.style.opacity = '0';
+      lavaFlow.style.transition = 'none'; lavaFlow.style.animation = ''; lavaFlow.style.height = '0'; lavaFlow.style.width = '28px'; lavaFlow.style.opacity = '0';
 
       // ── Phase 6: Reveal ──
       await sleep(200);
