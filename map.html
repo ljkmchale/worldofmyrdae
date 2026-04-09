@@ -424,7 +424,7 @@
       background: linear-gradient(to bottom, rgba(255,255,210,1) 0%, rgba(255,248,170,0.7) 55%, rgba(255,243,140,0) 100%);
       box-shadow: 0 0 6px 3px rgba(255,255,190,0.7), 0 0 12px 4px rgba(255,240,120,0.35);
       border-radius: 2px;
-      transform: translateX(-50%) rotate(-20deg);
+      transform: translateX(-50%);
       transform-origin: top center;
       z-index: 299;
       pointer-events: none;
@@ -976,13 +976,20 @@
       ashBeam.style.transition = 'height 0.4s ease-in';
       ashBeam.style.height = `${Math.round(beamH * 0.75)}px`;
 
-      // Host's collective beam — angled in from the NW, 300ms after Ash
+      // Host's collective beam — originates from the host's position, aimed at Old Gates
       await sleep(300);
-      hostBeam.style.left = `${originX}%`;
-      hostBeam.style.top  = `${originY}%`;
+      const hostFinalX = originX - 7;
+      const hostFinalY = originY + 1.5;
+      const dx = (originX - hostFinalX) / 100 * container.offsetWidth;
+      const dy = (originY - hostFinalY) / 100 * container.offsetHeight;
+      const hostBeamDist = Math.round(Math.sqrt(dx * dx + dy * dy) * 1.15);
+      const hostBeamAngle = Math.atan2(dx, dy) * 180 / Math.PI;
+      hostBeam.style.left = `${hostFinalX}%`;
+      hostBeam.style.top  = `${hostFinalY}%`;
+      hostBeam.style.transform = `translateX(-50%) rotate(${hostBeamAngle}deg)`;
       hostBeam.style.opacity = '0.9';
       hostBeam.style.transition = 'height 0.5s ease-in';
-      hostBeam.style.height = `${Math.round(beamH * 0.7)}px`;
+      hostBeam.style.height = `${hostBeamDist}px`;
 
       // Glow builds; all entities fade into the light
       glow.style.transition = 'opacity 2.8s ease-in';
