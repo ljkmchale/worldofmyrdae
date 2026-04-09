@@ -130,6 +130,7 @@ const MapController = (function () {
 
         container.addEventListener('mousedown', (e) => {
             if (e.button !== 0) return;
+            if (e.target.closest('.legend-panel')) return; // Let legend panel clicks (inputs, buttons) through
             e.preventDefault(); // Prevent text selection and default image dragging
             state.isDragging = true;
             state.startX = e.clientX - state.pointX;
