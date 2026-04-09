@@ -971,7 +971,7 @@
         const pxDx = (originX - fromX) / 100 * container.offsetWidth;
         const pxDy = (originY - fromY) / 100 * container.offsetHeight;
         const dist = Math.sqrt(pxDx * pxDx + pxDy * pxDy);
-        const angle = Math.atan2(pxDx, pxDy) * 180 / Math.PI;
+        const angle = Math.atan2(-pxDx, pxDy) * 180 / Math.PI;
         const h = dist > 10 ? Math.max(Math.round(dist * 1.2), Math.round(beamH * 0.55)) : beamH;
         beamEl.style.left = `${fromX}%`;
         beamEl.style.top  = `${fromY}%`;
