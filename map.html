@@ -240,6 +240,104 @@
       background: #9c8c78;
       border-top: 1px dashed #584433;
     }
+
+    /* Search Box */
+    .search-box {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.6rem;
+      color: var(--color-gold);
+      font-size: 0.75rem;
+      pointer-events: none;
+    }
+
+    #location-search {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.5rem 0.45rem 2rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    #location-search:focus {
+      border-color: var(--color-gold);
+      background: rgba(212, 175, 55, 0.06);
+    }
+
+    #location-search::placeholder {
+      color: #666;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 15, 0.98);
+      border: 1px solid var(--color-gold);
+      border-radius: 4px;
+      z-index: 200;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+    }
+
+    .search-result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.15s;
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-result-item:hover {
+      background: rgba(212, 175, 55, 0.15);
+    }
+
+    .search-result-name {
+      font-size: 0.83rem;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .search-result-type {
+      font-size: 0.7rem;
+      color: var(--color-gold);
+      text-transform: capitalize;
+      opacity: 0.8;
+      margin-left: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .search-no-results {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      color: #666;
+      font-family: 'Inter', sans-serif;
+      font-style: italic;
+    }
   </style>
 </head>
 
@@ -322,6 +420,14 @@
 
           <!-- Legend Panel -->
           <div class="legend-panel" id="legend-panel" style="display:none;">
+            <!-- Search Box -->
+            <div class="search-box">
+              <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="location-search" placeholder="Search locations..." autocomplete="off" spellcheck="false">
+              </div>
+              <div class="search-results" id="search-results" style="display:none;"></div>
+            </div>
             <h4><i class="fa-solid fa-scroll"></i> Map Legend</h4>
             <div class="legend-items">
               <div class="legend-item"><span class="legend-marker capital"></span> <span>Capital City</span></div>
@@ -361,7 +467,7 @@
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
   <script src="js/map-overlay.js"></script>
-
+  <script src="js/location-search.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -373,6 +479,7 @@
       });
 
       MapOverlay.init('map-container', 'map-image');
+      LocationSearch.init('map-container');
     });
 
     function toggleTerritories() {

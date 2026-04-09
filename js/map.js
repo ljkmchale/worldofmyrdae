@@ -151,6 +151,35 @@ const MapController = (function () {
             }
         });
 
+        function animatePanTo(targetScale, targetX, targetY) {
+            const startScale = state.scale;
+            const startX = state.pointX;
+            const startY = state.pointY;
+            const duration = 500;
+            const startTime = performance.now();
+
+            function easeInOutCubic(t) {
+                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            }
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(elapsed / duration, 1);
+                const e = easeInOutCubic(t);
+
+                state.scale = startScale + (targetScale - startScale) * e;
+                state.pointX = startX + (targetX - startX) * e;
+                state.pointY = startY + (targetY - startY) * e;
+
+                updateTransform();
+
+                if (t < 1) requestAnimationFrame(step);
+                else saveState();
+            }
+
+            requestAnimationFrame(step);
+        }
+
         return {
             reset: function () {
                 state.scale = 1;
@@ -158,7 +187,16 @@ const MapController = (function () {
                 state.pointY = 0;
                 requestUpdate();
             },
-            getState: () => ({ ...state })
+            getState: () => ({ ...state }),
+            panToLocation: function (x, y, targetScale) {
+                updateDimensions();
+                const newScale = Math.min(Math.max(2, targetScale || 4), 15);
+                const pixelX = (x / 100) * state.baseWidth;
+                const pixelY = (y / 100) * state.baseHeight;
+                const targetPointX = (state.cw / 2) - pixelX * newScale;
+                const targetPointY = (state.ch / 2) - pixelY * newScale;
+                animatePanTo(newScale, targetPointX, targetPointY);
+            }
         };
     }
 
@@ -173,6 +211,9 @@ const MapController = (function () {
         },
         getInstanceState: function (containerId) {
             return instances[containerId] ? instances[containerId].getState() : null;
+        },
+        panToLocation: function (containerId, x, y, scale) {
+            if (instances[containerId]) instances[containerId].panToLocation(x, y, scale);
         }
     };
 })();
