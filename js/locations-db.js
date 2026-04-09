@@ -2300,15 +2300,16 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
-            "fontSize": 9,
+            "fontSize": 17,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "labelAlign": "middle",
+            "opacity": 0.5
         },
         {
             "id": "northern-stoneflow",
@@ -4758,17 +4759,17 @@ const WORLD_LOCATIONS = {
             "y": 43.19,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Penumbra Sans Std",
             "fontSize": 16,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "skrettel",
