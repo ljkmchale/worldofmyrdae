@@ -6200,9 +6200,10 @@ const WORLD_LOCATIONS = {
             "y": 11.25,
             "region": "",
             "description": "Nature",
-            "fontFamily": "Sell Your Soul",
+            "fontFamily": "Penumbra Sans Std",
             "fontSize": 28,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
@@ -6211,8 +6212,7 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": -10,
             "textCurve": -44,
-            "opacity": 0.5,
-            "fontStyle": "Normal"
+            "opacity": 0.5
         },
         {
             "id": "thebrokendeep",
