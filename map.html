@@ -339,6 +339,72 @@
       font-style: italic;
     }
 
+    /* ── Lava Eruption ────────────────────────────────────────── */
+    #lava-pool {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff5a0 0%, #ff7700 45%, rgba(160,15,0,0) 100%);
+      box-shadow: 0 0 10px 5px rgba(255,90,0,0.85), 0 0 28px 14px rgba(200,30,0,0.45);
+      transform: translate(-50%, -50%);
+      z-index: 262;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    @keyframes lava-pool-pulse {
+      0%, 100% {
+        box-shadow: 0 0 10px 5px rgba(255,90,0,0.85), 0 0 28px 14px rgba(200,30,0,0.45);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 0 22px 11px rgba(255,130,0,1), 0 0 55px 28px rgba(230,55,0,0.7);
+        transform: translate(-50%, -50%) scale(1.7);
+      }
+    }
+
+    #lava-sparks {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,170,0,1);
+      transform: translate(-50%, -50%);
+      z-index: 263;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    @keyframes lava-erupt {
+      0% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+        box-shadow:
+           0px   0px 4px 2px rgba(255,200,0,0.9),
+          -5px  -10px 3px 2px rgba(255,100,0,0.85),
+           7px  -14px 3px 1px rgba(255,60,0,0.8),
+          -11px  -7px 3px 1px rgba(255,130,0,0.75),
+           3px  -20px 2px 1px rgba(255,80,0,0.7),
+          13px  -11px 2px 1px rgba(220,40,0,0.65),
+          -15px -17px 2px 1px rgba(255,110,0,0.6),
+           9px  -25px 2px 1px rgba(200,25,0,0.55);
+      }
+      100% {
+        transform: translate(-50%, calc(-50% - 85px));
+        opacity: 0;
+        box-shadow:
+           0px    0px  1px 0px rgba(255,200,0,0),
+          -22px  -42px 1px 0px rgba(255,100,0,0),
+           28px  -56px 1px 0px rgba(255,60,0,0),
+          -44px  -32px 1px 0px rgba(255,130,0,0),
+           11px  -82px 1px 0px rgba(255,80,0,0),
+           52px  -46px 1px 0px rgba(220,40,0,0),
+          -60px  -62px 1px 0px rgba(255,110,0,0),
+           36px  -95px 1px 0px rgba(200,25,0,0);
+      }
+    }
+
     /* ── Great Awakening Animation ─────────────────────────────── */
     @keyframes awakening-tremor {
       0%,  100% { transform: translate(0,    0)    rotate(0deg); }
@@ -700,6 +766,9 @@
             </div>
           </div>
           <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
+          <!-- Lava eruption at the Severed Crease -->
+          <div id="lava-pool"></div>
+          <div id="lava-sparks"></div>
           <!-- Divine glow — golden-white light gathering before the burst -->
           <div id="awakening-glow" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:298;pointer-events:none;opacity:0;"></div>
           <!-- Muerg — the descending earth god -->
@@ -880,6 +949,8 @@
       const ashBeam      = document.getElementById('ash-beam');
       const host         = document.getElementById('muerg-host');
       const hostBeam     = document.getElementById('host-beam');
+      const lavaPool     = document.getElementById('lava-pool');
+      const lavaSparks   = document.getElementById('lava-sparks');
       const container    = document.getElementById('map-container');
       const mapImg       = document.getElementById('map-image');
       const titleCard    = document.getElementById('awakening-title');
@@ -898,6 +969,8 @@
       ashBeam.style.transition = 'none'; ashBeam.style.height = '0'; ashBeam.style.opacity = '0';
       host.style.transition = 'none'; host.style.opacity = '0';
       hostBeam.style.transition = 'none'; hostBeam.style.height = '0'; hostBeam.style.opacity = '0';
+      lavaPool.style.transition = 'none'; lavaPool.style.animation = ''; lavaPool.style.opacity = '0';
+      lavaSparks.style.transition = 'none'; lavaSparks.style.animation = ''; lavaSparks.style.opacity = '0';
 
       // ── Phase 0: Zoom out to see the full world ──
       await MapController.zoomOutFull('map-container');
@@ -914,11 +987,24 @@
       // ── Phase 1: The old world fades in ──
       preMap.style.transition = 'opacity 1.8s ease-in-out';
       preMap.style.opacity = '1';
+
+      // Lava has always been there — the Crease is already churning
+      lavaPool.style.left = `${originX}%`;
+      lavaPool.style.top  = `${originY}%`;
+      lavaPool.style.transition = 'opacity 2s ease-in';
+      lavaPool.style.animation = 'lava-pool-pulse 1.4s ease-in-out infinite';
+      lavaPool.style.opacity = '1';
+
       await sleep(700);
       titleCard.style.opacity = '1';
       await sleep(1300);
 
       // ── Phase 2: Hold — let the player read the old world ──
+      // Sparks begin erupting upward from the Crease
+      lavaSparks.style.left = `${originX}%`;
+      lavaSparks.style.top  = `${originY}%`;
+      lavaSparks.style.animation = 'lava-erupt 1.6s ease-out infinite';
+      lavaSparks.style.opacity = '1';
       await sleep(2500);
 
       // ── Phase 2.5: The group sweeps in from the far northwest ──
@@ -999,9 +1085,11 @@
       hostBeam.style.transition = 'height 0.5s ease-in';
       hostBeam.style.height = `${hostH}px`;
 
-      // Glow builds; all entities fade into the light
+      // Glow builds; all entities fade into the light — divine fire seals the lava
       glow.style.transition = 'opacity 2.8s ease-in';
       glow.style.opacity = '1';
+      lavaPool.style.transition = 'opacity 1s ease-out'; lavaPool.style.opacity = '0';
+      lavaSparks.style.transition = 'opacity 0.6s ease-out'; lavaSparks.style.opacity = '0';
       entity.style.transition = 'opacity 0.8s ease'; entity.style.opacity = '0';
       ash.style.transition    = 'opacity 0.8s ease'; ash.style.opacity = '0';
       host.style.transition   = 'opacity 1s ease';   host.style.opacity = '0';
