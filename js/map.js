@@ -152,11 +152,11 @@ const MapController = (function () {
             }
         });
 
-        function animatePanTo(targetScale, targetX, targetY) {
+        function animatePanTo(targetScale, targetX, targetY, duration) {
             const startScale = state.scale;
             const startX = state.pointX;
             const startY = state.pointY;
-            const duration = 500;
+            duration = duration || 500;
             const startTime = performance.now();
 
             function easeInOutCubic(t) {
@@ -188,6 +188,12 @@ const MapController = (function () {
                 state.pointY = 0;
                 requestUpdate();
             },
+            zoomOutFull: function () {
+                return new Promise(resolve => {
+                    animatePanTo(1, 0, 0, 1200);
+                    setTimeout(resolve, 1300);
+                });
+            },
             getState: () => ({ ...state }),
             panToLocation: function (x, y, targetScale) {
                 updateDimensions();
@@ -215,6 +221,10 @@ const MapController = (function () {
         },
         panToLocation: function (containerId, x, y, scale) {
             if (instances[containerId]) instances[containerId].panToLocation(x, y, scale);
+        },
+        zoomOutFull: function (containerId) {
+            if (instances[containerId]) return instances[containerId].zoomOutFull();
+            return Promise.resolve();
         }
     };
 })();

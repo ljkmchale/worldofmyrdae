@@ -377,6 +377,30 @@
             animation: awakening-tremor 0.13s ease-in-out infinite;
         }
 
+        @keyframes awakening-heavy-tremor {
+            0%,  100% { transform: translate(0,     0)     rotate(0deg);   }
+            5%         { transform: translate(-13px,  8px)  rotate(-0.8deg); }
+            15%        { transform: translate( 15px, -10px) rotate( 0.7deg); }
+            25%        { transform: translate(-11px,  13px) rotate( 0.9deg); }
+            35%        { transform: translate( 14px,  -7px) rotate(-0.7deg); }
+            45%        { transform: translate(-16px,   9px) rotate( 1.0deg); }
+            55%        { transform: translate( 12px, -13px) rotate(-0.8deg); }
+            65%        { transform: translate(-10px,   8px) rotate( 0.7deg); }
+            75%        { transform: translate( 15px,  10px) rotate(-0.9deg); }
+            85%        { transform: translate(-13px,  -7px) rotate( 0.6deg); }
+            95%        { transform: translate(  9px, -10px) rotate(-0.5deg); }
+        }
+
+        #awakening-glow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 298;
+            pointer-events: none;
+            opacity: 0;
+            background: radial-gradient(ellipse at center, rgba(255,255,220,0.65) 0%, rgba(255,235,100,0.3) 35%, rgba(220,190,60,0.08) 62%, rgba(0,0,0,0) 80%);
+        }
+
         #awakening-title {
             position: absolute;
             bottom: 2.5rem;
@@ -406,6 +430,37 @@
             opacity: 0.85;
             margin-top: 0.25rem;
             letter-spacing: 0.08em;
+        }
+
+        #awakening-reveal-title {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 250;
+            pointer-events: none;
+            opacity: 0;
+            text-align: center;
+            transition: opacity 1.4s ease;
+        }
+
+        #awakening-reveal-title .reveal-main {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.5rem;
+            color: #ffffff;
+            text-shadow: 0 0 25px rgba(255,255,200,1), 0 0 55px rgba(255,240,100,0.7), 0 0 90px rgba(210,180,60,0.4);
+            letter-spacing: 0.18em;
+            white-space: nowrap;
+        }
+
+        #awakening-reveal-title .reveal-sub {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.92rem;
+            font-style: italic;
+            color: #e8d9a0;
+            opacity: 0.9;
+            margin-top: 0.35rem;
+            letter-spacing: 0.06em;
         }
     </style>
 </head>
@@ -437,7 +492,13 @@
         <!-- Title card shown during pre-awakening reveal -->
         <div id="awakening-title">
             <div class="title-main">Before the Great Awakening</div>
-            <div class="title-sub">The world as it once was…</div>
+            <div class="title-sub">Before the Earth God Muerg sealed the Severed Crease…</div>
+        </div>
+
+        <!-- Reveal title shown after the burst as the changed world appears -->
+        <div id="awakening-reveal-title">
+            <div class="reveal-main">The Great Awakening</div>
+            <div class="reveal-sub">Muerg's white fire sealed the Severed Crease — its lava cooled and rose, forever forming the Distancion Mountains</div>
         </div>
 
         <!-- Legend Panel -->
@@ -469,8 +530,10 @@
         </div>
 
         <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
-        <!-- Flash overlay: above all layers, for the Awakening burst -->
-        <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #dc143c 45%, #1a0005 100%);"></div>
+        <!-- Divine glow — golden-white light gathering before the burst -->
+        <div id="awakening-glow" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:298;pointer-events:none;opacity:0;"></div>
+        <!-- Flash overlay: white fire burst of Muerg -->
+        <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%);"></div>
         <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
             <!-- Sub-terrain layer goes here (z-index: 1) -->
             <!-- Main map -->
@@ -613,48 +676,118 @@
             if (awakeningRunning) return;
             awakeningRunning = true;
 
-            const btn       = document.getElementById('awakening-btn');
-            const preMap    = document.getElementById('preawakening-map');
-            const flash     = document.getElementById('awakening-flash');
-            const container = document.getElementById('map-container');
-            const titleCard = document.getElementById('awakening-title');
+            const btn         = document.getElementById('awakening-btn');
+            const preMap      = document.getElementById('preawakening-map');
+            const flash       = document.getElementById('awakening-flash');
+            const glow        = document.getElementById('awakening-glow');
+            const container   = document.getElementById('map-container');
+            const mapImg      = document.getElementById('map-image');
+            const titleCard   = document.getElementById('awakening-title');
+            const revealTitle = document.getElementById('awakening-reveal-title');
 
             const sleep = ms => new Promise(r => setTimeout(r, ms));
 
             if (btn) { btn.style.opacity = '0.3'; btn.disabled = true; }
 
-            // Phase 1: Fade in the pre-awakening world (1.8s)
+            // Phase 0: Zoom out to see the full world
+            await MapController.zoomOutFull('map-container');
+            await sleep(400);
+
+            // Position effects over the Severed Crease / Distancion Mountains (x:60, y:48.51 in map-% coords).
+            const mapDisplayH = (mapImg.naturalHeight / mapImg.naturalWidth) * container.offsetWidth;
+            const originX = 60;
+            const originY = ((48.51 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
+            const gradOrigin = `${originX}% ${originY}%`;
+            glow.style.background  = `radial-gradient(ellipse at ${gradOrigin}, rgba(255,255,220,0.65) 0%, rgba(255,235,100,0.3) 35%, rgba(220,190,60,0.08) 62%, rgba(0,0,0,0) 80%)`;
+            flash.style.background = `radial-gradient(ellipse at ${gradOrigin}, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%)`;
+
+            // Phase 1: The old world fades in
             preMap.style.transition = 'opacity 1.8s ease-in-out';
             preMap.style.opacity = '1';
-            await sleep(600);
+            await sleep(700);
             titleCard.style.opacity = '1';
-            await sleep(1400);
+            await sleep(1300);
 
-            // Phase 2: Hold — let the player read the old world (3.5s)
+            // Phase 2: Hold — the world as it was
             await sleep(3500);
 
-            // Phase 3: Title fades, tremor begins
+            // Phase 3: Muerg arrives — divine light begins to gather at the Crease
             titleCard.style.opacity = '0';
-            container.style.animation = 'awakening-tremor 0.3s ease-in-out infinite';
-            await sleep(800);
-            container.style.animation = 'awakening-tremor 0.13s ease-in-out infinite';
-            await sleep(2200);
+            glow.style.transition = 'opacity 2.8s ease-in';
+            glow.style.opacity = '1';
 
-            // Phase 4: Crimson flash burst
+            // The earth stirs — the Crease is being pulled closed
+            container.style.animation = 'awakening-tremor 0.35s ease-in-out infinite';
+            await sleep(1200);
+
+            // The lands shift — pulling together
+            container.style.animation = 'awakening-tremor 0.18s ease-in-out infinite';
+            await sleep(1000);
+
+            // Muerg's fire ignites — peak fury
+            container.style.animation = 'awakening-heavy-tremor 0.09s ease-in-out infinite';
+            await sleep(1600);
+
+            // Phase 4: The white fire bursts — two warning pulses then the full divine surge
             container.style.animation = '';
-            flash.style.transition = 'opacity 0.08s ease-in';
+
+            // First pulse — a breath of divine light
+            flash.style.transition = 'opacity 0.07s ease-in';
+            flash.style.opacity = '0.45';
+            await sleep(90);
+            flash.style.transition = 'opacity 0.28s ease-out';
+            flash.style.opacity = '0';
+            await sleep(230);
+
+            // Second pulse — brighter, the fire rising
+            flash.style.transition = 'opacity 0.06s ease-in';
+            flash.style.opacity = '0.75';
+            await sleep(90);
+            flash.style.transition = 'opacity 0.22s ease-out';
+            flash.style.opacity = '0';
+            await sleep(170);
+
+            // THE BURST — Muerg's white fire seals the Severed Crease
+            flash.style.transition = 'opacity 0.05s ease-in';
             flash.style.opacity = '1';
-            await sleep(100);
-            flash.style.transition = 'opacity 1.1s ease-out';
+            await sleep(80);
+
+            // Clear the glow under the flash
+            glow.style.transition = 'opacity 0s';
+            glow.style.opacity = '0';
+
+            // Flash begins to clear — start the cross-dissolve simultaneously so players
+            // can watch the lands merge as the light fades
+            flash.style.transition = 'opacity 1.8s ease-out';
             flash.style.opacity = '0';
 
-            // Phase 5: Pre-awakening fades, current world emerges (6s)
-            preMap.style.transition = 'opacity 6s ease-in-out';
+            // Old world contracts and dissolves — the lands pulling together into the new shape
+            preMap.style.transformOrigin = '50% 50%';
+            preMap.style.transition = 'opacity 6s ease-in-out, transform 6s ease-in-out';
+            preMap.style.transform = 'scale(0.96)';
             preMap.style.opacity = '0';
-            await sleep(6000);
 
-            // Done — re-enable button
-            await sleep(400);
+            // Phase 5: Aftershock — the land settles
+            container.style.animation = 'awakening-heavy-tremor 0.14s ease-in-out infinite';
+            await sleep(550);
+            container.style.animation = 'awakening-tremor 0.28s ease-in-out infinite';
+            await sleep(700);
+            container.style.animation = '';
+
+            // Wait for cross-dissolve to finish (6s from burst, ~1.25s elapsed)
+            await sleep(4750);
+
+            // Reset preMap transform so next replay starts clean
+            preMap.style.transition = 'none';
+            preMap.style.transform = '';
+
+            // Phase 6: Reveal — the changed world, the aftermath of Muerg's act
+            await sleep(200);
+            revealTitle.style.opacity = '1';
+            await sleep(4500);
+            revealTitle.style.opacity = '0';
+            await sleep(1400);
+
             if (btn) { btn.style.opacity = '1'; btn.disabled = false; }
             awakeningRunning = false;
         }
