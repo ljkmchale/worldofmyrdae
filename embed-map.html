@@ -885,9 +885,20 @@
             host.style.opacity = '1';
             await sleep(50);
 
-            entity.style.left = `${originX}%`;      entity.style.top = `${originY}%`;
-            ash.style.left    = `${originX - 1.5}%`; ash.style.top   = `${originY + 0.8}%`;
-            host.style.left   = `${originX - 7}%`;  host.style.top   = `${originY + 1.5}%`;
+            // Final resting positions for each entity
+            const muergFinalX = originX,        muergFinalY = originY;
+            const ashFinalX   = originX - 5,    ashFinalY   = originY + 5;
+            const hostFinalX  = originX - 10,   hostFinalY  = originY + 4;
+
+            // Muerg leads — straight to Old Gates
+            entity.style.left = `${muergFinalX}%`;
+            entity.style.top  = `${muergFinalY}%`;
+            // Ash flies alongside, offset left and below
+            ash.style.left = `${ashFinalX}%`;
+            ash.style.top  = `${ashFinalY}%`;
+            // Host trails behind the group
+            host.style.left = `${hostFinalX}%`;
+            host.style.top  = `${hostFinalY}%`;
             await sleep(6100);
 
             // Arrived — Muerg and Ash charge together
@@ -897,36 +908,39 @@
             entity.classList.remove('muerg-charging');
             ash.classList.remove('ash-charging');
 
-            // Muerg's white fire beam strikes the Old Gates
+            // Helper: fire a beam FROM entity position, aimed at Old Gates (originX, originY)
             const beamH = Math.round(container.offsetHeight * 0.16);
-            beam.style.left = `${originX}%`;
-            beam.style.top  = `${originY}%`;
+            function aimBeam(beamEl, fromX, fromY) {
+              const pxDx = (originX - fromX) / 100 * container.offsetWidth;
+              const pxDy = (originY - fromY) / 100 * container.offsetHeight;
+              const dist = Math.sqrt(pxDx * pxDx + pxDy * pxDy);
+              const angle = Math.atan2(pxDx, pxDy) * 180 / Math.PI;
+              const h = dist > 10 ? Math.max(Math.round(dist * 1.2), Math.round(beamH * 0.55)) : beamH;
+              beamEl.style.left = `${fromX}%`;
+              beamEl.style.top  = `${fromY}%`;
+              beamEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+              return h;
+            }
+
+            // Muerg's white fire beam — from Old Gates, straight down
+            const muergH = aimBeam(beam, muergFinalX, muergFinalY);
             beam.style.opacity = '1';
             beam.style.transition = 'height 0.4s ease-in';
-            beam.style.height = `${beamH}px`;
+            beam.style.height = `${muergH}px`;
 
-            // Ash's purple beam strikes same spot, 200ms later
+            // Ash's purple beam — from Ash's position, angled toward Old Gates
             await sleep(200);
-            ashBeam.style.left = `${originX}%`;
-            ashBeam.style.top  = `${originY}%`;
+            const ashH = aimBeam(ashBeam, ashFinalX, ashFinalY);
             ashBeam.style.opacity = '1';
             ashBeam.style.transition = 'height 0.4s ease-in';
-            ashBeam.style.height = `${Math.round(beamH * 0.75)}px`;
+            ashBeam.style.height = `${ashH}px`;
 
-            // Host's collective beam — originates from the host's position, aimed at Old Gates
+            // Host's collective beam — from host cluster, angled toward Old Gates
             await sleep(300);
-            const hostFinalX = originX - 7;
-            const hostFinalY = originY + 1.5;
-            const dx = (originX - hostFinalX) / 100 * container.offsetWidth;
-            const dy = (originY - hostFinalY) / 100 * container.offsetHeight;
-            const hostBeamDist = Math.round(Math.sqrt(dx * dx + dy * dy) * 1.15);
-            const hostBeamAngle = Math.atan2(dx, dy) * 180 / Math.PI;
-            hostBeam.style.left = `${hostFinalX}%`;
-            hostBeam.style.top  = `${hostFinalY}%`;
-            hostBeam.style.transform = `translateX(-50%) rotate(${hostBeamAngle}deg)`;
+            const hostH = aimBeam(hostBeam, hostFinalX, hostFinalY);
             hostBeam.style.opacity = '0.9';
             hostBeam.style.transition = 'height 0.5s ease-in';
-            hostBeam.style.height = `${hostBeamDist}px`;
+            hostBeam.style.height = `${hostH}px`;
 
             // Glow builds; all entities fade into the light
             glow.style.transition = 'opacity 2.8s ease-in';
