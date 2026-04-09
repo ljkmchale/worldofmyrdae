@@ -22,7 +22,7 @@ Sync the World of Myrdae project with GitHub master. This pulls remote changes, 
 3. **If there are local changes, stage and commit them:**
    - Stage all modified tracked files:
      ```bash
-     git -C "/Users/larrymchale/Desktop/worldofmyrdae-master" add js/locations-db.js js/map-overlay.js js/editor.js js/campaign-data.js css/ *.html
+     git -C "/Users/larrymchale/Desktop/worldofmyrdae-master" add js/ css/ *.html .claude/skills/
      ```
    - Use the commit message from $ARGUMENTS if provided, otherwise generate a short descriptive one based on what files changed (e.g. "Update locations database", "Edit map overlay styles", etc.)
    - Commit with that message plus the Co-Authored-By trailer.
