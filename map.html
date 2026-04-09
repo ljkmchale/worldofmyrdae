@@ -384,6 +384,121 @@
       background: radial-gradient(ellipse at center, rgba(255,255,220,0.65) 0%, rgba(255,235,100,0.3) 35%, rgba(220,190,60,0.08) 62%, rgba(0,0,0,0) 80%);
     }
 
+    /* Muerg — the descending earth god */
+    #muerg-entity {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, #fffde7 55%, rgba(255,253,200,0) 100%);
+      box-shadow:
+        0 0 10px  5px rgba(255,255,255,0.95),
+        0 0 22px 11px rgba(255,250,180,0.7),
+        0 0 45px 22px rgba(255,235,80,0.4);
+      z-index: 301;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes muerg-charge {
+      0%, 100% {
+        box-shadow: 0 0 10px 5px rgba(255,255,255,0.95), 0 0 22px 11px rgba(255,250,180,0.7), 0 0 45px 22px rgba(255,235,80,0.4);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 0 18px 10px rgba(255,255,255,1), 0 0 40px 22px rgba(255,250,180,0.95), 0 0 85px 45px rgba(255,235,80,0.65);
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+    }
+
+    .muerg-charging {
+      animation: muerg-charge 0.5s ease-in-out infinite;
+    }
+
+    /* White fire beam — strikes down into the Severed Crease */
+    #muerg-beam {
+      position: absolute;
+      width: 5px;
+      height: 0;
+      background: linear-gradient(to bottom, #ffffff 0%, rgba(255,255,200,0.8) 50%, rgba(255,248,150,0) 100%);
+      box-shadow: 0 0 8px 4px rgba(255,255,200,0.8), 0 0 16px 8px rgba(255,240,100,0.4);
+      border-radius: 3px;
+      transform: translateX(-50%);
+      transform-origin: top center;
+      z-index: 301;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* Ash — Muerg's human companion, half the size */
+    #ash-entity {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #e8b0ff 0%, #9b30ff 55%, rgba(130,0,220,0) 100%);
+      box-shadow:
+        0 0 6px  3px rgba(190,100,255,0.95),
+        0 0 12px 6px rgba(150,40,255,0.65),
+        0 0 24px 12px rgba(120,0,220,0.35);
+      z-index: 301;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes ash-charge {
+      0%, 100% {
+        box-shadow: 0 0 6px 3px rgba(190,100,255,0.95), 0 0 12px 6px rgba(150,40,255,0.65), 0 0 24px 12px rgba(120,0,220,0.35);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 0 11px 7px rgba(210,130,255,1), 0 0 22px 12px rgba(170,70,255,0.9), 0 0 48px 24px rgba(140,20,240,0.55);
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+    }
+
+    .ash-charging {
+      animation: ash-charge 0.5s ease-in-out infinite;
+    }
+
+    /* Ash's purple fire beam */
+    #ash-beam {
+      position: absolute;
+      width: 3px;
+      height: 0;
+      background: linear-gradient(to bottom, #cc66ff 0%, rgba(170,40,255,0.75) 50%, rgba(130,0,200,0) 100%);
+      box-shadow: 0 0 6px 3px rgba(180,50,255,0.75), 0 0 12px 6px rgba(140,20,220,0.35);
+      border-radius: 2px;
+      transform: translateX(-50%);
+      transform-origin: top center;
+      z-index: 301;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* The host — small star cluster trailing behind the group */
+    #muerg-host {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255, 255, 215, 0.9);
+      box-shadow:
+        0 0 3px 2px rgba(255, 255, 200, 0.5),
+        -11px  -5px 0 -1px rgba(255, 252, 190, 0.85),
+        -6px  -12px 0 -1px rgba(255, 248, 185, 0.75),
+        -19px  -3px 0 -1px rgba(255, 246, 178, 0.65),
+        -14px -14px 0 -1px rgba(255, 243, 172, 0.55),
+        -25px  -7px 0 -2px rgba(255, 249, 182, 0.5),
+        -8px  -20px 0 -1px rgba(255, 251, 188, 0.6);
+      z-index: 300;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+
     /* Title card that appears during the pre-awakening reveal */
     #awakening-title {
       position: absolute;
@@ -572,6 +687,16 @@
           <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
           <!-- Divine glow — golden-white light gathering before the burst -->
           <div id="awakening-glow" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:298;pointer-events:none;opacity:0;"></div>
+          <!-- Muerg — the descending earth god -->
+          <div id="muerg-entity"></div>
+          <!-- White fire beam striking into the Severed Crease -->
+          <div id="muerg-beam"></div>
+          <!-- Ash — Muerg's human companion -->
+          <div id="ash-entity"></div>
+          <!-- Ash's purple fire beam -->
+          <div id="ash-beam"></div>
+          <!-- The host — small star cluster trailing behind the group -->
+          <div id="muerg-host"></div>
           <!-- Flash overlay: white fire burst of Muerg -->
           <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%);"></div>
           <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
@@ -732,6 +857,11 @@
       const preMap       = document.getElementById('preawakening-map');
       const flash        = document.getElementById('awakening-flash');
       const glow         = document.getElementById('awakening-glow');
+      const entity       = document.getElementById('muerg-entity');
+      const beam         = document.getElementById('muerg-beam');
+      const ash          = document.getElementById('ash-entity');
+      const ashBeam      = document.getElementById('ash-beam');
+      const host         = document.getElementById('muerg-host');
       const container    = document.getElementById('map-container');
       const mapImg       = document.getElementById('map-image');
       const titleCard    = document.getElementById('awakening-title');
@@ -741,15 +871,23 @@
 
       if (btn) { btn.style.opacity = '0.3'; btn.disabled = true; }
 
+      // Reset all entities for replay
+      entity.style.transition = 'none'; entity.style.opacity = '0';
+      entity.classList.remove('muerg-charging');
+      beam.style.transition = 'none'; beam.style.height = '0'; beam.style.opacity = '0';
+      ash.style.transition = 'none'; ash.style.opacity = '0';
+      ash.classList.remove('ash-charging');
+      ashBeam.style.transition = 'none'; ashBeam.style.height = '0'; ashBeam.style.opacity = '0';
+      host.style.transition = 'none'; host.style.opacity = '0';
+
       // ── Phase 0: Zoom out to see the full world ──
       await MapController.zoomOutFull('map-container');
       await sleep(400);
 
-      // Position effects over the Severed Crease / Distancion Mountains (x:60, y:48.51 in map-% coords).
-      // At scale=1 the map fills container width; compute y as a % of container height.
+      // Compute the Old Gates / Severed Crease position in viewport % (x:65.8, y:56.5 map-coords)
       const mapDisplayH = (mapImg.naturalHeight / mapImg.naturalWidth) * container.offsetWidth;
-      const originX = 60;
-      const originY = ((48.51 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
+      const originX = 65.8;
+      const originY = +((56.5 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
       const gradOrigin = `${originX}% ${originY}%`;
       glow.style.background  = `radial-gradient(ellipse at ${gradOrigin}, rgba(255,255,220,0.65) 0%, rgba(255,235,100,0.3) 35%, rgba(220,190,60,0.08) 62%, rgba(0,0,0,0) 80%)`;
       flash.style.background = `radial-gradient(ellipse at ${gradOrigin}, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%)`;
@@ -761,30 +899,89 @@
       titleCard.style.opacity = '1';
       await sleep(1300);
 
-      // ── Phase 2: Hold — the world as it was ──
-      await sleep(3500);
+      // ── Phase 2: Hold — let the player read the old world ──
+      await sleep(2500);
 
-      // ── Phase 3: Muerg arrives — divine light begins to gather at the Crease ──
+      // ── Phase 2.5: The group sweeps in from the far northwest ──
       titleCard.style.opacity = '0';
+
+      // Set all start positions (far NW), invisible
+      entity.style.left = '5%';  entity.style.top = '3%';
+      entity.style.transition = 'none'; entity.style.opacity = '0';
+      ash.style.left = '3.5%';   ash.style.top = '5%';
+      ash.style.transition = 'none'; ash.style.opacity = '0';
+      host.style.left = '2%';    host.style.top = '7%';
+      host.style.transition = 'none'; host.style.opacity = '0';
+      entity.getBoundingClientRect(); // force reflow
+
+      // Launch all three — host slower so it visibly trails
+      entity.style.transition = 'top 3.5s ease-in, left 3.5s linear, opacity 0.4s ease';
+      entity.style.opacity = '1';
+      ash.style.transition    = 'top 3.5s ease-in, left 3.5s linear, opacity 0.4s ease';
+      ash.style.opacity = '1';
+      host.style.transition   = 'top 4.4s ease-in, left 4.4s linear, opacity 0.6s ease';
+      host.style.opacity = '1';
+      await sleep(50);
+
+      // Muerg leads — straight to Old Gates
+      entity.style.left = `${originX}%`;
+      entity.style.top  = `${originY}%`;
+      // Ash flies alongside, slightly behind and left
+      ash.style.left = `${originX - 1.5}%`;
+      ash.style.top  = `${originY + 0.8}%`;
+      // Host trails behind the group
+      host.style.left = `${originX - 7}%`;
+      host.style.top  = `${originY + 1.5}%`;
+      await sleep(3600);
+
+      // Arrived — Muerg and Ash charge together
+      entity.classList.add('muerg-charging');
+      ash.classList.add('ash-charging');
+      await sleep(1200);
+      entity.classList.remove('muerg-charging');
+      ash.classList.remove('ash-charging');
+
+      // Muerg's white fire beam strikes the Old Gates
+      const beamH = Math.round(container.offsetHeight * 0.16);
+      beam.style.left = `${originX}%`;
+      beam.style.top  = `${originY}%`;
+      beam.style.opacity = '1';
+      beam.style.transition = 'height 0.4s ease-in';
+      beam.style.height = `${beamH}px`;
+
+      // Ash's purple beam strikes same spot, 200ms later
+      await sleep(200);
+      ashBeam.style.left = `${originX}%`;
+      ashBeam.style.top  = `${originY}%`;
+      ashBeam.style.opacity = '1';
+      ashBeam.style.transition = 'height 0.4s ease-in';
+      ashBeam.style.height = `${Math.round(beamH * 0.75)}px`;
+
+      // Glow builds; all entities fade into the light
       glow.style.transition = 'opacity 2.8s ease-in';
       glow.style.opacity = '1';
+      entity.style.transition = 'opacity 0.8s ease'; entity.style.opacity = '0';
+      ash.style.transition    = 'opacity 0.8s ease'; ash.style.opacity = '0';
+      host.style.transition   = 'opacity 1s ease';   host.style.opacity = '0';
 
-      // The earth stirs — the Crease is being pulled closed
+      await sleep(420);
+      beam.style.transition    = 'opacity 0.9s ease-out'; beam.style.opacity = '0';
+      ashBeam.style.transition = 'opacity 0.9s ease-out'; ashBeam.style.opacity = '0';
+      await sleep(950);
+      beam.style.transition = 'none'; beam.style.height = '0';
+      ashBeam.style.transition = 'none'; ashBeam.style.height = '0';
+
+      // ── Phase 3: The earth responds — the Crease seals, lands pull together ──
       container.style.animation = 'awakening-tremor 0.35s ease-in-out infinite';
       await sleep(1200);
-
-      // The lands shift — pulling together
       container.style.animation = 'awakening-tremor 0.18s ease-in-out infinite';
       await sleep(1000);
-
-      // Muerg's fire ignites — peak fury
       container.style.animation = 'awakening-heavy-tremor 0.09s ease-in-out infinite';
       await sleep(1600);
 
       // ── Phase 4: The white fire bursts — two warning pulses then the full divine surge ──
       container.style.animation = '';
 
-      // First pulse — a breath of divine light
       flash.style.transition = 'opacity 0.07s ease-in';
       flash.style.opacity = '0.45';
       await sleep(90);
@@ -792,7 +989,6 @@
       flash.style.opacity = '0';
       await sleep(230);
 
-      // Second pulse — brighter, the fire rising
       flash.style.transition = 'opacity 0.06s ease-in';
       flash.style.opacity = '0.75';
       await sleep(90);
@@ -805,16 +1001,12 @@
       flash.style.opacity = '1';
       await sleep(80);
 
-      // Clear the glow under the flash
       glow.style.transition = 'opacity 0s';
       glow.style.opacity = '0';
 
-      // Flash begins to clear — start the cross-dissolve simultaneously so players
-      // can watch the lands merge as the light fades
+      // Flash clears — cross-dissolve begins, old world contracts into the new
       flash.style.transition = 'opacity 1.8s ease-out';
       flash.style.opacity = '0';
-
-      // Old world contracts and dissolves — the lands pulling together into the new shape
       preMap.style.transformOrigin = '50% 50%';
       preMap.style.transition = 'opacity 6s ease-in-out, transform 6s ease-in-out';
       preMap.style.transform = 'scale(0.96)';
@@ -827,10 +1019,8 @@
       await sleep(700);
       container.style.animation = '';
 
-      // Wait for cross-dissolve to finish (6s from burst, ~1.25s elapsed)
+      // Wait for cross-dissolve to finish
       await sleep(4750);
-
-      // Reset preMap transform so next replay starts clean
       preMap.style.transition = 'none';
       preMap.style.transform = '';
 
