@@ -580,20 +580,6 @@
             animation: muerg-charge 0.5s ease-in-out infinite;
         }
 
-        #muerg-beam {
-            position: absolute;
-            width: 5px;
-            height: 0;
-            background: linear-gradient(to bottom, #ffffff 0%, rgba(255,255,200,0.8) 50%, rgba(255,248,150,0) 100%);
-            box-shadow: 0 0 8px 4px rgba(255,255,200,0.8), 0 0 16px 8px rgba(255,240,100,0.4);
-            border-radius: 3px;
-            transform: translateX(-50%);
-            transform-origin: top center;
-            z-index: 301;
-            pointer-events: none;
-            opacity: 0;
-        }
-
         #ash-entity {
             position: absolute;
             width: 12px;
@@ -625,20 +611,6 @@
             animation: ash-charge 0.5s ease-in-out infinite;
         }
 
-        #ash-beam {
-            position: absolute;
-            width: 3px;
-            height: 0;
-            background: linear-gradient(to bottom, #cc66ff 0%, rgba(170,40,255,0.75) 50%, rgba(130,0,200,0) 100%);
-            box-shadow: 0 0 6px 3px rgba(180,50,255,0.75), 0 0 12px 6px rgba(140,20,220,0.35);
-            border-radius: 2px;
-            transform: translateX(-50%);
-            transform-origin: top center;
-            z-index: 301;
-            pointer-events: none;
-            opacity: 0;
-        }
-
         #muerg-host {
             position: absolute;
             width: 4px;
@@ -657,21 +629,6 @@
             pointer-events: none;
             opacity: 0;
             transform: translate(-50%, -50%);
-        }
-
-        /* Host beam — collective strike angling in from the northwest */
-        #host-beam {
-            position: absolute;
-            width: 4px;
-            height: 0;
-            background: linear-gradient(to bottom, rgba(255,255,210,1) 0%, rgba(255,248,170,0.7) 55%, rgba(255,243,140,0) 100%);
-            box-shadow: 0 0 6px 3px rgba(255,255,190,0.7), 0 0 12px 4px rgba(255,240,120,0.35);
-            border-radius: 2px;
-            transform: translateX(-50%);
-            transform-origin: top center;
-            z-index: 299;
-            pointer-events: none;
-            opacity: 0;
         }
 
         #awakening-title {
@@ -764,8 +721,8 @@
 
         <!-- Title card shown during pre-awakening reveal -->
         <div id="awakening-title">
-            <div class="title-main">Before the The Awakening</div>
-            <div class="title-sub">Before Ashe and the Primordials descended into the heart of Oberra…</div>
+            <div class="title-main">Before The Awakening</div>
+            <div class="title-sub">Muerg the Earth God sent Ashe and the Primordials to descended into the heart of Oberra…</div>
         </div>
 
         <!-- Reveal title shown after the burst as the changed world appears -->
@@ -817,16 +774,10 @@
         <div id="awakening-glow" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:298;pointer-events:none;opacity:0;"></div>
         <!-- The descending god -->
         <div id="muerg-entity"></div>
-        <!-- Fire beam striking into the depths -->
-        <div id="muerg-beam"></div>
         <!-- Ashe — who descends with the group and later surfaces with the Primordials -->
-        <div id="ash-entity"></div>
-        <!-- Ashe's purple fire beam -->
-        <div id="ash-beam"></div>
+        <div id="ash-entity"></div>  
         <!-- The Primordials — trailing behind the group -->
         <div id="muerg-host"></div>
-        <!-- Primordials beam — faint collective strike -->
-        <div id="host-beam"></div>
         <!-- Flash overlay -->
         <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%);"></div>
         <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
@@ -976,11 +927,8 @@
             const flash       = document.getElementById('awakening-flash');
             const glow        = document.getElementById('awakening-glow');
             const entity      = document.getElementById('muerg-entity');
-            const beam        = document.getElementById('muerg-beam');
             const ash         = document.getElementById('ash-entity');
-            const ashBeam     = document.getElementById('ash-beam');
             const host        = document.getElementById('muerg-host');
-            const hostBeam    = document.getElementById('host-beam');
             const lavaPool    = document.getElementById('lava-pool');
             const lavaSparks  = document.getElementById('lava-sparks');
             const lavaFlow    = document.getElementById('lava-flow');
@@ -1000,12 +948,9 @@
             // ── Reset everything for replay ──
             entity.style.transition = 'none'; entity.style.opacity = '0';
             entity.classList.remove('muerg-charging');
-            beam.style.transition = 'none'; beam.style.height = '0'; beam.style.opacity = '0';
             ash.style.transition = 'none'; ash.style.opacity = '0';
             ash.classList.remove('ash-charging');
-            ashBeam.style.transition = 'none'; ashBeam.style.height = '0'; ashBeam.style.opacity = '0';
             host.style.transition = 'none'; host.style.opacity = '0';
-            hostBeam.style.transition = 'none'; hostBeam.style.height = '0'; hostBeam.style.opacity = '0';
             lavaPool.style.transition = 'none'; lavaPool.style.animation = ''; lavaPool.style.opacity = '0';
             lavaSparks.style.transition = 'none'; lavaSparks.style.animation = ''; lavaSparks.style.opacity = '0';
             lavaFlow.style.transition = 'none'; lavaFlow.style.animation = ''; lavaFlow.style.height = '0'; lavaFlow.style.width = '28px'; lavaFlow.style.opacity = '0';
