@@ -20,6 +20,7 @@ class BoatFleet {
         this.svg.appendChild(this.boatsLayer);
 
         this.initializeBoats();
+        this.initializeSeaMonster();
         this.startAnimation();
     }
 
@@ -52,6 +53,33 @@ class BoatFleet {
                 element: null
             });
         });
+    }
+
+    initializeSeaMonster() {
+        this.seaMonster = {
+            pathPoints: [
+                { x: 35.0, y: 58.8 },
+                { x: 33.4, y: 52.1 },
+                { x: 37.6, y: 51.3 },
+                { x: 39.6, y: 48.3 },
+                { x: 42.3, y: 54.9 },
+                { x: 40.2, y: 59.2 }
+            ],
+            cycle: 240000,
+            pulseInterval: 45000,
+            visibleDuration: 7000,
+            wasVisible: false,
+            element: null,
+            splashGroup: null,
+            splashes: [],
+            lastSplash: 0,
+            size: Math.max(12, this.natW * 0.0012),
+            startTime: Date.now()
+        };
+
+        this.monsterLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        this.monsterLayer.setAttribute('class', 'overlay-sea-monster');
+        this.svg.appendChild(this.monsterLayer);
     }
 
     calculatePathPoints(route) {
@@ -108,6 +136,102 @@ class BoatFleet {
         return g;
     }
 
+    createSeaMonsterElement() {
+        const size = this.seaMonster.size;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'sea-serpent');
+        g.setAttribute('opacity', '0');
+
+        const splashGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        splashGroup.setAttribute('class', 'sea-serpent-splash-group');
+
+        const head = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        head.setAttribute('cx', '0');
+        head.setAttribute('cy', '0');
+        head.setAttribute('r', Math.max(3.5, size * 0.28));
+        head.setAttribute('fill', 'rgba(35, 88, 112, 0.92)');
+        head.setAttribute('stroke', 'rgba(180, 235, 255, 0.9)');
+        head.setAttribute('stroke-width', Math.max(1, size * 0.12));
+
+        const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        glow.setAttribute('cx', '0');
+        glow.setAttribute('cy', '0');
+        glow.setAttribute('r', Math.max(1.8, size * 0.18));
+        glow.setAttribute('fill', 'rgba(173, 231, 255, 0.35)');
+
+        g.appendChild(splashGroup);
+        g.appendChild(glow);
+        g.appendChild(head);
+
+        this.seaMonster.splashGroup = splashGroup;
+        this.monsterLayer.appendChild(g);
+        return g;
+    }
+
+    updateSeaMonster() {
+        if (!this.seaMonster) return;
+
+        const now = Date.now();
+        const cycleProgress = ((now - this.seaMonster.startTime) % this.seaMonster.cycle) / this.seaMonster.cycle;
+        const pathPos = this.interpolatePosition(this.seaMonster.pathPoints, cycleProgress);
+
+        const pulseProgress = ((now - this.seaMonster.startTime) % this.seaMonster.pulseInterval) / this.seaMonster.pulseInterval;
+        const visiblePulseThreshold = this.seaMonster.visibleDuration / this.seaMonster.pulseInterval;
+        const isVisible = pulseProgress < visiblePulseThreshold;
+        const visibleProgress = isVisible ? (pulseProgress / visiblePulseThreshold) : 0;
+
+        const rise = isVisible ? Math.sin(visibleProgress * Math.PI) * 0.45 : 0;
+        const x = pathPos.x;
+        const y = pathPos.y - rise;
+        const svgX = (x / 100) * this.natW;
+        const svgY = (y / 100) * this.natH;
+        const rotation = this.calculateRotation(this.seaMonster.pathPoints, cycleProgress);
+
+        if (!this.seaMonster.element) {
+            this.seaMonster.element = this.createSeaMonsterElement();
+        }
+
+        this.seaMonster.element.setAttribute('transform', `translate(${svgX},${svgY}) rotate(${rotation})`);
+        this.seaMonster.element.setAttribute('opacity', isVisible ? `${0.7 + rise * 0.18}` : '0');
+
+        if (isVisible && !this.seaMonster.wasVisible) {
+            this.createMonsterSplash();
+        }
+        this.seaMonster.wasVisible = isVisible;
+
+        this.seaMonster.splashes = this.seaMonster.splashes.filter(splash => {
+            const age = (now - splash.startTime) / 1200;
+            if (age >= 1) {
+                if (splash.element.parentNode) splash.element.parentNode.removeChild(splash.element);
+                return false;
+            }
+
+            const radius = this.seaMonster.size * 0.35 + age * this.seaMonster.size * 1.1;
+            splash.element.setAttribute('r', radius);
+            splash.element.setAttribute('opacity', `${Math.max(0, 0.65 - age * 0.65)}`);
+            splash.element.setAttribute('cx', '0');
+            splash.element.setAttribute('cy', '0');
+            return true;
+        });
+    }
+
+    createMonsterSplash() {
+        if (!this.seaMonster.splashGroup) return;
+
+        const size = this.seaMonster.size;
+        const splash = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        splash.setAttribute('fill', 'none');
+        splash.setAttribute('stroke', 'rgba(198, 241, 255, 0.85)');
+        splash.setAttribute('stroke-width', Math.max(1, size * 0.12));
+        splash.setAttribute('opacity', '0.75');
+        splash.setAttribute('cx', '0');
+        splash.setAttribute('cy', '0');
+        splash.setAttribute('r', `${Math.max(3, size * 0.3)}`);
+
+        this.seaMonster.splashGroup.appendChild(splash);
+        this.seaMonster.splashes.push({ element: splash, startTime: Date.now() });
+    }
+
     updateBoat(boat) {
         const raw      = ((Date.now() / boat.duration) + boat.startOffset) % 1;
         const progress = boat.reversed ? 1 - raw : raw;
@@ -132,6 +256,7 @@ class BoatFleet {
 
     animate = () => {
         this.boats.forEach(boat => this.updateBoat(boat));
+        this.updateSeaMonster();
         this.animationId = requestAnimationFrame(this.animate);
     }
 
