@@ -714,6 +714,9 @@
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
+            <button class="map-btn" id="water-routes-toggle" onclick="toggleWaterRoutes()" title="Toggle Water Routes" style="opacity:0.5;">
+                <i class="fa-solid fa-water"></i>
+            </button>
             <button class="map-btn" id="awakening-btn" onclick="replayGreatAwakening()" title="Replay The Awakening">
                 <i class="fa-solid fa-bolt-lightning"></i>
             </button>
@@ -915,6 +918,22 @@
 
         const tracker = createCoordsTracker('map-container', 'map-image', 'map-coords', 'coords-toggle');
         function toggleCoords() { tracker.toggle(); }
+
+        // ── Water Routes Toggle ──────────────────────────────────────
+        window.waterRoutesVisible = false;
+
+        function toggleWaterRoutes() {
+            window.waterRoutesVisible = !window.waterRoutesVisible;
+            const btn = document.getElementById('water-routes-toggle');
+            
+            if (btn) {
+                btn.style.opacity = window.waterRoutesVisible ? '1' : '0.5';
+                btn.title = window.waterRoutesVisible ? 'Hide Water Routes' : 'Show Water Routes';
+            }
+
+            // Redraw the overlay to show/hide water routes
+            MapOverlay.init('map-container', 'map-image');
+        }
 
         // ── Great Awakening Animation ──────────────────────────────────────
         let awakeningRunning = false;

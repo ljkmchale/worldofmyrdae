@@ -759,8 +759,8 @@ const MapOverlay = (function () {
      * Add a road/path to the map
      */
     function addRoad(group, road, ignoredLocMap, ignoredNatW, ignoredNatH) {
-        // Draw water-route lines only in editor mode; hide them in viewers.
-        if (road.type === 'water-route' && !isEditorMode()) {
+        // Draw water-route lines only in editor mode or if toggle is enabled; hide them in viewers.
+        if (road.type === 'water-route' && !isEditorMode() && !window.waterRoutesVisible) {
             return;
         }
 

@@ -14100,6 +14100,43 @@ const WORLD_LOCATIONS = {
                 ],
                 "fjordnahl"
             ]
+        },
+        {
+            "id": "nebisill-adamont-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "nebisill",
+                [
+                    67.41,
+                    72.05
+                ],
+                [
+                    67.11,
+                    70.37
+                ],
+                [
+                    65.52,
+                    69.87
+                ],
+                [
+                    65.02,
+                    69.13
+                ],
+                [
+                    64.46,
+                    68.63
+                ],
+                [
+                    63.7,
+                    68.38
+                ],
+                [
+                    61.98,
+                    66.61
+                ],
+                "adamont"
+            ]
         }
     ],
     "regions": []
