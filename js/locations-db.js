@@ -2579,7 +2579,7 @@ const WORLD_LOCATIONS = {
         "labelOffsetX": 0,
         "labelOffsetY": 0,
         "labelAlign": "middle",
-        "opacity": 0.8,
+        "opacity": 1,
         "fontStyle": "Normal"
     },
     {
