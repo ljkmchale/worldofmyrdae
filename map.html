@@ -339,6 +339,51 @@
       font-style: italic;
     }
 
+    /* ── Primordial Air ─────────────────────────────────────── */
+    #wind-sweep {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        88deg,
+        transparent 0%,   transparent 27%,
+        rgba(180,225,255,0.22) 29%, rgba(160,210,255,0.12) 33%, transparent 36%,
+        transparent 51%,
+        rgba(180,225,255,0.16) 53%, transparent 57%
+      );
+      z-index: 272;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-110%);
+    }
+
+    @keyframes wind-pass {
+      0%   { transform: translateX(-110%); opacity: 0; }
+      8%   { opacity: 1; }
+      88%  { opacity: 0.85; }
+      100% { transform: translateX(115%); opacity: 0; }
+    }
+
+    /* ── Primordial Water ───────────────────────────────────── */
+    #rain-veil {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        168deg,
+        transparent 0px,     transparent 11px,
+        rgba(80,150,230,0.13) 11px, rgba(80,150,230,0.13) 13px
+      );
+      z-index: 273;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    @keyframes rain-move {
+      from { background-position: 0 0; }
+      to   { background-position: -70px 140px; }
+    }
+
     /* ── Lava Eruption ────────────────────────────────────────── */
     #lava-pool {
       position: absolute;
@@ -791,6 +836,9 @@
             </div>
           </div>
           <div class="map-coords" id="map-coords" style="display:none;">X: — Y: —</div>
+          <!-- Primordial air and water elements -->
+          <div id="wind-sweep"></div>
+          <div id="rain-veil"></div>
           <!-- Lava eruption at the Severed Crease -->
           <div id="lava-pool"></div>
           <div id="lava-sparks"></div>
@@ -988,7 +1036,10 @@
 
       if (btn) { btn.style.opacity = '0.3'; btn.disabled = true; }
 
-      // Reset all entities for replay
+      const windSweep  = document.getElementById('wind-sweep');
+      const rainVeil   = document.getElementById('rain-veil');
+
+      // ── Reset everything for replay ──
       entity.style.transition = 'none'; entity.style.opacity = '0';
       entity.classList.remove('muerg-charging');
       beam.style.transition = 'none'; beam.style.height = '0'; beam.style.opacity = '0';
@@ -1000,37 +1051,45 @@
       lavaPool.style.transition = 'none'; lavaPool.style.animation = ''; lavaPool.style.opacity = '0';
       lavaSparks.style.transition = 'none'; lavaSparks.style.animation = ''; lavaSparks.style.opacity = '0';
       lavaFlow.style.transition = 'none'; lavaFlow.style.animation = ''; lavaFlow.style.height = '0'; lavaFlow.style.width = '28px'; lavaFlow.style.opacity = '0';
+      glow.style.transition = 'none'; glow.style.opacity = '0';
+      windSweep.style.animation = ''; windSweep.style.opacity = '0'; windSweep.style.transform = 'translateX(-110%)';
+      rainVeil.style.transition = 'none'; rainVeil.style.animationName = ''; rainVeil.style.opacity = '0';
 
-      // ── Phase 0: Zoom out to see the full world ──
+      // ── Phase 0: Zoom out ──
       await MapController.zoomOutFull('map-container');
       await sleep(400);
 
-      // Compute the Old Gates / Severed Crease position in viewport % (x:65.8, y:56.5 map-coords)
+      // ── Coordinates ──
       const mapDisplayH = (mapImg.naturalHeight / mapImg.naturalWidth) * container.offsetWidth;
-      const originX = 65.8;
-      const originY = +((56.5 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
-      const gradOrigin = `${originX}% ${originY}%`;
-      glow.style.background  = `radial-gradient(ellipse at ${gradOrigin}, rgba(255,255,220,0.65) 0%, rgba(255,235,100,0.3) 35%, rgba(220,190,60,0.08) 62%, rgba(0,0,0,0) 80%)`;
-      flash.style.background = `radial-gradient(ellipse at ${gradOrigin}, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%)`;
+      const originX  = 65.8;
+      const originY  = +((56.5 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
+      const descentX = 63.3;
+      const descentY = +((34.8 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
+      const sinkEndY = +((44.7 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
+      const emberX   = 63.09;
+      const emberY   = +((55.5 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
 
-      // ── Phase 1: The old world fades in ──
+      // Underground fire glow (warm orange, centered at Old Gates)
+      glow.style.background = `radial-gradient(ellipse at ${originX}% ${originY}%, rgba(255,90,0,0.55) 0%, rgba(200,40,0,0.22) 38%, rgba(160,15,0,0.06) 65%, rgba(0,0,0,0) 82%)`;
+
+      // ── Phase 1: Old world fades in ──
       preMap.style.transition = 'opacity 1.8s ease-in-out';
       preMap.style.opacity = '1';
       await sleep(700);
       titleCard.style.opacity = '1';
       await sleep(1300);
 
-      // ── Phase 2: Hold — let the player read the old world ──
+      // ── Phase 2: Hold ──
       await sleep(2500);
 
-      // ── Phase 2.5: The group sweeps in from the far northwest ──
+      // ── Phase 2.5: The group sweeps in from the NW toward the descent point ──
       titleCard.style.opacity = '0';
 
-      entity.style.left = '5%';  entity.style.top = '3%';
+      entity.style.left = '5%'; entity.style.top = '3%';
       entity.style.transition = 'none'; entity.style.opacity = '0';
-      ash.style.left = '3.5%';   ash.style.top = '5%';
+      ash.style.left = '3.5%'; ash.style.top = '5%';
       ash.style.transition = 'none'; ash.style.opacity = '0';
-      host.style.left = '2%';    host.style.top = '7%';
+      host.style.left = '2%'; host.style.top = '7%';
       host.style.transition = 'none'; host.style.opacity = '0';
       entity.getBoundingClientRect();
 
@@ -1042,157 +1101,160 @@
       host.style.opacity = '1';
       await sleep(50);
 
-      const muergFinalX = originX - 3,    muergFinalY = originY + 5;
-      const ashFinalX   = originX - 6,    ashFinalY   = originY + 7;
-      const hostFinalX  = originX - 11,   hostFinalY  = originY + 5;
-
-      entity.style.left = `${muergFinalX}%`; entity.style.top = `${muergFinalY}%`;
-      ash.style.left    = `${ashFinalX}%`;   ash.style.top    = `${ashFinalY}%`;
-      host.style.left   = `${hostFinalX}%`;  host.style.top   = `${hostFinalY}%`;
+      entity.style.left = `${descentX}%`;      entity.style.top = `${descentY}%`;
+      ash.style.left    = `${descentX - 2}%`;  ash.style.top    = `${descentY + 1.5}%`;
+      host.style.left   = `${descentX - 4}%`;  host.style.top   = `${descentY + 3}%`;
       await sleep(6100);
 
-      // ── Beam strike ──
+      // ── Descent: Muerg, Ash, and the primordials sink into Oberra ──
       entity.classList.add('muerg-charging');
       ash.classList.add('ash-charging');
-      await sleep(1200);
+      await sleep(800);
       entity.classList.remove('muerg-charging');
       ash.classList.remove('ash-charging');
 
-      const beamH = Math.round(container.offsetHeight * 0.16);
-      function aimBeam(beamEl, fromX, fromY) {
-        const pxDx = (originX - fromX) / 100 * container.offsetWidth;
-        const pxDy = (originY - fromY) / 100 * container.offsetHeight;
-        const dist = Math.sqrt(pxDx * pxDx + pxDy * pxDy);
-        const angle = Math.atan2(-pxDx, pxDy) * 180 / Math.PI;
-        beamEl.style.left = `${fromX}%`;
-        beamEl.style.top  = `${fromY}%`;
-        beamEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
-        return Math.round(dist);
-      }
+      entity.style.transition = 'top 2s ease-in, opacity 1.2s ease-in';
+      ash.style.transition    = 'top 2s ease-in, opacity 1.2s ease-in';
+      host.style.transition   = 'top 2.5s ease-in, opacity 1.5s ease-in';
+      entity.style.top = `${sinkEndY}%`; entity.style.opacity = '0';
+      ash.style.top    = `${sinkEndY + 1}%`; ash.style.opacity = '0';
+      host.style.top   = `${sinkEndY + 2}%`; host.style.opacity = '0';
+      await sleep(2000);
 
-      const muergH = aimBeam(beam, muergFinalX, muergFinalY);
-      beam.style.opacity = '1';
-      beam.style.transition = 'height 0.4s ease-in';
-      beam.style.height = `${muergH}px`;
+      // ── Phase 3: Underground — primordial fire and earth reshape the land ──
+      glow.style.transition = 'opacity 3s ease-in';
+      glow.style.opacity = '1';
 
-      await sleep(200);
-      const ashH = aimBeam(ashBeam, ashFinalX, ashFinalY);
-      ashBeam.style.opacity = '1';
-      ashBeam.style.transition = 'height 0.4s ease-in';
-      ashBeam.style.height = `${ashH}px`;
-
-      await sleep(300);
-      const hostH = aimBeam(hostBeam, hostFinalX, hostFinalY);
-      hostBeam.style.opacity = '0.9';
-      hostBeam.style.transition = 'height 0.5s ease-in';
-      hostBeam.style.height = `${hostH}px`;
-
-      // ── Beams hit — lava erupts from the Crease ──
-      lavaPool.style.left = `${originX}%`;
-      lavaPool.style.top  = `${originY}%`;
-      lavaPool.style.transition = 'opacity 0.35s ease-in';
+      lavaPool.style.left = `${originX}%`; lavaPool.style.top = `${originY}%`;
+      lavaPool.style.transition = 'opacity 1s ease-in';
       lavaPool.style.animation = 'lava-pool-pulse 1.4s ease-in-out infinite';
       lavaPool.style.opacity = '1';
-      await sleep(250);
-      lavaSparks.style.left = `${originX}%`;
-      lavaSparks.style.top  = `${originY}%`;
+      await sleep(600);
+      lavaSparks.style.left = `${originX}%`; lavaSparks.style.top = `${originY}%`;
       lavaSparks.style.animation = 'lava-erupt 1.6s ease-out infinite';
       lavaSparks.style.opacity = '1';
 
-      // Glow builds; entities and beams fade
-      glow.style.transition = 'opacity 2.8s ease-in';
-      glow.style.opacity = '1';
-      entity.style.transition = 'opacity 0.8s ease'; entity.style.opacity = '0';
-      ash.style.transition    = 'opacity 0.8s ease'; ash.style.opacity = '0';
-      host.style.transition   = 'opacity 1s ease';   host.style.opacity = '0';
+      container.style.animation = 'awakening-tremor 0.35s ease-in-out infinite';
+      await sleep(1500);
 
-      await sleep(420);
-      beam.style.transition     = 'opacity 0.9s ease-out'; beam.style.opacity = '0';
-      ashBeam.style.transition  = 'opacity 0.9s ease-out'; ashBeam.style.opacity = '0';
-      hostBeam.style.transition = 'opacity 0.9s ease-out'; hostBeam.style.opacity = '0';
-      await sleep(950);
-      beam.style.transition = 'none'; beam.style.height = '0';
-      ashBeam.style.transition = 'none'; ashBeam.style.height = '0';
-      hostBeam.style.transition = 'none'; hostBeam.style.height = '0';
+      lavaPool.style.animation   = 'lava-pool-pulse 0.9s ease-in-out infinite';
+      lavaSparks.style.animation = 'lava-erupt 1.0s ease-out infinite';
+      container.style.animation = 'awakening-tremor 0.18s ease-in-out infinite';
+      await sleep(1000);
 
-      // ── Phase 3: White fire flashes — the divine surge ──
-      flash.style.transition = 'opacity 0.07s ease-in';
-      flash.style.opacity = '0.45';
-      await sleep(90);
-      flash.style.transition = 'opacity 0.28s ease-out';
-      flash.style.opacity = '0';
-      await sleep(230);
-
-      flash.style.transition = 'opacity 0.06s ease-in';
-      flash.style.opacity = '0.75';
-      await sleep(90);
-      flash.style.transition = 'opacity 0.22s ease-out';
-      flash.style.opacity = '0';
-      await sleep(170);
-
-      flash.style.transition = 'opacity 0.05s ease-in';
-      flash.style.opacity = '1';
-      await sleep(80);
-      glow.style.transition = 'opacity 0s'; glow.style.opacity = '0';
-      flash.style.transition = 'opacity 1.8s ease-out';
-      flash.style.opacity = '0';
-
-      // ── Phase 4: The mountain explodes — tremors + lava pouring out ──
+      // Lava pours toward Emberstan
       lavaPool.style.animation   = 'lava-pool-pulse 0.55s ease-in-out infinite';
       lavaSparks.style.animation = 'lava-erupt 0.7s ease-out infinite';
-
-      // Lava pours down the mountainside toward Emberstan (x:63.09, y:55.5)
-      const emberX = 63.09;
-      const emberY = +((55.5 / 100) * mapDisplayH / container.offsetHeight * 100).toFixed(1);
-      const flowDx   = (emberX - originX) / 100 * container.offsetWidth;
-      const flowDy   = (emberY - originY) / 100 * container.offsetHeight;
-      const flowDist = Math.round(Math.sqrt(flowDx * flowDx + flowDy * flowDy) * 1.3);
+      const flowDx    = (emberX - originX) / 100 * container.offsetWidth;
+      const flowDy    = (emberY - originY) / 100 * container.offsetHeight;
+      const flowDist  = Math.round(Math.sqrt(flowDx * flowDx + flowDy * flowDy) * 1.3);
       const flowAngle = Math.atan2(-flowDx, flowDy) * 180 / Math.PI;
-      lavaFlow.style.left   = `${originX}%`;
-      lavaFlow.style.top    = `${originY}%`;
+      lavaFlow.style.left = `${originX}%`; lavaFlow.style.top = `${originY}%`;
       lavaFlow.style.transform = `translateX(-50%) rotate(${flowAngle}deg)`;
       lavaFlow.style.animation = 'lava-flow-ripple 1.3s ease-in-out infinite';
       lavaFlow.style.transition = 'opacity 0.6s ease-in, height 2.2s ease-out';
       lavaFlow.style.opacity = '0.9';
       lavaFlow.style.height = `${flowDist}px`;
 
-      container.style.animation = 'awakening-tremor 0.35s ease-in-out infinite';
+      container.style.animation = 'awakening-heavy-tremor 0.09s ease-in-out infinite';
       await sleep(1200);
-      // Pool spreads wider as tremors intensify
       lavaFlow.style.transition = 'width 1.8s ease-out';
       lavaFlow.style.width = '60px';
+      await sleep(2000);
       container.style.animation = 'awakening-tremor 0.18s ease-in-out infinite';
       await sleep(1000);
-      container.style.animation = 'awakening-heavy-tremor 0.09s ease-in-out infinite';
-      await sleep(1600);
       container.style.animation = '';
 
-      // ── Phase 5: Cross-dissolve — old world contracts into the new ──
+      // ── Phase 4: Ash and the primordials surface ──
+      ash.style.transition = 'none';
+      ash.style.left = `${originX - 1}%`; ash.style.top = `${originY + 14}%`; ash.style.opacity = '0';
+      host.style.transition = 'none';
+      host.style.left = `${originX - 4}%`; host.style.top = `${originY + 14}%`; host.style.opacity = '0';
+      ash.getBoundingClientRect();
+
+      ash.style.transition  = 'top 2.5s ease-out, opacity 1s ease';
+      ash.style.opacity = '1'; ash.style.top = `${originY - 3}%`;
+      host.style.transition = 'top 3s ease-out, opacity 1.2s ease';
+      host.style.opacity = '1'; host.style.top = `${originY - 2}%`;
+      await sleep(2500);
+
+      ash.classList.add('ash-charging');
+      await sleep(1200);
+      ash.classList.remove('ash-charging');
+
+      // ── Phase 5: Primordial air — wind sweeps the land ──
+      // Pass 1
+      windSweep.style.opacity = '1';
+      windSweep.style.transition = 'transform 1.6s ease-in-out';
+      windSweep.style.transform = 'translateX(115%)';
+      container.style.animation = 'awakening-tremor 0.3s ease-in-out infinite';
+      await sleep(1600);
+
+      // Pass 2
+      windSweep.style.transition = 'none'; windSweep.style.transform = 'translateX(-110%)'; windSweep.style.opacity = '0.85';
+      windSweep.getBoundingClientRect();
+      windSweep.style.transition = 'transform 2s ease-in-out';
+      windSweep.style.transform = 'translateX(115%)';
+      await sleep(2000);
+
+      // Pass 3 (fades as water arrives)
+      windSweep.style.transition = 'none'; windSweep.style.transform = 'translateX(-110%)'; windSweep.style.opacity = '0.5';
+      windSweep.getBoundingClientRect();
+      windSweep.style.transition = 'transform 2.2s ease-in-out, opacity 1.5s ease-out';
+      windSweep.style.transform = 'translateX(115%)'; windSweep.style.opacity = '0';
+      await sleep(2200);
+      container.style.animation = '';
+
+      // ── Phase 6: Primordial water — rain falls, seas form, volcanoes cool ──
+      rainVeil.style.animationName = 'rain-move';
+      rainVeil.style.animationDuration = '2s';
+      rainVeil.style.animationTimingFunction = 'linear';
+      rainVeil.style.animationIterationCount = 'infinite';
+      rainVeil.style.transition = 'opacity 2s ease-in';
+      rainVeil.style.opacity = '0.9';
+      await sleep(1500);
+
+      lavaPool.style.transition   = 'opacity 2.5s ease-out'; lavaPool.style.opacity   = '0';
+      lavaSparks.style.transition = 'opacity 2s ease-out';   lavaSparks.style.opacity = '0';
+      lavaFlow.style.transition   = 'opacity 2.5s ease-out'; lavaFlow.style.opacity   = '0';
+      glow.style.transition       = 'opacity 2.5s ease-out'; glow.style.opacity       = '0';
+
+      container.style.animation = 'awakening-tremor 0.35s ease-in-out infinite';
+      await sleep(1200);
+      container.style.animation = 'awakening-tremor 0.28s ease-in-out infinite';
+      await sleep(800);
+      container.style.animation = '';
+
+      ash.style.transition  = 'opacity 2s ease-out'; ash.style.opacity  = '0';
+      host.style.transition = 'opacity 2s ease-out'; host.style.opacity = '0';
+
+      // ── Cross-dissolve — old world becomes the new ──
       preMap.style.transformOrigin = '50% 50%';
       preMap.style.transition = 'opacity 6s ease-in-out, transform 6s ease-in-out';
       preMap.style.transform = 'scale(0.96)';
       preMap.style.opacity = '0';
 
-      // Lava fades as the new sealed world is revealed
-      lavaPool.style.transition = 'opacity 2.5s ease-out'; lavaPool.style.opacity = '0';
-      lavaSparks.style.transition = 'opacity 2s ease-out'; lavaSparks.style.opacity = '0';
-      lavaFlow.style.transition = 'opacity 3s ease-out'; lavaFlow.style.opacity = '0';
-
-      // Aftershock
       container.style.animation = 'awakening-heavy-tremor 0.14s ease-in-out infinite';
       await sleep(550);
       container.style.animation = 'awakening-tremor 0.28s ease-in-out infinite';
       await sleep(700);
       container.style.animation = '';
 
-      // Wait for dissolve + lava fully gone — then hard-stop everything
-      await sleep(4750);
+      // Rain persists through dissolve — new seas forming
+      await sleep(3500);
+      rainVeil.style.transition = 'opacity 1.8s ease-out';
+      rainVeil.style.opacity = '0';
+      await sleep(1800);
+
+      // Hard-stop everything
       preMap.style.transition = 'none'; preMap.style.transform = '';
       lavaPool.style.transition = 'none'; lavaPool.style.animation = ''; lavaPool.style.opacity = '0';
       lavaSparks.style.transition = 'none'; lavaSparks.style.animation = ''; lavaSparks.style.opacity = '0';
       lavaFlow.style.transition = 'none'; lavaFlow.style.animation = ''; lavaFlow.style.height = '0'; lavaFlow.style.width = '28px'; lavaFlow.style.opacity = '0';
+      windSweep.style.animation = ''; windSweep.style.opacity = '0'; windSweep.style.transform = 'translateX(-110%)';
+      rainVeil.style.transition = 'none'; rainVeil.style.animationName = ''; rainVeil.style.opacity = '0';
 
-      // ── Phase 6: Reveal ──
+      // ── Reveal ──
       await sleep(200);
       revealTitle.style.opacity = '1';
       await sleep(4500);
