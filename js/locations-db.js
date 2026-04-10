@@ -13768,22 +13768,337 @@ const WORLD_LOCATIONS = {
             "points": [
                 "gevakaln",
                 [
-                    45.6,
-                    60.2
+                    45.45,
+                    65.78
                 ],
                 [
-                    44.4,
-                    57.1
-                ],
-                [
-                    43.1,
-                    54.2
-                ],
-                [
-                    42.2,
-                    52.1
+                    42.31,
+                    52.09
                 ],
                 "gulward"
+            ]
+        },
+        {
+            "id": "bonegate-oldport-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "bonegate",
+                [
+                    39.31,
+                    43.38
+                ],
+                [
+                    38.91,
+                    35.99
+                ],
+                "oldport"
+            ]
+        },
+        {
+            "id": "harelbek-bonegate-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "harelbek",
+                [
+                    37.95,
+                    48.17
+                ],
+                "bonegate"
+            ]
+        },
+        {
+            "id": "gulward-gevakaln-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "gulward",
+                [
+                    41.98,
+                    53.35
+                ],
+                [
+                    46.62,
+                    62.15
+                ],
+                [
+                    46.94,
+                    63.36
+                ],
+                "gevakaln"
+            ]
+        },
+        {
+            "id": "emberstran-adamont-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "emberstran",
+                [
+                    60.44,
+                    62.39
+                ],
+                "adamont"
+            ]
+        },
+        {
+            "id": "glimmerstone-emberstan-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "glimmerstone",
+                [
+                    58.25,
+                    60.77
+                ],
+                "emberstran"
+            ]
+        },
+        {
+            "id": "paendley-emberstran-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "paendley",
+                [
+                    54.47,
+                    63.29
+                ],
+                [
+                    54.91,
+                    63.17
+                ],
+                [
+                    58.11,
+                    60.83
+                ],
+                "emberstran"
+            ]
+        },
+        {
+            "id": "farview-porthbay-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "farview",
+                [
+                    73.53,
+                    74.53
+                ],
+                [
+                    76.31,
+                    72.62
+                ],
+                [
+                    79.01,
+                    69.69
+                ],
+                [
+                    81.13,
+                    65.74
+                ],
+                [
+                    81.87,
+                    59.99
+                ],
+                [
+                    81.87,
+                    57.7
+                ],
+                [
+                    81.32,
+                    56.92
+                ],
+                [
+                    81.4,
+                    56.03
+                ],
+                "porthbay"
+            ]
+        },
+        {
+            "id": "nauldeaus-fardrift-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "nauldeaus",
+                [
+                    61.34,
+                    28.01
+                ],
+                [
+                    63.47,
+                    27.51
+                ],
+                [
+                    64.25,
+                    25.84
+                ],
+                "fardrift"
+            ]
+        },
+        {
+            "id": "tratta-nauldeaus-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "tratta",
+                [
+                    70.75,
+                    34.91
+                ],
+                [
+                    70.41,
+                    34.56
+                ],
+                [
+                    67.06,
+                    32.34
+                ],
+                [
+                    65.02,
+                    30.94
+                ],
+                [
+                    64.63,
+                    29.78
+                ],
+                [
+                    63.92,
+                    29.45
+                ],
+                "nauldeaus"
+            ]
+        },
+        {
+            "id": "lurdaba-tratta-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "lurdoba",
+                [
+                    75.16,
+                    34.78
+                ],
+                [
+                    73.41,
+                    36.01
+                ],
+                "tratta"
+            ]
+        },
+        {
+            "id": "stinson-eruvic-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "stinson",
+                [
+                    43.61,
+                    23.81
+                ],
+                [
+                    45.21,
+                    21.04
+                ],
+                "eruvic"
+            ]
+        },
+        {
+            "id": "raselle-ingriss-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "raselle",
+                [
+                    42.31,
+                    31.89
+                ],
+                [
+                    39.07,
+                    32.44
+                ],
+                "ingress"
+            ]
+        },
+        {
+            "id": "Porpen-morrey-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "porpen",
+                [
+                    12.46,
+                    20.02
+                ],
+                [
+                    13.12,
+                    21.87
+                ],
+                [
+                    16.6,
+                    29.28
+                ],
+                [
+                    16.79,
+                    35.63
+                ],
+                [
+                    18.82,
+                    42.5
+                ],
+                "morrey"
+            ]
+        },
+        {
+            "id": "evyndar-porpen-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "evyndar",
+                [
+                    18.56,
+                    32.44
+                ],
+                [
+                    18.43,
+                    32.25
+                ],
+                [
+                    14.81,
+                    27.15
+                ],
+                [
+                    12.86,
+                    22.39
+                ],
+                [
+                    12.68,
+                    20.15
+                ],
+                "porpen"
+            ]
+        },
+        {
+            "id": "stinson-fjordnahl-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "stinson",
+                [
+                    42.38,
+                    22.07
+                ],
+                [
+                    40.61,
+                    19.6
+                ],
+                [
+                    38.17,
+                    13.78
+                ],
+                "fjordnahl"
             ]
         }
     ],
