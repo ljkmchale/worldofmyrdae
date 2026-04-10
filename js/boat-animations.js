@@ -28,12 +28,26 @@ class BoatFleet {
             const pathPoints = this.calculatePathPoints(route);
             if (pathPoints.length < 2) return;
 
+            const baseDuration = 90000 + (routeIdx * 8000) + (Math.random() * 30000); // 90-120+ sec
+
+            // Boat traveling forward
             this.boats.push({
                 route,
-                id: `boat-${route.id}`,
+                id: `boat-${route.id}-fwd`,
                 reversed: false,
                 startOffset: routeIdx * 0.13,
-                duration: 90000 + (routeIdx * 8000) + (Math.random() * 30000), // 90-120+ sec
+                duration: baseDuration,
+                pathPoints,
+                element: null
+            });
+
+            // Boat traveling backwards (bidirectional)
+            this.boats.push({
+                route,
+                id: `boat-${route.id}-bwd`,
+                reversed: true,
+                startOffset: (routeIdx * 0.13) + 0.5, // Start on opposite end
+                duration: baseDuration,
                 pathPoints,
                 element: null
             });
