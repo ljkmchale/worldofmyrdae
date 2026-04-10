@@ -121,7 +121,7 @@
   </style>
 </head>
 
-<body>
+<body class="editor-mode">
   <div class="editor-layout">
     <div class="editor-sidebar" id="editor-sidebar">
       <div style="padding: 1rem; border-bottom: 1px solid #333; text-align: center;">
@@ -313,8 +313,10 @@
               <option value="major">Major Road</option>
               <option value="minor">Minor Road</option>
               <option value="river">River</option>
+              <option value="water-route">Boat Route / Sea Lane</option>
               <option value="border">Border</option>
             </select>
+            <small style="display:block; margin-top:0.4rem; color:#888; font-size:0.85rem;">Boat routes are saved as water-route and will animate boats on the map instead of drawing a road line.</small>
           </div>
 
           <div class="form-group">
@@ -448,6 +450,7 @@
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
   <script src="js/map-overlay.js"></script>
+  <script src="js/boat-animations.js"></script>
   <script src="js/editor.js"></script>
 
   <script>

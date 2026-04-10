@@ -14,6 +14,10 @@ const MapOverlay = (function () {
     let roadGroup = null;
     let initializedContainers = []; // Track which containers have been explicitly initialized
 
+    function isEditorMode() {
+        return typeof document !== 'undefined' && document.body && document.body.classList.contains('editor-mode');
+    }
+
     function getData() { return data; }
 
     /**
@@ -131,8 +135,9 @@ const MapOverlay = (function () {
 
             // Create ID lookup map for road routing
             locMap.clear();
-            if (data.locations) {
-                data.locations.forEach(loc => {
+            const locationsForMap = data.locations && data.locations.length > 0 ? data.locations : (WORLD_LOCATIONS ? WORLD_LOCATIONS.locations : []);
+            if (locationsForMap.length > 0) {
+                locationsForMap.forEach(loc => {
                     if (loc.id) locMap.set(loc.id, loc);
                 });
                 console.log(`Location map built: ${locMap.size} locations`);
@@ -167,13 +172,24 @@ const MapOverlay = (function () {
                 });
                 svg.appendChild(roadGroup);
                 console.log(`Rendered ${roadsRendered} of ${data.roads.length} roads`);
+
+                // Remove any lingering water-route path elements only outside the editor
+                if (!isEditorMode()) {
+                    removeWaterRoutePaths();
+                }
+
+                // Initialize boat animations for water routes on all maps
+                if (typeof initializeBoatAnimations === 'function') {
+                    initializeBoatAnimations(svg, data, locMap, natW, natH);
+                }
             }
 
             // Render location markers
-            if (data.locations) {
+            const locationsToRender = data.locations && data.locations.length > 0 ? data.locations : (WORLD_LOCATIONS ? WORLD_LOCATIONS.locations : []);
+            if (locationsToRender.length > 0) {
                 const locGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 locGroup.setAttribute('class', 'overlay-locations');
-                data.locations.forEach(loc => {
+                locationsToRender.forEach(loc => {
                     const px = (loc.x / 100) * natW;
                     const py = (loc.y / 100) * natH;
                     addMarker(locGroup, loc, px, py, natW);
@@ -743,6 +759,11 @@ const MapOverlay = (function () {
      * Add a road/path to the map
      */
     function addRoad(group, road, ignoredLocMap, ignoredNatW, ignoredNatH) {
+        // Draw water-route lines only in editor mode; hide them in viewers.
+        if (road.type === 'water-route' && !isEditorMode()) {
+            return;
+        }
+
         // Calculate path using the helper (uses module-scoped locMap, natW, natH)
         const d = calculatePathD(road);
         if (!d) return;
@@ -781,6 +802,13 @@ const MapOverlay = (function () {
                 strokeWidth = Math.max(natW * 0.0003, 2);
                 strokeOpacity = '0.85';
                 haloColor = 'rgba(200, 220, 240, 0.6)';
+                break;
+            case 'water-route':
+                strokeColor = '#1E90FF'; // DodgerBlue for water routes
+                strokeWidth = Math.max(natW * 0.0002, 1.5);
+                strokeOpacity = '0.7';
+                dashArray = `${natW * 0.0005}, ${natW * 0.0003}`; // Dashed water routes
+                haloColor = 'rgba(135, 206, 250, 0.4)'; // Light sky blue halo
                 break;
             case 'border':
                 strokeColor = '#5c4a4a'; // Muted brownish red
@@ -1002,6 +1030,18 @@ const MapOverlay = (function () {
         if (roadGroup) {
             addRoad(roadGroup, road, locMap, natW, natH);
         }
+    }
+
+    function removeWaterRoutePaths() {
+        if (!data || !Array.isArray(data.roads)) return;
+        data.roads.forEach(road => {
+            if (road.type === 'water-route' && road.id) {
+                const existing = document.getElementById('road-path-' + road.id);
+                if (existing && existing.parentNode) {
+                    existing.parentNode.removeChild(existing);
+                }
+            }
+        });
     }
 
     return {
