@@ -7797,6 +7797,7 @@ const WORLD_LOCATIONS = {
             "y": 35.9,
             "region": "Yearning Vale",
             "description": "A coastal settlement.",
+            "link": "https://docs.google.com/document/d/1nbv3ZA-BTR3i1qT535PrR0A3sFHzOuxeYAmXDD83TwY/edit?tab=t.0",
             "fontFamily": "Simonetta",
             "fontSize": 18,
             "fontWeight": "300",
@@ -13757,6 +13758,55 @@ const WORLD_LOCATIONS = {
                     48.4
                 ],
                 "harelbek"
+            ]
+        },
+        {
+            "id": "gevakaln-gulward-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "color": "#3C8FCC",
+            "width": 1.3,
+            "points": [
+                "gevakaln",
+                [
+                    45.45,
+                    65.78
+                ],
+                [
+                    42.31,
+                    52.09
+                ],
+                "gulward"
+            ]
+        },
+        {
+            "id": "bonegate-oldport-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "bonegate",
+                [
+                    39.31,
+                    43.38
+                ],
+                [
+                    38.91,
+                    35.99
+                ],
+                "oldport"
+            ]
+        },
+        {
+            "id": "harelbek-bonegate-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "harelbek",
+                [
+                    37.95,
+                    48.17
+                ],
+                "bonegate"
             ]
         },
         {
