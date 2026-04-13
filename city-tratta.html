@@ -124,23 +124,6 @@
     }
     #top-bar > * { pointer-events: auto; }
 
-    .back-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      text-decoration: none;
-      letter-spacing: 0.06em;
-      border: 1px solid var(--border);
-      padding: 0.35rem 0.8rem;
-      border-radius: 3px;
-      transition: color 0.2s, border-color 0.2s;
-      white-space: nowrap;
-    }
-    .back-btn:hover { color: var(--gold); border-color: var(--gold-dim); }
-
     .city-title {
       font-family: 'Cinzel', serif;
       font-size: 1.35rem;
@@ -393,7 +376,6 @@
 
   <!-- TOP BAR -->
   <div id="top-bar">
-    <a href="map.html" class="back-btn">&#8592; World Map</a>
     <div>
       <div class="city-title">Tratta</div>
       <div class="city-subtitle">City of the Broken Deep &middot; Yearning Vale</div>
