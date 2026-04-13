@@ -286,7 +286,7 @@
     }
     .num-label {
       font-family: 'Cinzel', serif;
-      font-size: 17.33px;
+      font-size: 30px;
       fill: #f0e8d0;
       text-anchor: middle;
       dominant-baseline: central;
@@ -299,8 +299,8 @@
       animation: pulseRing 2.8s ease-out infinite;
     }
     @keyframes pulseRing {
-      0%   { r: 16; opacity: 0.9; }
-      100% { r: 64; opacity: 0; }
+      0%   { r: 18; opacity: 0.9; }
+      100% { r: 72; opacity: 0; }
     }
 
     /* Hint text */
@@ -521,7 +521,7 @@ const NUMBERED_LOCATIONS = [
     }
   }
 
-  // Keep markers at constant screen size regardless of zoom
+// Keep markers at constant screen size regardless of zoom
   function updateOverlayScale(totalScale) {
     const inv = 1 / totalScale;
     const namedLayer    = document.getElementById('named-labels-layer');
@@ -530,12 +530,12 @@ const NUMBERED_LOCATIONS = [
     Array.from(namedLayer.children).forEach(el => {
       const x = parseFloat(el.dataset.px || 0);
       const y = parseFloat(el.dataset.py || 0);
-      el.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
+      el.style.transform = `translate(${x}px,${y}px) translate(${-x}px,${-y}px)`;
     });
     Array.from(numberedLayer.children).forEach(grp => {
       const x = parseFloat(grp.dataset.px || 0);
       const y = parseFloat(grp.dataset.py || 0);
-      grp.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
+      grp.style.transform = `translate(${x}px,${y}px) translate(${-x}px,${-y}px)`;
     });
   }
 
@@ -780,18 +780,18 @@ const NUMBERED_LOCATIONS = [
 
       // Pulsing ring for major locations (1-4)
       if (loc.n <= 4) {
-        const pulse = svgEl('circle', { cx: px, cy: py, r: 16, class: 'pulse-ring' });
+        const pulse = svgEl('circle', { cx: px, cy: py, r: 18, class: 'pulse-ring' });
         grp.appendChild(pulse);
       }
 
       // Outer decorative ring
       grp.appendChild(svgEl('circle', {
-        cx: px, cy: py, r: 18,
+        cx: px, cy: py, r: 20,
         fill: 'none', stroke: 'rgba(212,175,55,0.35)', 'stroke-width': '1',
       }));
       // Background fill
       grp.appendChild(svgEl('circle', {
-        cx: px, cy: py, r: 16,
+        cx: px, cy: py, r: 18,
         fill: 'rgba(12,9,5,0.84)',
         stroke: 'rgba(212,175,55,0.82)',
         'stroke-width': '1.5',
