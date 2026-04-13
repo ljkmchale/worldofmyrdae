@@ -66,6 +66,27 @@
       overflow: visible;
     }
 
+    .num-label {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      fill: #f0e8d0;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    .pulse-ring {
+      fill: none;
+      stroke: rgba(212,175,55,0.45);
+      stroke-width: 1.5;
+      animation: pulseRing 2.8s ease-out infinite;
+    }
+
+    @keyframes pulseRing {
+      0%   { r: 12; opacity: 0.9; }
+      100% { r: 48; opacity: 0; }
+    }
+
     #grain {
       position: fixed;
       inset: 0;
@@ -170,6 +191,88 @@
       pointer-events: none;
     }
 
+    #location-tooltip {
+      position: fixed;
+      z-index: 60;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0;
+      pointer-events: none;
+      width: 280px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s, transform 0.18s;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.75);
+      overflow: hidden;
+    }
+
+    #location-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #tt-image-wrap {
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #tt-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      display: block;
+      filter: contrast(1.08) saturate(1.2) brightness(0.9);
+      transition: transform 0.4s ease;
+    }
+
+    #location-tooltip.visible #tt-image-wrap img {
+      transform: scale(1.04);
+    }
+
+    #tt-image-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(5,5,8,0.85) 100%);
+    }
+
+    #tt-name-overlay {
+      position: absolute;
+      bottom: 0.55rem;
+      left: 0.85rem;
+      right: 0.85rem;
+      z-index: 2;
+      font-family: 'Cinzel', serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+
+    .tt-body {
+      padding: 0.65rem 0.9rem 0.8rem;
+    }
+
+    .tt-type {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 0.4rem;
+      text-transform: capitalize;
+      letter-spacing: 0.04em;
+    }
+
+    .tt-desc {
+      font-size: 0.83rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
     #hint {
       position: fixed;
       bottom: 3.5rem;
@@ -201,6 +304,7 @@
       <img id="city-map" src="images/emberstran.png" alt="City of Emberstran" draggable="false">
       <svg id="overlay-svg" xmlns="http://www.w3.org/2000/svg">
         <g id="coord-grid-layer" style="display:none;"></g>
+        <g id="numbered-markers-layer"></g>
       </svg>
     </div>
   </div>
@@ -213,6 +317,7 @@
     <div class="ctrl-sep"></div>
     <button class="ctrl-btn" id="btn-reset" title="Reset View">&#8984;</button>
     <div class="ctrl-sep"></div>
+    <button class="ctrl-btn active" id="btn-markers" title="Toggle Numbered Markers">&#9711;</button>
     <button class="ctrl-btn" id="btn-coords" title="Toggle Coordinates">&#8862;</button>
   </div>
 
@@ -224,8 +329,25 @@
 
   <div id="hint">Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Toggle coordinates</div>
 
+  <div id="location-tooltip">
+    <div id="tt-image-wrap">
+      <img id="tt-image" src="images/emberstran.png" alt="Emberstran">
+      <div id="tt-name-overlay"></div>
+    </div>
+    <div class="tt-body">
+      <div class="tt-type" id="tt-type"></div>
+      <div class="tt-desc" id="tt-desc"></div>
+    </div>
+  </div>
+
   <script>
     'use strict';
+
+    const NUMBERED_LOCATIONS = [
+       { n:  1, x: 50.9, y: 38.3, name: 'The Lord\'s Keep',    type: 'City Capital',        desc: 'A well-known tavern and meeting point in the heart of Tratta\'s upper ring.' },
+       { n:  2, x: 68.6, y: 27.2, name: 'Imonorra\'s Tower',   type: 'Tower',        desc: 'A well-known tavern and meeting point in the heart of Tratta\'s upper ring.' },
+ 
+    ];
 
     (function () {
       const viewport = document.getElementById('map-viewport');
@@ -233,8 +355,13 @@
       const mapImg = document.getElementById('city-map');
       const overlaySvg = document.getElementById('overlay-svg');
       const coordGridLayer = document.getElementById('coord-grid-layer');
+      const numberedMarkersLayer = document.getElementById('numbered-markers-layer');
       const zoomBadge = document.getElementById('zoom-badge');
       const hint = document.getElementById('hint');
+      const tooltip = document.getElementById('location-tooltip');
+      const ttName = document.getElementById('tt-name-overlay');
+      const ttType = document.getElementById('tt-type');
+      const ttDesc = document.getElementById('tt-desc');
 
       const MIN_SCALE = 0.6;
       const MAX_SCALE = 12;
@@ -291,6 +418,7 @@
         layerGrp.style.transform = `translate3d(${s.pointX}px,${s.pointY}px,0) scale(${totalScale})`;
         layerGrp.style.transformOrigin = '0 0';
         zoomBadge.textContent = s.scale.toFixed(1) + '\u00D7';
+        updateOverlayScale(totalScale);
         s.ticking = false;
       }
 
@@ -301,8 +429,80 @@
         }
       }
 
+      function updateOverlayScale(totalScale) {
+        const inv = 1 / totalScale;
+        Array.from(numberedMarkersLayer.children).forEach((grp) => {
+          const x = parseFloat(grp.dataset.px || 0);
+          const y = parseFloat(grp.dataset.py || 0);
+          grp.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
+        });
+      }
+
+      function svgEl(tag, attrs) {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+        return el;
+      }
+
+      function buildNumberedMarkers() {
+        numberedMarkersLayer.innerHTML = '';
+        NUMBERED_LOCATIONS.forEach((loc) => {
+          const px = (loc.x / 100) * s.imgW;
+          const py = (loc.y / 100) * s.imgH;
+          const grp = svgEl('g', { style: 'pointer-events:all; cursor:pointer;' });
+          grp.dataset.px = px;
+          grp.dataset.py = py;
+
+          if (loc.n <= 4) {
+            const pulse = svgEl('circle', { cx: px, cy: py, r: 12, class: 'pulse-ring' });
+            grp.appendChild(pulse);
+          }
+
+          grp.appendChild(svgEl('circle', {
+            cx: px, cy: py, r: 13.5,
+            fill: 'none', stroke: 'rgba(212,175,55,0.35)', 'stroke-width': '1',
+          }));
+
+          grp.appendChild(svgEl('circle', {
+            cx: px, cy: py, r: 12,
+            fill: 'rgba(12,9,5,0.84)',
+            stroke: 'rgba(212,175,55,0.82)',
+            'stroke-width': '1.5',
+          }));
+
+          const num = svgEl('text', { x: px, y: py, class: 'num-label' });
+          num.textContent = loc.n;
+          grp.appendChild(num);
+
+          addTipEvents(grp, loc);
+          numberedMarkersLayer.appendChild(grp);
+        });
+      }
+
+      function addTipEvents(el, loc) {
+        el.addEventListener('mouseenter', (e) => {
+          ttName.textContent = loc.name || ('Location ' + loc.n);
+          ttType.textContent = loc.type || '';
+          ttDesc.textContent = loc.desc || '';
+          tooltip.classList.add('visible');
+          moveTip(e);
+        });
+        el.addEventListener('mousemove', moveTip);
+        el.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+      }
+
+      function moveTip(e) {
+        const x = e.clientX + 18;
+        const y = e.clientY - 10;
+        const tw = tooltip.offsetWidth || 240;
+        const th = tooltip.offsetHeight || 80;
+        tooltip.style.left = Math.min(x, window.innerWidth - tw - 12) + 'px';
+        tooltip.style.top = Math.max(10, Math.min(y, window.innerHeight - th - 12)) + 'px';
+      }
+
       function onImgReady() {
         updateDims();
+        buildNumberedMarkers();
         render();
         setTimeout(() => hint.classList.add('hidden'), 6000);
       }
@@ -489,6 +689,13 @@
       document.getElementById('btn-reset').addEventListener('click', () => {
         updateDims();
         animateTo(1, (s.cw - s.bw) / 2, (s.ch - s.bh) / 2, 650);
+      });
+
+      let markersOn = true;
+      document.getElementById('btn-markers').addEventListener('click', function () {
+        markersOn = !markersOn;
+        numberedMarkersLayer.style.opacity = markersOn ? '1' : '0';
+        this.classList.toggle('active', markersOn);
       });
 
       let coordsOn = false;
