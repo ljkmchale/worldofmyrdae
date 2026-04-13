@@ -615,6 +615,7 @@ const WORLD_LOCATIONS = {
             "region": "",
             "description": "City",
             "link": "https://docs.google.com/document/d/1oECFiNos1Qqa1CfGo-2DJWbyet9SOF_gMKd3ZR2kY6c/edit?tab=t.0",
+            "cityMap": "city-emberstran.html",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
