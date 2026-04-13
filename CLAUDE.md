@@ -14,6 +14,7 @@ Key pages:
 - `http://localhost:3000/editor.html` — map editor (add/edit locations, roads, regions)
 - `http://localhost:3000/map.html` — read-only interactive map viewer
 - `http://localhost:3000/map-3d-planet.html` — 3D rotating globe
+- `http://localhost:3000/embed-map.html` — embeddable map (same as map.html, for iframe use)
 
 ## Architecture
 
@@ -21,18 +22,21 @@ Key pages:
 1. `js/locations-db.js` — source of truth; exports `WORLD_LOCATIONS` global with all locations, roads, and regions
 2. `js/campaign-data.js` — loads `WORLD_LOCATIONS`, provides CRUD API (`CampaignData.addLocation()`, etc.)
 3. `js/map-overlay.js` — reads campaign data, renders SVG markers/labels/tooltips onto the map image
-4. `js/editor.js` — UI for editing; POSTs changes to `server.js /save` which writes back to `locations-db.js`
-5. `js/map.js` — pan/zoom controller (GPU-accelerated via CSS transforms)
+4. `js/boat-animations.js` — `BoatFleet` class; animates sailing vessels and a sea monster along `water-route` roads
+5. `js/editor.js` — UI for editing; POSTs changes to `server.js /save` which writes back to `locations-db.js`
+6. `js/map.js` — pan/zoom controller (GPU-accelerated via CSS transforms)
 
 ### Key files
 | File | Purpose |
 |------|---------|
-| `js/locations-db.js` | ~9000 lines — the entire world database |
+| `js/locations-db.js` | the entire world database |
 | `js/map-overlay.js` | SVG overlay renderer, tooltips, territory borders |
+| `js/boat-animations.js` | `BoatFleet` class — animated boats + sea monster on water routes |
 | `js/editor.js` | Editor UI logic, save/load, live preview |
 | `js/campaign-data.js` | Data init, persistence, cross-tab BroadcastChannel sync |
 | `js/map.js` | Zoom/pan with requestAnimationFrame |
 | `server.js` | Static file server + POST `/save` endpoint |
+| `sort_locations_by_region.py` | Utility script to sort locations-db.js entries by region |
 
 ### Data structure (WORLD_LOCATIONS)
 ```js
@@ -54,7 +58,7 @@ Key pages:
     {
       id: "road-id",
       name: "Road Name",
-      type: "road",            // road | path | river | trade-route | etc.
+      type: "road",            // road | path | river | trade-route | water-route | etc.
       waypoints: [{x, y}, ...],
       color: "#8B6914",
       width: 2,
