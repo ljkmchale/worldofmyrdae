@@ -83,22 +83,6 @@
     }
 
     /* ── FIXED ATMOSPHERE OVERLAYS ── */
-    #atmosphere {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9;
-      opacity: 0;
-      transition: background 1.8s ease, opacity 1.8s ease;
-    }
-    #vignette {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 10;
-      background: radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.65) 100%);
-      transition: background 1.8s ease;
-    }
     /* Film-grain texture overlay */
     #grain {
       position: fixed;
@@ -181,39 +165,6 @@
       height: 1px;
       background: var(--border);
       margin: 0.15rem 0;
-    }
-
-    /* ── ATMOSPHERE BAR ── */
-    #atmos-panel {
-      position: fixed;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 50;
-      display: flex;
-      gap: 0.35rem;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.35rem 0.45rem;
-    }
-    .atmos-btn {
-      font-family: 'Cinzel', serif;
-      font-size: 0.68rem;
-      letter-spacing: 0.06em;
-      color: var(--text-dim);
-      background: none;
-      border: 1px solid transparent;
-      padding: 0.3rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .atmos-btn:hover { color: var(--text); }
-    .atmos-btn.active {
-      color: var(--gold);
-      border-color: var(--gold-dim);
-      background: rgba(212,175,55,0.08);
     }
 
     /* ── ZOOM BADGE ── */
@@ -397,6 +348,7 @@
             <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,1)" flood-opacity="1"/>
           </filter>
         </defs>
+        <g id="coord-grid-layer" style="display:none;"></g>
         <g id="named-labels-layer"></g>
         <g id="numbered-markers-layer"></g>
       </svg>
@@ -404,8 +356,6 @@
   </div>
 
   <!-- ATMOSPHERE OVERLAYS -->
-  <div id="atmosphere"></div>
-  <div id="vignette"></div>
   <div id="grain"></div>
 
   <!-- CONTROLS -->
@@ -416,19 +366,18 @@
     <button class="ctrl-btn" id="btn-reset"    title="Reset View">&#8984;</button>
     <div class="ctrl-sep"></div>
     <button class="ctrl-btn active" id="btn-markers" title="Toggle Location Pins">&#9711;</button>
-    <button class="ctrl-btn active" id="btn-labels"  title="Toggle Named Labels">Aa</button>
-  </div>
-
-  <!-- ATMOSPHERE BAR -->
-  <div id="atmos-panel">
-    <button class="atmos-btn active" data-mode="day">Day</button>
-    <button class="atmos-btn"        data-mode="dusk">Dusk</button>
-    <button class="atmos-btn"        data-mode="night">Night</button>
-    <button class="atmos-btn"        data-mode="fog">Fog</button>
+    <button class="ctrl-btn" id="btn-labels"  title="Toggle Named Labels">Aa</button>
+    <button class="ctrl-btn" id="btn-coords"  title="Toggle Coordinates">⊞</button>
+    <div class="ctrl-sep"></div>
   </div>
 
   <!-- ZOOM BADGE -->
   <div id="zoom-badge">1.0&times;</div>
+
+  <!-- COORDINATE DISPLAY -->
+  <div id="coord-display" style="position:fixed; bottom:1rem; left:1rem; z-index:50; font-family:'Cinzel',serif; font-size:0.72rem; color:#d4af37; background:rgba(8,8,14,0.92); border:1px solid rgba(212,175,55,0.5); border-radius:3px; padding:0.4rem 0.6rem; pointer-events:none;">
+    x: 0.0  y: 0.0
+  </div>
 
   <!-- HINT -->
   <div id="hint">Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Hover markers for details</div>
@@ -453,74 +402,51 @@
 // x, y = percentage of image width/height
 // ══════════════════════════════════════════════════════════════
 const NAMED_LOCATIONS = [
-  { id: 'north-gate',   name: 'North Gate',       x: 49.5, y:  3.2, type: 'gate',      desc: 'Primary northern entrance to Tratta. The iron portcullis was reinforced after the Siege of 847 AR.' },
-  { id: 'westpost',     name: 'Westpost',          x:  3.5, y: 41.5, type: 'district',  desc: 'The outer western settlement beyond the walls. Merchants, travelers, and transient workers settle here.' },
-  { id: 'lower-docks',  name: 'Lower Docks',       x: 54.5, y: 40.5, type: 'harbor',    desc: 'Inner harbor sheltered from the Broken Deep. Fishing vessels and small trade barges dock here daily.' },
-  { id: 'high-decks',   name: 'High Decks',        x: 51.5, y: 50.5, type: 'harbor',    desc: 'Deep-water berths for ocean-going vessels. The lifeblood of Tratta\'s maritime trade empire.' },
+  { id: 'north-gate',   name: 'North Gate',        x: 49.5, y: 3.2,  type: 'gate',      desc: 'Primary northern entrance to Tratta. The iron portcullis was reinforced after the Siege of 847 AR.' },
+  { id: 'westpost',     name: 'Westpost',          x: 3.5,  y: 41.5, type: 'district',  desc: 'The outer western settlement beyond the walls. Merchants, travelers, and transient workers settle here.' },
+  { id: 'lower-docks',  name: 'Lower Docks',      x: 54.5, y: 40.5, type: 'harbor',    desc: 'Inner harbor sheltered from the Broken Deep. Fishing vessels and small trade barges dock here daily.' },
+  { id: 'high-docks',   name: 'High Docks',        x: 61.6, y: 45.5, type: 'harbor',    desc: 'Deep-water berths for ocean-going vessels. The lifeblood of Tratta\'s maritime trade empire.' },
   { id: 'mahl-palace',  name: 'Mahl Palace',       x: 84.2, y: 53.5, type: 'palace',    desc: 'Seat of the Mahl dynasty. The fortified compound has never fallen to siege — its walls are said to be warded.' },
   { id: 'high-gate',    name: 'High Gate',         x: 60.5, y: 95.2, type: 'gate',      desc: 'Southern gate connecting Tratta to the road toward Yearning Vale and the interior.' },
   { id: 'broken-deep',  name: 'The Broken Deep',   x: 83.5, y: 19.0, type: 'sea',       desc: 'Treacherous coastal waters east of Tratta. Named for the shattered reef that has claimed a thousand ships.' },
 ];
 
 const NUMBERED_LOCATIONS = [
-  { n:  1, x: 42.0, y: 33.0, name: 'The Anchored Spire',    type: 'tavern',        desc: 'A well-known tavern and meeting point in the heart of Tratta\'s upper ring.' },
-  { n:  2, x: 25.0, y: 54.0, name: 'SeaRoute Colosseum',    type: 'arena',         desc: 'Tratta\'s grand fighting arena. Gladiatorial bouts, beast fights, and spectacle draw crowds from across Yearning Vale.' },
-  { n:  3, x: 14.0, y: 68.0, name: 'Torguard Post',         type: 'garrison',      desc: 'City guard outpost on the western edge of Tratta. Watches the Westpost approaches and the outer gate.' },
-  { n:  4, x: 39.0, y: 72.0, name: 'The Majestic',          type: 'inn',           desc: 'Tratta\'s finest inn. Lavish rooms, a respected dining hall, and discretion guaranteed for wealthy guests.' },
-  { n:  5, x: 48.0, y: 76.0, name: 'Travane College',       type: 'college',       desc: 'One of two Travane College campuses in Tratta. Educates the city\'s merchant class in trade, navigation, and letters.' },
-  { n:  6, x: 67.0, y: 72.0, name: 'The Reserve (Vault)',   type: 'bank',          desc: 'Tratta\'s most secure financial institution. Houses gold reserves, trade bonds, and sealed private vaults.' },
-  { n:  7, x: 56.0, y: 81.0, name: 'Lower Warehouse',       type: 'warehouse',     desc: 'Large storage facility serving the lower dock district. Goods from the High Decks are staged here before distribution.' },
-  { n:  8, x: 46.0, y: 43.0, name: 'Slippy Tails',          type: 'tavern',        desc: 'A rowdy dockside tavern popular with fishermen and sailors off the Lower Docks. Known for cheap ale and brawls.' },
-  { n:  9, x: 46.0, y: 18.0, name: 'Ye Olde Elderberry',    type: 'tavern',        desc: 'A venerable drinking establishment in the north ward. Claims to be the oldest continuously-operating tavern in Tratta.' },
-  { n: 10, x: 40.0, y: 37.0, name: 'Sticky Parrot',         type: 'tavern',        desc: 'Lively tavern in the inner ring. Named for the landlord\'s famously foul-mouthed parrot, still perched behind the bar.' },
-  { n: 11, x: 27.0, y: 45.0, name: 'SeaRoute Inn',          type: 'inn',           desc: 'Affordable lodging for traveling merchants following the sea trade routes. Run by the SeaRoute guild.' },
-  { n: 12, x: 41.0, y: 58.0, name: 'Mahl\'s Hold',          type: 'stronghold',    desc: 'A secondary fortified compound belonging to the Mahl dynasty, separate from Mahl Palace. Used for city administration.' },
-  { n: 13, x: 67.0, y: 52.0, name: 'Trusty Tankard',        type: 'tavern',        desc: 'Sailor\'s tavern on the eastern dock strip. A reliable haunt — the drinks are honest and the fights are honest too.' },
-  { n: 14, x: 56.0, y: 62.0, name: 'The Zealous Crew',      type: 'tavern',        desc: 'Favored by privateers and naval officers alike. Recruitment boards line the walls with postings for sea voyages.' },
-  { n: 15, x: 56.0, y: 32.0, name: 'Lower Market',          type: 'market',        desc: 'The main street market of the lower ring. Daily stalls selling food, cloth, tools, and imported curiosities.' },
-  { n: 16, x: 37.0, y: 43.0, name: 'Trade Shops',           type: 'market',        desc: 'A cluster of permanent trade shops near the harbor entry. Covers everything from rope and sailcloth to spices and dyes.' },
-  { n: 17, x: 44.0, y: 55.0, name: 'Soren\'s Oddities',     type: 'shop',          desc: 'A curiosity shop run by the enigmatic Soren. Sells rare imports, unusual trinkets, and items of uncertain provenance.' },
-  { n: 18, x: 59.0, y: 56.0, name: 'High Market',           type: 'market',        desc: 'The upscale market district. Fine goods, luxury imports, and guild-controlled trade between Tratta\'s wealthiest merchants.' },
-  { n: 19, x: 55.0, y: 85.0, name: 'Travane College',       type: 'college',       desc: 'Second campus of Travane College, serving the southern districts. Focuses on maritime law and trade contracts.' },
-  { n: 20, x: 64.0, y: 39.0, name: 'Broken Sea Pearl',      type: 'inn',           desc: 'An inn with harbor views, named for a massive cracked pearl mounted above its door. Favored by captains and navigators.' },
-  { n: 21, x: 37.0, y: 30.0, name: 'Shrine of Knowledge',   type: 'shrine',        desc: 'A small but respected shrine dedicated to the pursuit of knowledge. Scholars and scribes leave offerings here.' },
-  { n: 22, x: 21.0, y: 27.0, name: 'Statue of Brault',      type: 'landmark',      desc: 'A large bronze statue of Brault the Navigator, founder of Tratta\'s first sea-trade guild. A civic landmark.' },
-  { n: 23, x: 65.0, y: 58.0, name: 'Temple of Tratta',      type: 'temple',        desc: 'The city\'s primary temple. Dedicated to the patron deity of Tratta — a place of worship, ceremony, and civic oath-taking.' },
-  { n: 24, x: 29.0, y: 78.0, name: 'Stables',               type: 'stables',       desc: 'City stables in the southwest quarter. Horses, mules, and draft animals for hire or boarding.' },
-  { n: 25, x: 50.0, y: 22.0, name: 'Bathhouse',             type: 'bathhouse',     desc: 'Public bathhouse in the upper ring. Hot and cold baths, steam rooms, and a small attached barber.' },
-  { n: 26, x: 36.0, y: 68.0, name: 'Triage',                type: 'medical',       desc: 'A triage and healing station in the lower ring. Currently in need of repair and restocking.' },
-  { n: 27, x: 73.0, y: 64.0, name: 'Lovely Loft',           type: 'brothel',       desc: 'Tratta\'s most notable brothel, located conveniently near the harbor. Discreet, well-run, and surprisingly expensive.' },
+  { n:  1, x: 41.1, y: 26.2, name: 'The Anchored Spire',    type: 'tavern',        desc: 'A well-known tavern and meeting point in the heart of Tratta\'s upper ring.' },
+  { n:  2, x: 32.1, y: 50.9, name: 'SeaRoute Colosseum',    type: 'arena',         desc: 'Tratta\'s grand fighting arena. Gladiatorial bouts, beast fights, and spectacle draw crowds from across Yearning Vale.' },
+  { n:  3, x: 25.5, y: 72.3, name: 'Torguard Post',         type: 'garrison',      desc: 'City guard outpost on the western edge of Tratta. Watches the Westpost approaches and the outer gate.' },
+  { n:  4, x: 52.7, y: 72.5, name: 'The Majestic',          type: 'inn',           desc: 'Tratta\'s finest inn. Lavish rooms, a respected dining hall, and discretion guaranteed for wealthy guests.' },
+  { n:  5, x: 63.4, y: 75.0, name: 'Travane College',       type: 'college',       desc: 'One of two Travane College campuses in Tratta. Educates the city\'s merchant class in trade, navigation, and letters.' },
+  { n:  6, x: 76.5, y: 76.5, name: 'The Reserve (Vault)',   type: 'bank',          desc: 'Tratta\'s most secure financial institution. Houses gold reserves, trade bonds, and sealed private vaults.' },
+  { n:  7, x: 59.1, y: 28.5, name: 'Lower Warehouse',       type: 'warehouse',     desc: 'Large storage facility serving the lower dock district. Goods from the High Decks are staged here before distribution.' },
+  { n:  8, x: 49.2, y: 39.9, name: 'Slippy Tails',          type: 'tavern',        desc: 'A rowdy dockside tavern popular with fishermen and sailors off the Lower Docks. Known for cheap ale and brawls.' },
+  { n:  9, x: 44.8, y: 14.3, name: 'Ye Olde Elderberry',    type: 'tavern',        desc: 'A venerable drinking establishment in the north ward. Claims to be the oldest continuously-operating tavern in Tratta.' },
+  { n: 10, x: 39.3, y: 34.0, name: 'Sticky Parrot',         type: 'tavern',        desc: 'Lively tavern in the inner ring. Named for the landlord\'s famously foul-mouthed parrot, still perched behind the bar.' },
+  { n: 11, x: 22.7, y: 45.0, name: 'SeaRoute Inn',          type: 'inn',           desc: 'Affordable lodging for traveling merchants following the sea trade routes. Run by the SeaRoute guild.' },
+  { n: 12, x: 47.1, y: 66.6, name: 'Mahl\'s Hold',          type: 'stronghold',    desc: 'A secondary fortified compound belonging to the Mahl dynasty, separate from Mahl Palace. Used for city administration.' },
+  { n: 13, x: 67.9, y: 53.1, name: 'Trusty Tankard',        type: 'tavern',        desc: 'Sailor\'s tavern on the eastern dock strip. A reliable haunt — the drinks are honest and the fights are honest too.' },
+  { n: 14, x: 70.6, y: 83.3, name: 'The Zealous Crew',      type: 'tavern',        desc: 'Favored by privateers and naval officers alike. Recruitment boards line the walls with postings for sea voyages.' },
+  { n: 15, x: 52.1, y: 30.5, name: 'Lower Market',          type: 'market',        desc: 'The main street market of the lower ring. Daily stalls selling food, cloth, tools, and imported curiosities.' },
+  { n: 16, x: 31.4, y: 38.1, name: 'Trade Shops',           type: 'market',        desc: 'A cluster of permanent trade shops near the harbor entry. Covers everything from rope and sailcloth to spices and dyes.' },
+  { n: 17, x: 43.7, y: 59.2, name: 'Soren\'s Oddities',     type: 'shop',          desc: 'A curiosity shop run by the enigmatic Soren. Sells rare imports, unusual trinkets, and items of uncertain provenance.' },
+  { n: 18, x: 65.7, y: 59.3, name: 'High Market',           type: 'market',        desc: 'The upscale market district. Fine goods, luxury imports, and guild-controlled trade between Tratta\'s wealthiest merchants.' },
+  { n: 19, x: 68.5, y: 87.9, name: 'Travane College',       type: 'college',       desc: 'Second campus of Travane College, serving the southern districts. Focuses on maritime law and trade contracts.' },
+  { n: 20, x: 69.2, y: 38.9, name: 'Broken Sea Pearl',      type: 'inn',           desc: 'An inn with harbor views, named for a massive cracked pearl mounted above its door. Favored by captains and navigators.' },
+  { n: 21, x: 32.4, y: 31.2, name: 'Shrine of Knowledge',   type: 'shrine',        desc: 'A small but respected shrine dedicated to the pursuit of knowledge. Scholars and scribes leave offerings here.' },
+  { n: 22, x: 20.9, y: 26.3, name: 'Statue of Brault',      type: 'landmark',      desc: 'A large bronze statue of Brault the Navigator, founder of Tratta\'s first sea-trade guild. A civic landmark.' },
+  { n: 23, x: 68.3, y: 63.0, name: 'Temple of Tratta',      type: 'temple',        desc: 'The city\'s primary temple. Dedicated to the patron deity of Tratta — a place of worship, ceremony, and civic oath-taking.' },
+  { n: 24, x: 13.2, y: 35.0, name: 'Stables',               type: 'stables',       desc: 'City stables in the southwest quarter. Horses, mules, and draft animals for hire or boarding.' },
+  { n: 24, x: 40.6, y: 85.2, name: 'Stables',               type: 'stables',       desc: 'City stables in the southwest quarter. Horses, mules, and draft animals for hire or boarding.' },
+  { n: 25, x: 20.2, y: 50.8, name: 'Bathhouse',             type: 'bathhouse',     desc: 'Public bathhouse in the upper ring. Hot and cold baths, steam rooms, and a small attached barber.' },
+  { n: 25, x: 48.0, y: 17.2, name: 'Bathhouse',             type: 'bathhouse',     desc: 'Public bathhouse in the upper ring. Hot and cold baths, steam rooms, and a small attached barber.' },
+  { n: 26, x: 40.7, y: 76.5, name: 'Triage',                type: 'medical',       desc: 'A triage and healing station in the lower ring. Currently in need of repair and restocking.' },
+  { n: 27, x: 20.9, y: 26.3, name: 'Lovely Loft',           type: 'brothel',       desc: 'Tratta\'s most notable brothel, located conveniently near the harbor. Discreet, well-run, and surprisingly expensive.' },
+  { n: 27, x: 84.2, y: 69.2, name: 'Lovely Loft',           type: 'brothel',       desc: 'Tratta\'s most notable brothel, located conveniently near the harbor. Discreet, well-run, and surprisingly expensive.' },
 ];
 
 // ══════════════════════════════════════════════════════════════
 // ATMOSPHERE MODES
 // ══════════════════════════════════════════════════════════════
-const ATMOSPHERE = {
-  day: {
-    imgFilter:    'contrast(1.12) saturate(1.35) brightness(0.88) hue-rotate(-3deg)',
-    overlay:      null,
-    overlayAlpha: 0,
-    vignette:     'radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.65) 100%)',
-  },
-  dusk: {
-    imgFilter:    'contrast(1.18) saturate(1.55) brightness(0.70) hue-rotate(8deg) sepia(0.18)',
-    overlay:      'radial-gradient(ellipse at 60% 28%, rgba(220,80,20,0.28) 0%, rgba(110,35,5,0.22) 65%, transparent 100%)',
-    overlayAlpha: 1,
-    vignette:     'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(30,5,0,0.75) 100%)',
-  },
-  night: {
-    imgFilter:    'contrast(1.22) saturate(0.55) brightness(0.36) hue-rotate(205deg)',
-    overlay:      'radial-gradient(ellipse at 45% 38%, rgba(28,55,120,0.42) 0%, rgba(8,12,48,0.65) 100%)',
-    overlayAlpha: 1,
-    vignette:     'radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(0,0,20,0.88) 100%)',
-  },
-  fog: {
-    imgFilter:    'contrast(0.88) saturate(0.62) brightness(0.80)',
-    overlay:      'radial-gradient(ellipse at 50% 45%, rgba(195,205,215,0.30) 0%, rgba(175,188,200,0.52) 100%)',
-    overlayAlpha: 1,
-    vignette:     'radial-gradient(ellipse at 50% 50%, rgba(160,170,180,0.15) 0%, rgba(120,132,142,0.38) 100%)',
-  },
-};
 
 // ══════════════════════════════════════════════════════════════
 // MAP CONTROLLER
@@ -626,6 +552,7 @@ const ATMOSPHERE = {
     ws.style.height = (0.58  * s.imgH) + 'px';
 
     buildNamedLabels();
+    document.getElementById('named-labels-layer').style.opacity = '0';
     buildNumberedMarkers();
     render();
 
@@ -679,6 +606,26 @@ const ATMOSPHERE = {
   window.addEventListener('mouseup', () => {
     s.isDragging = false;
     viewport.classList.remove('grabbing');
+  });
+
+  // ── COORDINATE DISPLAY ──────────────────────────────────────
+  const coordDisplay = document.getElementById('coord-display');
+  viewport.addEventListener('mousemove', (e) => {
+    const rect = viewport.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    // Map screen point → image-space point
+    const naturalToDisplay = s.bw / s.imgW;
+    const curTotalScale    = naturalToDisplay * s.scale;
+    const xs = (mx - s.pointX) / curTotalScale;
+    const ys = (my - s.pointY) / curTotalScale;
+    // Convert to percentage (0-100)
+    const xPct = (xs / s.imgW) * 100;
+    const yPct = (ys / s.imgH) * 100;
+    coordDisplay.textContent = `x: ${xPct.toFixed(1)}  y: ${yPct.toFixed(1)}`;
+  });
+  viewport.addEventListener('mouseleave', () => {
+    coordDisplay.textContent = 'x: 0.0  y: 0.0';
   });
 
   // ── TOUCH PAN/PINCH ─────────────────────────────────────────
@@ -925,34 +872,83 @@ const ATMOSPHERE = {
     this.classList.toggle('active', markersOn);
   });
 
-  let labelsOn = true;
+  let labelsOn = false;
   document.getElementById('btn-labels').addEventListener('click', function () {
     labelsOn = !labelsOn;
     document.getElementById('named-labels-layer').style.opacity = labelsOn ? '1' : '0';
     this.classList.toggle('active', labelsOn);
   });
 
-  // ══════════════════════════════════════════════════════════
-  // ATMOSPHERE
-  // ══════════════════════════════════════════════════════════
-  const atmosEl    = document.getElementById('atmosphere');
-  const vignetteEl = document.getElementById('vignette');
+  let coordsOn = false;
+  const coordGridLayer = document.getElementById('coord-grid-layer');
+  document.getElementById('btn-coords').addEventListener('click', function () {
+    coordsOn = !coordsOn;
+    coordGridLayer.style.display = coordsOn ? 'block' : 'none';
+    this.classList.toggle('active', coordsOn);
+    if (coordsOn && coordGridLayer.children.length === 0) {
+      buildCoordinateGrid();
+    }
+  });
 
-  function applyAtmosphere(mode) {
-    const m = ATMOSPHERE[mode];
-    mapImg.style.transition   = 'filter 1.8s ease';
-    mapImg.style.filter       = m.imgFilter;
-    atmosEl.style.background  = m.overlay || 'none';
-    atmosEl.style.opacity     = m.overlayAlpha || 0;
-    vignetteEl.style.background = m.vignette;
-    document.querySelectorAll('.atmos-btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.mode === mode)
-    );
+  function buildCoordinateGrid() {
+    coordGridLayer.innerHTML = '';
+    const step = 10; // 10% increments
+
+    // Vertical lines and labels (x-axis, 0-100)
+    for (let x = 0; x <= 100; x += step) {
+      const px = (x / 100) * s.imgW;
+      
+      // Line
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', px);
+      line.setAttribute('y1', 0);
+      line.setAttribute('x2', px);
+      line.setAttribute('y2', s.imgH);
+      line.setAttribute('stroke', 'rgba(212, 175, 55, 0.25)');
+      line.setAttribute('stroke-width', '0.5');
+      line.setAttribute('pointer-events', 'none');
+      coordGridLayer.appendChild(line);
+      
+      // Label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', px);
+      text.setAttribute('y', 12);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-family', 'Cinzel');
+      text.setAttribute('font-size', '8');
+      text.setAttribute('fill', 'rgba(212, 175, 55, 0.5)');
+      text.setAttribute('pointer-events', 'none');
+      text.textContent = x;
+      coordGridLayer.appendChild(text);
+    }
+
+    // Horizontal lines and labels (y-axis, 0-100)
+    for (let y = 0; y <= 100; y += step) {
+      const py = (y / 100) * s.imgH;
+      
+      // Line
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', 0);
+      line.setAttribute('y1', py);
+      line.setAttribute('x2', s.imgW);
+      line.setAttribute('y2', py);
+      line.setAttribute('stroke', 'rgba(212, 175, 55, 0.25)');
+      line.setAttribute('stroke-width', '0.5');
+      line.setAttribute('pointer-events', 'none');
+      coordGridLayer.appendChild(line);
+      
+      // Label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', 4);
+      text.setAttribute('y', py + 3);
+      text.setAttribute('font-family', 'Cinzel');
+      text.setAttribute('font-size', '8');
+      text.setAttribute('fill', 'rgba(212, 175, 55, 0.5)');
+      text.setAttribute('pointer-events', 'none');
+      text.textContent = y;
+      coordGridLayer.appendChild(text);
+    }
   }
-
-  document.querySelectorAll('.atmos-btn').forEach(btn =>
-    btn.addEventListener('click', () => applyAtmosphere(btn.dataset.mode))
-  );
 
 })();
 </script>
