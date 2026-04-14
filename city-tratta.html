@@ -430,8 +430,8 @@ const NUMBERED_LOCATIONS = _city.pins;
 
   // ── DIMENSIONS ──────────────────────────────────────────────
   function updateDims() {
-    s.cw = viewport.offsetWidth;
-    s.ch = viewport.offsetHeight;
+    s.cw = viewport.offsetWidth || window.innerWidth;
+    s.ch = viewport.offsetHeight || window.innerHeight;
     s.imgW = mapImg.naturalWidth;
     s.imgH = mapImg.naturalHeight;
     if (!s.imgW) return;
@@ -481,7 +481,9 @@ const NUMBERED_LOCATIONS = _city.pins;
   }
 
   // Keep markers at constant screen size regardless of zoom
+  // SVG elements need setAttribute('transform') not style.transform
   function updateOverlayScale(totalScale) {
+    if (!totalScale || !isFinite(totalScale) || totalScale <= 0) return;
     const inv = 1 / totalScale;
     const namedLayer    = document.getElementById('named-labels-layer');
     const numberedLayer = document.getElementById('numbered-markers-layer');
@@ -489,12 +491,12 @@ const NUMBERED_LOCATIONS = _city.pins;
     Array.from(namedLayer.children).forEach(el => {
       const x = parseFloat(el.dataset.px || 0);
       const y = parseFloat(el.dataset.py || 0);
-      el.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
+      el.setAttribute('transform', `translate(${x},${y}) scale(${inv}) translate(${-x},${-y})`);
     });
     Array.from(numberedLayer.children).forEach(grp => {
       const x = parseFloat(grp.dataset.px || 0);
       const y = parseFloat(grp.dataset.py || 0);
-      grp.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
+      grp.setAttribute('transform', `translate(${x},${y}) scale(${inv}) translate(${-x},${-y})`);
     });
   }
 
@@ -509,9 +511,15 @@ const NUMBERED_LOCATIONS = _city.pins;
     ws.style.height = (0.58  * s.imgH) + 'px';
 
     buildNamedLabels();
-    document.getElementById('named-labels-layer').style.opacity = '0';
+    document.getElementById('named-labels-layer').style.opacity = '1';
     buildNumberedMarkers();
     render();
+
+    // Re-render after layout settles — offsetWidth may be 0 on first paint
+    requestAnimationFrame(() => {
+      updateDims();
+      render();
+    });
 
     // Hide hint after 6 seconds
     setTimeout(() => hint.classList.add('hidden'), 6000);
