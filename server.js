@@ -7,6 +7,24 @@ const PUBLIC_DIR = __dirname;
 
 const server = http.createServer((req, res) => {
     // Handle POST request to save locations-db.js
+    if (req.method === 'POST' && req.url === '/save-city-map') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            try {
+                const filePath = path.join(PUBLIC_DIR, 'js', 'city-maps.js');
+                fs.writeFileSync(filePath, body);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, message: 'City maps saved' }));
+            } catch (err) {
+                console.error("Save Error:", err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+        return;
+    }
+
     if (req.method === 'POST' && req.url === '/save') {
         let body = '';
         req.on('data', chunk => {

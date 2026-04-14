@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emberstran - City Map | World of Myrdae</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet">
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --gold: #d4af37;
@@ -21,7 +30,8 @@
       --border: rgba(212, 175, 55, 0.25);
     }
 
-    html, body {
+    html,
+    body {
       width: 100%;
       height: 100%;
       overflow: hidden;
@@ -38,7 +48,10 @@
       user-select: none;
       -webkit-user-select: none;
     }
-    #map-viewport.grabbing { cursor: grabbing; }
+
+    #map-viewport.grabbing {
+      cursor: grabbing;
+    }
 
     #map-layer-group {
       position: absolute;
@@ -77,14 +90,21 @@
 
     .pulse-ring {
       fill: none;
-      stroke: rgba(212,175,55,0.45);
+      stroke: rgba(212, 175, 55, 0.45);
       stroke-width: 1.5;
       animation: pulseRing 2.8s ease-out infinite;
     }
 
     @keyframes pulseRing {
-      0%   { r: 12; opacity: 0.9; }
-      100% { r: 48; opacity: 0; }
+      0% {
+        r: 12;
+        opacity: 0.9;
+      }
+
+      100% {
+        r: 48;
+        opacity: 0;
+      }
     }
 
     #grain {
@@ -107,10 +127,13 @@
       align-items: center;
       gap: 1.5rem;
       padding: 0.8rem 1.25rem;
-      background: linear-gradient(to bottom, rgba(5,5,8,0.95) 0%, transparent 100%);
+      background: linear-gradient(to bottom, rgba(5, 5, 8, 0.95) 0%, transparent 100%);
       pointer-events: none;
     }
-    #top-bar > * { pointer-events: auto; }
+
+    #top-bar>* {
+      pointer-events: auto;
+    }
 
     .city-title {
       font-family: 'Cinzel', serif;
@@ -118,7 +141,7 @@
       font-weight: 600;
       color: var(--gold);
       letter-spacing: 0.1em;
-      text-shadow: 0 0 24px rgba(212,175,55,0.45);
+      text-shadow: 0 0 24px rgba(212, 175, 55, 0.45);
     }
 
     .city-subtitle {
@@ -160,13 +183,13 @@
     .ctrl-btn:hover {
       border-color: var(--gold);
       color: var(--gold);
-      background: rgba(212,175,55,0.1);
+      background: rgba(212, 175, 55, 0.1);
     }
 
     .ctrl-btn.active {
       border-color: var(--gold);
       color: var(--gold);
-      background: rgba(212,175,55,0.14);
+      background: rgba(212, 175, 55, 0.14);
     }
 
     .ctrl-sep {
@@ -203,7 +226,7 @@
       opacity: 0;
       transform: translateY(6px);
       transition: opacity 0.18s, transform 0.18s;
-      box-shadow: 0 8px 36px rgba(0,0,0,0.75);
+      box-shadow: 0 8px 36px rgba(0, 0, 0, 0.75);
       overflow: hidden;
     }
 
@@ -237,7 +260,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, transparent 40%, rgba(5,5,8,0.85) 100%);
+      background: linear-gradient(to bottom, transparent 40%, rgba(5, 5, 8, 0.85) 100%);
     }
 
     #tt-name-overlay {
@@ -251,7 +274,7 @@
       font-weight: 600;
       color: var(--gold);
       letter-spacing: 0.06em;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
     }
 
     .tt-body {
@@ -288,9 +311,13 @@
       opacity: 1;
       transition: opacity 1.5s ease;
     }
-    #hint.hidden { opacity: 0; }
+
+    #hint.hidden {
+      opacity: 0;
+    }
   </style>
 </head>
+
 <body>
   <div id="top-bar">
     <div>
@@ -323,8 +350,9 @@
 
   <div id="zoom-badge">1.0&times;</div>
 
-  <div id="coord-display" style="position:fixed; bottom:1rem; left:1rem; z-index:50; font-family:'Cinzel',serif; font-size:0.72rem; color:#d4af37; background:rgba(8,8,14,0.92); border:1px solid rgba(212,175,55,0.5); border-radius:3px; padding:0.4rem 0.6rem; pointer-events:none;">
-    x: 0.0  y: 0.0
+  <div id="coord-display"
+    style="position:fixed; bottom:1rem; left:1rem; z-index:50; font-family:'Cinzel',serif; font-size:0.72rem; color:#d4af37; background:rgba(8,8,14,0.92); border:1px solid rgba(212,175,55,0.5); border-radius:3px; padding:0.4rem 0.6rem; pointer-events:none;">
+    x: 0.0 y: 0.0
   </div>
 
   <div id="hint">Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Toggle coordinates</div>
@@ -344,16 +372,121 @@
     'use strict';
 
     const NUMBERED_LOCATIONS = [
-       { n:  1, x: 50.9, y: 38.3, name: 'The Lord\'s Keep',    type: 'City Capital',  desc: 'Lord Dusklight’s residence, known as the Lord’s Keep, is the political and symbolic heart of Emberstran’s power.' },
-       { n:  2, x: 68.6, y: 27.2, name: 'Imonorra\'s Tower',   type: 'Wizard\'s Tower',         desc: 'Imonorra Asuun, the Lord’s Advisor, resides in a tall, four-story tower on the northeastern edge of Emberstran.' },
-       { n:  3, x: 82.8, y: 39.1, name: 'Cemetery',            type: 'Grave Yard',      desc: 'Emberstran’s primary cemetery spans the elevated eastern side of the city.' },
-       { n:  4, x: 51.0, y: 46.1, name: 'Market',             type: 'Market',      desc: 'Known simply as “The Market,” this open-air trading hub sits in the heart of Emberstran’s bustling dock district, where sailors, merchants, and locals mingle in a shifting maze of stalls and wagons.' },
-       { n:  5, x: 51.0, y: 71.8, name: 'Docks',              type: 'Shipyard',  desc: 'The Docks are a sprawling network of wharfs, ship berths, and warehouses along the waterfront, where fishmongers, sailors, merchants, and dockhands keep business flowing from dawn till dusk.' },
-       { n:  6, x: 50.9, y: 17.9, name: 'Upper City Gate',   type: 'Gates',          desc: 'A popular tavern among sailors and dockworkers, known for its lively atmosphere and strong ale.' },
-       { n:  7, x: 11.1, y: 34.2, name: 'Western Gate',type: 'Gates',           desc: 'The Shipwright’s Guild is a sprawling complex of workshops and warehouses where skilled artisans construct and repair the vessels that keep Emberstran’s trade flowing.' },
-       { n:  8, x: 95.4, y: 74.7, name: 'Western Gate', type: 'Gates', desc: 'A bustling area where fishermen bring in their daily catch and sell it fresh to locals and merchants.' },
-       { n:  9, x: 17.7, y: 34.4, name: 'The Dyed Cane', type: 'Shop',        desc: 'An ancient lighthouse that has guided ships safely to Emberstran’s harbor for centuries.' },
-       { n: 10, x: 22.1, y: 43.1, name: 'The Headless Hydra',          type: 'Harbor',          desc: 'The main harbor of Emberstran, where cargo ships from across Myrdae arrive and depart.' }
+      {
+        n: 1, x: 50.9, y: 38.3, name: 'The Lord\'s Keep',
+        type: 'City Capital',
+        desc: 'Lord Dusklight’s residence, known as the Lord’s Keep, is the political and symbolic heart of Emberstran’s power.'
+      },
+      {
+        n: 2, x: 68.6, y: 27.2, name: 'Imonorra\'s Tower',
+        type: 'Wizard\'s Tower',
+        desc: 'Imonorra Asuun, the Lord’s Advisor, resides in a tall, four-story tower on the northeastern edge of Emberstran.'
+      },
+      {
+        n: 3, x: 82.8, y: 39.1, name: 'Cemetery',
+        type: 'Grave Yard',
+        desc: 'Emberstran’s primary cemetery spans the elevated eastern side of the city.'
+      },
+      {
+        n: 4, x: 51.0, y: 46.1, name: 'Market',
+        type: 'Market',
+        desc: 'Known simply as “The Market,” this open-air trading hub sits in the heart of Emberstran’s bustling dock district, where sailors, merchants, and locals mingle in a shifting maze of stalls and wagons.'
+      },
+      {
+        n: 5, x: 51.0, y: 71.8, name: 'Docks',
+        type: 'Shipyard',
+        desc: 'The Docks are a sprawling network of wharfs, ship berths, and warehouses along the waterfront, where fishmongers, sailors, merchants, and dockhands keep business flowing from dawn till dusk.'
+      },
+      {
+        n: 6, x: 50.9, y: 17.9, name: 'Upper City Gate',
+        type: 'Gates',
+        desc: 'A popular tavern among sailors and dockworkers, known for its lively atmosphere and strong ale.'
+      },
+      {
+        n: 7, x: 11.1, y: 34.2, name: 'Western Gate',
+        type: 'Gates',
+        desc: 'The Shipwright’s Guild is a sprawling complex of workshops and warehouses where skilled artisans construct and repair the vessels that keep Emberstran’s trade flowing.'
+      },
+      {
+        n: 8, x: 95.4, y: 74.7, name: 'Western Gate',
+        type: 'Gates',
+        desc: 'A bustling area where fishermen bring in their daily catch and sell it fresh to locals and merchants.'
+      },
+      {
+        n: 9, x: 17.7, y: 34.4, name: 'The Dyed Cane',
+        type: 'Shop',
+        desc: 'An ancient lighthouse that has guided ships safely to Emberstran’s harbor for centuries.'
+      },
+      {
+        n: 10, x: 22.1, y: 43.1, name: 'The Headless Hydra',
+        type: 'Shop',
+        desc: 'The main harbor of Emberstran, where cargo ships from across Myrdae arrive and depart.'
+      },
+      {
+        n: 11, x: 53.6, y: 66.5, name: 'Anchor Point',
+        type: 'Inn & Tavern',
+        desc: 'Anchor Point is a well-known and frequently visited inn and tavern located on the corner of the Grand Pier in Emberstran’s Docks.'
+      },
+      {
+        n: 12, x: 63.5, y: 44.7, name: 'The Crimson Swan',
+        type: 'Inn',
+        desc: 'The Crimson Swan Inn is a discreet, high-end establishment in Emberstran’s northern district, catering to wealthy residents and discerning travelers who value quiet luxury over public spectacle.'
+      },
+      {
+        n: 13, x: 69.5, y: 34.3, name: 'Old Oak & Grapes',
+        type: 'Tavern',
+        desc: 'The Old Oak & Grapes is Emberstran’s most refined and artistic tavern, located prominently in the Northern District.'
+      },
+      {
+        n: 14, x: 79.1, y: 62.5, name: 'Crusty Mug',
+        type: 'Tavern',
+        desc: 'The Crusty Mug is one of the most popular and frequently visited pubs in southeastern Emberstran, known for its lively crowds, potent drinks, and layered atmosphere.'
+      },
+      {
+        n: 15, x: 89.0, y: 67.6, name: 'Warm Bear Inn',
+        type: 'Lodge',
+        desc: 'Located near the southeastern gates of Emberstran, the Warm Bear Inn is a well-known lodge-style inn that caters primarily to hunters, trappers, and adventurers passing through or returning from the wilds.'
+      },
+      {
+        n: 16, x: 14.3, y: 43.0, name: 'Charums\'s Oils',
+        type: 'Bath House',
+        desc: 'Charum’s Oils is a refined bath house nestled in the western side of Emberstran. The street-level structure is circular, with elegant stonework.'
+      },
+      {
+        n: 17, x: 45.4, y: 46.2, name: 'Points & Edges',
+        type: 'Blacksmith',
+        desc: 'Points and Edges is a well-respected blacksmith shop situated near the bustling docks of Emberstran.'
+      },
+      {
+        n: 18, x: 48.3, y: 66.7, name: 'The Silver Spaulder',
+        type: 'Armory Shop',
+        desc: 'The Silver Spaulder is an upscale armory located on the edge of Emberstran’s docks. Under the new ownership of Vyaanis Aeldorien, a master smith drow seeking a fresh start on the surface, the shop has quickly gained a reputation for the finest armor craftsmanship in Emberstran.'
+      },
+      {
+        n: 19, x: 51.4, y: 63.4, name: 'Raddic\'s Rarities',
+        type: 'Shop',
+        desc: 'Located prominently on the docks of Emberstran’s bustling pier, Raddic’s Rarities is one of the largest and most well-known specialty shops in the city.'
+      },
+      {
+        n: 20, x: 55.9, y: 46.1, name: 'Gems of Emberstran',
+        type: 'Gem Shop',
+        desc: 'Gems of Emberstran is a respected and meticulously run jeweler’s shop located just off the market square near Emberstran’s docks. The shop is famed for the quality and artistry of its work—especially jewelry crafted using gems mined from the dwarven city of Dunduar.'
+      },
+      {
+        n: 21, x: 20.1, y: 62.6, name: 'Lady Luck\'s Temple',
+        type: 'Temple',
+        desc: 'Lady Luck’s Temple is a vibrant and welcoming place of worship devoted to Osanna, goddess of fortune, revelry, and risk. Located in the southwestern quarter of Emberstran, where most of the city’s common folk live and work, the temple stands as a cheerful sanctuary amid the bustle'
+      },
+      {
+        n: 22, x: 45.1, y: 25.9, name: 'Temple to Diverra',
+        type: 'Temple',
+        desc: 'Located in the refined northern district of Emberstran, the Temple of Diverra is a mid-sized sanctuary devoted to the goddess of love and passion. The temple is constructed of smooth, pale stone with rich, dark red wood trimming and accents of gilded metal.'
+      },
+      {
+        n: 23, x: 75.6, y: 47.1, name: 'Church to Crael',
+        type: 'Temple',
+        desc: 'The Silent Veil serves as the primary place of worship for the god Crael within Emberstran. It sits quietly in the Southeast District, mere steps west of the cemetery, allowing it to serve not only as a place of prayer but as a point of passage for those mourning or tending to the dead.'
+      },
 
     ];
 
@@ -770,4 +903,5 @@
     })();
   </script>
 </body>
+
 </html>

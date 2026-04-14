@@ -138,6 +138,7 @@
       <div class="editor-tabs">
         <button class="editor-tab active" onclick="Editor.switchTab('locations')">Locations</button>
         <button class="editor-tab" onclick="Editor.switchTab('roads')">Roads</button>
+        <button class="editor-tab" onclick="CityEditor.open()">City Map</button>
       </div>
 
       <!-- Locations Tab Content -->
@@ -277,6 +278,76 @@
               style="background:#500; border-color:#800; color:#fff;" id="btn-del-loc">Delete</button>
           </div>
         </div>
+      </div>
+
+      <!-- City Map Tab Content -->
+      <div id="tab-citymap" class="tab-content" style="padding: 1rem; display: none;">
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">Select a city, then drag pins to reposition them. Click Save when done.</p>
+
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label style="font-size:0.75rem; color:#888;">City</label>
+          <select id="city-select" class="form-control"
+            style="font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; width:100%;"
+            onchange="CityEditor.loadCity(this.value)">
+            <option value="">— Select a city —</option>
+          </select>
+        </div>
+
+        <div id="city-pin-controls" style="display:none;">
+          <div style="position:relative; margin-bottom:0.5rem;">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; pointer-events:none;"></i>
+            <input type="text" id="city-pin-search" placeholder="Search pins…" autocomplete="off"
+              style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
+              oninput="CityEditor.filterList(this.value)">
+          </div>
+
+          <select id="city-pin-list" class="form-control"
+            style="margin-bottom: 0.75rem; font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; width:100%;"
+            onchange="CityEditor.selectPin(this.value)">
+          </select>
+        </div>
+
+        <div id="city-pin-form" style="display:none;">
+          <h3 id="city-pin-name" style="margin:0 0 0.75rem; color:var(--color-gold); font-family:'Cinzel',serif; font-size:0.95rem;"></h3>
+          <p style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;"><i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.</p>
+          <div class="form-inline">
+            <div class="form-group" style="flex:1;">
+              <label>X (%)</label>
+              <input type="number" id="city-pin-x" class="form-control" step="0.1" oninput="CityEditor.updateFromForm()">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Y (%)</label>
+              <input type="number" id="city-pin-y" class="form-control" step="0.1" oninput="CityEditor.updateFromForm()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="city-pin-name-input" class="form-control" oninput="CityEditor.updateFromForm()">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" id="city-pin-type" class="form-control" oninput="CityEditor.updateFromForm()">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="city-pin-desc" class="form-control" rows="3" oninput="CityEditor.updateFromForm()"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Pin Size &nbsp;<span id="city-pin-size-val" style="color:var(--color-gold);">1.0</span></label>
+            <input type="range" id="city-pin-size" min="0.3" max="3.0" step="0.1" value="1.0"
+              style="width:100%; accent-color:var(--color-gold);"
+              oninput="document.getElementById('city-pin-size-val').textContent=parseFloat(this.value).toFixed(1); CityEditor.updateFromForm()">
+          </div>
+        </div>
+
+        <div id="city-action-btns" style="display:none; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-primary" onclick="CityEditor.save()" style="flex:1;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            <button class="btn btn-secondary" onclick="CityEditor.resetView()" style="flex:1;"><i class="fa-solid fa-house"></i> Reset View</button>
+          </div>
+          <button class="btn btn-secondary" onclick="CityEditor.exitCityMode()" style="width:100%; opacity:0.7;">&#8592; Back to World Map</button>
+        </div>
+        <div id="city-save-status" style="font-size:0.75rem; color:#888; margin-top:0.5rem; min-height:1.2rem; font-style:italic;"></div>
       </div>
 
       <!-- Roads Tab Content -->
@@ -446,6 +517,7 @@
     </div>
   </div>
 
+  <script src="js/city-maps.js"></script>
   <script src="js/locations-db.js"></script>
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
@@ -561,6 +633,310 @@
       display.textContent = `X: ${imgX.toFixed(2)}  Y: ${imgY.toFixed(2)}`;
     });
   </script>
+
+<script>
+const CityEditor = (function () {
+  let cityData    = null;  // deep copy of the active city entry from CITY_MAPS
+  let allData     = null;  // deep copy of all CITY_MAPS
+  let activeCityId = null;
+  let selectedKey  = null; // "n:1" or "id:north-gate"
+  let cityMapActive = false;
+
+  // ── Open the tab (populate city selector) ──────────────────
+  function open() {
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-citymap').style.display = 'block';
+    document.querySelectorAll('.editor-tab').forEach(btn => {
+      if (btn.textContent.trim() === 'City Map') btn.classList.add('active');
+    });
+
+    const sel = document.getElementById('city-select');
+    sel.innerHTML = '<option value="">— Select a city —</option>';
+    CITY_MAPS.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      if (c.id === activeCityId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    if (activeCityId) loadCity(activeCityId);
+  }
+
+  // ── Load a city into the editor ────────────────────────────
+  function loadCity(cityId) {
+    if (!cityId) return;
+
+    // Restore world overlay if switching cities
+    if (cityMapActive) _setOverlay(true);
+
+    activeCityId = cityId;
+    allData = CITY_MAPS.map(c => ({
+      ...c,
+      pins: c.pins.map(p => ({ ...p })),
+      namedLabels: c.namedLabels.map(l => ({ ...l })),
+    }));
+    cityData = allData.find(c => c.id === cityId);
+
+    // Swap map image, hide world overlay
+    const img = document.getElementById('map-image');
+    img.src = cityData.image;
+    cityMapActive = true;
+    img.onload = () => { _setOverlay(false); renderPins(); };
+    if (img.complete && img.naturalWidth) { _setOverlay(false); renderPins(); }
+
+    MapController.reset('map-container');
+
+    document.getElementById('city-pin-controls').style.display = 'block';
+    document.getElementById('city-action-btns').style.display  = 'flex';
+    document.getElementById('city-pin-form').style.display     = 'none';
+    selectedKey = null;
+    populateList();
+
+    // Watch pan/zoom to re-render pins
+    _watchTransform();
+  }
+
+  // ── Hide/show the world map overlay SVG ────────────────────
+  function _setOverlay(visible) {
+    const ov = document.getElementById('map-container-overlay');
+    if (ov) ov.style.visibility = visible ? 'visible' : 'hidden';
+  }
+
+  // ── Exit city mode, restore world map ──────────────────────
+  function exitCityMode() {
+    cityMapActive = false;
+    _setOverlay(true);
+    document.querySelectorAll('.city-pin').forEach(el => el.remove());
+    document.getElementById('map-image').src = 'images/Myrdae.jpg';
+    document.getElementById('city-pin-controls').style.display = 'none';
+    document.getElementById('city-action-btns').style.display  = 'none';
+    document.getElementById('city-pin-form').style.display     = 'none';
+    document.getElementById('city-select').value = '';
+    activeCityId = null;
+    // Switch back to locations tab
+    Editor.switchTab('locations');
+  }
+
+  // ── Pin list ────────────────────────────────────────────────
+  function populateList(filter) {
+    const sel = document.getElementById('city-pin-list');
+    sel.innerHTML = '<option value="">— Select a pin —</option>';
+    if (!cityData) return;
+    const q = (filter || '').toLowerCase();
+
+    cityData.pins.forEach(loc => {
+      if (q && !loc.name.toLowerCase().includes(q) && !String(loc.n).includes(q)) return;
+      const opt = document.createElement('option');
+      opt.value = 'n:' + loc.n;
+      opt.textContent = loc.n + '. ' + loc.name;
+      sel.appendChild(opt);
+    });
+    (cityData.namedLabels || []).forEach(loc => {
+      if (q && !loc.name.toLowerCase().includes(q)) return;
+      const opt = document.createElement('option');
+      opt.value = 'id:' + loc.id;
+      opt.textContent = '★ ' + loc.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function filterList(q) { populateList(q); }
+
+  function getLoc(key) {
+    if (!cityData || !key) return null;
+    if (key.startsWith('n:')) return cityData.pins.find(l => l.n === parseInt(key.slice(2)));
+    return (cityData.namedLabels || []).find(l => l.id === key.slice(3));
+  }
+
+  function selectPin(key) {
+    selectedKey = key;
+    const loc = getLoc(key);
+    const form = document.getElementById('city-pin-form');
+    if (!loc) { form.style.display = 'none'; highlightPin(null); return; }
+
+    form.style.display = 'block';
+    document.getElementById('city-pin-name').textContent = loc.name || ('Pin ' + loc.n);
+    document.getElementById('city-pin-x').value = loc.x.toFixed(1);
+    document.getElementById('city-pin-y').value = loc.y.toFixed(1);
+    document.getElementById('city-pin-name-input').value = loc.name || '';
+    document.getElementById('city-pin-type').value = loc.type || '';
+    document.getElementById('city-pin-desc').value = loc.desc || '';
+    const sz = (loc.size || 1.0).toFixed(1);
+    document.getElementById('city-pin-size').value = sz;
+    document.getElementById('city-pin-size-val').textContent = sz;
+    highlightPin(key);
+  }
+
+  function updateFromForm() {
+    const loc = getLoc(selectedKey);
+    if (!loc) return;
+    loc.x    = parseFloat(document.getElementById('city-pin-x').value) || loc.x;
+    loc.y    = parseFloat(document.getElementById('city-pin-y').value) || loc.y;
+    loc.name = document.getElementById('city-pin-name-input').value;
+    loc.type = document.getElementById('city-pin-type').value;
+    loc.desc = document.getElementById('city-pin-desc').value;
+    loc.size = parseFloat(document.getElementById('city-pin-size').value) || 1.0;
+    document.getElementById('city-pin-name').textContent = loc.name;
+    renderPins();
+    highlightPin(selectedKey);
+  }
+
+  // ── Render pins ─────────────────────────────────────────────
+  function renderPins() {
+    if (!cityMapActive || !cityData) return;
+    const container = document.getElementById('map-container');
+    document.querySelectorAll('.city-pin').forEach(el => el.remove());
+
+    const img   = document.getElementById('map-image');
+    const state = MapController.getInstanceState('map-container');
+    if (!state || !img.naturalWidth) return;
+
+    const cw    = container.offsetWidth;
+    const dispW = cw * state.scale;
+    const dispH = (img.naturalHeight / img.naturalWidth) * cw * state.scale;
+
+    function makePin(x, y, label, key, isNamed, size) {
+      const sz  = size || 1.0;
+      const dim = Math.round((isNamed ? 10 : 14) * sz);
+      const el  = document.createElement('div');
+      el.className = 'city-pin';
+      el.dataset.key = key;
+      el.style.cssText = 'position:absolute;z-index:200;cursor:grab;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%);pointer-events:all;';
+
+      const dot = document.createElement('div');
+      dot.style.cssText = `width:${dim}px;height:${dim}px;border-radius:50%;background:${isNamed?'rgba(212,175,55,0.9)':'rgba(12,9,5,0.88)'};border:2px solid rgba(212,175,55,0.85);box-shadow:0 0 6px rgba(212,175,55,0.5);flex-shrink:0;display:flex;align-items:center;justify-content:center;`;
+
+      if (!isNamed) {
+        const num = document.createElement('span');
+        num.style.cssText = `font-family:'Cinzel',serif;font-size:${Math.max(7, Math.round(9*sz))}px;color:#f0e8d0;pointer-events:none;line-height:1;`;
+        num.textContent = label;
+        dot.appendChild(num);
+      }
+
+      const lbl = document.createElement('div');
+      lbl.style.cssText = `font-family:'Cinzel',serif;font-size:${Math.round(8*sz)}px;color:#d4af37;background:rgba(5,5,8,0.8);padding:1px 4px;border-radius:2px;white-space:nowrap;margin-top:2px;border:1px solid rgba(212,175,55,0.25);pointer-events:none;`;
+      lbl.textContent = isNamed ? label : '';
+      el.appendChild(dot);
+      if (isNamed) el.appendChild(lbl);
+
+      el.style.left = (state.pointX + (x / 100) * dispW) + 'px';
+      el.style.top  = (state.pointY + (y / 100) * dispH) + 'px';
+
+      attachDrag(el, key);
+      el.addEventListener('click', e => { e.stopPropagation(); document.getElementById('city-pin-list').value = key; selectPin(key); });
+      container.appendChild(el);
+    }
+
+    cityData.pins.forEach(l => makePin(l.x, l.y, l.n, 'n:' + l.n, false, l.size));
+    (cityData.namedLabels || []).forEach(l => {
+      if (l.type === 'sea' || l.type === 'direction') return;
+      makePin(l.x, l.y, l.name, 'id:' + l.id, true, l.size);
+    });
+  }
+
+  function highlightPin(key) {
+    document.querySelectorAll('.city-pin').forEach(el => {
+      const dot = el.querySelector('div');
+      const isSelected = el.dataset.key === key;
+      const isNamed = el.dataset.key.startsWith('id:');
+      dot.style.background   = isSelected ? '#d4af37' : (isNamed ? 'rgba(212,175,55,0.9)' : 'rgba(12,9,5,0.88)');
+      dot.style.boxShadow    = isSelected ? '0 0 12px #d4af37' : '0 0 6px rgba(212,175,55,0.5)';
+    });
+  }
+
+  // ── Drag ────────────────────────────────────────────────────
+  function attachDrag(el, key) {
+    el.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      e.stopPropagation(); e.preventDefault();
+      el.style.cursor = 'grabbing';
+
+      const loc = getLoc(key);
+      const sx = e.clientX, sy = e.clientY;
+      const lx = loc.x,    ly = loc.y;
+      const container = document.getElementById('map-container');
+      const img   = document.getElementById('map-image');
+      const state = MapController.getInstanceState('map-container');
+      const cw    = container.offsetWidth;
+      const dispW = cw * state.scale;
+      const dispH = (img.naturalHeight / img.naturalWidth) * cw * state.scale;
+
+      function onMove(ev) {
+        loc.x = Math.min(100, Math.max(0, lx + ((ev.clientX - sx) / dispW) * 100));
+        loc.y = Math.min(100, Math.max(0, ly + ((ev.clientY - sy) / dispH) * 100));
+        renderPins(); highlightPin(key);
+        if (selectedKey === key) {
+          document.getElementById('city-pin-x').value = loc.x.toFixed(1);
+          document.getElementById('city-pin-y').value = loc.y.toFixed(1);
+        }
+      }
+      function onUp() {
+        el.style.cursor = 'grab';
+        document.getElementById('city-pin-list').value = key;
+        selectPin(key);
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      }
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    });
+  }
+
+  // ── Watch map transform to re-render pins ───────────────────
+  let _transformWatching = false;
+  function _watchTransform() {
+    if (_transformWatching) return;
+    _transformWatching = true;
+    const img = document.getElementById('map-image');
+    new MutationObserver(() => { if (cityMapActive) renderPins(); })
+      .observe(img, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // ── Save entire CITY_MAPS back to city-maps.js ──────────────
+  function save() {
+    if (!allData) return;
+    const status = document.getElementById('city-save-status');
+    status.textContent = 'Saving…'; status.style.color = '#888';
+
+    function serializeCity(c) {
+      const pins = c.pins.map(l =>
+        `      { n: ${String(l.n).padStart(2)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, name: ${JSON.stringify(l.name)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)} },`
+      ).join('\n');
+      const named = c.namedLabels.map(l =>
+        `      { id: ${JSON.stringify(l.id)}, name: ${JSON.stringify(l.name)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)} },`
+      ).join('\n');
+      return `  {\n    id: ${JSON.stringify(c.id)},\n    name: ${JSON.stringify(c.name)},\n    image: ${JSON.stringify(c.image)},\n    previewImage: ${JSON.stringify(c.previewImage)},\n    pins: [\n${pins}\n    ],\n    namedLabels: [\n${named}\n    ],\n  },`;
+    }
+
+    const output = `/**
+ * City Maps Registry — World of Myrdae
+ * Add a new city by adding an entry to CITY_MAPS.
+ * Each city needs: id, name, image (path), and pins array.
+ * Pin positions are edited via the City Map tab in editor.html.
+ */
+const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
+
+    fetch('/save-city-map', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: output })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          // Sync live CITY_MAPS object
+          allData.forEach((c, i) => { Object.assign(CITY_MAPS[i], c); });
+          status.textContent = 'Saved ✓'; status.style.color = '#4caf50';
+        } else {
+          status.textContent = 'Error: ' + res.error; status.style.color = '#e44';
+        }
+      })
+      .catch(err => { status.textContent = 'Save failed: ' + err.message; status.style.color = '#e44'; });
+  }
+
+  function resetView() { MapController.reset('map-container'); setTimeout(renderPins, 100); }
+
+  return { open, loadCity, selectPin, filterList, updateFromForm, save, resetView, exitCityMode, renderPins };
+})();
+</script>
 </body>
 
 </html>
