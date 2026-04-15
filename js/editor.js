@@ -572,6 +572,12 @@ const Editor = (function () {
         document.getElementById('road-labelSide').value = road.labelSide || 'top';
         document.getElementById('road-labelReverse').checked = road.labelReverse || false;
 
+        // Ship / vessel details
+        document.getElementById('ship-name').value = road.shipName || '';
+        document.getElementById('ship-type').value = road.shipType || '';
+        document.getElementById('ship-captain').value = road.captainName || '';
+        toggleShipDetails();
+
         // Update location dropdowns
         updateLocationDropdowns();
         const points = road.points || [];
@@ -639,6 +645,12 @@ const Editor = (function () {
         document.getElementById('road-labelOffset').value = '';
         document.getElementById('road-labelSide').value = 'top';
         document.getElementById('road-labelReverse').checked = false;
+
+        // Ship / vessel details
+        document.getElementById('ship-name').value = '';
+        document.getElementById('ship-type').value = '';
+        document.getElementById('ship-captain').value = '';
+        toggleShipDetails();
 
         // Reset location dropdowns
         updateLocationDropdowns();
@@ -941,7 +953,23 @@ const Editor = (function () {
             if (endLocId && endLocId !== startLocId) roadData.points.push(endLocId);
         }
 
+        // Ship / vessel details (only for water-route)
+        if (roadData.type === 'water-route') {
+            const shipName = document.getElementById('ship-name').value;
+            const shipType = document.getElementById('ship-type').value;
+            const shipCaptain = document.getElementById('ship-captain').value;
+            if (shipName) roadData.shipName = shipName;
+            if (shipType) roadData.shipType = shipType;
+            if (shipCaptain) roadData.captainName = shipCaptain;
+        }
+
         return { roadData, startLocId, endLocId, existing, id };
+    }
+
+    function toggleShipDetails() {
+        const type = document.getElementById('road-type')?.value;
+        const section = document.getElementById('ship-details-section');
+        if (section) section.style.display = type === 'water-route' ? 'block' : 'none';
     }
 
     function previewRoad() {
@@ -1230,6 +1258,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         saveWaypoint,
         cancelEditWaypoint,
         previewRoad,
+        toggleShipDetails,
 
         // Core
         exportData,

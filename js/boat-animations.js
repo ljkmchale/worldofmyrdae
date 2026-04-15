@@ -1,6 +1,48 @@
 // Boat animation system for World of Myrdae
 // Draws SVG sailing vessels that move slowly along water routes
 
+// ── Boat tooltip helpers ─────────────────────────────────────────────────────
+let _boatTooltip = null;
+
+function _getBoatTooltip() {
+    if (!_boatTooltip) {
+        _boatTooltip = document.createElement('div');
+        _boatTooltip.className = 'map-tooltip';
+        _boatTooltip.style.display = 'none';
+        _boatTooltip.style.pointerEvents = 'none';
+        document.body.appendChild(_boatTooltip);
+    }
+    return _boatTooltip;
+}
+
+function _showBoatTooltip(e, boat) {
+    const tt = _getBoatTooltip();
+    tt.innerHTML = `
+        <div style="font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#4da6ff;margin-bottom:0.3rem;">&#9875; ${boat.shipName}</div>
+        <div style="font-size:0.7rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(77,166,255,0.25);">${boat.shipType}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;">Captain: <em>${boat.captainName}</em></div>
+    `;
+    tt.style.display = 'block';
+    _positionBoatTooltip(e);
+}
+
+function _positionBoatTooltip(e) {
+    const tt = _getBoatTooltip();
+    const margin = 14;
+    let x = e.clientX + margin;
+    let y = e.clientY + margin;
+    const rect = tt.getBoundingClientRect();
+    if (x + rect.width  > window.innerWidth)  x = e.clientX - rect.width  - margin;
+    if (y + rect.height > window.innerHeight) y = e.clientY - rect.height - margin;
+    tt.style.left = x + 'px';
+    tt.style.top  = y + 'px';
+}
+
+function _hideBoatTooltip() {
+    if (_boatTooltip) _boatTooltip.style.display = 'none';
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 class BoatFleet {
     constructor(svg, waterRoutes, locMap, natW, natH) {
         this.svg    = svg;
@@ -31,6 +73,10 @@ class BoatFleet {
 
             const baseDuration = 90000 + (routeIdx * 8000) + (Math.random() * 30000); // 90-120+ sec
 
+            const shipName    = route.shipName    || route.name || 'Unknown Vessel';
+            const shipType    = route.shipType    || 'Ship';
+            const captainName = route.captainName || 'Unknown';
+
             // Boat traveling forward
             this.boats.push({
                 route,
@@ -39,7 +85,10 @@ class BoatFleet {
                 startOffset: routeIdx * 0.13,
                 duration: baseDuration,
                 pathPoints,
-                element: null
+                element: null,
+                shipName,
+                shipType,
+                captainName
             });
 
             // Boat traveling backwards (bidirectional)
@@ -50,7 +99,10 @@ class BoatFleet {
                 startOffset: (routeIdx * 0.13) + 0.5, // Start on opposite end
                 duration: baseDuration,
                 pathPoints,
-                element: null
+                element: null,
+                shipName,
+                shipType,
+                captainName
             });
         });
     }
@@ -118,10 +170,11 @@ class BoatFleet {
         return Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
     }
 
-    createBoatElement() {
+    createBoatElement(boat) {
         const s = this.boatSize;
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('class', 'boat');
+        g.style.cursor = 'pointer';
 
         const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         dot.setAttribute('cx', '0');
@@ -132,6 +185,12 @@ class BoatFleet {
         dot.setAttribute('stroke-width', Math.max(0.5, s * 0.1));
 
         g.appendChild(dot);
+
+        // Hover tooltip showing ship name, type, and captain
+        g.addEventListener('mouseenter', (e) => _showBoatTooltip(e, boat));
+        g.addEventListener('mousemove',  (e) => _positionBoatTooltip(e));
+        g.addEventListener('mouseleave', ()  => _hideBoatTooltip());
+
         this.boatsLayer.appendChild(g);
         return g;
     }
@@ -247,7 +306,7 @@ class BoatFleet {
         const svgY = (pos.y / 100) * this.natH;
 
         if (!boat.element) {
-            boat.element = this.createBoatElement();
+            boat.element = this.createBoatElement(boat);
         }
 
         boat.element.setAttribute('transform', `translate(${svgX},${svgY})`);

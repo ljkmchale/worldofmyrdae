@@ -380,7 +380,7 @@
 
           <div class="form-group">
             <label>Type</label>
-            <select id="road-type" class="form-control" onchange="Editor.previewRoad()">
+            <select id="road-type" class="form-control" onchange="Editor.previewRoad(); Editor.toggleShipDetails();">
               <option value="major">Major Road</option>
               <option value="minor">Minor Road</option>
               <option value="river">River</option>
@@ -388,6 +388,22 @@
               <option value="border">Border</option>
             </select>
             <small style="display:block; margin-top:0.4rem; color:#888; font-size:0.85rem;">Boat routes are saved as water-route and will animate boats on the map instead of drawing a road line.</small>
+          </div>
+
+          <div id="ship-details-section" style="display:none; background:rgba(0,60,100,0.15); border:1px solid rgba(30,144,255,0.25); border-radius:4px; padding:0.75rem; margin-bottom:0.75rem;">
+            <p style="margin:0 0 0.6rem; font-size:0.8rem; color:#4da6ff; font-family:'Cinzel',serif; letter-spacing:0.05em;">&#9875; Vessel Details</p>
+            <div class="form-group">
+              <label>Ship Name</label>
+              <input type="text" id="ship-name" class="form-control" placeholder="e.g. The Crimson Tide">
+            </div>
+            <div class="form-group">
+              <label>Ship Type</label>
+              <input type="text" id="ship-type" class="form-control" placeholder="e.g. Galleon, Caravel, Sloop">
+            </div>
+            <div class="form-group">
+              <label>Captain</label>
+              <input type="text" id="ship-captain" class="form-control" placeholder="e.g. Captain Mara Vex">
+            </div>
           </div>
 
           <div class="form-group">
