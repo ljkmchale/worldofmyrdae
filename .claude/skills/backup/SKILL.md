@@ -1,6 +1,6 @@
 ---
 name: backup
-description: Create a timestamped backup of key World of Myrdae source files (locations-db.js, map-overlay.js, editor.js, boat-animations.js) into the /backups/ directory before making significant changes
+description: Create a timestamped backup of key World of Myrdae source files (locations-db.js, map-overlay.js, editor.js, boat-animations.js, dragon-overlay.js) into the /backups/ directory before making significant changes
 argument-hint: [optional note]
 ---
 
@@ -13,6 +13,7 @@ Steps:
    - `js/map-overlay.js` → `backups/map-overlay.<timestamp>.js`
    - `js/editor.js` → `backups/editor.<timestamp>.js`
    - `js/boat-animations.js` → `backups/boat-animations.<timestamp>.js`
+   - `js/dragon-overlay.js` → `backups/dragon-overlay.<timestamp>.js`
 3. Use `cp` commands via Bash to do the actual copying.
 4. Confirm to the user which files were backed up and to what paths.
 

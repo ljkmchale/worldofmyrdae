@@ -15,6 +15,8 @@ Key pages:
 - `http://localhost:3000/map.html` — read-only interactive map viewer
 - `http://localhost:3000/map-3d-planet.html` — 3D rotating globe
 - `http://localhost:3000/embed-map.html` — embeddable map (same as map.html, for iframe use)
+- `http://localhost:3000/city-emberstran.html` — standalone city map for Emberstran
+- `http://localhost:3000/city-tratta.html` — standalone city map for Tratta
 
 ## Architecture
 
@@ -23,7 +25,8 @@ Key pages:
 2. `js/campaign-data.js` — loads `WORLD_LOCATIONS`, provides CRUD API (`CampaignData.addLocation()`, etc.)
 3. `js/map-overlay.js` — reads campaign data, renders SVG markers/labels/tooltips onto the map image
 4. `js/boat-animations.js` — `BoatFleet` class; animates sailing vessels and a sea monster along `water-route` roads
-5. `js/editor.js` — UI for editing; POSTs changes to `server.js /save` which writes back to `locations-db.js`
+5. `js/dragon-overlay.js` — `DragonFlyover` module; animates a golden dragon flying over the Arbescar region on a 4-minute patrol cycle
+6. `js/editor.js` — UI for editing; POSTs changes to `server.js /save` which writes back to `locations-db.js`
 6. `js/map.js` — pan/zoom controller (GPU-accelerated via CSS transforms)
 
 ### Key files
@@ -32,6 +35,7 @@ Key pages:
 | `js/locations-db.js` | the entire world database |
 | `js/map-overlay.js` | SVG overlay renderer, tooltips, territory borders |
 | `js/boat-animations.js` | `BoatFleet` class — animated boats + sea monster on water routes |
+| `js/dragon-overlay.js` | `DragonFlyover` module — golden dragon flyover animation above Arbescar |
 | `js/editor.js` | Editor UI logic, save/load, live preview |
 | `js/campaign-data.js` | Data init, persistence, cross-tab BroadcastChannel sync |
 | `js/map.js` | Zoom/pan with requestAnimationFrame |
