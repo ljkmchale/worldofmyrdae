@@ -231,6 +231,15 @@
               oninput="Editor.previewLocation()">
           </div>
 
+          <div class="form-group">
+            <label>City Map Page <span style="color:#888;font-size:0.75rem;">(adds City Map button to tooltip)</span></label>
+            <select id="loc-cityMap" class="form-control"
+              style="font-family:'Cinzel',serif;font-size:0.85rem;background:#1a1614;color:#d4af37;border:1px solid #584433;"
+              onchange="Editor.previewLocation()">
+              <option value="">— None —</option>
+            </select>
+          </div>
+
           <details style="margin-top: 1rem; margin-bottom: 1rem;">
             <summary style="cursor: pointer; color: var(--color-gold); font-size: 0.9rem;">Advanced Typography / Markers
             </summary>
@@ -651,6 +660,20 @@
   </script>
 
 <script>
+// Populate the City Map dropdown in the location form
+(function populateCityMapSelect() {
+  const sel = document.getElementById('loc-cityMap');
+  if (!sel || typeof CITY_MAPS === 'undefined') return;
+  CITY_MAPS.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = 'city-viewer.html?city=' + c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+})();
+</script>
+
+<script>
 const CityEditor = (function () {
   let cityData    = null;  // deep copy of the active city entry from CITY_MAPS
   let allData     = null;  // deep copy of all CITY_MAPS
@@ -659,7 +682,7 @@ const CityEditor = (function () {
   let cityMapActive = false;
 
   // ── Open the tab (populate city selector) ──────────────────
-  function open() {
+  async function open() {
     document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
     document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-citymap').style.display = 'block';
@@ -677,6 +700,24 @@ const CityEditor = (function () {
       sel.appendChild(opt);
     });
 
+    // Discover city folders from server, add unregistered ones
+    try {
+      const discovered = await fetch('/api/city-images').then(r => r.json());
+      const knownIds = new Set(CITY_MAPS.map(c => c.id));
+      discovered.forEach(d => {
+        if (!knownIds.has(d.id)) {
+          const opt = document.createElement('option');
+          opt.value = '__new__:' + d.id;
+          opt.textContent = '+ Add: ' + d.name;
+          opt.dataset.image      = d.image      || ('images/cities/' + d.id + '/' + d.id + '.png');
+          opt.dataset.locImage   = d.locationsImage || '';
+          sel.appendChild(opt);
+        }
+      });
+    } catch (e) {
+      console.warn('City image discovery failed:', e);
+    }
+
     if (activeCityId) loadCity(activeCityId);
   }
 
@@ -684,14 +725,35 @@ const CityEditor = (function () {
   function loadCity(cityId) {
     if (!cityId) return;
 
+    // Handle newly discovered city (not yet in CITY_MAPS)
+    if (cityId.startsWith('__new__:')) {
+      const rawId = cityId.slice(8);
+      const sel = document.getElementById('city-select');
+      const opt = Array.from(sel.options).find(o => o.value === cityId);
+      const img = opt ? opt.dataset.image : ('images/cities/' + rawId + '/' + rawId + '.png');
+      const capName = rawId.charAt(0).toUpperCase() + rawId.slice(1);
+      const newEntry = {
+        id: rawId,
+        name: capName,
+        image: img,
+        previewImage: img,
+        pins: [],
+        namedLabels: [],
+      };
+      CITY_MAPS.push(newEntry);
+      // Replace the option with a normal one
+      if (opt) { opt.value = rawId; opt.textContent = capName; }
+      return loadCity(rawId);
+    }
+
     // Restore world overlay if switching cities
     if (cityMapActive) _setOverlay(true);
 
     activeCityId = cityId;
     allData = CITY_MAPS.map(c => ({
       ...c,
-      pins: c.pins.map(p => ({ ...p })),
-      namedLabels: c.namedLabels.map(l => ({ ...l })),
+      pins: (c.pins || []).map(p => ({ ...p })),
+      namedLabels: (c.namedLabels || []).map(l => ({ ...l })),
     }));
     cityData = allData.find(c => c.id === cityId);
 
@@ -917,12 +979,16 @@ const CityEditor = (function () {
     status.textContent = 'Saving…'; status.style.color = '#888';
 
     function serializeCity(c) {
-      const pins = c.pins.map(l =>
-        `      { n: ${String(l.n).padStart(2)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, name: ${JSON.stringify(l.name)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)} },`
-      ).join('\n');
-      const named = c.namedLabels.map(l =>
-        `      { id: ${JSON.stringify(l.id)}, name: ${JSON.stringify(l.name)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)} },`
-      ).join('\n');
+      const pins = c.pins.map(l => {
+        let s = `      { n: ${String(l.n).padStart(2)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, name: ${JSON.stringify(l.name)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)}`;
+        if (l.size && l.size !== 1.0) s += `, size: ${parseFloat(l.size).toFixed(1)}`;
+        return s + ' },';
+      }).join('\n');
+      const named = (c.namedLabels || []).map(l => {
+        let s = `      { id: ${JSON.stringify(l.id)}, name: ${JSON.stringify(l.name)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)}`;
+        if (l.size && l.size !== 1.0) s += `, size: ${parseFloat(l.size).toFixed(1)}`;
+        return s + ' },';
+      }).join('\n');
       return `  {\n    id: ${JSON.stringify(c.id)},\n    name: ${JSON.stringify(c.name)},\n    image: ${JSON.stringify(c.image)},\n    previewImage: ${JSON.stringify(c.previewImage)},\n    pins: [\n${pins}\n    ],\n    namedLabels: [\n${named}\n    ],\n  },`;
     }
 
@@ -939,7 +1005,10 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
       .then(res => {
         if (res.success) {
           // Sync live CITY_MAPS object
-          allData.forEach((c, i) => { Object.assign(CITY_MAPS[i], c); });
+          allData.forEach(c => {
+            const existing = CITY_MAPS.find(m => m.id === c.id);
+            if (existing) Object.assign(existing, c);
+          });
           status.textContent = 'Saved ✓'; status.style.color = '#4caf50';
         } else {
           status.textContent = 'Error: ' + res.error; status.style.color = '#e44';

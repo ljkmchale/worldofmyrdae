@@ -263,6 +263,7 @@ const Editor = (function () {
         document.getElementById('loc-desc').value = loc.description || '';
         document.getElementById('loc-details').value = loc.details || '';
         document.getElementById('loc-link').value = loc.link || '';
+        document.getElementById('loc-cityMap').value = loc.cityMap || '';
 
         // Advanced
         document.getElementById('loc-fontFamily').value = loc.fontFamily || '';
@@ -304,6 +305,7 @@ const Editor = (function () {
         document.getElementById('loc-desc').value = '';
         document.getElementById('loc-details').value = '';
         document.getElementById('loc-link').value = '';
+        document.getElementById('loc-cityMap').value = '';
 
         document.getElementById('loc-fontFamily').value = '';
         document.getElementById('loc-fontSize').value = '';
@@ -366,6 +368,9 @@ const Editor = (function () {
 
         const link = document.getElementById('loc-link').value.trim();
         if (link) locData.link = link;
+
+        const cityMap = document.getElementById('loc-cityMap').value;
+        if (cityMap) locData.cityMap = cityMap;
 
         const setIf = (key, val, parseFn, defaultVal = undefined) => {
             if (val !== '') {

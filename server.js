@@ -25,6 +25,45 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // GET /api/city-images — scan images/cities/ for available city map folders
+    if (req.method === 'GET' && req.url === '/api/city-images') {
+        try {
+            const citiesDir = path.join(PUBLIC_DIR, 'images', 'cities');
+            const imgExts = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'];
+            const results = [];
+
+            if (fs.existsSync(citiesDir)) {
+                const folders = fs.readdirSync(citiesDir).filter(f =>
+                    fs.statSync(path.join(citiesDir, f)).isDirectory()
+                );
+                folders.forEach(folder => {
+                    const folderPath = path.join(citiesDir, folder);
+                    const files = fs.readdirSync(folderPath);
+                    // Find the primary map image (matches folder name, excludes *-locations.*)
+                    const mapFile = files.find(f => {
+                        const base = path.basename(f, path.extname(f)).toLowerCase();
+                        return base === folder.toLowerCase() && imgExts.includes(path.extname(f));
+                    });
+                    // Find the locations reference image
+                    const locFile = files.find(f => f.toLowerCase().includes('location'));
+                    results.push({
+                        id: folder,
+                        name: folder.charAt(0).toUpperCase() + folder.slice(1),
+                        image: mapFile ? `images/cities/${folder}/${mapFile}` : null,
+                        locationsImage: locFile ? `images/cities/${folder}/${locFile}` : null,
+                    });
+                });
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(results));
+        } catch (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: err.message }));
+        }
+        return;
+    }
+
     if (req.method === 'POST' && req.url === '/save') {
         let body = '';
         req.on('data', chunk => {
