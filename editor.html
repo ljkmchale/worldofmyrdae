@@ -347,6 +347,10 @@
               style="width:100%; accent-color:var(--color-gold);"
               oninput="document.getElementById('city-pin-size-val').textContent=parseFloat(this.value).toFixed(1); CityEditor.updateFromForm()">
           </div>
+          <button class="btn" onclick="CityEditor.deletePin()" 
+            style="background:#500; border-color:#800; color:#fff; width:100%; margin-top:0.5rem;">
+            <i class="fa-solid fa-trash"></i> Delete This Pin
+          </button>
         </div>
 
         <div id="city-action-btns" style="display:none; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
@@ -594,6 +598,7 @@
         </div>
         <div class="map-coords" id="map-coords">X: — Y: —</div>
         <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+        <svg id="city-pins-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:200; overflow:visible;"></svg>
       </div>
     </div>
   </div>
@@ -679,7 +684,11 @@
         const imgX = (mouseX - tx) / imgDisplayWidth * 100;
         const imgY = (mouseY - ty) / imgDisplayHeight * 100;
 
-        Editor.handleMapClick(imgX, imgY);
+        if (CityEditor.isActive()) {
+          CityEditor.addPin(imgX, imgY);
+        } else {
+          Editor.handleMapClick(imgX, imgY);
+        }
       });
     });
 
@@ -900,7 +909,7 @@ const CityEditor = (function () {
     const sz = (loc.size || 1.0).toFixed(1);
     document.getElementById('city-pin-size').value = sz;
     document.getElementById('city-pin-size-val').textContent = sz;
-    highlightPin(key);
+    renderPins();
   }
 
   function updateFromForm() {
@@ -914,93 +923,151 @@ const CityEditor = (function () {
     loc.size = parseFloat(document.getElementById('city-pin-size').value) || 1.0;
     document.getElementById('city-pin-name').textContent = loc.name;
     renderPins();
-    highlightPin(selectedKey);
   }
 
-  // ── Render pins ─────────────────────────────────────────────
+  // ── Add new pin at coordinates ─────────────────────────────
+  function addPin(x, y) {
+    if (!cityData) return;
+    
+    // Find next available number (n)
+    const existingNums = cityData.pins.map(p => p.n);
+    const nextN = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+    
+    const newPin = {
+      n: nextN,
+      x: parseFloat(x.toFixed(1)),
+      y: parseFloat(y.toFixed(1)),
+      name: 'New Pin ' + nextN,
+      type: 'poi',
+      desc: '',
+      size: 1.0
+    };
+    
+    cityData.pins.push(newPin);
+    populateList();
+    renderPins();
+    selectPin('n:' + nextN);
+    document.getElementById('city-pin-list').value = 'n:' + nextN;
+  }
+
+  // ── Delete active pin ──────────────────────────────────────
+  function deletePin() {
+    if (!selectedKey || !cityData) return;
+    const loc = getLoc(selectedKey);
+    if (!loc) return;
+
+    if (!confirm(`Are you sure you want to delete "${loc.name || ('Pin ' + loc.n)}"?`)) return;
+
+    if (selectedKey.startsWith('n:')) {
+      const idx = cityData.pins.findIndex(p => p.n === loc.n);
+      if (idx !== -1) cityData.pins.splice(idx, 1);
+    } else {
+      const idx = (cityData.namedLabels || []).findIndex(l => l.id === loc.id);
+      if (idx !== -1) cityData.namedLabels.splice(idx, 1);
+    }
+
+    selectedKey = null;
+    document.getElementById('city-pin-form').style.display = 'none';
+    populateList();
+    renderPins();
+  }
+
+  // ── Render pins (SVG-based, scales WITH map) ─────────────────────
   function renderPins() {
     if (!cityMapActive || !cityData) return;
-    const container = document.getElementById('map-container');
-    document.querySelectorAll('.city-pin').forEach(el => el.remove());
+    const overlay = document.getElementById('city-pins-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = '';
 
     const img   = document.getElementById('map-image');
     const state = MapController.getInstanceState('map-container');
     if (!state || !img.naturalWidth) return;
 
-    const cw    = container.offsetWidth;
-    const dispW = cw * state.scale;
-    const dispH = (img.naturalHeight / img.naturalWidth) * cw * state.scale;
+    const cw      = document.getElementById('map-container').offsetWidth;
+    const total   = (cw / img.naturalWidth) * state.scale;
 
-    function makePin(x, y, label, key, isNamed, size) {
-      const sz  = size || 1.0;
-      const dim = Math.round((isNamed ? 10 : 14) * sz);
-      const el  = document.createElement('div');
-      el.className = 'city-pin';
-      el.dataset.key = key;
-      el.style.cssText = 'position:absolute;z-index:200;cursor:grab;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%);pointer-events:all;';
-
-      const dot = document.createElement('div');
-      dot.style.cssText = `width:${dim}px;height:${dim}px;border-radius:50%;background:${isNamed?'rgba(212,175,55,0.9)':'rgba(12,9,5,0.88)'};border:2px solid rgba(212,175,55,0.85);box-shadow:0 0 6px rgba(212,175,55,0.5);flex-shrink:0;display:flex;align-items:center;justify-content:center;`;
-
-      if (!isNamed) {
-        const num = document.createElement('span');
-        num.style.cssText = `font-family:'Cinzel',serif;font-size:${Math.max(7, Math.round(9*sz))}px;color:#f0e8d0;pointer-events:none;line-height:1;`;
-        num.textContent = label;
-        dot.appendChild(num);
-      }
-
-      const lbl = document.createElement('div');
-      lbl.style.cssText = `font-family:'Cinzel',serif;font-size:${Math.round(8*sz)}px;color:#d4af37;background:rgba(5,5,8,0.8);padding:1px 4px;border-radius:2px;white-space:nowrap;margin-top:2px;border:1px solid rgba(212,175,55,0.25);pointer-events:none;`;
-      lbl.textContent = isNamed ? label : '';
-      el.appendChild(dot);
-      if (isNamed) el.appendChild(lbl);
-
-      el.style.left = (state.pointX + (x / 100) * dispW) + 'px';
-      el.style.top  = (state.pointY + (y / 100) * dispH) + 'px';
-
-      attachDrag(el, key);
-      el.addEventListener('click', e => { e.stopPropagation(); document.getElementById('city-pin-list').value = key; selectPin(key); });
-      container.appendChild(el);
+    function svgEl(tag, attrs) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+      return el;
     }
 
-    cityData.pins.forEach(l => makePin(l.x, l.y, l.n, 'n:' + l.n, false, l.size));
+    function makePin(loc, key, isNamed) {
+      const px = (loc.x / 100) * img.naturalWidth;
+      const py = (loc.y / 100) * img.naturalHeight;
+      const sz = loc.size || 1.0;
+      const r  = (isNamed ? 10 : 14) * sz;
+      
+      // Position the pin group in screen space, and let it scale with 'total'
+      const g = svgEl('g', {
+        class: 'city-pin',
+        style: 'cursor:grab; pointer-events:all;',
+        transform: `translate(${state.pointX + px * total},${state.pointY + py * total}) scale(${total})`
+      });
+      g.dataset.key = key;
+
+      const isSelected = selectedKey === key;
+      const fill   = isSelected ? '#d4af37' : (isNamed ? 'rgba(212,175,55,0.9)' : 'rgba(12,9,5,0.88)');
+      const stroke = 'rgba(212,175,55,0.85)';
+
+      const circle = svgEl('circle', {
+        cx: 0, cy: 0, r: r,
+        fill: fill, stroke: stroke, 'stroke-width': (2 / total).toFixed(2)
+      });
+      if (isSelected) {
+          circle.setAttribute('style', `filter: drop-shadow(0 0 ${8/total}px #d4af37);`);
+      }
+      g.appendChild(circle);
+
+      if (!isNamed) {
+        const t = svgEl('text', {
+          x: 0, y: 0, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: '#f0e8d0', 'font-family': 'Cinzel', 'font-size': Math.round(14 * sz) + 'px'
+        });
+        t.textContent = loc.n;
+        g.appendChild(t);
+      } else {
+        const t = svgEl('text', {
+          x: 0, y: r + 15, 'text-anchor': 'middle',
+          fill: '#d4af37', 'font-family': 'Cinzel', 'font-size': Math.round(12 * sz) + 'px',
+          stroke: 'rgba(0,0,0,0.8)', 'stroke-width': (3 / total).toFixed(2), 'paint-order': 'stroke'
+        });
+        t.textContent = loc.name;
+        g.appendChild(t);
+      }
+
+      attachDrag(g, loc, key);
+      g.addEventListener('click', e => { e.stopPropagation(); selectPin(key); });
+      overlay.appendChild(g);
+    }
+
+    cityData.pins.forEach(l => makePin(l, 'n:' + l.n, false));
     (cityData.namedLabels || []).forEach(l => {
       if (l.type === 'sea' || l.type === 'direction') return;
-      makePin(l.x, l.y, l.name, 'id:' + l.id, true, l.size);
+      makePin(l, 'id:' + l.id, true);
     });
   }
 
-  function highlightPin(key) {
-    document.querySelectorAll('.city-pin').forEach(el => {
-      const dot = el.querySelector('div');
-      const isSelected = el.dataset.key === key;
-      const isNamed = el.dataset.key.startsWith('id:');
-      dot.style.background   = isSelected ? '#d4af37' : (isNamed ? 'rgba(212,175,55,0.9)' : 'rgba(12,9,5,0.88)');
-      dot.style.boxShadow    = isSelected ? '0 0 12px #d4af37' : '0 0 6px rgba(212,175,55,0.5)';
-    });
-  }
-
-  // ── Drag ────────────────────────────────────────────────────
-  function attachDrag(el, key) {
+  // ── Drag (Updated for SVG) ──────────────────────────────────
+  function attachDrag(el, loc, key) {
     el.addEventListener('mousedown', e => {
       if (e.button !== 0) return;
       e.stopPropagation(); e.preventDefault();
       el.style.cursor = 'grabbing';
 
-      const loc = getLoc(key);
       const sx = e.clientX, sy = e.clientY;
       const lx = loc.x,    ly = loc.y;
-      const container = document.getElementById('map-container');
+      
       const img   = document.getElementById('map-image');
       const state = MapController.getInstanceState('map-container');
-      const cw    = container.offsetWidth;
+      const cw    = document.getElementById('map-container').offsetWidth;
       const dispW = cw * state.scale;
       const dispH = (img.naturalHeight / img.naturalWidth) * cw * state.scale;
 
       function onMove(ev) {
         loc.x = Math.min(100, Math.max(0, lx + ((ev.clientX - sx) / dispW) * 100));
         loc.y = Math.min(100, Math.max(0, ly + ((ev.clientY - sy) / dispH) * 100));
-        renderPins(); highlightPin(key);
+        renderPins(); 
         if (selectedKey === key) {
           document.getElementById('city-pin-x').value = loc.x.toFixed(1);
           document.getElementById('city-pin-y').value = loc.y.toFixed(1);
@@ -1008,7 +1075,6 @@ const CityEditor = (function () {
       }
       function onUp() {
         el.style.cursor = 'grab';
-        document.getElementById('city-pin-list').value = key;
         selectPin(key);
         window.removeEventListener('mousemove', onMove);
         window.removeEventListener('mouseup', onUp);
@@ -1123,7 +1189,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
     }
   }
 
-  return { open, loadCity, selectPin, filterList, updateFromForm, save, resetView, exitCityMode, renderPins, isActive, reloadData };
+  return { open, loadCity, selectPin, filterList, updateFromForm, addPin, save, resetView, exitCityMode, renderPins, isActive, reloadData };
 })();
 </script>
 </body>

@@ -532,12 +532,15 @@
       }
 
       function updateOverlayScale(totalScale) {
+        // Inverse scaling disabled: pins will grow/shrink with the map zoom.
+        /*
         const inv = 1 / totalScale;
         Array.from(numberedMarkersLayer.children).forEach((grp) => {
           const x = parseFloat(grp.dataset.px || 0);
           const y = parseFloat(grp.dataset.py || 0);
           grp.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
         });
+        */
       }
 
       function svgEl(tag, attrs) {

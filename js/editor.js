@@ -50,10 +50,22 @@ const Editor = (function () {
         ['road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
             'road-dashed', 'road-dashLength', 'road-gapLength',
             'road-fontFamily', 'road-fontSize', 'road-fontWeight', 'road-fontStyle', 'road-labelOpacity',
-            'road-labelOffset', 'road-labelSide', 'road-labelReverse'].forEach(id => {
+            'road-labelOffset', 'road-labelSide', 'road-labelReverse',
+            'ship-name', 'ship-type', 'ship-captain', 'ship-duration', 'ship-color', 'ship-size',
+            'route-purpose', 'route-cargo', 'route-risk'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', previewRoad);
             });
+        
+        const shipColorPicker = document.getElementById('ship-color-picker');
+        if (shipColorPicker) {
+            shipColorPicker.addEventListener('input', () => {
+                const colorInput = document.getElementById('ship-color');
+                if (colorInput) colorInput.value = shipColorPicker.value;
+                previewRoad();
+            });
+        }
+
         ['road-start-location', 'road-end-location'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('change', previewRoad);
@@ -1023,9 +1035,33 @@ const Editor = (function () {
     function handleShipTypeChange() {
         const select = document.getElementById('ship-type');
         const custom = document.getElementById('ship-type-custom');
+        const colorInput = document.getElementById('ship-color');
+        const colorPicker = document.getElementById('ship-color-picker');
+
+        const typeColors = {
+            'Caravel': '#ffcc00',
+            'Sloop': '#4da6ff',
+            'Brigantine': '#ff6600',
+            'Galleon': '#ff3333',
+            'Frigate': '#cc33ff',
+            'Merchant Cog': '#99ff33',
+            'Longship': '#964B00',
+            'Warship': '#555555',
+            'Fishing Vessel': '#00cccc'
+        };
+
         if (select && custom) {
             custom.style.display = select.value === 'Other' ? 'block' : 'none';
-            if (select.value !== 'Other') custom.value = '';
+            if (select.value !== 'Other') {
+                custom.value = '';
+                // Automatically set color if it's a known type and color isn't already customized
+                if (typeColors[select.value]) {
+                    const newColor = typeColors[select.value];
+                    if (colorInput) colorInput.value = newColor;
+                    if (colorPicker) colorPicker.value = newColor;
+                }
+                previewRoad();
+            }
         }
     }
 

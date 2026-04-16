@@ -6,8 +6,14 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
 
 const server = http.createServer((req, res) => {
-    // Handle POST request to save locations-db.js
-    if (req.method === 'POST' && req.url === '/save-city-map') {
+    // Normalize URL: strip query strings and trailing slashes (except for root)
+    let url = req.url.split('?')[0];
+    if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+    }
+
+    // Handle POST request to save city-maps.js
+    if (req.method === 'POST' && url === '/save-city-map') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
@@ -26,7 +32,7 @@ const server = http.createServer((req, res) => {
     }
 
     // GET /api/city-images — scan images/cities/ for available city map folders
-    if (req.method === 'GET' && req.url === '/api/city-images') {
+    if (req.method === 'GET' && url === '/api/city-images') {
         try {
             const citiesDir = path.join(PUBLIC_DIR, 'images', 'cities');
             const imgExts = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'];
@@ -64,7 +70,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (req.method === 'POST' && req.url === '/save') {
+    if (req.method === 'POST' && url === '/save') {
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
@@ -87,11 +93,7 @@ const server = http.createServer((req, res) => {
     }
 
     // Serve Static Files
-    let reqPath = req.url === '/' ? '/editor.html' : req.url;
-    // Strip query strings for file resolution
-    if (reqPath.includes('?')) {
-        reqPath = reqPath.split('?')[0];
-    }
+    let reqPath = url === '/' ? '/editor.html' : url;
 
     // Decode URL-encoded characters so filenames with spaces (e.g. %20) resolve correctly
     reqPath = decodeURIComponent(reqPath);

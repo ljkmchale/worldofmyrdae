@@ -499,17 +499,12 @@ if (!_city) {
       if (!s.ticking) { requestAnimationFrame(render); s.ticking = true; }
     }
 
-    // Keep markers at constant screen size (SVG requires setAttribute)
+    // Pins now scale naturally with the map features. 
+    // We only adjust stroke-widths and effects if needed to keep them crisp.
     function updateOverlayScale(totalScale) {
       if (!totalScale || !isFinite(totalScale) || totalScale <= 0) return;
-      const inv = 1 / totalScale;
-      ['named-labels-layer', 'numbered-markers-layer'].forEach(id => {
-        Array.from(document.getElementById(id).children).forEach(el => {
-          const x = parseFloat(el.dataset.px || 0);
-          const y = parseFloat(el.dataset.py || 0);
-          el.setAttribute('transform', `translate(${x},${y}) scale(${inv}) translate(${-x},${-y})`);
-        });
-      });
+      // No longer applying 1/totalScale to keep pins constant size.
+      // They will now grow and shrink with the map.
     }
 
     // ── INIT ──────────────────────────────────────────────────

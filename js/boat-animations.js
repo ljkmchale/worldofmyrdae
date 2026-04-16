@@ -68,6 +68,19 @@ class BoatFleet {
         this.boats  = [];
         this.animationId = null;
 
+        // Default colors for different ship types
+        this.typeColors = {
+            'Caravel': '#ffcc00',
+            'Sloop': '#4da6ff',
+            'Brigantine': '#ff6600',
+            'Galleon': '#ff3333',
+            'Frigate': '#cc33ff',
+            'Merchant Cog': '#99ff33',
+            'Longship': '#964B00',
+            'Warship': '#555555',
+            'Fishing Vessel': '#00cccc'
+        };
+
         // Boat dots should be small markers on the map.
         this.boatSize = Math.max(4, natW * 0.0012);
 
@@ -94,38 +107,21 @@ class BoatFleet {
             const shipName    = route.shipName    || route.name || 'Unknown Vessel';
             const shipType    = route.shipType    || 'Ship';
             const captainName = route.captainName || 'Unknown';
-            const boatColor   = route.boatColor   || '#4da6ff';
+            
+            // Use saved boatColor, or look up default by type, or fallback to blue
+            const boatColor   = route.boatColor || this.typeColors[shipType] || '#4da6ff';
+            
             const boatSizeMul = route.boatSizeMultiplier || 1;
             const routePurpose = route.routePurpose || '';
             const cargo        = route.cargo        || '';
             const riskLevel    = route.riskLevel    || '';
 
-            // Boat traveling forward
+            // Create exactly ONE boat per route so name/captain are unique
             this.boats.push({
                 route,
-                id: `boat-${route.id}-fwd`,
-                reversed: false,
-                startOffset: routeIdx * 0.13,
-                duration: baseDuration,
-                pathPoints,
-                element: null,
-                shipName,
-                shipType,
-                captainName,
-                boatColor,
-                boatSizeMul,
-                routePurpose,
-                cargo,
-                riskLevel
-            });
-
-            // Boat traveling backwards (bidirectional)
-            this.boats.push({
-                route,
-                id: `boat-${route.id}-bwd`,
-                reversed: true,
-                startOffset: (routeIdx * 0.13) + 0.5, // Start on opposite end
-                duration: baseDuration,
+                id: `boat-${route.id}`,
+                startOffset: routeIdx * 0.17, // Randomize starting position along the loop
+                duration: baseDuration * 2,   // Duration is for the full round trip (A->B->A)
                 pathPoints,
                 element: null,
                 shipName,
@@ -210,6 +206,7 @@ class BoatFleet {
         g.setAttribute('class', 'boat');
         g.style.cursor = 'pointer';
 
+        // Use a simple circle as requested, colored by type
         const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         dot.setAttribute('cx', '0');
         dot.setAttribute('cy', '0');
@@ -326,13 +323,26 @@ class BoatFleet {
     }
 
     updateBoat(boat) {
-        const raw      = ((Date.now() / boat.duration) + boat.startOffset) % 1;
-        const progress = boat.reversed ? 1 - raw : raw;
+        // Raw progress from 0 to 1 for the total round trip
+        const totalProgress = ((Date.now() / boat.duration) + boat.startOffset) % 1;
+        
+        // Split progress: 0.0-0.5 is forward, 0.5-1.0 is backward
+        let raw, reversed;
+        if (totalProgress < 0.5) {
+            raw = totalProgress * 2; // Map 0-0.5 to 0-1
+            reversed = false;
+        } else {
+            raw = (totalProgress - 0.5) * 2; // Map 0.5-1.0 to 0-1
+            reversed = true;
+        }
 
-        // Fade in/out near each endpoint so boats don't pop on/off
+        const progress = reversed ? 1 - raw : raw;
+
+        // Fade in/out near the "docking" points (ends of the route)
+        // Since it's a round trip, it only "docks" at progress 0 and 1
         let opacity = 1;
-        if      (raw < 0.04)  opacity = raw / 0.04;
-        else if (raw > 0.96)  opacity = (1 - raw) / 0.04;
+        if      (raw < 0.05) opacity = raw / 0.05;
+        else if (raw > 0.95) opacity = (1 - raw) / 0.05;
 
         const pos  = this.interpolatePosition(boat.pathPoints, progress);
         const rot  = this.calculateRotation(boat.pathPoints, progress);
@@ -343,7 +353,11 @@ class BoatFleet {
             boat.element = this.createBoatElement(boat);
         }
 
-        boat.element.setAttribute('transform', `translate(${svgX},${svgY})`);
+        // Adjust rotation based on direction (reversed travels backward, so rotate 180)
+        const finalRot = reversed ? rot + 180 : rot;
+
+        // Shapes pointing Up (negative Y) need +90 to align with atan2 output
+        boat.element.setAttribute('transform', `translate(${svgX},${svgY}) rotate(${finalRot + 90})`);
         boat.element.setAttribute('opacity', opacity);
     }
 

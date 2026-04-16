@@ -483,6 +483,8 @@ const NUMBERED_LOCATIONS = _city.pins;
   // Keep markers at constant screen size regardless of zoom
   // SVG elements need setAttribute('transform') not style.transform
   function updateOverlayScale(totalScale) {
+    // Inverse scaling disabled: pins will grow/shrink with the map zoom.
+    /*
     if (!totalScale || !isFinite(totalScale) || totalScale <= 0) return;
     const inv = 1 / totalScale;
     const namedLayer    = document.getElementById('named-labels-layer');
@@ -498,6 +500,7 @@ const NUMBERED_LOCATIONS = _city.pins;
       const y = parseFloat(grp.dataset.py || 0);
       grp.setAttribute('transform', `translate(${x},${y}) scale(${inv}) translate(${-x},${-y})`);
     });
+    */
   }
 
   // ── INIT ────────────────────────────────────────────────────
