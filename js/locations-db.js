@@ -7919,6 +7919,8 @@ const WORLD_LOCATIONS = {
             "y": 42.4,
             "region": "Yearning Vale",
             "description": "Point of Interest",
+            "link": "https://docs.google.com/document/d/1U1YgTimFZtG1VsC4fjWoh1wVCxGGdokU4peu8hh6jx8/edit?tab=t.0",
+            "cityMap": "city-viewer.html?city=scarwatch-hold",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -8427,6 +8429,8 @@ const WORLD_LOCATIONS = {
             "id": "tratta-road",
             "type": "major",
             "curved": true,
+            "fontFamily": "Simonetta",
+            "fontStyle": "Italic",
             "points": [
                 "del-bris",
                 [
@@ -8435,12 +8439,14 @@ const WORLD_LOCATIONS = {
                 ],
                 [
                     70.74,
-                    37.1
+                    37.14
                 ],
-                ""
-            ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
+                [
+                    70.67,
+                    36.53
+                ],
+                "tratta"
+            ]
         },
         {
             "id": "delbris-road",
@@ -9512,15 +9518,6 @@ const WORLD_LOCATIONS = {
             "fontStyle": "Italic"
         },
         {
-            "id": "1771877532713-road",
-            "type": "minor",
-            "curved": true,
-            "fontSize": 12,
-            "points": [],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
-        },
-        {
             "id": "culburn-road",
             "type": "minor",
             "curved": true,
@@ -10280,14 +10277,6 @@ const WORLD_LOCATIONS = {
                 ],
                 "padstow"
             ],
-            "fontFamily": "Simonetta",
-            "fontStyle": "Italic"
-        },
-        {
-            "id": "padstor-road-west",
-            "type": "major",
-            "curved": true,
-            "points": [],
             "fontFamily": "Simonetta",
             "fontStyle": "Italic"
         },
@@ -13499,15 +13488,6 @@ const WORLD_LOCATIONS = {
             ]
         },
         {
-            "id": "denskelber-road-south",
-            "type": "minor",
-            "curved": true,
-            "fontSize": 13,
-            "points": [
-                "denskelber"
-            ]
-        },
-        {
             "id": "dhachaomhnoir-road-east",
             "type": "major",
             "curved": true,
@@ -13681,12 +13661,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#4682B4",
             "width": 1.3,
-            "shipName": "Ironkeel",
-            "shipType": "Brigantine",
-            "captainName": "Captain Torvald Drask",
-            "routePurpose": "merchant",
-            "cargo": "Timber, ironwork, wool",
-            "riskLevel": "low",
             "points": [
                 "bonegate",
                 [
@@ -13702,7 +13676,14 @@ const WORLD_LOCATIONS = {
                     52.23
                 ],
                 "gulward"
-            ]
+            ],
+            "shipName": "Ironkeel",
+            "shipType": "Brigantine",
+            "captainName": "Captain Torvald Drask",
+            "animationDuration": 100,
+            "routePurpose": "military",
+            "cargo": "Swords, armor, mercenaries",
+            "riskLevel": "low"
         },
         {
             "id": "gulward-amberleen-sea-route",
