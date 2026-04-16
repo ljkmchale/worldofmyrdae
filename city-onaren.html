@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>onaren - City Map | World of Myrdae</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet">
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --gold: #d4af37;
+      --gold-dim: #a08828;
+      --bg: #050508;
+      --bg-panel: rgba(8, 8, 14, 0.92);
+      --text: #c8b89a;
+      --text-dim: #6b5c48;
+      --border: rgba(212, 175, 55, 0.25);
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    #map-viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #map-viewport.grabbing {
+      cursor: grabbing;
+    }
+
+    #map-layer-group {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    #city-map {
+      display: block;
+      max-width: none;
+      image-rendering: auto;
+    }
+
+    #city-map {
+      filter: contrast(1.08) saturate(1.18) brightness(0.9);
+    }
+
+    #overlay-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .num-label {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      fill: #f0e8d0;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    .pulse-ring {
+      fill: none;
+      stroke: rgba(212, 175, 55, 0.45);
+      stroke-width: 1.5;
+      animation: pulseRing 2.8s ease-out infinite;
+    }
+
+    @keyframes pulseRing {
+      0% {
+        r: 12;
+        opacity: 0.9;
+      }
+
+      100% {
+        r: 48;
+        opacity: 0;
+      }
+    }
+
+    #grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 11;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    #top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.8rem 1.25rem;
+      background: linear-gradient(to bottom, rgba(5, 5, 8, 0.95) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    #top-bar>* {
+      pointer-events: auto;
+    }
+
+    .city-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 24px rgba(212, 175, 55, 0.45);
+    }
+
+    .city-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      font-style: italic;
+      margin-top: 0.1rem;
+    }
+
+    #controls {
+      position: fixed;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .ctrl-btn {
+      width: 38px;
+      height: 38px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-family: 'Cinzel', serif;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .ctrl-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .ctrl-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(212, 175, 55, 0.14);
+    }
+
+    .ctrl-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 0.15rem 0;
+    }
+
+    #zoom-badge {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 50;
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.65rem;
+      border-radius: 3px;
+      letter-spacing: 0.06em;
+      pointer-events: none;
+    }
+
+    #location-tooltip {
+      position: fixed;
+      z-index: 60;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0;
+      pointer-events: none;
+      width: 280px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s, transform 0.18s;
+      box-shadow: 0 8px 36px rgba(0, 0, 0, 0.75);
+      overflow: hidden;
+    }
+
+    #location-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #tt-image-wrap {
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #tt-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      display: block;
+      filter: contrast(1.08) saturate(1.2) brightness(0.9);
+      transition: transform 0.4s ease;
+    }
+
+    #location-tooltip.visible #tt-image-wrap img {
+      transform: scale(1.04);
+    }
+
+    #tt-image-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(5, 5, 8, 0.85) 100%);
+    }
+
+    #tt-name-overlay {
+      position: absolute;
+      bottom: 0.55rem;
+      left: 0.85rem;
+      right: 0.85rem;
+      z-index: 2;
+      font-family: 'Cinzel', serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    .tt-body {
+      padding: 0.65rem 0.9rem 0.8rem;
+    }
+
+    .tt-type {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 0.4rem;
+      text-transform: capitalize;
+      letter-spacing: 0.04em;
+    }
+
+    .tt-desc {
+      font-size: 0.83rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: var(--text-dim);
+      pointer-events: none;
+      z-index: 50;
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity 1.5s ease;
+    }
+
+    #hint.hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="top-bar">
+    <div>
+      <div class="city-title">onaren</div>
+      <div class="city-subtitle">City Map of onaren · World of Myrdae</div>
+    </div>
+  </div>
+
+  <div id="map-viewport">
+    <div id="map-layer-group">
+      <img id="city-map" src="images/onaren.png" alt="City of onaren" draggable="false">
+      <svg id="overlay-svg" xmlns="http://www.w3.org/2000/svg">
+        <g id="coord-grid-layer" style="display:none;"></g>
+        <g id="numbered-markers-layer"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="grain"></div>
+
+  <div id="controls">
+    <button class="ctrl-btn" id="btn-zoom-in" title="Zoom In">+</button>
+    <button class="ctrl-btn" id="btn-zoom-out" title="Zoom Out">&#8722;</button>
+    <div class="ctrl-sep"></div>
+    <button class="ctrl-btn" id="btn-reset" title="Reset View">&#8984;</button>
+    <div class="ctrl-sep"></div>
+    <button class="ctrl-btn active" id="btn-markers" title="Toggle Numbered Markers">&#9711;</button>
+    <button class="ctrl-btn" id="btn-coords" title="Toggle Coordinates">&#8862;</button>
+  </div>
+
+  <div id="zoom-badge">1.0&times;</div>
+
+  <div id="coord-display"
+    style="position:fixed; bottom:1rem; left:1rem; z-index:50; font-family:'Cinzel',serif; font-size:0.72rem; color:#d4af37; background:rgba(8,8,14,0.92); border:1px solid rgba(212,175,55,0.5); border-radius:3px; padding:0.4rem 0.6rem; pointer-events:none;">
+    x: 0.0 y: 0.0
+  </div>
+
+  <div id="hint">Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Toggle coordinates</div>
+
+  <div id="location-tooltip">
+    <div id="tt-image-wrap">
+      <img id="tt-image" src="images/onaren.png" alt="onaren">
+      <div id="tt-name-overlay"></div>
+    </div>
+    <div class="tt-body">
+      <div class="tt-type" id="tt-type"></div>
+      <div class="tt-desc" id="tt-desc"></div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    const NUMBERED_LOCATIONS = [
+      {
+        n: 1, x: 29.8, y: 24.4, name: 'Evonstride Stables',
+        type: 'Stables',
+        desc: 'The Evonstride Stables serve as the primary care facility for horses and mounts in O’naren. Attached to the Evonstride family home, the stables are well-maintained, with intricately carved wooden walls supported by sturdy stone columns'
+      },
+      {
+        n: 2, x: 43.1, y: 24.0, name: 'The Overlook',
+        type: 'Overlook',
+        desc: 'The Overlook in O’naren is a tall, round stone tower situated on the northwestern edge of Driftglow Pond, serving as both a vantage point for the Realmwardens and a communal hub for travelers and merchants.'
+      },
+      {
+        n: 3, x: 72.4, y: 20.4, name: 'Temple of Tranquility',
+        type: 'Temple',
+        desc: 'The Temple of Tranquility is one of the largest and most revered structures in O’naren, standing on a terrace overlooking the northeastern side of town. It is built from smooth stone with intricate floral carvings.'
+      },
+      {
+        n: 4, x: 87.5, y: 25.3, name: 'Nesling Soar',
+        type: 'Inn',
+        desc: 'The Nestling Soar is a well-kept elven inn situated on the upper terrace of northeast O’naren, offering travelers a quiet and comfortable place to stay.'
+      },
+      {
+        n: 5, x: 90.6, y: 39.6, name: 'Truffle Trap',
+        type: 'Tavern',
+        desc: 'The Truffle Trap is the main tavern in O’naren, sitting adjacent to the Nestling Soar on the upper terrace. It is constructed of the same smooth carved stone as the inn, with ornate wooden accents that reflect the town’s natural aesthetic.'
+      },
+      {
+        n: 6, x: 88.0, y: 48.3, name: 'Halls of O\'naren',
+        type: 'Hall',
+        desc: 'The Hall of O’naren serves as the center of governance for the town and the seat of Lord Itham Elle’neros. The structure consists of a large circular central chamber flanked by two rectangular wings'
+      },
+      {
+        n: 7, x: 72.4, y: 70.4, name: 'Common Area',
+        type: 'Area',
+        desc: 'The Commons Area is a tranquil clearing on the first terrace in the southeastern part of O’naren, positioned on one side of the river. At its center stands a large stone gazebo, crafted with smooth, carved pillars and an open design that allows for a clear view of the cascading falls that feed the Driftglow pond.'
+      },
+      {
+        n: 8, x: 59.4, y: 83.0, name: 'Purposeful Poise',
+        type: 'Parlor',
+        desc: 'The stylist’s parlor in O’naren is an elegant establishment catering to those who seek refinement and personal grooming. The space is warm and inviting, with a sense of luxury that complements the town’s natural beauty. The interior features a harmonious blend of natural materials and sophisticated design elements, creating an atmosphere of serene opulence.'
+      },
+      {
+        n: 9, x: 54.4, y: 83.4, name: 'Pieces of Ra\'lorn',
+        type: 'Tailor',
+        desc: 'The tailor\'s shop is an elegant establishment catering primarily to elven fashion. The shop is meticulously arranged, with only a few dozen outfits on display at a time, each carefully selected for its craftsmanship and artistry.'
+      },
+      {
+        n: 10, x: 62.0, y: 95.1, name: 'Oracle',
+        type: 'Center',
+        desc: 'The Oracle, Zanasee Tsal’daree, is known as the Weavereader, a magic user with deep ties in the Tegenwald Phet.  The Weavereader’s home is a circular two-story structure on the upper terrace of O’naren, located on the south side of town.'
+      },
+      {
+        n: 11, x: 50.7, y: 96.1, name: 'Fletcher / Tannery',
+        type: 'Tannery',
+        desc: 'On the upper terrace of O’naren, along the south side of town, stand two well-maintained stone buildings dedicated to the needs of hunters and woodsmen. The Fletcher is a workshop where bows and arrows are skillfully crafted using the materials sourced from the surrounding forests. Various arrowheads, bowstrings, and quivers are also sold here.'
+      },
+      {
+        n: 12, x: 33.6, y: 88.3, name: 'Vocehna\'s Gallery',
+        type: 'Gallery',
+        desc: 'Vocehna Maepholaer’s art gallery is on the upper terrace of O’naren, housed in a square, single-story building with smooth carved stone walls rising to a 20-foot ceiling. The interior is spacious and filled with natural light from high arched windows, showcasing a curated selection of vases, sculptures, paintings, and ornamental elven crafts.'
+      },
+      {
+        n: 13, x: 30.7, y: 75.8, name: 'Ore Masters',
+        type: 'Ship',
+        desc: 'The Ore Masters is the collective name for three connected and meticulously kept buildings operated by the Tu\'osaar siblings, whose lineage is renowned for producing some of the finest smiths and jewel-crafters in Myrdae..'
+      },
+      {
+        n: 14, x: 24.3, y: 63.6, name: 'Mines',
+        type: 'Ore',
+        desc: 'The mines of O’naren are located on the southwest side of town, where a cave entrance opens into the rocky foothills. The mines have long provided the town with high-quality stone and ore, contributing to the settlement’s economy and craftsmanship'
+      },
+      {
+        n: 15, x: 26.1, y: 46.0, name: 'Welthas\' Market',
+        type: 'Store',
+        desc: 'The general store in O’naren is a two-story structure. The ground floor is a spacious square room, well-stocked with essentials such as rations, travel gear, simple tools, and common goods frequently needed by visitors and locals alike.'
+      },
+      
+
+    ];
+
+    (function () {
+      const viewport = document.getElementById('map-viewport');
+      const layerGrp = document.getElementById('map-layer-group');
+      const mapImg = document.getElementById('city-map');
+      const overlaySvg = document.getElementById('overlay-svg');
+      const coordGridLayer = document.getElementById('coord-grid-layer');
+      const numberedMarkersLayer = document.getElementById('numbered-markers-layer');
+      const zoomBadge = document.getElementById('zoom-badge');
+      const hint = document.getElementById('hint');
+      const tooltip = document.getElementById('location-tooltip');
+      const ttName = document.getElementById('tt-name-overlay');
+      const ttType = document.getElementById('tt-type');
+      const ttDesc = document.getElementById('tt-desc');
+
+      const MIN_SCALE = 0.6;
+      const MAX_SCALE = 12;
+
+      const s = {
+        scale: 1,
+        pointX: 0,
+        pointY: 0,
+        isDragging: false,
+        startX: 0,
+        startY: 0,
+        ticking: false,
+        cw: 0,
+        ch: 0,
+        bw: 0,
+        bh: 0,
+        imgW: 0,
+        imgH: 0
+      };
+
+      function updateDims() {
+        s.cw = viewport.offsetWidth;
+        s.ch = viewport.offsetHeight;
+        s.imgW = mapImg.naturalWidth;
+        s.imgH = mapImg.naturalHeight;
+        if (!s.imgW) return;
+
+        const ratio = Math.min(s.cw / s.imgW, s.ch / s.imgH);
+        s.bw = s.imgW * ratio;
+        s.bh = s.imgH * ratio;
+
+        if (s.scale === 1) {
+          s.pointX = (s.cw - s.bw) / 2;
+          s.pointY = (s.ch - s.bh) / 2;
+        }
+
+        overlaySvg.setAttribute('width', s.imgW);
+        overlaySvg.setAttribute('height', s.imgH);
+      }
+
+      function clamp() {
+        const iw = s.bw * s.scale;
+        const ih = s.bh * s.scale;
+        const margin = 60;
+        s.pointX = Math.min(s.pointX, margin);
+        s.pointX = Math.max(s.pointX, s.cw - iw - margin);
+        s.pointY = Math.min(s.pointY, margin);
+        s.pointY = Math.max(s.pointY, s.ch - ih - margin);
+      }
+
+      function render() {
+        const naturalToDisplay = s.bw / s.imgW;
+        const totalScale = naturalToDisplay * s.scale;
+        layerGrp.style.transform = `translate3d(${s.pointX}px,${s.pointY}px,0) scale(${totalScale})`;
+        layerGrp.style.transformOrigin = '0 0';
+        zoomBadge.textContent = s.scale.toFixed(1) + '\u00D7';
+        updateOverlayScale(totalScale);
+        s.ticking = false;
+      }
+
+      function requestRender() {
+        if (!s.ticking) {
+          requestAnimationFrame(render);
+          s.ticking = true;
+        }
+      }
+
+      function updateOverlayScale(totalScale) {
+        const inv = 1 / totalScale;
+        Array.from(numberedMarkersLayer.children).forEach((grp) => {
+          const x = parseFloat(grp.dataset.px || 0);
+          const y = parseFloat(grp.dataset.py || 0);
+          grp.style.transform = `translate(${x}px,${y}px) scale(${inv}) translate(${-x}px,${-y}px)`;
+        });
+      }
+
+      function svgEl(tag, attrs) {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+        return el;
+      }
+
+      function buildNumberedMarkers() {
+        numberedMarkersLayer.innerHTML = '';
+        NUMBERED_LOCATIONS.forEach((loc) => {
+          const px = (loc.x / 100) * s.imgW;
+          const py = (loc.y / 100) * s.imgH;
+          const grp = svgEl('g', { style: 'pointer-events:all; cursor:pointer;' });
+          grp.dataset.px = px;
+          grp.dataset.py = py;
+
+          if (loc.n <= 4) {
+            const pulse = svgEl('circle', { cx: px, cy: py, r: 12, class: 'pulse-ring' });
+            grp.appendChild(pulse);
+          }
+
+          grp.appendChild(svgEl('circle', {
+            cx: px, cy: py, r: 13.5,
+            fill: 'none', stroke: 'rgba(212,175,55,0.35)', 'stroke-width': '1',
+          }));
+
+          grp.appendChild(svgEl('circle', {
+            cx: px, cy: py, r: 12,
+            fill: 'rgba(12,9,5,0.84)',
+            stroke: 'rgba(212,175,55,0.82)',
+            'stroke-width': '1.5',
+          }));
+
+          const num = svgEl('text', { x: px, y: py, class: 'num-label' });
+          num.textContent = loc.n;
+          grp.appendChild(num);
+
+          addTipEvents(grp, loc);
+          numberedMarkersLayer.appendChild(grp);
+        });
+      }
+
+      function addTipEvents(el, loc) {
+        el.addEventListener('mouseenter', (e) => {
+          ttName.textContent = loc.name || ('Location ' + loc.n);
+          ttType.textContent = loc.type || '';
+          ttDesc.textContent = loc.desc || '';
+          tooltip.classList.add('visible');
+          moveTip(e);
+        });
+        el.addEventListener('mousemove', moveTip);
+        el.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+      }
+
+      function moveTip(e) {
+        const x = e.clientX + 18;
+        const y = e.clientY - 10;
+        const tw = tooltip.offsetWidth || 240;
+        const th = tooltip.offsetHeight || 80;
+        tooltip.style.left = Math.min(x, window.innerWidth - tw - 12) + 'px';
+        tooltip.style.top = Math.max(10, Math.min(y, window.innerHeight - th - 12)) + 'px';
+      }
+
+      function onImgReady() {
+        updateDims();
+        buildNumberedMarkers();
+        render();
+        setTimeout(() => hint.classList.add('hidden'), 6000);
+      }
+
+      if (mapImg.complete && mapImg.naturalWidth) onImgReady();
+      else mapImg.addEventListener('load', onImgReady);
+
+      window.addEventListener('resize', () => {
+        updateDims();
+        requestRender();
+      });
+
+      viewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const rect = viewport.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const naturalToDisplay = s.bw / s.imgW;
+        const curTotalScale = naturalToDisplay * s.scale;
+        const xs = (mx - s.pointX) / curTotalScale;
+        const ys = (my - s.pointY) / curTotalScale;
+
+        const factor = e.deltaY < 0 ? 1.13 : 1 / 1.13;
+        s.scale = Math.min(Math.max(MIN_SCALE, s.scale * factor), MAX_SCALE);
+
+        const newTotalScale = naturalToDisplay * s.scale;
+        s.pointX = mx - xs * newTotalScale;
+        s.pointY = my - ys * newTotalScale;
+        clamp();
+        requestRender();
+      }, { passive: false });
+
+      viewport.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        s.isDragging = true;
+        s.startX = e.clientX - s.pointX;
+        s.startY = e.clientY - s.pointY;
+        viewport.classList.add('grabbing');
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!s.isDragging) return;
+        s.pointX = e.clientX - s.startX;
+        s.pointY = e.clientY - s.startY;
+        clamp();
+        requestRender();
+      });
+
+      window.addEventListener('mouseup', () => {
+        s.isDragging = false;
+        viewport.classList.remove('grabbing');
+      });
+
+      const coordDisplay = document.getElementById('coord-display');
+      viewport.addEventListener('mousemove', (e) => {
+        const rect = viewport.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const naturalToDisplay = s.bw / s.imgW;
+        const curTotalScale = naturalToDisplay * s.scale;
+        const xs = (mx - s.pointX) / curTotalScale;
+        const ys = (my - s.pointY) / curTotalScale;
+        const xPct = (xs / s.imgW) * 100;
+        const yPct = (ys / s.imgH) * 100;
+        coordDisplay.textContent = `x: ${xPct.toFixed(1)}  y: ${yPct.toFixed(1)}`;
+      });
+
+      viewport.addEventListener('mouseleave', () => {
+        coordDisplay.textContent = 'x: 0.0  y: 0.0';
+      });
+
+      let lastPinchDist = 0;
+      viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          s.isDragging = true;
+          s.startX = e.touches[0].clientX - s.pointX;
+          s.startY = e.touches[0].clientY - s.pointY;
+        } else if (e.touches.length === 2) {
+          s.isDragging = false;
+          lastPinchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (e.touches.length === 1 && s.isDragging) {
+          s.pointX = e.touches[0].clientX - s.startX;
+          s.pointY = e.touches[0].clientY - s.startY;
+          clamp();
+          requestRender();
+        } else if (e.touches.length === 2) {
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const mid = {
+            x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+            y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+          };
+          const rect = viewport.getBoundingClientRect();
+          const naturalToDisplay = s.bw / s.imgW;
+          const totalScale = naturalToDisplay * s.scale;
+          const xs = (mid.x - rect.left - s.pointX) / totalScale;
+          const ys = (mid.y - rect.top - s.pointY) / totalScale;
+
+          s.scale = Math.min(Math.max(MIN_SCALE, s.scale * (dist / lastPinchDist)), MAX_SCALE);
+
+          const newTotalScale = naturalToDisplay * s.scale;
+          s.pointX = (mid.x - rect.left) - xs * newTotalScale;
+          s.pointY = (mid.y - rect.top) - ys * newTotalScale;
+          clamp();
+          requestRender();
+          lastPinchDist = dist;
+        }
+      }, { passive: false });
+
+      viewport.addEventListener('touchend', () => {
+        s.isDragging = false;
+      });
+
+      function animateTo(targetScale, targetX, targetY, ms) {
+        const s0 = s.scale;
+        const x0 = s.pointX;
+        const y0 = s.pointY;
+        const t0 = performance.now();
+
+        function ease(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function step(now) {
+          const t = Math.min((now - t0) / ms, 1);
+          const e = ease(t);
+          s.scale = s0 + (targetScale - s0) * e;
+          s.pointX = x0 + (targetX - x0) * e;
+          s.pointY = y0 + (targetY - y0) * e;
+          render();
+          if (t < 1) requestAnimationFrame(step);
+        }
+
+        requestAnimationFrame(step);
+      }
+
+      function flyTo(xPct, yPct, targetScale) {
+        updateDims();
+        const naturalToDisplay = s.bw / s.imgW;
+        const newScale = Math.min(Math.max(3, targetScale || 4), MAX_SCALE);
+        const totalScale = naturalToDisplay * newScale;
+        const px = (xPct / 100) * s.imgW * totalScale;
+        const py = (yPct / 100) * s.imgH * totalScale;
+        animateTo(newScale, s.cw / 2 - px, s.ch / 2 - py, 700);
+      }
+
+      window.cityFlyTo = flyTo;
+
+      document.getElementById('btn-zoom-in').addEventListener('click', () => {
+        const cx = s.cw / 2;
+        const cy = s.ch / 2;
+        const naturalToDisplay = s.bw / s.imgW;
+        const curTotalScale = naturalToDisplay * s.scale;
+        const xs = (cx - s.pointX) / curTotalScale;
+        const ys = (cy - s.pointY) / curTotalScale;
+        const newScale = Math.min(s.scale * 1.6, MAX_SCALE);
+        const newTotalScale = naturalToDisplay * newScale;
+        animateTo(newScale, cx - xs * newTotalScale, cy - ys * newTotalScale, 380);
+      });
+
+      document.getElementById('btn-zoom-out').addEventListener('click', () => {
+        const cx = s.cw / 2;
+        const cy = s.ch / 2;
+        const naturalToDisplay = s.bw / s.imgW;
+        const curTotalScale = naturalToDisplay * s.scale;
+        const xs = (cx - s.pointX) / curTotalScale;
+        const ys = (cy - s.pointY) / curTotalScale;
+        const newScale = Math.max(s.scale / 1.6, MIN_SCALE);
+        const newTotalScale = naturalToDisplay * newScale;
+        animateTo(newScale, cx - xs * newTotalScale, cy - ys * newTotalScale, 380);
+      });
+
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        updateDims();
+        animateTo(1, (s.cw - s.bw) / 2, (s.ch - s.bh) / 2, 650);
+      });
+
+      let markersOn = true;
+      document.getElementById('btn-markers').addEventListener('click', function () {
+        markersOn = !markersOn;
+        numberedMarkersLayer.style.opacity = markersOn ? '1' : '0';
+        this.classList.toggle('active', markersOn);
+      });
+
+      let coordsOn = false;
+      document.getElementById('btn-coords').addEventListener('click', function () {
+        coordsOn = !coordsOn;
+        coordGridLayer.style.display = coordsOn ? 'block' : 'none';
+        this.classList.toggle('active', coordsOn);
+        if (coordsOn && coordGridLayer.children.length === 0) buildCoordinateGrid();
+      });
+
+      function buildCoordinateGrid() {
+        coordGridLayer.innerHTML = '';
+        const step = 10;
+
+        for (let x = 0; x <= 100; x += step) {
+          const px = (x / 100) * s.imgW;
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', px);
+          line.setAttribute('y1', 0);
+          line.setAttribute('x2', px);
+          line.setAttribute('y2', s.imgH);
+          line.setAttribute('stroke', 'rgba(212, 175, 55, 0.25)');
+          line.setAttribute('stroke-width', '0.5');
+          line.setAttribute('pointer-events', 'none');
+          coordGridLayer.appendChild(line);
+
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', px);
+          text.setAttribute('y', 12);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-family', 'Cinzel');
+          text.setAttribute('font-size', '8');
+          text.setAttribute('fill', 'rgba(212, 175, 55, 0.5)');
+          text.setAttribute('pointer-events', 'none');
+          text.textContent = x;
+          coordGridLayer.appendChild(text);
+        }
+
+        for (let y = 0; y <= 100; y += step) {
+          const py = (y / 100) * s.imgH;
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', 0);
+          line.setAttribute('y1', py);
+          line.setAttribute('x2', s.imgW);
+          line.setAttribute('y2', py);
+          line.setAttribute('stroke', 'rgba(212, 175, 55, 0.25)');
+          line.setAttribute('stroke-width', '0.5');
+          line.setAttribute('pointer-events', 'none');
+          coordGridLayer.appendChild(line);
+
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', 8);
+          text.setAttribute('y', py + 3);
+          text.setAttribute('font-family', 'Cinzel');
+          text.setAttribute('font-size', '8');
+          text.setAttribute('fill', 'rgba(212, 175, 55, 0.5)');
+          text.setAttribute('pointer-events', 'none');
+          text.textContent = y;
+          coordGridLayer.appendChild(text);
+        }
+      }
+    })();
+  </script>
+</body>
+
+</html>

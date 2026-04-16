@@ -579,27 +579,8 @@ const Editor = (function () {
 
         // Ship / vessel details
         document.getElementById('ship-name').value = road.shipName || '';
-        const shipTypeSelect = document.getElementById('ship-type');
-        const shipTypeCustom = document.getElementById('ship-type-custom');
-        const knownShipTypes = Array.from(shipTypeSelect.options).map(o => o.value);
-        if (road.shipType && !knownShipTypes.includes(road.shipType)) {
-            shipTypeSelect.value = 'Other';
-            shipTypeCustom.style.display = 'block';
-            shipTypeCustom.value = road.shipType;
-        } else {
-            shipTypeSelect.value = road.shipType || '';
-            shipTypeCustom.style.display = 'none';
-            shipTypeCustom.value = '';
-        }
+        document.getElementById('ship-type').value = road.shipType || '';
         document.getElementById('ship-captain').value = road.captainName || '';
-        document.getElementById('ship-duration').value = road.animationDuration || '';
-        const loadedBoatColor = road.boatColor || '';
-        document.getElementById('ship-color').value = loadedBoatColor;
-        document.getElementById('ship-color-picker').value = loadedBoatColor || '#4da6ff';
-        document.getElementById('ship-size').value = road.boatSizeMultiplier || '';
-        document.getElementById('route-purpose').value = road.routePurpose || '';
-        document.getElementById('route-cargo').value = road.cargo || '';
-        document.getElementById('route-risk').value = road.riskLevel || '';
         toggleShipDetails();
 
         // Update location dropdowns
@@ -673,16 +654,7 @@ const Editor = (function () {
         // Ship / vessel details
         document.getElementById('ship-name').value = '';
         document.getElementById('ship-type').value = '';
-        document.getElementById('ship-type-custom').value = '';
-        document.getElementById('ship-type-custom').style.display = 'none';
         document.getElementById('ship-captain').value = '';
-        document.getElementById('ship-duration').value = '';
-        document.getElementById('ship-color').value = '';
-        document.getElementById('ship-color-picker').value = '#4da6ff';
-        document.getElementById('ship-size').value = '';
-        document.getElementById('route-purpose').value = '';
-        document.getElementById('route-cargo').value = '';
-        document.getElementById('route-risk').value = '';
         toggleShipDetails();
 
         // Reset location dropdowns
@@ -989,26 +961,11 @@ const Editor = (function () {
         // Ship / vessel details (only for water-route)
         if (roadData.type === 'water-route') {
             const shipName = document.getElementById('ship-name').value;
-            const shipTypeRaw = document.getElementById('ship-type').value;
-            const shipTypeCustom = document.getElementById('ship-type-custom').value;
-            const shipType = shipTypeRaw === 'Other' ? shipTypeCustom : shipTypeRaw;
+            const shipType = document.getElementById('ship-type').value;
             const shipCaptain = document.getElementById('ship-captain').value;
-            const shipDuration = parseFloat(document.getElementById('ship-duration').value);
-            const boatColor = document.getElementById('ship-color').value.trim();
-            const boatSizeMultiplier = parseFloat(document.getElementById('ship-size').value);
-            const routePurpose = document.getElementById('route-purpose').value;
-            const cargo = document.getElementById('route-cargo').value;
-            const riskLevel = document.getElementById('route-risk').value;
-
             if (shipName) roadData.shipName = shipName;
             if (shipType) roadData.shipType = shipType;
             if (shipCaptain) roadData.captainName = shipCaptain;
-            if (!isNaN(shipDuration) && shipDuration > 0) roadData.animationDuration = shipDuration;
-            if (boatColor) roadData.boatColor = boatColor;
-            if (!isNaN(boatSizeMultiplier) && boatSizeMultiplier > 0) roadData.boatSizeMultiplier = boatSizeMultiplier;
-            if (routePurpose) roadData.routePurpose = routePurpose;
-            if (cargo) roadData.cargo = cargo;
-            if (riskLevel) roadData.riskLevel = riskLevel;
         }
 
         return { roadData, startLocId, endLocId, existing, id };
@@ -1018,21 +975,6 @@ const Editor = (function () {
         const type = document.getElementById('road-type')?.value;
         const section = document.getElementById('ship-details-section');
         if (section) section.style.display = type === 'water-route' ? 'block' : 'none';
-    }
-
-    function handleShipTypeChange() {
-        const select = document.getElementById('ship-type');
-        const custom = document.getElementById('ship-type-custom');
-        if (select && custom) {
-            custom.style.display = select.value === 'Other' ? 'block' : 'none';
-            if (select.value !== 'Other') custom.value = '';
-        }
-    }
-
-    function syncShipColorPicker() {
-        const text = document.getElementById('ship-color').value.trim();
-        const picker = document.getElementById('ship-color-picker');
-        if (picker && /^#[0-9A-Fa-f]{6}$/.test(text)) picker.value = text;
     }
 
     function previewRoad() {
@@ -1327,8 +1269,6 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         cancelEditWaypoint,
         previewRoad,
         toggleShipDetails,
-        handleShipTypeChange,
-        syncShipColorPicker,
 
         // Core
         exportData,

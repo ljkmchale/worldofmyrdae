@@ -13648,12 +13648,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#1E90FF",
             "width": 1.4,
-            "shipName": "The Silver Gull",
-            "shipType": "Caravel",
-            "captainName": "Captain Edra Mosswick",
-            "routePurpose": "merchant",
-            "cargo": "Grain, salt, dried fish",
-            "riskLevel": "low",
             "points": [
                 "oldport",
                 [
@@ -13681,12 +13675,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#4682B4",
             "width": 1.3,
-            "shipName": "Ironkeel",
-            "shipType": "Brigantine",
-            "captainName": "Captain Torvald Drask",
-            "routePurpose": "merchant",
-            "cargo": "Timber, ironwork, wool",
-            "riskLevel": "low",
             "points": [
                 "bonegate",
                 [
@@ -13710,12 +13698,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#00BFFF",
             "width": 1.3,
-            "shipName": "The Amber Star",
-            "shipType": "Sloop",
-            "captainName": "Captain Lessa Vaine",
-            "routePurpose": "merchant",
-            "cargo": "Dyes, amber resin, cloth",
-            "riskLevel": "low",
             "points": [
                 "gulward",
                 [
@@ -13735,12 +13717,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#5DADE2",
             "width": 1.4,
-            "shipName": "Stormward",
-            "shipType": "Galleon",
-            "captainName": "Captain Brannick Holt",
-            "routePurpose": "military",
-            "cargo": "Soldiers, weapons, supplies",
-            "riskLevel": "medium",
             "points": [
                 "bonegate",
                 [
@@ -13768,12 +13744,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#5AA2D6",
             "width": 1.4,
-            "shipName": "The Pale Tide",
-            "shipType": "Merchant Cog",
-            "captainName": "Captain Mira Dunhall",
-            "routePurpose": "merchant",
-            "cargo": "Stone, quarried slate, rope",
-            "riskLevel": "low",
             "points": [
                 "stoneshore",
                 [
@@ -13805,12 +13775,6 @@ const WORLD_LOCATIONS = {
             "curved": true,
             "color": "#3C8FCC",
             "width": 1.3,
-            "shipName": "Deepwater Queen",
-            "shipType": "Galleon",
-            "captainName": "Captain Sevara Keth",
-            "routePurpose": "merchant",
-            "cargo": "Exotic spices, silks, southern goods",
-            "riskLevel": "medium",
             "points": [
                 "gevakaln",
                 [
@@ -13828,12 +13792,6 @@ const WORLD_LOCATIONS = {
             "id": "bonegate-oldport-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Returning Blade",
-            "shipType": "Frigate",
-            "captainName": "Captain Aldric Sorn",
-            "routePurpose": "military",
-            "cargo": "Dispatches, treasury shipments",
-            "riskLevel": "medium",
             "points": [
                 "bonegate",
                 [
@@ -13851,12 +13809,6 @@ const WORLD_LOCATIONS = {
             "id": "harelbek-bonegate-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Hearthward",
-            "shipType": "Sloop",
-            "captainName": "Captain Jennek Farrow",
-            "routePurpose": "passenger",
-            "cargo": "Passengers, mail, fresh produce",
-            "riskLevel": "low",
             "points": [
                 "harelbek",
                 [
@@ -13870,12 +13822,6 @@ const WORLD_LOCATIONS = {
             "id": "gulward-gevakaln-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Southstone",
-            "shipType": "Merchant Cog",
-            "captainName": "Captain Oris Vell",
-            "routePurpose": "merchant",
-            "cargo": "Pottery, oil, salted meats",
-            "riskLevel": "low",
             "points": [
                 "gulward",
                 [
@@ -13897,12 +13843,6 @@ const WORLD_LOCATIONS = {
             "id": "emberstran-adamont-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Ember Wind",
-            "shipType": "Galleon",
-            "captainName": "Captain Carys Ashmore",
-            "routePurpose": "merchant",
-            "cargo": "Enchanted goods, rare metals, gems",
-            "riskLevel": "medium",
             "points": [
                 "emberstran",
                 [
@@ -13916,12 +13856,6 @@ const WORLD_LOCATIONS = {
             "id": "glimmerstone-emberstan-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Dawnspire",
-            "shipType": "Caravel",
-            "captainName": "Captain Solwen Bright",
-            "routePurpose": "merchant",
-            "cargo": "Glimmerstone crystals, refined glass",
-            "riskLevel": "low",
             "points": [
                 "glimmerstone",
                 [
@@ -13935,12 +13869,6 @@ const WORLD_LOCATIONS = {
             "id": "paendley-emberstran-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Wandering Lantern",
-            "shipType": "Merchant Cog",
-            "captainName": "Captain Thessa Dund",
-            "routePurpose": "merchant",
-            "cargo": "Livestock, grain, lantern oil",
-            "riskLevel": "low",
             "points": [
                 "paendley",
                 [
@@ -13962,12 +13890,6 @@ const WORLD_LOCATIONS = {
             "id": "farview-porthbay-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Far Horizon",
-            "shipType": "Galleon",
-            "captainName": "Captain Emrik Tannes",
-            "routePurpose": "exploration",
-            "cargo": "Charts, expedition supplies, salvage",
-            "riskLevel": "high",
             "points": [
                 "farview",
                 [
@@ -14009,12 +13931,6 @@ const WORLD_LOCATIONS = {
             "id": "nauldeaus-fardrift-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Frostspine",
-            "shipType": "Longship",
-            "captainName": "Captain Runa Iceborn",
-            "routePurpose": "exploration",
-            "cargo": "Furs, ivory, northern trophies",
-            "riskLevel": "high",
             "points": [
                 "nauldeaus",
                 [
@@ -14036,12 +13952,6 @@ const WORLD_LOCATIONS = {
             "id": "tratta-nauldeaus-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Gilded Oar",
-            "shipType": "Galleon",
-            "captainName": "Captain Mareth Trell",
-            "routePurpose": "merchant",
-            "cargo": "Luxury goods, wine, fine textiles",
-            "riskLevel": "medium",
             "points": [
                 "tratta",
                 [
@@ -14075,12 +13985,6 @@ const WORLD_LOCATIONS = {
             "id": "lurdaba-tratta-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Lurdoban Pride",
-            "shipType": "Brigantine",
-            "captainName": "Captain Harolt Wex",
-            "routePurpose": "merchant",
-            "cargo": "Mountain ore, carved stone, pelts",
-            "riskLevel": "low",
             "points": [
                 "lurdoba",
                 [
@@ -14098,12 +14002,6 @@ const WORLD_LOCATIONS = {
             "id": "stinson-eruvic-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Northern Arrow",
-            "shipType": "Caravel",
-            "captainName": "Captain Finn Breck",
-            "routePurpose": "merchant",
-            "cargo": "Salted herring, timber, amber",
-            "riskLevel": "medium",
             "points": [
                 "stinson",
                 [
@@ -14121,12 +14019,6 @@ const WORLD_LOCATIONS = {
             "id": "raselle-ingriss-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Sea Rose",
-            "shipType": "Sloop",
-            "captainName": "Captain Aelith Grayne",
-            "routePurpose": "smuggling",
-            "cargo": "Contraband, stolen artifacts, black powder",
-            "riskLevel": "high",
             "points": [
                 "raselle",
                 [
@@ -14144,12 +14036,6 @@ const WORLD_LOCATIONS = {
             "id": "Porpen-morrey-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Western Wanderer",
-            "shipType": "Merchant Cog",
-            "captainName": "Captain Orys Pennel",
-            "routePurpose": "merchant",
-            "cargo": "Western spices, dyed cloth, livestock",
-            "riskLevel": "low",
             "points": [
                 "porpen",
                 [
@@ -14179,12 +14065,6 @@ const WORLD_LOCATIONS = {
             "id": "evyndar-porpen-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "Evyndal Runner",
-            "shipType": "Brigantine",
-            "captainName": "Captain Daws Vark",
-            "routePurpose": "merchant",
-            "cargo": "Elven goods, rare herbs, moonstone",
-            "riskLevel": "medium",
             "points": [
                 "evyndar",
                 [
@@ -14214,12 +14094,6 @@ const WORLD_LOCATIONS = {
             "id": "stinson-fjordnahl-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Frozen Wake",
-            "shipType": "Longship",
-            "captainName": "Captain Sigurd Nahl",
-            "routePurpose": "exploration",
-            "cargo": "Ice trade, frozen goods, northern maps",
-            "riskLevel": "high",
             "points": [
                 "stinson",
                 [
@@ -14241,12 +14115,6 @@ const WORLD_LOCATIONS = {
             "id": "nebisill-adamont-sea-route",
             "type": "water-route",
             "curved": true,
-            "shipName": "The Jade Serpent",
-            "shipType": "Galleon",
-            "captainName": "Captain Xara Solum",
-            "routePurpose": "merchant",
-            "cargo": "Nebisill jade, alchemical reagents, silk",
-            "riskLevel": "medium",
             "points": [
                 "nebisill",
                 [

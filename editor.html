@@ -407,11 +407,67 @@
             </div>
             <div class="form-group">
               <label>Ship Type</label>
-              <input type="text" id="ship-type" class="form-control" placeholder="e.g. Galleon, Caravel, Sloop">
+              <select id="ship-type" class="form-control" onchange="Editor.handleShipTypeChange()">
+                <option value="">— Select type —</option>
+                <option value="Caravel">Caravel</option>
+                <option value="Sloop">Sloop</option>
+                <option value="Brigantine">Brigantine</option>
+                <option value="Galleon">Galleon</option>
+                <option value="Frigate">Frigate</option>
+                <option value="Merchant Cog">Merchant Cog</option>
+                <option value="Longship">Longship</option>
+                <option value="Warship">Warship</option>
+                <option value="Fishing Vessel">Fishing Vessel</option>
+                <option value="Other">Other…</option>
+              </select>
+              <input type="text" id="ship-type-custom" class="form-control" style="display:none; margin-top:0.4rem;" placeholder="Custom ship type">
             </div>
             <div class="form-group">
               <label>Captain</label>
               <input type="text" id="ship-captain" class="form-control" placeholder="e.g. Captain Mara Vex">
+            </div>
+            <div class="form-group">
+              <label>Animation Speed (seconds per loop)</label>
+              <input type="number" id="ship-duration" class="form-control" step="10" min="30" max="600" placeholder="90–120 (random default)">
+            </div>
+            <div class="form-group">
+              <label>Boat Color</label>
+              <div style="display:flex;gap:0.4rem;align-items:center;">
+                <input type="color" id="ship-color-picker" value="#4da6ff" style="width:2.5rem;height:2rem;padding:0.1rem;border:1px solid #444;border-radius:3px;background:#111;cursor:pointer;" oninput="document.getElementById('ship-color').value=this.value">
+                <input type="text" id="ship-color" class="form-control" placeholder="#4da6ff (default)" oninput="Editor.syncShipColorPicker()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Boat Size Multiplier</label>
+              <input type="number" id="ship-size" class="form-control" step="0.1" min="0.3" max="5" placeholder="1.0 (default)">
+            </div>
+
+            <p style="margin:0.8rem 0 0.5rem; font-size:0.8rem; color:#4da6ff; font-family:'Cinzel',serif; letter-spacing:0.05em; border-top:1px solid rgba(30,144,255,0.2); padding-top:0.6rem;">Route Details</p>
+            <div class="form-group">
+              <label>Purpose</label>
+              <select id="route-purpose" class="form-control">
+                <option value="">— Select purpose —</option>
+                <option value="merchant">Merchant Trade</option>
+                <option value="military">Military Patrol</option>
+                <option value="exploration">Exploration</option>
+                <option value="smuggling">Smuggling</option>
+                <option value="fishing">Fishing</option>
+                <option value="passenger">Passenger</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cargo / Notes</label>
+              <input type="text" id="route-cargo" class="form-control" placeholder="e.g. Spices, textiles, weapons">
+            </div>
+            <div class="form-group">
+              <label>Risk Level</label>
+              <select id="route-risk" class="form-control">
+                <option value="">— Select risk —</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="deadly">Deadly</option>
+              </select>
             </div>
           </div>
 
@@ -1019,7 +1075,55 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
 
   function resetView() { MapController.reset('map-container'); setTimeout(renderPins, 100); }
 
-  return { open, loadCity, selectPin, filterList, updateFromForm, save, resetView, exitCityMode, renderPins };
+  function isActive() { return cityMapActive; }
+
+  // ── Reload city-maps.js from disk and re-render pins ───────
+  async function reloadData() {
+    if (!activeCityId) return;
+    const btn = Array.from(document.querySelectorAll('button')).find(b =>
+      b.getAttribute('onclick') && b.getAttribute('onclick').includes('reloadPage')
+    );
+    const origHtml = btn ? btn.innerHTML : null;
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reloading…'; }
+
+    try {
+      // Fetch fresh city-maps.js and eval it in a sandboxed way
+      const res = await fetch('js/city-maps.js?v=' + Date.now());
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+
+      // Extract the CITY_MAPS array literal and re-parse into the live global
+      // We do this by creating a temporary script that overwrites CITY_MAPS
+      const script = document.createElement('script');
+      script.textContent = text + '\n// reload complete';
+      document.head.appendChild(script);
+      document.head.removeChild(script);
+
+      // Re-deep-copy from the freshly-updated global
+      allData = CITY_MAPS.map(c => ({
+        ...c,
+        pins: (c.pins || []).map(p => ({ ...p })),
+        namedLabels: (c.namedLabels || []).map(l => ({ ...l })),
+      }));
+      cityData = allData.find(c => c.id === activeCityId);
+
+      populateList();
+      renderPins();
+      if (selectedKey) selectPin(selectedKey);
+
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Reloaded!';
+        btn.style.background = '#0a0';
+        setTimeout(() => { btn.innerHTML = origHtml; btn.style.background = ''; }, 2000);
+      }
+    } catch (err) {
+      console.error('City data reload failed:', err);
+      if (btn) { btn.innerHTML = origHtml; }
+      alert('Failed to reload city data: ' + err.message);
+    }
+  }
+
+  return { open, loadCity, selectPin, filterList, updateFromForm, save, resetView, exitCityMode, renderPins, isActive, reloadData };
 })();
 </script>
 </body>

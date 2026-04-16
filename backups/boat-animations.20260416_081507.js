@@ -15,27 +15,12 @@ function _getBoatTooltip() {
     return _boatTooltip;
 }
 
-const RISK_COLORS = { low: '#4caf50', medium: '#ff9800', high: '#f44336', deadly: '#9c27b0' };
-const PURPOSE_LABELS = { merchant: 'Merchant Trade', military: 'Military Patrol', exploration: 'Exploration', smuggling: 'Smuggling', fishing: 'Fishing', passenger: 'Passenger' };
-
 function _showBoatTooltip(e, boat) {
     const tt = _getBoatTooltip();
-    let extra = '';
-    if (boat.routePurpose || boat.cargo || boat.riskLevel) {
-        const purposeLabel = PURPOSE_LABELS[boat.routePurpose] || boat.routePurpose || '';
-        const riskColor = RISK_COLORS[boat.riskLevel] || '#a0a0a0';
-        const riskLabel = boat.riskLevel ? boat.riskLevel.charAt(0).toUpperCase() + boat.riskLevel.slice(1) : '';
-        extra = `<div style="margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid rgba(77,166,255,0.2);font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:#c0c0c0;">`;
-        if (purposeLabel) extra += `<div>${purposeLabel}</div>`;
-        if (boat.cargo) extra += `<div style="color:#aaa;font-style:italic;">${boat.cargo}</div>`;
-        if (riskLabel) extra += `<div style="margin-top:0.2rem;">Risk: <span style="color:${riskColor};font-weight:600;">${riskLabel}</span></div>`;
-        extra += `</div>`;
-    }
     tt.innerHTML = `
         <div style="font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#4da6ff;margin-bottom:0.3rem;">&#9875; ${boat.shipName}</div>
         <div style="font-size:0.7rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(77,166,255,0.25);">${boat.shipType}</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;">Captain: <em>${boat.captainName}</em></div>
-        ${extra}
     `;
     tt.style.display = 'block';
     _positionBoatTooltip(e);
@@ -86,19 +71,11 @@ class BoatFleet {
             const pathPoints = this.calculatePathPoints(route);
             if (pathPoints.length < 2) return;
 
-            // Use per-route duration (seconds → ms) or randomized default
-            const baseDuration = route.animationDuration
-                ? route.animationDuration * 1000
-                : 90000 + (routeIdx * 8000) + (Math.random() * 30000);
+            const baseDuration = 90000 + (routeIdx * 8000) + (Math.random() * 30000); // 90-120+ sec
 
             const shipName    = route.shipName    || route.name || 'Unknown Vessel';
             const shipType    = route.shipType    || 'Ship';
             const captainName = route.captainName || 'Unknown';
-            const boatColor   = route.boatColor   || '#4da6ff';
-            const boatSizeMul = route.boatSizeMultiplier || 1;
-            const routePurpose = route.routePurpose || '';
-            const cargo        = route.cargo        || '';
-            const riskLevel    = route.riskLevel    || '';
 
             // Boat traveling forward
             this.boats.push({
@@ -111,12 +88,7 @@ class BoatFleet {
                 element: null,
                 shipName,
                 shipType,
-                captainName,
-                boatColor,
-                boatSizeMul,
-                routePurpose,
-                cargo,
-                riskLevel
+                captainName
             });
 
             // Boat traveling backwards (bidirectional)
@@ -130,12 +102,7 @@ class BoatFleet {
                 element: null,
                 shipName,
                 shipType,
-                captainName,
-                boatColor,
-                boatSizeMul,
-                routePurpose,
-                cargo,
-                riskLevel
+                captainName
             });
         });
     }
@@ -204,8 +171,7 @@ class BoatFleet {
     }
 
     createBoatElement(boat) {
-        const s = this.boatSize * (boat.boatSizeMul || 1);
-        const color = boat.boatColor || '#4da6ff';
+        const s = this.boatSize;
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('class', 'boat');
         g.style.cursor = 'pointer';
@@ -214,7 +180,7 @@ class BoatFleet {
         dot.setAttribute('cx', '0');
         dot.setAttribute('cy', '0');
         dot.setAttribute('r', Math.max(2, s * 0.45));
-        dot.setAttribute('fill', color);
+        dot.setAttribute('fill', '#4da6ff');
         dot.setAttribute('stroke', '#002f5e');
         dot.setAttribute('stroke-width', Math.max(0.5, s * 0.1));
 
