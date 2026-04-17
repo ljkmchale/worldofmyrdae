@@ -8,8 +8,10 @@ const CITY_MAPS = [
   {
     id: "tratta",
     name: "Tratta",
+    subtitle: "City of the Broken Deep \u00B7 Yearning Vale",
     image: "images/cities/tratta/tratta.png",
     previewImage: "images/tratta.jpg",
+    shimmer: { x: 0.62, y: 0.02, w: 0.355, h: 0.58 },
     pins: [
       { n:  1, x: 41.1, y: 26.2, name: "The Anchored Spire", type: "Tavern", desc: "A well-known tavern and meeting point in the heart of Tratta's upper ring." },
       { n:  2, x: 32.1, y: 50.9, name: "SeaRoute Colosseum", type: "arena", desc: "Tratta's grand fighting arena. Gladiatorial bouts, beast fights, and spectacle draw crowds from across Yearning Vale." },
