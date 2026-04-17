@@ -202,7 +202,7 @@
               <option value="port">Port</option>
               <option value="ruins">Ruins</option>
               <option value="landmark">Landmark</option>
-              <option value="nature">Nature</option>
+              <option value="nature">Nature / Terrain</option>
               <option value="poi">POI</option>
               <option value="region">Region Label</option>
               <option value="water">Water Label</option>
@@ -1194,7 +1194,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
 
   function getActiveCityId() { return activeCityId; }
 
-  return { open, loadCity, selectPin, filterList, updateFromForm, addPin, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
+  return { open, loadCity, selectPin, filterList, updateFromForm, addPin, deletePin, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
 })();
 </script>
   <!-- AI Wizard Modal -->
@@ -1281,14 +1281,39 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
           <h3 style="color:var(--color-gold); margin-top:0;">Step 3: Map Generation</h3>
           <div class="form-group">
             <label>ComfyUI Host</label>
-            <input type="text" id="ai-comfy-host" class="form-control" value="http://127.0.0.1:8188">
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <input type="text" id="ai-comfy-host" class="form-control" value="http://127.0.0.1:8188" style="flex:1;" oninput="AIWizard.resetConnectionStatus()">
+              <button class="btn btn-secondary" id="ai-btn-test-conn" onclick="AIWizard.testConnection()" style="min-width:120px; white-space:nowrap;">
+                <i class="fa-solid fa-plug"></i> Test
+              </button>
+            </div>
+            <div id="ai-conn-status" style="margin-top:0.4rem; font-size:0.8rem; min-height:1.2rem;"></div>
           </div>
           <div class="form-group">
             <label>Generation Prompt</label>
             <textarea id="ai-gen-prompt" class="form-control" rows="4"></textarea>
           </div>
           <div class="form-group">
-            <label>Workflow JSON <span style="font-size:0.7rem; color:#666;">(Optional, default will be used)</span></label>
+            <label>Negative Prompt</label>
+            <textarea id="ai-neg-prompt" class="form-control" rows="2" placeholder="photorealistic, blurry, ugly, modern...">photorealistic, photograph, 3d render, blurry, low quality, distorted, ugly, modern, red blobs, abstract, noise, watermark, text labels, signature</textarea>
+          </div>
+          <div style="display:flex; gap:1rem;">
+            <div class="form-group" style="flex:1;">
+              <label>Steps <span id="ai-steps-val" style="color:var(--color-gold);">30</span></label>
+              <input type="range" id="ai-steps" min="10" max="60" value="30" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-steps-val').textContent=this.value">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>CFG <span id="ai-cfg-val" style="color:var(--color-gold);">7</span></label>
+              <input type="range" id="ai-cfg" min="1" max="15" value="7" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-cfg-val').textContent=this.value">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Denoise <span id="ai-denoise-val" style="color:var(--color-gold);">0.78</span></label>
+              <input type="range" id="ai-denoise" min="0.3" max="1.0" step="0.01" value="0.78" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-denoise-val').textContent=parseFloat(this.value).toFixed(2)">
+            </div>
+          </div>
+          <p style="font-size:0.75rem; color:#4da6ff; margin:0 0 0.75rem;"><i class="fa-solid fa-circle-info"></i> If a sketch image was found in Step 2, it will be used as img2img input. <strong>Denoise</strong>: lower = closer to sketch, higher = more creative.</p>
+          <div class="form-group">
+            <label>Workflow JSON <span style="font-size:0.7rem; color:#666;">(Optional — overrides default img2img workflow)</span></label>
             <textarea id="ai-comfy-workflow" class="form-control" rows="6" 
               placeholder='Paste API JSON here...'
               oninput="localStorage.setItem('comfy_workflow_json', this.value)"></textarea>
@@ -1301,7 +1326,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
 
           <div style="margin-top:1.5rem; display:flex; gap:1rem;">
             <button class="btn btn-secondary" onclick="AIWizard.nextStep(2)">&larr; Back</button>
-            <button class="btn btn-primary" onclick="AIWizard.generate()">Generate & Create City</button>
+            <button class="btn btn-primary" id="ai-btn-generate" onclick="AIWizard.generate()">Generate & Create City</button>
           </div>
         </div>
 
@@ -1335,8 +1360,8 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         let foundLoc = null;
         const allLocations = (typeof CampaignData !== 'undefined') ? CampaignData.getLocations() : [];
 
-        if (typeof Editor !== 'undefined' && Editor.state && Editor.state.selectedLocation) {
-            foundLoc = allLocations.find(l => l.id === Editor.state.selectedLocation);
+        if (typeof Editor !== 'undefined' && Editor.state && Editor.state.selectedLocId) {
+            foundLoc = allLocations.find(l => l.id === Editor.state.selectedLocId);
         } else if (typeof CityEditor !== 'undefined') {
             const activeCityId = CityEditor.getActiveCityId();
             if (activeCityId) {
@@ -1374,6 +1399,9 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
           const errBtns = document.getElementById('ai-step4-error-btns');
           if (spinner) spinner.style.display = '';
           if (errBtns) errBtns.style.display = 'none';
+          // Disable generate button until connection is confirmed
+          const genBtn = document.getElementById('ai-btn-generate');
+          if (genBtn) genBtn.disabled = true;
           const bar = document.getElementById('ai-progress-bar');
           if (bar) bar.style.width = '0%';
           const statusEl = document.getElementById('ai-status-text');
@@ -1398,7 +1426,39 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
             const saved = localStorage.getItem('comfy_workflow_json');
             if (saved) wfField.value = saved;
           }
+          testConnection();
         }
+      }
+
+      async function testConnection() {
+        const host = document.getElementById('ai-comfy-host').value || 'http://127.0.0.1:8188';
+        const statusEl = document.getElementById('ai-conn-status');
+        const btn = document.getElementById('ai-btn-test-conn');
+        const genBtn = document.getElementById('ai-btn-generate');
+
+        statusEl.innerHTML = '<span style="color:#888;"><i class="fa-solid fa-spinner fa-spin"></i> Connecting to ComfyUI…</span>';
+        if (btn) btn.disabled = true;
+        if (genBtn) genBtn.disabled = true;
+
+        try {
+          const res = await fetch(`/api/ai/comfy-proxy?host=${encodeURIComponent(host)}&endpoint=/system_stats`);
+          const data = await res.json();
+          if (data.error) throw new Error(data.error);
+          statusEl.innerHTML = '<span style="color:#4caf50;"><i class="fa-solid fa-circle-check"></i> ComfyUI is running ✓</span>';
+          if (genBtn) genBtn.disabled = false;
+        } catch (e) {
+          statusEl.innerHTML = `<span style="color:#e44;"><i class="fa-solid fa-circle-xmark"></i> ComfyUI not reachable — start it at <strong>${host}</strong> then click Test again.</span>`;
+          if (genBtn) genBtn.disabled = true;
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      }
+
+      function resetConnectionStatus() {
+        const statusEl = document.getElementById('ai-conn-status');
+        const genBtn = document.getElementById('ai-btn-generate');
+        if (statusEl) statusEl.innerHTML = '';
+        if (genBtn) genBtn.disabled = true;
       }
 
       async function fetchGoogleDoc() {
@@ -1442,18 +1502,47 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
       function parseData() {
         const text = document.getElementById('ai-gazetteer-text').value;
         pins = [];
-        text.split('\n').forEach(line => {
-            const match = line.trim().match(/^(\d{1,2})[\s.]+(.+?)(?::\s*(.*))?$/);
-            if (match) {
-                const n = parseInt(match[1]);
-                const name = match[2].trim();
-                if (n > 0 && n < 100 && name.length > 2) {
-                    pins.push({ n, name, desc: (match[3] || '').trim(), x: 50, y: 50, type: 'poi' });
-                }
+        const seen = new Set();
+
+        // Strategy 1: try to extract the Map section (number on own line, name on next line)
+        const mapMatch = text.match(/\bMap\b[\s\S]*?(?=\nNotable Locations|\nNotable|\nHistory|$)/i);
+        const mapSection = mapMatch ? mapMatch[0] : text;
+        const lines = mapSection.split('\n').map(l => l.trim()).filter(Boolean);
+        for (let i = 0; i < lines.length - 1; i++) {
+          const numMatch = lines[i].match(/^(\d{1,2})$/);
+          if (numMatch) {
+            const n = parseInt(numMatch[1]);
+            const name = lines[i + 1];
+            // Reject price/table noise: names containing currency symbols or slashes
+            if (n > 0 && n < 100 && name.length > 2 && !/[\/\\]/.test(name) && !/^\d/.test(name) && !seen.has(n)) {
+              seen.add(n);
+              pins.push({ n, name, desc: '', x: 50, y: 50, type: 'poi' });
             }
-        });
-        document.getElementById('ai-pins-list').innerHTML = pins.map(p => `<div>${p.n}. ${p.name}</div>`).join('');
-        document.getElementById('ai-gen-prompt').value = `True top-down photorealistic medieval fantasy map. Focus on: ${pins.slice(0, 10).map(p => p.name).join(', ')}. Style: Overhead, highly detailed.`;
+          }
+        }
+
+        // Strategy 2: inline format "1. Name" or "1 Name" (fallback if Map section yielded nothing)
+        if (pins.length === 0) {
+          lines.forEach(line => {
+            const match = line.match(/^(\d{1,2})[\s.]+(.+?)(?::\s*(.*))?$/);
+            if (match) {
+              const n = parseInt(match[1]);
+              const name = match[2].trim();
+              if (n > 0 && n < 100 && name.length > 2 && !/[\/\\]/.test(name) && !seen.has(n)) {
+                seen.add(n);
+                pins.push({ n, name, desc: (match[3] || '').trim(), x: 50, y: 50, type: 'poi' });
+              }
+            }
+          });
+        }
+
+        // Sort by pin number
+        pins.sort((a, b) => a.n - b.n);
+
+        document.getElementById('ai-pins-list').innerHTML = pins.length
+          ? pins.map(p => `<div>${p.n}. ${p.name}</div>`).join('')
+          : '<div style="color:#888;">No pins found — check gazetteer format.</div>';
+        document.getElementById('ai-gen-prompt').value = `Top-down aerial fantasy city map illustration, hand-drawn cartographic style, parchment paper texture, ink and watercolor, medieval stone fortress and settlement, cobblestone streets, detailed rooftops and towers, warm earthy tones. Key locations: ${pins.slice(0, 8).map(p => p.name).join(', ')}. Artisan cartography, vintage map art, highly detailed.`;
         nextStep(3);
       }
 
@@ -1462,6 +1551,10 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         const cityName = document.getElementById('ai-city-name').value;
         const host = document.getElementById('ai-comfy-host').value || 'http://127.0.0.1:8188';
         const prompt = document.getElementById('ai-gen-prompt').value;
+        const negPrompt = document.getElementById('ai-neg-prompt').value || 'blurry, low quality, distorted, ugly, modern, watermark';
+        const steps = parseInt(document.getElementById('ai-steps').value) || 30;
+        const cfg = parseFloat(document.getElementById('ai-cfg').value) || 7;
+        const denoise = parseFloat(document.getElementById('ai-denoise').value) || 0.78;
         let workflowStr = document.getElementById('ai-comfy-workflow').value || localStorage.getItem('comfy_workflow_json');
 
         nextStep(4);
@@ -1469,28 +1562,64 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         const progress = document.getElementById('ai-progress-bar');
 
         try {
-          status.textContent = "Connecting to ComfyUI...";
-          progress.style.width = "10%";
+          // Try to upload sketch as img2img source
+          let sketchFilename = null;
+          const sketchPath = `images/cities/${cityId}/sketch.png`;
+          status.textContent = "Uploading sketch to ComfyUI...";
+          progress.style.width = "8%";
+          try {
+            const upRes = await fetch('/api/ai/upload-to-comfy', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ host, localPath: sketchPath })
+            }).then(r => r.json());
+            if (upRes.name) sketchFilename = upRes.name;
+          } catch(e) { /* no sketch — fall back to txt2img */ }
 
-          const defaultWorkflow = {"3":{"class_type":"KSampler","inputs":{"cfg":8,"denoise":1,"latent_image":["5",0],"model":["4",0],"positive":["6",0],"negative":["7",0],"sampler_name":"euler","scheduler":"normal","seed":Math.floor(Math.random()*1000000),"steps":25}},"4":{"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":"v1-5-pruned-emaonly.ckpt"}},"5":{"class_type":"EmptyLatentImage","inputs":{"batch_size":1,"height":512,"width":512}},"6":{"class_type":"CLIPTextEncode","inputs":{"clip":["4",1],"text":prompt}},"7":{"class_type":"CLIPTextEncode","inputs":{"clip":["4",1],"text":"text, labels, blurry"}},"8":{"class_type":"VAEDecode","inputs":{"samples":["3",0],"vae":["4",2]}},"9":{"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["8",0]}}};
+          status.textContent = "Connecting to ComfyUI...";
+          progress.style.width = "12%";
+
+          const seed = Math.floor(Math.random() * 1000000);
+          let defaultWorkflow;
+          if (sketchFilename) {
+            // img2img: use sketch as latent source
+            defaultWorkflow = {
+              "1": {"class_type":"LoadImage","inputs":{"image":sketchFilename}},
+              "1r":{"class_type":"ImageScale","inputs":{"image":["1",0],"upscale_method":"lanczos","width":512,"height":512,"crop":"disabled"}},
+              "2": {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":"v1-5-pruned-emaonly.safetensors"}},
+              "3": {"class_type":"VAEEncode","inputs":{"pixels":["1r",0],"vae":["2",2]}},
+              "4": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":prompt}},
+              "5": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":negPrompt}},
+              "6": {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["4",0],"negative":["5",0],"latent_image":["3",0],"denoise":denoise,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
+              "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["2",2]}},
+              "8": {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
+            };
+          } else {
+            // txt2img fallback
+            defaultWorkflow = {
+              "2": {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":"v1-5-pruned-emaonly.safetensors"}},
+              "3": {"class_type":"EmptyLatentImage","inputs":{"batch_size":1,"height":768,"width":768}},
+              "4": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":prompt}},
+              "5": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":negPrompt}},
+              "6": {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["4",0],"negative":["5",0],"latent_image":["3",0],"denoise":1.0,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
+              "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["2",2]}},
+              "8": {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
+            };
+          }
+
           const workflow = JSON.parse(workflowStr || JSON.stringify(defaultWorkflow));
-          
-          Object.keys(workflow).forEach(key => {
-              if (workflow[key].inputs && workflow[key].inputs.text !== undefined && typeof workflow[key].inputs.text === 'string') {
-                  workflow[key].inputs.text = prompt;
-              }
-          });
+          status.textContent = sketchFilename ? `Using sketch as img2img base (denoise ${denoise})…` : "Generating from prompt (no sketch found)…";
+          progress.style.width = "18%";
 
           const promptRes = await fetch('/api/ai/comfy-proxy', {
               method: 'POST',
               body: JSON.stringify({ host, payload: { prompt: workflow } })
           }).then(r => r.json());
 
-          if (promptRes.error) throw new Error(promptRes.error);
+          if (promptRes.error) throw new Error(typeof promptRes.error === 'string' ? promptRes.error : (promptRes.error.message || JSON.stringify(promptRes.error)));
           const promptId = promptRes.prompt_id;
 
           let finished = false, attempts = 0;
-          while (!finished && attempts < 60) {
+          while (!finished && attempts < 120) {
               await new Promise(r => setTimeout(r, 3000));
               const histRes = await fetch(`/api/ai/comfy-proxy?host=${encodeURIComponent(host)}&endpoint=/history/${promptId}`).then(r => r.json());
               if (histRes[promptId]) {
@@ -1536,7 +1665,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         }
       }
 
-      return { open, close, nextStep, fetchGoogleDoc, parseData, generate };
+      return { open, close, nextStep, fetchGoogleDoc, parseData, generate, testConnection, resetConnectionStatus };
     })();
   </script>
 </body>

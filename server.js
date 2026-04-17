@@ -162,6 +162,40 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // Upload a local image to ComfyUI's input directory
+    if (req.method === 'POST' && url === '/api/ai/upload-to-comfy') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            try {
+                const { host, localPath } = JSON.parse(body);
+                const filePath = path.join(PUBLIC_DIR, localPath);
+                const fileData = fs.readFileSync(filePath);
+                const filename = path.basename(filePath);
+                const boundary = '----MyrdaeBoundary' + Date.now();
+                const preamble = Buffer.from(
+                    `--${boundary}\r\nContent-Disposition: form-data; name="image"; filename="${filename}"\r\nContent-Type: image/png\r\n\r\n`
+                );
+                const epilogue = Buffer.from(`\r\n--${boundary}\r\nContent-Disposition: form-data; name="type"\r\n\r\ninput\r\n--${boundary}--\r\n`);
+                const multipart = Buffer.concat([preamble, fileData, epilogue]);
+                const urlObj = new URL((host || 'http://127.0.0.1:8188') + '/upload/image');
+                const options = { method: 'POST', headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}`, 'Content-Length': multipart.length } };
+                const proxyReq = http.request(urlObj, options, (proxyRes) => {
+                    let rb = '';
+                    proxyRes.on('data', c => { rb += c; });
+                    proxyRes.on('end', () => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(rb); });
+                });
+                proxyReq.on('error', (err) => { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: err.message })); });
+                proxyReq.write(multipart);
+                proxyReq.end();
+            } catch (err) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+
     // AI Image Save Route — download generated image from ComfyUI and store locally
     if (req.method === 'POST' && url === '/api/ai/save-image') {
         let body = '';
