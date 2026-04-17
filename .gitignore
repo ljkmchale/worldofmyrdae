@@ -2,6 +2,10 @@
 .claude/worktrees/
 .claude/settings.local.json
 
+# Environment / secrets — never commit API keys
+.env
+.env.*
+
 # Node
 node_modules/
 
