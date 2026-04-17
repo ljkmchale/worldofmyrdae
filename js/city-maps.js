@@ -8,7 +8,7 @@ const CITY_MAPS = [
   {
     id: "tratta",
     name: "Tratta",
-    image: "images/cities/tratta/tratta.png",
+    image: "images/cities/tratta/tratta.PNG",
     previewImage: "images/tratta.jpg",
     pins: [
       { n:  1, x: 41.1, y: 26.2, name: "The Anchored Spire", type: "Tavern", desc: "A well-known tavern and meeting point in the heart of Tratta's upper ring." },
@@ -52,8 +52,8 @@ const CITY_MAPS = [
   {
     id: "emberstran",
     name: "Emberstran",
-    image: "images/cities/emberstran/emberstran.png",
-    previewImage: "images/cities/emberstran/emberstran.png",
+    image: "images/cities/emberstran/emberstran.PNG",
+    previewImage: "images/cities/emberstran/emberstran.PNG",
     pins: [
       { n:  1, x: 50.7, y: 38.0, name: "The Lord's Keep", type: "keep", desc: "The seat of power in Emberstran." },
       { n:  2, x: 68.6, y: 27.1, name: "Imonorra's Tower", type: "tower", desc: "A tall tower belonging to the mage Imonorra." },
@@ -88,8 +88,8 @@ const CITY_MAPS = [
   {
     id: "nauldeaus",
     name: "Nauldeaus",
-    image: "images/cities/nauldeaus/nauldeaus.png",
-    previewImage: "images/cities/nauldeaus/nauldeaus.png",
+    image: "images/cities/nauldeaus/nauldeaus.PNG",
+    previewImage: "images/cities/nauldeaus/nauldeaus.PNG",
     pins: [
       { n:  1, x: 29.1, y: 28.2, name: "Far Warehouse", type: "warehouse", desc: "A large warehouse district on the far edge of the city." },
       { n:  2, x: 45.2, y: 60.6, name: "Trader's Market", type: "market", desc: "The main trading market of Nauldeaus." },
@@ -141,8 +141,8 @@ const CITY_MAPS = [
   {
     id: "adsuren",
     name: "Adsuren",
-    image: "images/cities/adsuren/adsuren.png",
-    previewImage: "images/cities/adsuren/adsuren.png",
+    image: "images/cities/adsuren/adsuren.PNG",
+    previewImage: "images/cities/adsuren/adsuren.PNG",
     pins: [
       { n:  1, x: 26.3, y: 27.9, name: "The Graying Grotto", type: "tavern", desc: "A cave-adjacent tavern with a distinctive grey stone interior.", size: 1.4 },
       { n:  2, x: 45.2, y: 26.5, name: "Adsuren Stables", type: "stables", desc: "The main stables of Adsuren.", size: 1.4 },
@@ -165,8 +165,8 @@ const CITY_MAPS = [
   {
     id: "onaren",
     name: "Onaren",
-    image: "images/cities/onaren/onaren.png",
-    previewImage: "images/cities/onaren/onaren.png",
+    image: "images/cities/onaren/onaren.PNG",
+    previewImage: "images/cities/onaren/onaren.PNG",
     pins: [
       { n:  1, x: 30.0, y: 25.9, name: "Evonstride Stables", type: "Stables", desc: "The Evonstride Stables serve as the primary care facility for horses and mounts in O'naren. Attached to the Evonstride family home, the stables are well-maintained, with intricately carved wooden walls supported by sturdy stone columns.", size: 1.4 },
       { n:  2, x: 42.3, y: 23.7, name: "The Overlook", type: "Overlook", desc: "The Overlook in O'naren is a tall, round stone tower situated on the northwestern edge of Driftglow Pond, serving as both a vantage point for the Realmwardens and a communal hub for travelers and merchants.", size: 1.4 },
@@ -219,8 +219,8 @@ const CITY_MAPS = [
   {
     id: "basctdelm",
     name: "basctdelm",
-    image: "images/cities/basctdelm/basctdelm.png",
-    previewImage: "images/cities/basctdelm/basctdelm.png",
+    image: "images/cities/basctdelm/basctdelm.PNG",
+    previewImage: "images/cities/basctdelm/basctdelm.PNG",
     pins: [
       { n:  1, x: 10.8, y: 18.5, name: "Talward Keep", type: "Keep", desc: "" },
       { n:  2, x: 14.5, y: 35.7, name: "House of Myr", type: "House", desc: "" },
