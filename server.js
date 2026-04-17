@@ -7,6 +7,7 @@ const net = require('net');
 const PORT = process.env.PORT || 3000;
 const COMFY_PORT = 8188;
 const PUBLIC_DIR = __dirname;
+const PUBLIC_DIR_REAL = fs.realpathSync(PUBLIC_DIR);
 
 // Simple .env loader
 if (fs.existsSync(path.join(__dirname, '.env'))) {
@@ -19,6 +20,32 @@ if (fs.existsSync(path.join(__dirname, '.env'))) {
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 let comfyProcess = null;
+
+function resolvePublicPath(requestPath) {
+    const relativePath = requestPath.startsWith('/') ? requestPath.slice(1) : requestPath;
+    const resolvedPath = path.resolve(PUBLIC_DIR_REAL, relativePath);
+    const relative = path.relative(PUBLIC_DIR_REAL, resolvedPath);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        throw new Error('Path escapes public directory');
+    }
+    return resolvedPath;
+}
+
+function parseComfyHost(rawHost, { localOnly = false } = {}) {
+    const host = rawHost || 'http://127.0.0.1:8188';
+    const parsed = new URL(host);
+    const isLocalHost = ['127.0.0.1', 'localhost', '::1'].includes(parsed.hostname);
+
+    if (localOnly && !isLocalHost) {
+        throw new Error('Only local ComfyUI hosts are allowed');
+    }
+
+    return parsed;
+}
+
+function getHttpModuleForUrl(targetUrl) {
+    return targetUrl.protocol === 'https:' ? require('https') : http;
+}
 
 // Function to check if a port is in use
 function isPortInUse(port) {
@@ -82,7 +109,7 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             try {
-                const filePath = path.join(PUBLIC_DIR, 'js', 'city-maps.js');
+                const filePath = resolvePublicPath('js/city-maps.js');
                 fs.writeFileSync(filePath, body);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ success: true, message: 'City maps saved' }));
@@ -99,11 +126,10 @@ const server = http.createServer((req, res) => {
     if (req.method === 'GET' && url === '/api/ai/comfy-proxy') {
         try {
             const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
-            const host = params.get('host') || 'http://127.0.0.1:8188';
+            const host = parseComfyHost(params.get('host'));
             const endpoint = params.get('endpoint') || '/';
-            const targetUrl = host + endpoint;
-            const https = require('https');
-            const mod = targetUrl.startsWith('https') ? https : http;
+            const targetUrl = new URL(endpoint, host);
+            const mod = getHttpModuleForUrl(targetUrl);
             mod.get(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (proxyRes) => {
                 let responseBody = '';
                 proxyRes.on('data', chunk => { responseBody += chunk; });
@@ -129,16 +155,17 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             try {
                 const data = JSON.parse(body);
-                const targetUrl = data.host || 'http://127.0.0.1:8188';
+                const host = parseComfyHost(data.host);
                 const endpoint  = data.endpoint || '/prompt';
-                
-                const urlObj = new URL(targetUrl + endpoint);
+
+                const urlObj = new URL(endpoint, host);
                 const options = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 };
 
-                const proxyReq = http.request(urlObj, options, (proxyRes) => {
+                const requestModule = getHttpModuleForUrl(urlObj);
+                const proxyReq = requestModule.request(urlObj, options, (proxyRes) => {
                     let responseBody = '';
                     proxyRes.on('data', chunk => { responseBody += chunk; });
                     proxyRes.on('end', () => {
@@ -169,7 +196,11 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             try {
                 const { host, localPath } = JSON.parse(body);
-                const filePath = path.join(PUBLIC_DIR, localPath);
+                if (!localPath) {
+                    throw new Error('Missing localPath');
+                }
+                const comfyHost = parseComfyHost(host, { localOnly: true });
+                const filePath = resolvePublicPath(localPath);
                 const fileData = fs.readFileSync(filePath);
                 const filename = path.basename(filePath);
                 const boundary = '----MyrdaeBoundary' + Date.now();
@@ -178,9 +209,10 @@ const server = http.createServer((req, res) => {
                 );
                 const epilogue = Buffer.from(`\r\n--${boundary}\r\nContent-Disposition: form-data; name="type"\r\n\r\ninput\r\n--${boundary}--\r\n`);
                 const multipart = Buffer.concat([preamble, fileData, epilogue]);
-                const urlObj = new URL((host || 'http://127.0.0.1:8188') + '/upload/image');
+                const urlObj = new URL('/upload/image', comfyHost);
                 const options = { method: 'POST', headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}`, 'Content-Length': multipart.length } };
-                const proxyReq = http.request(urlObj, options, (proxyRes) => {
+                const requestModule = getHttpModuleForUrl(urlObj);
+                const proxyReq = requestModule.request(urlObj, options, (proxyRes) => {
                     let rb = '';
                     proxyRes.on('data', c => { rb += c; });
                     proxyRes.on('end', () => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(rb); });
@@ -210,12 +242,12 @@ const server = http.createServer((req, res) => {
                 fs.mkdirSync(cityDir, { recursive: true });
                 const destPath = path.join(cityDir, safeId + '.png');
 
-                const https = require('https');
                 function fetchBuf(targetUrl, depth) {
                     depth = depth || 0;
                     return new Promise((resolve, reject) => {
                         if (depth > 8) { reject(new Error('Too many redirects')); return; }
-                        const mod = targetUrl.startsWith('https') ? https : http;
+                        const parsedTargetUrl = new URL(targetUrl);
+                        const mod = getHttpModuleForUrl(parsedTargetUrl);
                         mod.get(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (r) => {
                             if ([301, 302, 307, 308].includes(r.statusCode) && r.headers.location) {
                                 fetchBuf(r.headers.location, depth + 1).then(resolve, reject);
@@ -694,7 +726,7 @@ ${text}`;
         req.on('end', () => {
             try {
                 // Ensure the path is correct
-                const filePath = path.join(PUBLIC_DIR, 'js', 'locations-db.js');
+                const filePath = resolvePublicPath('js/locations-db.js');
                 fs.writeFileSync(filePath, body);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -712,9 +744,22 @@ ${text}`;
     let reqPath = url === '/' ? '/editor.html' : url;
 
     // Decode URL-encoded characters so filenames with spaces (e.g. %20) resolve correctly
-    reqPath = decodeURIComponent(reqPath);
+    try {
+        reqPath = decodeURIComponent(reqPath);
+    } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+        return;
+    }
 
-    let filePath = path.join(PUBLIC_DIR, reqPath);
+    let filePath;
+    try {
+        filePath = resolvePublicPath(reqPath);
+    } catch (err) {
+        res.writeHead(403, { 'Content-Type': 'text/plain' });
+        res.end('Forbidden');
+        return;
+    }
     const extname = String(path.extname(filePath)).toLowerCase();
 
     const mimeTypes = {

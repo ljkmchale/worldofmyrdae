@@ -310,8 +310,8 @@ const Editor = (function () {
         // Clear form
         document.getElementById('loc-id').value = '';
         document.getElementById('loc-name').value = 'New Location';
-        document.getElementById('loc-x').value = x ? x.toFixed(1) : 50;
-        document.getElementById('loc-y').value = y ? y.toFixed(1) : 50;
+        document.getElementById('loc-x').value = x !== undefined ? x.toFixed(1) : 50;
+        document.getElementById('loc-y').value = y !== undefined ? y.toFixed(1) : 50;
         document.getElementById('loc-type').value = 'town';
         document.getElementById('loc-region').value = '';
         document.getElementById('loc-desc').value = '';

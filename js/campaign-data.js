@@ -11,6 +11,8 @@ const CampaignData = (function () {
         regions: [],
         notes: {}
     };
+    let syncListenersBound = false;
+    let pollingIntervalId = null;
 
     // Configuration
     let USE_LOCAL_STORAGE = false; // Set to true to persist manual edits in browser
@@ -56,36 +58,40 @@ const CampaignData = (function () {
         }
 
         // Listen for changes from other windows/tabs
-        window.addEventListener('storage', (e) => {
-            if (e.key === STORAGE_KEY && e.newValue) {
-                try {
-                    const newData = JSON.parse(e.newValue);
-                    if (JSON.stringify(newData) !== JSON.stringify(data)) {
-                        data = newData;
-                        console.log('Campaign data synced from another window (storage event).');
-                        triggerUpdate();
+        if (!syncListenersBound) {
+            window.addEventListener('storage', (e) => {
+                if (e.key === STORAGE_KEY && e.newValue) {
+                    try {
+                        const newData = JSON.parse(e.newValue);
+                        if (JSON.stringify(newData) !== JSON.stringify(data)) {
+                            data = newData;
+                            console.log('Campaign data synced from another window (storage event).');
+                            triggerUpdate();
+                        }
+                    } catch (err) {
+                        console.error('Failed to sync cross-window data:', err);
                     }
-                } catch (err) {
-                    console.error('Failed to sync cross-window data:', err);
                 }
-            }
-        });
+            });
 
-        // Polling fallback for file:// protocol where events often fail
-        let lastKnownStorage = localStorage.getItem(STORAGE_KEY);
-        setInterval(() => {
-            const currentStorage = localStorage.getItem(STORAGE_KEY);
-            if (currentStorage !== lastKnownStorage) {
-                lastKnownStorage = currentStorage;
-                try {
-                    data = JSON.parse(currentStorage);
-                    console.log('Campaign data synced from another window (polling).');
-                    triggerUpdate();
-                } catch (err) {
-                    console.error('Failed to sync data via polling:', err);
+            // Polling fallback for file:// protocol where events often fail
+            let lastKnownStorage = localStorage.getItem(STORAGE_KEY);
+            pollingIntervalId = setInterval(() => {
+                const currentStorage = localStorage.getItem(STORAGE_KEY);
+                if (currentStorage !== lastKnownStorage) {
+                    lastKnownStorage = currentStorage;
+                    try {
+                        data = JSON.parse(currentStorage);
+                        console.log('Campaign data synced from another window (polling).');
+                        triggerUpdate();
+                    } catch (err) {
+                        console.error('Failed to sync data via polling:', err);
+                    }
                 }
-            }
-        }, 2000);
+            }, 2000);
+
+            syncListenersBound = true;
+        }
 
         return data;
     }
