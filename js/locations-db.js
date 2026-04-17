@@ -2110,7 +2110,8 @@ const WORLD_LOCATIONS = {
             "y": 37.8,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1Uow9Y0-_llBAp4meZsA-QEFTmMslbMV_IlgYV3UjNxg/edit?tab=t.0",
+            "link": "https://docs.google.com/document/d/1Bq6DDjHDkgMwH6-rko5hITz-hCnT5MmcbPIOwCavM-E/edit?tab=t.0#heading=h.eikouaesbcs9",
+            "cityMap": "city-viewer.html?city=shademoor",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3624,7 +3625,7 @@ const WORLD_LOCATIONS = {
             "y": 33.46,
             "region": "Borealian Sway",
             "description": "O’naren is a small elven settlement in the wooded foothills west of Qal’dynn, serving as both a waypoint for travelers and a place of quiet contemplation. Its finely carved stone buildings blend seamlessly with the gray-green forest, reflecting the elven reverence for nature. The town is centered around Driftglow Pond, a pristine circular body of water that catches the cascading falls from the hills. At its heart lies a small island, crowned by an ancient tree with striking pink foliage—believed to be a relic of the Qal’daefar, the original elves of Myrdae.",
-            "cityMap": "city-onaren.html",
+            "cityMap": "city-viewer.html?city=onaren",
             "link": "https://docs.google.com/document/d/1ot7DXOzqFjYKucVqVu-tqmTRflrfBKSAwRZjNZtGLXU/edit?tab=t.0",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3643,7 +3644,9 @@ const WORLD_LOCATIONS = {
             "x": 49.1,
             "y": 36.3,
             "region": "",
-            "description": "Nature",
+            "description": "The Abbey of Mont Rest, now commonly referred to as the Abbey of Light, is a sanctuary located south of O’naren, sitting at the summit of a tall foothill descending from the Distancion Mountains into the Borealian Sway. Originally dedicated to the old god Neera, the abbey has since expanded its purpose, becoming a place of study and reverence for all the gods of Myrdae. Built from the region’s natural stone, the abbey has stood for approximately 150 years, housing both devoted scholars of divine lore and an orphanage that provides care for abandoned or displaced children.",
+            "link": "https://docs.google.com/document/d/14hX4cryRE61O6wLcZ26qFtsAXACJzqU60rwIgFkQYjQ/edit?tab=t.0",
+            "cityMap": "city-viewer.html?city=abbey-of-mont-rest",
             "fontFamily": "Simonetta",
             "fontSize": 12,
             "fontWeight": "300",
@@ -14261,6 +14264,131 @@ const WORLD_LOCATIONS = {
                 ],
                 "adamont"
             ]
+        },
+        {
+            "id": "tratta-farview-sea-road",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "tratta",
+                [
+                    72.48,
+                    34.77
+                ],
+                [
+                    76.63,
+                    31.05
+                ],
+                [
+                    77.25,
+                    27.97
+                ],
+                [
+                    78.22,
+                    23.22
+                ],
+                [
+                    78.58,
+                    18.35
+                ],
+                [
+                    78.76,
+                    14.91
+                ],
+                [
+                    79.29,
+                    10.87
+                ],
+                [
+                    80.61,
+                    9.47
+                ],
+                [
+                    82.85,
+                    10.26
+                ],
+                [
+                    84.22,
+                    11.76
+                ],
+                [
+                    85.16,
+                    15.34
+                ],
+                [
+                    85.81,
+                    21.46
+                ],
+                [
+                    86.13,
+                    26.33
+                ],
+                [
+                    86.29,
+                    31.09
+                ],
+                [
+                    85.32,
+                    35.42
+                ],
+                [
+                    84.7,
+                    39.46
+                ],
+                [
+                    84.88,
+                    42.33
+                ],
+                [
+                    85.04,
+                    46.62
+                ],
+                [
+                    84.5,
+                    49.27
+                ],
+                [
+                    83.85,
+                    51.95
+                ],
+                [
+                    83.05,
+                    56.85
+                ],
+                [
+                    82.18,
+                    60.18
+                ],
+                [
+                    80.86,
+                    63.72
+                ],
+                [
+                    80.9,
+                    66.59
+                ],
+                [
+                    79.37,
+                    69.56
+                ],
+                [
+                    76.99,
+                    72.74
+                ],
+                [
+                    73.83,
+                    73.21
+                ],
+                "farview"
+            ],
+            "shipName": "The Stowaway",
+            "shipType": "Merchant Cog",
+            "captainName": "Captain Marna Vex",
+            "boatColor": "#3366ff",
+            "boatSizeMultiplier": 1,
+            "routePurpose": "merchant",
+            "cargo": "Spices, Silks",
+            "riskLevel": "medium"
         }
     ],
     "regions": []

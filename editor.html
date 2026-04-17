@@ -1547,19 +1547,19 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         const cityId = document.getElementById('ai-city-id').value || '';
         const isFortress = /hold|fort|keep|castle|citadel|bastion|garrison|stronghold|outpost|watch/i.test(cityName + ' ' + cityId);
         const isVillage = /village|hamlet|settlement|farm|homestead/i.test(cityName + ' ' + cityId);
-        const isUnderground = /moor|shade|deep|under|dark|cavern|grotto|hollow|tunnel|drow|dwarf|duergar|mine|vault/i.test(cityName + ' ' + cityId);
+        const isUnderground = /underdark|undercity|underground|cavern|grotto|underhive|drow enclave|subterranean|duergar|beneath the|below the/i.test(cityName + ' ' + cityId);
         const pinNames = pins.slice(0, 8).map(p => p.name).join(', ');
         let styleHint;
         if (isFortress) {
-          styleHint = `fantasy medieval walled fortress, stone curtain walls with corner towers, inner bailey and courtyard, grass and dirt paths, warm earthy tones`;
+          styleHint = `walled medieval fortress compound, thick stone perimeter walls with circular corner towers, cobblestone inner courtyard, individual stone buildings with slate rooftops, gatehouse entrance, interior gardens and training grounds, dense forest tree canopies surrounding the outer walls`;
         } else if (isUnderground) {
-          styleHint = `fantasy underground cavern city, carved stone chambers, central lake or chasm, glowing mushroom clusters, dark stone floors with amber and purple glowing lights, drow or dwarven architecture`;
+          styleHint = `underground cavern city carved from dark stone, glowing lanterns and bioluminescent mushrooms, tunnels and passages, tiered stone platforms, underground lake or chasm, dwarven or drow stonework architecture`;
         } else if (isVillage) {
-          styleHint = `fantasy medieval village, timber-framed cottages with thatched rooftops, winding dirt roads, gardens, trees as round canopy shapes, warm earthy tones`;
+          styleHint = `small fantasy village, timber-framed cottages with thatched or shingle rooftops, winding dirt paths, garden patches, individual round tree canopies with drop shadows, wooden fences, well or market square at center`;
         } else {
-          styleHint = `fantasy medieval city, dense clusters of stone and timber buildings, winding cobblestone streets, city walls, market squares, docks if coastal, warm earthy tones`;
+          styleHint = `fantasy medieval town, stone and timber buildings with varied rooftop colors, cobblestone streets, town walls or palisade, market square, river or docks if present, dense round tree canopies in parks and outskirts`;
         }
-        const genPrompt = `Fantasy map illustration, strict overhead top-down flat view, ${styleHint}, Inkarnate Pro style, painterly digital art, rich detailed textures, soft atmospheric lighting. Follow the layout of the reference sketch exactly — keep all roads, paths, and waterways in the same position, do not add buildings that are not in the sketch, remove all text and numbers. Locations: ${pinNames}.`;
+        const genPrompt = `Tabletop RPG battle map, Inkarnate Pro style, strict overhead top-down bird's eye view, ${styleHint}. Clean crisp illustration, individual building stamps with detailed roof textures, cobblestone tile ground texture, round tree canopies with soft drop shadows, compass rose in corner, warm earth tones, rich saturated colors, professional TTRPG game asset. Match the layout of the reference sketch exactly — preserve all road positions and building placements, do not add extra structures. Numbered key locations: ${pinNames}.`;
         document.getElementById('ai-gen-prompt').value = genPrompt;
         nextStep(3);
       }
@@ -1618,7 +1618,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
               "11": {"class_type":"ControlNetApplyAdvanced","inputs":{
                       "positive":["4",0],"negative":["5",0],
                       "control_net":["10",0],"image":["1r",0],
-                      "strength":0.6,"start_percent":0.0,"end_percent":1.0}},
+                      "strength":0.55,"start_percent":0.0,"end_percent":1.0}},
               "6":  {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["11",0],"negative":["11",1],"latent_image":["3",0],"denoise":denoise,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
               "7":  {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":vaeRef}},
               "8":  {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
