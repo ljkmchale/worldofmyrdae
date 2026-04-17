@@ -1295,12 +1295,12 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
           </div>
           <div class="form-group">
             <label>Negative Prompt</label>
-            <textarea id="ai-neg-prompt" class="form-control" rows="2" placeholder="blurry, ugly, modern...">blurry, low quality, distorted, ugly, modern buildings, sketch, drawing, cartoon, flat, oversaturated, abstract, noise, watermark, text labels, signature, painting, illustration, 2d, anime</textarea>
+            <textarea id="ai-neg-prompt" class="form-control" rows="2" placeholder="blurry, ugly, modern...">blurry, low quality, distorted, ugly, modern buildings, photograph, photorealistic, 3d render, anime, manga, flat colors, oversaturated, abstract, noise, watermark, text, labels, numbers, signature, dark, gloomy</textarea>
           </div>
           <div class="form-group">
             <label>Model Checkpoint <span style="font-size:0.7rem; color:#888;">(filename in ComfyUI models/checkpoints/)</span></label>
-            <input type="text" id="ai-model-name" class="form-control" value="Realistic_Vision_V6.0_NV_B1_fp16.safetensors" placeholder="e.g. Realistic_Vision_V6.0_NV_B1_fp16.safetensors" style="font-size:0.8rem;">
-            <p style="font-size:0.72rem; color:#f0a500; margin:0.3rem 0 0;">For photorealistic output, use a realistic checkpoint (Realistic Vision, DreamShaper, etc.) — <em>not</em> vanilla SD 1.5.</p>
+            <input type="text" id="ai-model-name" class="form-control" value="DreamShaper_8_pruned.safetensors" placeholder="e.g. DreamShaper_8_pruned.safetensors" style="font-size:0.8rem;">
+            <p style="font-size:0.72rem; color:#f0a500; margin:0.3rem 0 0;">DreamShaper 8 recommended for illustrated fantasy map style. Realistic Vision V6 available as alternative for photorealistic output.</p>
           </div>
           <div style="display:flex; gap:1rem;">
             <div class="form-group" style="flex:1;">
@@ -1312,8 +1312,8 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
               <input type="range" id="ai-cfg" min="1" max="15" value="7" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-cfg-val').textContent=this.value">
             </div>
             <div class="form-group" style="flex:1;">
-              <label>Denoise <span id="ai-denoise-val" style="color:var(--color-gold);">0.88</span></label>
-              <input type="range" id="ai-denoise" min="0.3" max="1.0" step="0.01" value="0.88" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-denoise-val').textContent=parseFloat(this.value).toFixed(2)">
+              <label>Denoise <span id="ai-denoise-val" style="color:var(--color-gold);">0.72</span></label>
+              <input type="range" id="ai-denoise" min="0.3" max="1.0" step="0.01" value="0.72" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-denoise-val').textContent=parseFloat(this.value).toFixed(2)">
             </div>
           </div>
           <p style="font-size:0.75rem; color:#4da6ff; margin:0 0 0.75rem;"><i class="fa-solid fa-circle-info"></i> Sketch will be used as the img2img reference. <strong>Denoise</strong>: 0.75–0.85 = preserves sketch layout, 0.90–1.0 = maximum transformation.</p>
@@ -1384,11 +1384,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
             }
         }
 
-        if (!document.getElementById('ai-city-name').value) {
-            document.getElementById('ai-city-name').value = 'Scarwatch Hold';
-            document.getElementById('ai-city-id').value = 'scarwatch-hold';
-            document.getElementById('ai-google-doc-url').value = 'https://docs.google.com/document/d/1U1YgTimFZtG1VsC4fjWoh1wVCxGGdokU4peu8hh6jx8/edit';
-        }
+        // Leave fields blank if no location was auto-detected — let user fill them in
         nextStep(1);
       }
 
@@ -1551,15 +1547,19 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         const cityId = document.getElementById('ai-city-id').value || '';
         const isFortress = /hold|fort|keep|castle|citadel|bastion|garrison|stronghold|outpost|watch/i.test(cityName + ' ' + cityId);
         const isVillage = /village|hamlet|settlement|farm|homestead/i.test(cityName + ' ' + cityId);
+        const isUnderground = /moor|shade|deep|under|dark|cavern|grotto|hollow|tunnel|drow|dwarf|duergar|mine|vault/i.test(cityName + ' ' + cityId);
         const pinNames = pins.slice(0, 8).map(p => p.name).join(', ');
-        let genPrompt;
+        let styleHint;
         if (isFortress) {
-          genPrompt = `Use the sketch as the primary structural reference and transform it into a photorealistic top-down aerial view of a medieval fantasy fortress compound. Bird's-eye view showing stone curtain walls with corner towers, inner bailey with buildings, gatehouse, courtyard, and surrounding terrain. Highly detailed photorealistic rendering with realistic stone textures, realistic lighting and shadows, moss and weathering on walls, dirt paths and grass. Rich fantasy-medieval atmosphere. Key locations: ${pinNames}.`;
+          styleHint = `fantasy medieval walled fortress, stone curtain walls with corner towers, inner bailey and courtyard, grass and dirt paths, warm earthy tones`;
+        } else if (isUnderground) {
+          styleHint = `fantasy underground cavern city, carved stone chambers, central lake or chasm, glowing mushroom clusters, dark stone floors with amber and purple glowing lights, drow or dwarven architecture`;
         } else if (isVillage) {
-          genPrompt = `Use the sketch as the primary structural reference and transform it into a photorealistic top-down aerial view of a small medieval fantasy village. Bird's-eye view showing timber-framed cottages, dirt roads, gardens, a central well or square. Highly detailed photorealistic rendering with realistic thatched and tiled roofs, realistic lighting and shadows, lived-in organic layout. Key locations: ${pinNames}.`;
+          styleHint = `fantasy medieval village, timber-framed cottages with thatched rooftops, winding dirt roads, gardens, trees as round canopy shapes, warm earthy tones`;
         } else {
-          genPrompt = `Use the sketch as the primary structural reference and transform it into a full city-scale environment. Top-down bird's-eye view of a sprawling medieval fantasy city. Dense clusters of buildings, winding cobblestone streets, organic lived-in layout. Realistic architectural details, varied rooftops, natural city flow. Highly detailed and photorealistic, rich textures, realistic lighting, cohesive fantasy-medieval atmosphere. Key locations: ${pinNames}.`;
+          styleHint = `fantasy medieval city, dense clusters of stone and timber buildings, winding cobblestone streets, city walls, market squares, docks if coastal, warm earthy tones`;
         }
+        const genPrompt = `Fantasy map illustration, strict overhead top-down flat view, ${styleHint}, Inkarnate Pro style, painterly digital art, rich detailed textures, soft atmospheric lighting. Follow the layout of the reference sketch exactly — keep all roads, paths, and waterways in the same position, do not add buildings that are not in the sketch, remove all text and numbers. Locations: ${pinNames}.`;
         document.getElementById('ai-gen-prompt').value = genPrompt;
         nextStep(3);
       }
@@ -1598,25 +1598,33 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
           progress.style.width = "12%";
 
           const seed = Math.floor(Math.random() * 1000000);
-          // Node "9" is a standalone VAE loader — required for noVAE checkpoints like Realistic Vision
-          const vaeNode = {"9": {"class_type":"VAELoader","inputs":{"vae_name":"vae-ft-mse-840000-ema-pruned.safetensors"}}};
+          // noVAE models (name contains NV or noVAE) need a separate VAELoader node
+          const needsExternalVae = /NV|noVAE/i.test(modelName);
+          const vaeRef = needsExternalVae ? ["9",0] : ["2",2];
+          const vaeNode = needsExternalVae ? {"9": {"class_type":"VAELoader","inputs":{"vae_name":"vae-ft-mse-840000-ema-pruned.safetensors"}}} : {};
           let defaultWorkflow;
           if (sketchFilename) {
-            // img2img: use sketch as latent source
+            // img2img + ControlNet tile: sketch is used as both the latent base AND the layout control signal
+            // Node "10" = ControlNetLoader, "11" = ControlNetApplyAdvanced (wraps positive conditioning)
             defaultWorkflow = {
               ...vaeNode,
-              "1": {"class_type":"LoadImage","inputs":{"image":sketchFilename}},
-              "1r":{"class_type":"ImageScale","inputs":{"image":["1",0],"upscale_method":"lanczos","width":1024,"height":1024,"crop":"disabled"}},
-              "2": {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":modelName}},
-              "3": {"class_type":"VAEEncode","inputs":{"pixels":["1r",0],"vae":["9",0]}},
-              "4": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":prompt}},
-              "5": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":negPrompt}},
-              "6": {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["4",0],"negative":["5",0],"latent_image":["3",0],"denoise":denoise,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
-              "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["9",0]}},
-              "8": {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
+              "1":  {"class_type":"LoadImage","inputs":{"image":sketchFilename}},
+              "1r": {"class_type":"ImageScale","inputs":{"image":["1",0],"upscale_method":"lanczos","width":1024,"height":1024,"crop":"disabled"}},
+              "2":  {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":modelName}},
+              "3":  {"class_type":"VAEEncode","inputs":{"pixels":["1r",0],"vae":vaeRef}},
+              "4":  {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":prompt}},
+              "5":  {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":negPrompt}},
+              "10": {"class_type":"ControlNetLoader","inputs":{"control_net_name":"control_v11f1e_sd15_tile.pth"}},
+              "11": {"class_type":"ControlNetApplyAdvanced","inputs":{
+                      "positive":["4",0],"negative":["5",0],
+                      "control_net":["10",0],"image":["1r",0],
+                      "strength":0.6,"start_percent":0.0,"end_percent":1.0}},
+              "6":  {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["11",0],"negative":["11",1],"latent_image":["3",0],"denoise":denoise,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
+              "7":  {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":vaeRef}},
+              "8":  {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
             };
           } else {
-            // txt2img fallback
+            // txt2img fallback — no sketch, no ControlNet
             defaultWorkflow = {
               ...vaeNode,
               "2": {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":modelName}},
@@ -1624,7 +1632,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
               "4": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":prompt}},
               "5": {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":negPrompt}},
               "6": {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["4",0],"negative":["5",0],"latent_image":["3",0],"denoise":1.0,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
-              "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["9",0]}},
+              "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":vaeRef}},
               "8": {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
             };
           }
@@ -1648,7 +1656,10 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
               if (histRes[promptId]) {
                   finished = true;
                   const nodeData = histRes[promptId].outputs;
-                  const filename = nodeData[Object.keys(nodeData)[0]].images[0].filename;
+                  // Find the SaveImage node output — look for any node that has an images array
+                  const saveNode = Object.values(nodeData).find(n => n.images && n.images.length > 0);
+                  if (!saveNode) throw new Error('No image output found in ComfyUI response');
+                  const filename = saveNode.images[0].filename;
                   await fetch('/api/ai/save-image', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },

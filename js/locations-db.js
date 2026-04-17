@@ -2110,6 +2110,7 @@ const WORLD_LOCATIONS = {
             "y": 37.8,
             "region": "",
             "description": "Town",
+            "link": "https://docs.google.com/document/d/1Uow9Y0-_llBAp4meZsA-QEFTmMslbMV_IlgYV3UjNxg/edit?tab=t.0",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",

@@ -490,11 +490,26 @@ const server = http.createServer((req, res) => {
 
                 // Identify key sections
                 const mapSection = sections.find(s => /^(map|city\s*map)$/i.test(s.heading.trim()));
-                const locSection = sections.find(s =>
-                    /notable.?locations?/i.test(s.heading) || 
+                const locSectionIdx = sections.findIndex(s =>
+                    /notable.?locations?/i.test(s.heading) ||
                     /^locations?$/i.test(s.heading.trim()) ||
                     /points? of interest/i.test(s.heading)
                 );
+                const locSection = locSectionIdx !== -1 ? sections[locSectionIdx] : null;
+
+                // If the Notable Locations section itself has no body text, the doc uses headings
+                // per location — collect all sub-section text until the next major section
+                if (locSection && locSection.text.trim().length < 50 && locSectionIdx !== -1) {
+                    const majorSectionKeywords = /^(non-player characters|services provided|approaching|entering|lodging|meals|unique items|npc|overview|history|government|economy|religion|traditions|laws|punishment)$/i;
+                    const subTexts = [];
+                    for (let si = locSectionIdx + 1; si < sections.length; si++) {
+                        const s = sections[si];
+                        if (!majorSectionKeywords.test(s.heading.trim())) {
+                            subTexts.push(s.heading + (s.text ? '\n' + s.text : ''));
+                        }
+                    }
+                    locSection.text = subTexts.join('\n\n');
+                }
 
                 // Source URLs for crest, map, and numbered-locations overlay
                 const crestSrcUrl    = preImages[0] || allImages[0] || null;
@@ -626,7 +641,7 @@ GAZETTEER TEXT:
 ${text}`;
 
                 const https = require('https');
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
                 const aiReqBody = JSON.stringify({
                     contents: [{ parts: [{ text: aiPrompt }] }]
