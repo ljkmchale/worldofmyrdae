@@ -6,1139 +6,239 @@
  */
 const CITY_MAPS = [
   {
-    "id": "tratta",
-    "name": "Tratta",
-    "image": "images/cities/tratta/tratta.png",
-    "previewImage": "images/tratta.jpg",
-    "pins": [
-      {
-        "n": 1,
-        "x": 41.1,
-        "y": 26.2,
-        "name": "The Anchored Spire",
-        "type": "Tavern",
-        "desc": "A well-known tavern and meeting point in the heart of Tratta's upper ring."
-      },
-      {
-        "n": 2,
-        "x": 32.1,
-        "y": 50.9,
-        "name": "SeaRoute Colosseum",
-        "type": "arena",
-        "desc": "Tratta's grand fighting arena. Gladiatorial bouts, beast fights, and spectacle draw crowds from across Yearning Vale."
-      },
-      {
-        "n": 3,
-        "x": 25.5,
-        "y": 72.3,
-        "name": "Torguard Post",
-        "type": "garrison",
-        "desc": "City guard outpost on the western edge of Tratta. Watches the Westpost approaches and the outer gate."
-      },
-      {
-        "n": 4,
-        "x": 52.7,
-        "y": 72.5,
-        "name": "The Majestic",
-        "type": "inn",
-        "desc": "Tratta's finest inn. Lavish rooms, a respected dining hall, and discretion guaranteed for wealthy guests."
-      },
-      {
-        "n": 5,
-        "x": 63.4,
-        "y": 75,
-        "name": "Travane College",
-        "type": "college",
-        "desc": "One of two Travane College campuses in Tratta."
-      },
-      {
-        "n": 6,
-        "x": 76.5,
-        "y": 76.5,
-        "name": "The Reserve (Vault)",
-        "type": "bank",
-        "desc": "Tratta's most secure financial institution. Houses gold reserves, trade bonds, and sealed private vaults."
-      },
-      {
-        "n": 7,
-        "x": 59.1,
-        "y": 28.5,
-        "name": "Lower Warehouse",
-        "type": "warehouse",
-        "desc": "Large storage facility serving the lower dock district."
-      },
-      {
-        "n": 8,
-        "x": 49.2,
-        "y": 39.9,
-        "name": "Slippy Tails",
-        "type": "tavern",
-        "desc": "A rowdy dockside tavern popular with fishermen and sailors off the Lower Docks."
-      },
-      {
-        "n": 9,
-        "x": 44.8,
-        "y": 14.3,
-        "name": "Ye Olde Elderberry",
-        "type": "tavern",
-        "desc": "A venerable drinking establishment in the north ward."
-      },
-      {
-        "n": 10,
-        "x": 39.3,
-        "y": 34,
-        "name": "Sticky Parrot",
-        "type": "tavern",
-        "desc": "Lively tavern in the inner ring."
-      },
-      {
-        "n": 11,
-        "x": 22.7,
-        "y": 45,
-        "name": "SeaRoute Inn",
-        "type": "inn",
-        "desc": "Affordable lodging for traveling merchants following the sea trade routes."
-      },
-      {
-        "n": 12,
-        "x": 47.1,
-        "y": 66.6,
-        "name": "Mahl's Hold",
-        "type": "stronghold",
-        "desc": "A secondary fortified compound belonging to the Mahl dynasty."
-      },
-      {
-        "n": 13,
-        "x": 67.9,
-        "y": 53.1,
-        "name": "Trusty Tankard",
-        "type": "tavern",
-        "desc": "Sailor's tavern on the eastern dock strip."
-      },
-      {
-        "n": 14,
-        "x": 70.6,
-        "y": 83.3,
-        "name": "The Zealous Crew",
-        "type": "tavern",
-        "desc": "Favored by privateers and naval officers alike."
-      },
-      {
-        "n": 15,
-        "x": 52.1,
-        "y": 30.5,
-        "name": "Lower Market",
-        "type": "market",
-        "desc": "The main street market of the lower ring."
-      },
-      {
-        "n": 16,
-        "x": 31.4,
-        "y": 38.1,
-        "name": "Trade Shops",
-        "type": "market",
-        "desc": "A cluster of permanent trade shops near the harbor entry."
-      },
-      {
-        "n": 17,
-        "x": 43.7,
-        "y": 59.2,
-        "name": "Soren's Oddities",
-        "type": "shop",
-        "desc": "A curiosity shop run by the enigmatic Soren."
-      },
-      {
-        "n": 18,
-        "x": 65.7,
-        "y": 59.3,
-        "name": "High Market",
-        "type": "market",
-        "desc": "The upscale market district."
-      },
-      {
-        "n": 19,
-        "x": 68.5,
-        "y": 87.9,
-        "name": "Travane College",
-        "type": "college",
-        "desc": "Second campus of Travane College, southern district."
-      },
-      {
-        "n": 20,
-        "x": 69.2,
-        "y": 38.9,
-        "name": "Broken Sea Pearl",
-        "type": "inn",
-        "desc": "An inn with harbor views."
-      },
-      {
-        "n": 21,
-        "x": 32.4,
-        "y": 31.2,
-        "name": "Shrine of Knowledge",
-        "type": "shrine",
-        "desc": "A small but respected shrine dedicated to the pursuit of knowledge."
-      },
-      {
-        "n": 22,
-        "x": 20.9,
-        "y": 26.3,
-        "name": "Statue of Brault",
-        "type": "landmark",
-        "desc": "A large bronze statue of Brault the Navigator."
-      },
-      {
-        "n": 23,
-        "x": 68.3,
-        "y": 63,
-        "name": "Temple of Tratta",
-        "type": "temple",
-        "desc": "The city's primary temple."
-      },
-      {
-        "n": 24,
-        "x": 40.6,
-        "y": 85.2,
-        "name": "Stables",
-        "type": "stables",
-        "desc": "City stables in the southwest quarter."
-      },
-      {
-        "n": 25,
-        "x": 48,
-        "y": 17.2,
-        "name": "Bathhouse",
-        "type": "bathhouse",
-        "desc": "Public bathhouse in the upper ring."
-      },
-      {
-        "n": 26,
-        "x": 40.7,
-        "y": 76.5,
-        "name": "Triage",
-        "type": "medical",
-        "desc": "A triage and healing station in the lower ring."
-      },
-      {
-        "n": 27,
-        "x": 84.2,
-        "y": 69.2,
-        "name": "Lovely Loft",
-        "type": "brothel",
-        "desc": "Tratta's most notable brothel, near the harbor."
-      }
+    id: "tratta",
+    name: "Tratta",
+    image: "images/cities/tratta/tratta.png",
+    previewImage: "images/tratta.jpg",
+    pins: [
+      { n:  1, x: 41.1, y: 26.2, name: "The Anchored Spire", type: "Tavern", desc: "A well-known tavern and meeting point in the heart of Tratta's upper ring." },
+      { n:  2, x: 32.1, y: 50.9, name: "SeaRoute Colosseum", type: "arena", desc: "Tratta's grand fighting arena. Gladiatorial bouts, beast fights, and spectacle draw crowds from across Yearning Vale." },
+      { n:  3, x: 25.5, y: 72.3, name: "Torguard Post", type: "garrison", desc: "City guard outpost on the western edge of Tratta. Watches the Westpost approaches and the outer gate." },
+      { n:  4, x: 52.7, y: 72.5, name: "The Majestic", type: "inn", desc: "Tratta's finest inn. Lavish rooms, a respected dining hall, and discretion guaranteed for wealthy guests." },
+      { n:  5, x: 63.4, y: 75.0, name: "Travane College", type: "college", desc: "One of two Travane College campuses in Tratta." },
+      { n:  6, x: 76.5, y: 76.5, name: "The Reserve (Vault)", type: "bank", desc: "Tratta's most secure financial institution. Houses gold reserves, trade bonds, and sealed private vaults." },
+      { n:  7, x: 59.1, y: 28.5, name: "Lower Warehouse", type: "warehouse", desc: "Large storage facility serving the lower dock district." },
+      { n:  8, x: 49.2, y: 39.9, name: "Slippy Tails", type: "tavern", desc: "A rowdy dockside tavern popular with fishermen and sailors off the Lower Docks." },
+      { n:  9, x: 44.8, y: 14.3, name: "Ye Olde Elderberry", type: "tavern", desc: "A venerable drinking establishment in the north ward." },
+      { n: 10, x: 39.3, y: 34.0, name: "Sticky Parrot", type: "tavern", desc: "Lively tavern in the inner ring." },
+      { n: 11, x: 22.7, y: 45.0, name: "SeaRoute Inn", type: "inn", desc: "Affordable lodging for traveling merchants following the sea trade routes." },
+      { n: 12, x: 47.1, y: 66.6, name: "Mahl's Hold", type: "stronghold", desc: "A secondary fortified compound belonging to the Mahl dynasty." },
+      { n: 13, x: 67.9, y: 53.1, name: "Trusty Tankard", type: "tavern", desc: "Sailor's tavern on the eastern dock strip." },
+      { n: 14, x: 70.6, y: 83.3, name: "The Zealous Crew", type: "tavern", desc: "Favored by privateers and naval officers alike." },
+      { n: 15, x: 52.1, y: 30.5, name: "Lower Market", type: "market", desc: "The main street market of the lower ring." },
+      { n: 16, x: 31.4, y: 38.1, name: "Trade Shops", type: "market", desc: "A cluster of permanent trade shops near the harbor entry." },
+      { n: 17, x: 43.7, y: 59.2, name: "Soren's Oddities", type: "shop", desc: "A curiosity shop run by the enigmatic Soren." },
+      { n: 18, x: 65.7, y: 59.3, name: "High Market", type: "market", desc: "The upscale market district." },
+      { n: 19, x: 68.5, y: 87.9, name: "Travane College", type: "college", desc: "Second campus of Travane College, southern district." },
+      { n: 20, x: 69.2, y: 38.9, name: "Broken Sea Pearl", type: "inn", desc: "An inn with harbor views." },
+      { n: 21, x: 32.4, y: 31.2, name: "Shrine of Knowledge", type: "shrine", desc: "A small but respected shrine dedicated to the pursuit of knowledge." },
+      { n: 22, x: 20.9, y: 26.3, name: "Statue of Brault", type: "landmark", desc: "A large bronze statue of Brault the Navigator." },
+      { n: 23, x: 68.3, y: 63.0, name: "Temple of Tratta", type: "temple", desc: "The city's primary temple." },
+      { n: 24, x: 40.6, y: 85.2, name: "Stables", type: "stables", desc: "City stables in the southwest quarter." },
+      { n: 25, x: 48.0, y: 17.2, name: "Bathhouse", type: "bathhouse", desc: "Public bathhouse in the upper ring." },
+      { n: 26, x: 40.7, y: 76.5, name: "Triage", type: "medical", desc: "A triage and healing station in the lower ring." },
+      { n: 27, x: 84.2, y: 69.2, name: "Lovely Loft", type: "brothel", desc: "Tratta's most notable brothel, near the harbor." },
     ],
-    "namedLabels": [
-      {
-        "id": "north-gate",
-        "name": "North Gate",
-        "x": 49.5,
-        "y": 3.2,
-        "type": "gate",
-        "desc": "Primary northern entrance to Tratta."
-      },
-      {
-        "id": "westpost",
-        "name": "Westpost",
-        "x": 3.5,
-        "y": 41.5,
-        "type": "district",
-        "desc": "The outer western settlement beyond the walls."
-      },
-      {
-        "id": "lower-docks",
-        "name": "Lower Docks",
-        "x": 54.5,
-        "y": 40.5,
-        "type": "harbor",
-        "desc": "Inner harbor sheltered from the Broken Deep."
-      },
-      {
-        "id": "high-decks",
-        "name": "High Decks",
-        "x": 61.6,
-        "y": 45.5,
-        "type": "harbor",
-        "desc": "Deep-water berths for ocean-going vessels."
-      },
-      {
-        "id": "mahl-palace",
-        "name": "Mahl Palace",
-        "x": 84.2,
-        "y": 53.5,
-        "type": "palace",
-        "desc": "Seat of the Mahl dynasty."
-      },
-      {
-        "id": "high-gate",
-        "name": "High Gate",
-        "x": 60.5,
-        "y": 95.2,
-        "type": "gate",
-        "desc": "Southern gate connecting Tratta to Yearning Vale."
-      },
-      {
-        "id": "broken-deep",
-        "name": "The Broken Deep",
-        "x": 83.5,
-        "y": 19,
-        "type": "sea",
-        "desc": "Treacherous coastal waters east of Tratta."
-      }
-    ]
+    namedLabels: [
+      { id: "north-gate", name: "North Gate", x: 49.5, y: 3.2, type: "gate", desc: "Primary northern entrance to Tratta." },
+      { id: "westpost", name: "Westpost", x: 3.5, y: 41.5, type: "district", desc: "The outer western settlement beyond the walls." },
+      { id: "lower-docks", name: "Lower Docks", x: 54.5, y: 40.5, type: "harbor", desc: "Inner harbor sheltered from the Broken Deep." },
+      { id: "high-decks", name: "High Decks", x: 61.6, y: 45.5, type: "harbor", desc: "Deep-water berths for ocean-going vessels." },
+      { id: "mahl-palace", name: "Mahl Palace", x: 84.2, y: 53.5, type: "palace", desc: "Seat of the Mahl dynasty." },
+      { id: "high-gate", name: "High Gate", x: 60.5, y: 95.2, type: "gate", desc: "Southern gate connecting Tratta to Yearning Vale." },
+      { id: "broken-deep", name: "The Broken Deep", x: 83.5, y: 19.0, type: "sea", desc: "Treacherous coastal waters east of Tratta." },
+    ],
   },
   {
-    "id": "emberstran",
-    "name": "Emberstran",
-    "image": "images/cities/emberstran/emberstran.png",
-    "previewImage": "images/cities/emberstran/emberstran.png",
-    "pins": [
-      {
-        "n": 1,
-        "x": 50,
-        "y": 40,
-        "name": "The Lord's Keep",
-        "type": "keep",
-        "desc": "The seat of power in Emberstran."
-      },
-      {
-        "n": 2,
-        "x": 65,
-        "y": 28,
-        "name": "Imonorra's Tower",
-        "type": "tower",
-        "desc": "A tall tower belonging to the mage Imonorra."
-      },
-      {
-        "n": 3,
-        "x": 78,
-        "y": 42,
-        "name": "Cemetery",
-        "type": "cemetery",
-        "desc": "The city cemetery, maintained by the Temple to Diverra."
-      },
-      {
-        "n": 4,
-        "x": 52,
-        "y": 54,
-        "name": "Market",
-        "type": "market",
-        "desc": "Emberstran's main market square."
-      },
-      {
-        "n": 5,
-        "x": 50,
-        "y": 78,
-        "name": "Docks",
-        "type": "harbor",
-        "desc": "The harbour docks of Emberstran, opening onto the Glimmering Sea."
-      },
-      {
-        "n": 6,
-        "x": 50,
-        "y": 8,
-        "name": "Upper City Gate",
-        "type": "gate",
-        "desc": "The main northern gate into Emberstran's upper city."
-      },
-      {
-        "n": 7,
-        "x": 8,
-        "y": 38,
-        "name": "Western Gate",
-        "type": "gate",
-        "desc": "Western gate leading toward Flatgarde."
-      },
-      {
-        "n": 8,
-        "x": 85,
-        "y": 82,
-        "name": "Southern Gate",
-        "type": "gate",
-        "desc": "Southern gate leading toward Ulgrey."
-      },
-      {
-        "n": 9,
-        "x": 14,
-        "y": 30,
-        "name": "The Dyed Cane",
-        "type": "tavern",
-        "desc": "A lively tavern in the western quarter."
-      },
-      {
-        "n": 10,
-        "x": 22,
-        "y": 46,
-        "name": "The Headless Hydra",
-        "type": "tavern",
-        "desc": "A rough-and-tumble tavern popular with dock workers and sailors."
-      },
-      {
-        "n": 11,
-        "x": 72,
-        "y": 68,
-        "name": "Anchor Point",
-        "type": "tavern",
-        "desc": "A respectable tavern near the eastern docks."
-      },
-      {
-        "n": 12,
-        "x": 60,
-        "y": 46,
-        "name": "The Crimson Swan",
-        "type": "inn",
-        "desc": "Emberstran's finest inn."
-      },
-      {
-        "n": 13,
-        "x": 68,
-        "y": 32,
-        "name": "Old Oak & Grapes",
-        "type": "tavern",
-        "desc": "An old establishment with a large oak tree growing through the roof."
-      },
-      {
-        "n": 14,
-        "x": 44,
-        "y": 64,
-        "name": "Crusty Mug",
-        "type": "tavern",
-        "desc": "A cheap dockside tavern."
-      },
-      {
-        "n": 15,
-        "x": 76,
-        "y": 74,
-        "name": "Warm Bear Inn",
-        "type": "inn",
-        "desc": "A cosy inn in the eastern quarter."
-      },
-      {
-        "n": 16,
-        "x": 18,
-        "y": 54,
-        "name": "Charum's Oils",
-        "type": "shop",
-        "desc": "An apothecary and oil merchant."
-      },
-      {
-        "n": 17,
-        "x": 46,
-        "y": 52,
-        "name": "Points & Edges",
-        "type": "shop",
-        "desc": "A weapons and armour merchant near the market square."
-      },
-      {
-        "n": 18,
-        "x": 46,
-        "y": 72,
-        "name": "The Silver Spaulder",
-        "type": "shop",
-        "desc": "A high-quality armourer's shop near the docks."
-      },
-      {
-        "n": 19,
-        "x": 50,
-        "y": 70,
-        "name": "Raddic's Rarities",
-        "type": "shop",
-        "desc": "A curiosity shop run by the half-elf Raddic."
-      },
-      {
-        "n": 20,
-        "x": 54,
-        "y": 70,
-        "name": "Gems of Emberstran",
-        "type": "shop",
-        "desc": "A jeweller and gem merchant."
-      },
-      {
-        "n": 21,
-        "x": 16,
-        "y": 68,
-        "name": "Lady Luck's Temple",
-        "type": "temple",
-        "desc": "A temple dedicated to Lady Luck."
-      },
-      {
-        "n": 22,
-        "x": 36,
-        "y": 28,
-        "name": "Temple to Diverra",
-        "type": "temple",
-        "desc": "The main temple of Diverra, goddess of the sea and storms."
-      },
-      {
-        "n": 23,
-        "x": 74,
-        "y": 54,
-        "name": "Church to Crael",
-        "type": "temple",
-        "desc": "A small church dedicated to Crael, god of fire and forge."
-      }
+    id: "emberstran",
+    name: "Emberstran",
+    image: "images/cities/emberstran/emberstran.png",
+    previewImage: "images/cities/emberstran/emberstran.png",
+    pins: [
+      { n:  1, x: 50.7, y: 38.0, name: "The Lord's Keep", type: "keep", desc: "The seat of power in Emberstran." },
+      { n:  2, x: 68.6, y: 27.1, name: "Imonorra's Tower", type: "tower", desc: "A tall tower belonging to the mage Imonorra." },
+      { n:  3, x: 78.0, y: 42.0, name: "Cemetery", type: "cemetery", desc: "The city cemetery, maintained by the Temple to Diverra." },
+      { n:  4, x: 50.7, y: 45.8, name: "Market", type: "market", desc: "Emberstran's main market square." },
+      { n:  5, x: 50.9, y: 71.3, name: "Docks", type: "harbor", desc: "The harbour docks of Emberstran, opening onto the Glimmering Sea.", size: 1.2 },
+      { n:  6, x: 50.9, y: 17.6, name: "Upper City Gate", type: "gate", desc: "The main northern gate into Emberstran's upper city.", size: 1.2 },
+      { n:  7, x: 11.0, y: 34.0, name: "Western Gate", type: "gate", desc: "Western gate leading toward Flatgarde." },
+      { n:  8, x: 95.2, y: 74.8, name: "Southern Gate", type: "gate", desc: "Southern gate leading toward Ulgrey.", size: 1.2 },
+      { n:  9, x: 17.6, y: 34.1, name: "The Dyed Cane", type: "tavern", desc: "A lively tavern in the western quarter.", size: 1.1 },
+      { n: 10, x: 22.0, y: 42.8, name: "The Headless Hydra", type: "tavern", desc: "A rough-and-tumble tavern popular with dock workers and sailors.", size: 1.2 },
+      { n: 11, x: 53.5, y: 66.2, name: "Anchor Point", type: "tavern", desc: "A respectable tavern near the eastern docks.", size: 1.1 },
+      { n: 12, x: 63.4, y: 44.4, name: "The Crimson Swan", type: "inn", desc: "Emberstran's finest inn.", size: 1.1 },
+      { n: 13, x: 69.3, y: 34.2, name: "Old Oak & Grapes", type: "tavern", desc: "An old establishment with a large oak tree growing through the roof.", size: 1.2 },
+      { n: 14, x: 78.8, y: 62.1, name: "Crusty Mug", type: "tavern", desc: "A cheap dockside tavern.", size: 1.1 },
+      { n: 15, x: 88.8, y: 67.3, name: "Warm Bear Inn", type: "inn", desc: "A cosy inn in the eastern quarter.", size: 1.2 },
+      { n: 16, x: 14.2, y: 42.8, name: "Charum's Oils", type: "Shop", desc: "An apothecary and oil merchant.", size: 1.2 },
+      { n: 17, x: 45.4, y: 45.9, name: "Points & Edges", type: "shop", desc: "A weapons and armour merchant near the market square.", size: 1.1 },
+      { n: 18, x: 48.1, y: 66.5, name: "The Silver Spaulder", type: "shop", desc: "A high-quality armourer's shop near the docks.", size: 1.1 },
+      { n: 19, x: 51.1, y: 63.2, name: "Raddic's Rarities", type: "shop", desc: "A curiosity shop run by the half-elf Raddic.", size: 1.1 },
+      { n: 20, x: 55.8, y: 46.0, name: "Gems of Emberstran", type: "shop", desc: "A jeweller and gem merchant.", size: 1.2 },
+      { n: 21, x: 20.0, y: 62.3, name: "Lady Luck's Temple", type: "temple", desc: "A temple dedicated to Lady Luck.", size: 1.1 },
+      { n: 22, x: 45.0, y: 25.9, name: "Temple to Diverra", type: "temple", desc: "The main temple of Diverra, goddess of the sea and storms.", size: 1.2 },
+      { n: 23, x: 75.4, y: 46.9, name: "Church to Crael", type: "temple", desc: "A small church dedicated to Crael, god of fire and forge.", size: 1.2 },
     ],
-    "namedLabels": [
-      {
-        "id": "glimmering-sea",
-        "name": "The Glimmering Sea",
-        "x": 40,
-        "y": 92,
-        "type": "sea",
-        "desc": "The sea to the south of Emberstran."
-      },
-      {
-        "id": "to-flatgarde",
-        "name": "To Flatgarde",
-        "x": 2,
-        "y": 38,
-        "type": "direction",
-        "desc": "Road leading west to Flatgarde."
-      },
-      {
-        "id": "to-ulgrey",
-        "name": "To Ulgrey",
-        "x": 90,
-        "y": 84,
-        "type": "direction",
-        "desc": "Road leading south to Ulgrey."
-      }
-    ]
+    namedLabels: [
+      { id: "glimmering-sea", name: "The Glimmering Sea", x: 40.0, y: 92.0, type: "sea", desc: "The sea to the south of Emberstran." },
+      { id: "to-flatgarde", name: "To Flatgarde", x: 2.0, y: 38.0, type: "direction", desc: "Road leading west to Flatgarde." },
+      { id: "to-ulgrey", name: "To Ulgrey", x: 90.0, y: 84.0, type: "direction", desc: "Road leading south to Ulgrey." },
+    ],
   },
   {
-    "id": "nauldeaus",
-    "name": "Nauldeaus",
-    "image": "images/cities/nauldeaus/nauldeaus.png",
-    "previewImage": "images/cities/nauldeaus/nauldeaus.png",
-    "pins": [
-      {
-        "n": 1,
-        "x": 50,
-        "y": 50,
-        "name": "Far Warehouse",
-        "type": "warehouse",
-        "desc": "A large warehouse district on the far edge of the city."
-      },
-      {
-        "n": 2,
-        "x": 50,
-        "y": 50,
-        "name": "Trader's Market",
-        "type": "market",
-        "desc": "The main trading market of Nauldeaus."
-      },
-      {
-        "n": 3,
-        "x": 50,
-        "y": 50,
-        "name": "The Meridian's Seat",
-        "type": "landmark",
-        "desc": "Seat of the city's ruling council."
-      },
-      {
-        "n": 4,
-        "x": 50,
-        "y": 50,
-        "name": "Wave's Edge Vault",
-        "type": "bank",
-        "desc": "The city's primary vault and financial institution."
-      },
-      {
-        "n": 5,
-        "x": 50,
-        "y": 50,
-        "name": "Wave's Edge Theater",
-        "type": "theater",
-        "desc": "The city's main performance theater."
-      },
-      {
-        "n": 6,
-        "x": 50,
-        "y": 50,
-        "name": "Wave's Edge Keep",
-        "type": "keep",
-        "desc": "The fortified keep of Nauldeaus."
-      },
-      {
-        "n": 7,
-        "x": 50,
-        "y": 50,
-        "name": "Wave's Lantern",
-        "type": "landmark",
-        "desc": "A great lighthouse marking the harbor entrance."
-      },
-      {
-        "n": 8,
-        "x": 50,
-        "y": 50,
-        "name": "The Overlook",
-        "type": "landmark",
-        "desc": "A high point with views over the city and sea."
-      },
-      {
-        "n": 9,
-        "x": 50,
-        "y": 50,
-        "name": "Stacked Cask Brewery",
-        "type": "tavern",
-        "desc": "A popular brewery and tavern."
-      },
-      {
-        "n": 10,
-        "x": 50,
-        "y": 50,
-        "name": "The Ship House",
-        "type": "tavern",
-        "desc": "A nautical-themed tavern near the dots."
-      },
-      {
-        "n": 11,
-        "x": 50,
-        "y": 50,
-        "name": "Gabük Brothers",
-        "type": "shop",
-        "desc": "A well-stocked general goods shop run by two brothers."
-      },
-      {
-        "n": 12,
-        "x": 50,
-        "y": 50,
-        "name": "Wave's Edge Novelties",
-        "type": "shop",
-        "desc": "Unusual and imported goods from across the seas."
-      },
-      {
-        "n": 13,
-        "x": 50,
-        "y": 50,
-        "name": "Dren's Worn Anvil",
-        "type": "shop",
-        "desc": "A blacksmith and armorer."
-      },
-      {
-        "n": 14,
-        "x": 50,
-        "y": 50,
-        "name": "Old Hand Outfitter",
-        "type": "shop",
-        "desc": "Outfitting supplies for sailors and travelers."
-      },
-      {
-        "n": 15,
-        "x": 50,
-        "y": 50,
-        "name": "Flask of Fuena",
-        "type": "tavern",
-        "desc": "A tavern named for a local spirit."
-      },
-      {
-        "n": 16,
-        "x": 50,
-        "y": 50,
-        "name": "Dockside",
-        "type": "inn",
-        "desc": "A reliable inn beside the docks."
-      },
-      {
-        "n": 17,
-        "x": 50,
-        "y": 50,
-        "name": "The Bright Pearl",
-        "type": "inn",
-        "desc": "A well-regarded inn in the merchant quarter."
-      },
-      {
-        "n": 18,
-        "x": 50,
-        "y": 50,
-        "name": "Slibberwell",
-        "type": "inn",
-        "desc": "A modest but clean inn."
-      },
-      {
-        "n": 19,
-        "x": 50,
-        "y": 50,
-        "name": "Clam Tarts",
-        "type": "tavern",
-        "desc": "A pub famous for its clam tarts."
-      },
-      {
-        "n": 20,
-        "x": 50,
-        "y": 50,
-        "name": "Broken Oar",
-        "type": "inn",
-        "desc": "A sailors' inn with a broken oar above the door."
-      },
-      {
-        "n": 21,
-        "x": 50,
-        "y": 50,
-        "name": "Shrine to Cembus",
-        "type": "shrine",
-        "desc": "A small shrine to the god Cembus."
-      },
-      {
-        "n": 22,
-        "x": 50,
-        "y": 50,
-        "name": "House of Addan",
-        "type": "landmark",
-        "desc": "The house of the merchant lord Addan."
-      },
-      {
-        "n": 23,
-        "x": 50,
-        "y": 50,
-        "name": "The Sanctum",
-        "type": "temple",
-        "desc": "A multi-faith sanctum open to all worshippers."
-      },
-      {
-        "n": 24,
-        "x": 50,
-        "y": 50,
-        "name": "Shrine of Knowledge",
-        "type": "shrine",
-        "desc": "A shrine dedicated to learning and knowledge."
-      },
-      {
-        "n": 25,
-        "x": 50,
-        "y": 50,
-        "name": "Coralei's Temple",
-        "type": "temple",
-        "desc": "Temple to Coralei, goddess of the deep."
-      },
-      {
-        "n": 26,
-        "x": 50,
-        "y": 50,
-        "name": "Stables",
-        "type": "stables",
-        "desc": "City stables."
-      },
-      {
-        "n": 27,
-        "x": 50,
-        "y": 50,
-        "name": "Bathhouse",
-        "type": "bathhouse",
-        "desc": "Public bathhouse."
-      },
-      {
-        "n": 28,
-        "x": 50,
-        "y": 50,
-        "name": "Triage",
-        "type": "medical",
-        "desc": "A triage and healing station."
-      }
+    id: "nauldeaus",
+    name: "Nauldeaus",
+    image: "images/cities/nauldeaus/nauldeaus.png",
+    previewImage: "images/cities/nauldeaus/nauldeaus.png",
+    pins: [
+      { n:  1, x: 10.0, y: 50.0, name: "Far Warehouse", type: "warehouse", desc: "A large warehouse district on the far edge of the city." },
+      { n:  2, x: 20.0, y: 50.0, name: "Trader's Market", type: "market", desc: "The main trading market of Nauldeaus." },
+      { n:  3, x: 30.0, y: 50.0, name: "The Meridian's Seat", type: "landmark", desc: "Seat of the city's ruling council." },
+      { n:  4, x: 40.0, y: 50.0, name: "Wave's Edge Vault", type: "bank", desc: "The city's primary vault and financial institution." },
+      { n:  5, x: 50.0, y: 50.0, name: "Wave's Edge Theater", type: "theater", desc: "The city's main performance theater." },
+      { n:  6, x: 50.0, y: 50.0, name: "Wave's Edge Keep", type: "keep", desc: "The fortified keep of Nauldeaus." },
+      { n:  7, x: 60.0, y: 50.0, name: "Wave's Lantern", type: "landmark", desc: "A great lighthouse marking the harbor entrance." },
+      { n:  8, x: 70.0, y: 50.0, name: "The Overlook", type: "landmark", desc: "A high point with views over the city and sea." },
+      { n:  9, x: 80.0, y: 50.0, name: "Stacked Cask Brewery", type: "tavern", desc: "A popular brewery and tavern." },
+      { n: 10, x: 90.0, y: 50.0, name: "The Ship House", type: "tavern", desc: "A nautical-themed tavern near the dots." },
+      { n: 11, x: 50.0, y: 10.0, name: "Gabük Brothers", type: "shop", desc: "A well-stocked general goods shop run by two brothers." },
+      { n: 12, x: 50.0, y: 20.0, name: "Wave's Edge Novelties", type: "shop", desc: "Unusual and imported goods from across the seas." },
+      { n: 13, x: 50.0, y: 30.0, name: "Dren's Worn Anvil", type: "shop", desc: "A blacksmith and armorer." },
+      { n: 14, x: 50.0, y: 40.0, name: "Old Hand Outfitter", type: "shop", desc: "Outfitting supplies for sailors and travelers." },
+      { n: 15, x: 50.0, y: 50.0, name: "Flask of Fuena", type: "tavern", desc: "A tavern named for a local spirit." },
+      { n: 16, x: 50.0, y: 60.0, name: "Dockside", type: "inn", desc: "A reliable inn beside the docks." },
+      { n: 17, x: 50.0, y: 70.0, name: "The Bright Pearl", type: "inn", desc: "A well-regarded inn in the merchant quarter." },
+      { n: 18, x: 50.0, y: 80.0, name: "Slibberwell", type: "inn", desc: "A modest but clean inn." },
+      { n: 19, x: 50.0, y: 90.0, name: "Clam Tarts", type: "tavern", desc: "A pub famous for its clam tarts." },
+      { n: 20, x: 59.0, y: 50.0, name: "Broken Oar", type: "inn", desc: "A sailors' inn with a broken oar above the door." },
+      { n: 21, x: 58.0, y: 50.0, name: "Shrine to Cembus", type: "shrine", desc: "A small shrine to the god Cembus." },
+      { n: 22, x: 57.0, y: 50.0, name: "House of Addan", type: "landmark", desc: "The house of the merchant lord Addan." },
+      { n: 23, x: 56.0, y: 50.0, name: "The Sanctum", type: "temple", desc: "A multi-faith sanctum open to all worshippers." },
+      { n: 24, x: 55.0, y: 50.0, name: "Shrine of Knowledge", type: "shrine", desc: "A shrine dedicated to learning and knowledge." },
+      { n: 25, x: 54.0, y: 50.0, name: "Coralei's Temple", type: "temple", desc: "Temple to Coralei, goddess of the deep." },
+      { n: 26, x: 530.0, y: 50.0, name: "Stables", type: "stables", desc: "City stables." },
+      { n: 27, x: 52.0, y: 50.0, name: "Bathhouse", type: "bathhouse", desc: "Public bathhouse." },
+      { n: 28, x: 51.0, y: 50.0, name: "Triage", type: "medical", desc: "A triage and healing station." },
     ],
-    "namedLabels": []
+    namedLabels: [
+
+    ],
   },
   {
-    "id": "adsuren",
-    "name": "Adsuren",
-    "image": "images/cities/adsuren/adsuren.png",
-    "previewImage": "images/cities/adsuren/adsuren.png",
-    "pins": [
-      {
-        "n": 1,
-        "x": 50,
-        "y": 50,
-        "name": "The Graying Grotto",
-        "type": "tavern",
-        "desc": "A cave-adjacent tavern with a distinctive grey stone interior."
-      },
-      {
-        "n": 2,
-        "x": 50,
-        "y": 50,
-        "name": "Adsuren Stables",
-        "type": "stables",
-        "desc": "The main stables of Adsuren."
-      },
-      {
-        "n": 3,
-        "x": 50,
-        "y": 50,
-        "name": "Mage Tower",
-        "type": "tower",
-        "desc": "A tower occupied by a local mage."
-      },
-      {
-        "n": 4,
-        "x": 50,
-        "y": 50,
-        "name": "Ethea's Stone",
-        "type": "landmark",
-        "desc": "A standing stone said to mark the founding of Adsuren."
-      },
-      {
-        "n": 5,
-        "x": 50,
-        "y": 50,
-        "name": "Tanner",
-        "type": "shop",
-        "desc": "A tannery and leather goods shop."
-      },
-      {
-        "n": 6,
-        "x": 50,
-        "y": 50,
-        "name": "The Rugged Rooster",
-        "type": "tavern",
-        "desc": "A rustic tavern popular with locals."
-      },
-      {
-        "n": 7,
-        "x": 50,
-        "y": 50,
-        "name": "The Falling Fish",
-        "type": "tavern",
-        "desc": "A riverside tavern."
-      },
-      {
-        "n": 8,
-        "x": 50,
-        "y": 50,
-        "name": "Spider's Silk",
-        "type": "shop",
-        "desc": "A textile and weaving shop."
-      },
-      {
-        "n": 9,
-        "x": 50,
-        "y": 50,
-        "name": "Guard Post",
-        "type": "garrison",
-        "desc": "The town guard post."
-      },
-      {
-        "n": 10,
-        "x": 50,
-        "y": 50,
-        "name": "Adsuren Center",
-        "type": "landmark",
-        "desc": "The central square of Adsuren."
-      },
-      {
-        "n": 11,
-        "x": 50,
-        "y": 50,
-        "name": "Intendant's House",
-        "type": "landmark",
-        "desc": "Home of the town intendant."
-      },
-      {
-        "n": 12,
-        "x": 50,
-        "y": 50,
-        "name": "Nature's Oratory",
-        "type": "temple",
-        "desc": "An open-air temple dedicated to nature."
-      }
+    id: "adsuren",
+    name: "Adsuren",
+    image: "images/cities/adsuren/adsuren.png",
+    previewImage: "images/cities/adsuren/adsuren.png",
+    pins: [
+      { n:  1, x: 26.3, y: 27.9, name: "The Graying Grotto", type: "tavern", desc: "A cave-adjacent tavern with a distinctive grey stone interior.", size: 1.4 },
+      { n:  2, x: 45.2, y: 26.5, name: "Adsuren Stables", type: "stables", desc: "The main stables of Adsuren.", size: 1.4 },
+      { n:  3, x: 63.4, y: 8.5, name: "Mage Tower", type: "tower", desc: "A tower occupied by a local mage.", size: 1.4 },
+      { n:  4, x: 70.7, y: 29.2, name: "Ethea's Stone", type: "landmark", desc: "A standing stone said to mark the founding of Adsuren.", size: 1.4 },
+      { n:  5, x: 81.1, y: 16.5, name: "Tanner", type: "shop", desc: "A tannery and leather goods shop.", size: 1.4 },
+      { n:  6, x: 81.7, y: 38.1, name: "The Rugged Rooster", type: "tavern", desc: "A rustic tavern popular with locals.", size: 1.4 },
+      { n:  7, x: 73.8, y: 54.0, name: "The Falling Fish", type: "tavern", desc: "A riverside tavern.", size: 1.4 },
+      { n:  8, x: 58.6, y: 66.9, name: "Spider's Silk", type: "shop", desc: "A textile and weaving shop.", size: 1.4 },
+      { n:  9, x: 48.4, y: 55.3, name: "Guard Post", type: "garrison", desc: "The town guard post.", size: 1.4 },
+      { n: 10, x: 47.4, y: 66.5, name: "Adsuren Center", type: "landmark", desc: "The central square of Adsuren.", size: 1.4 },
+      { n: 11, x: 58.5, y: 87.6, name: "Intendant's House", type: "landmark", desc: "Home of the town intendant.", size: 1.4 },
+      { n: 12, x: 14.6, y: 83.2, name: "Nature's Oratory", type: "temple", desc: "An open-air temple dedicated to nature.", size: 1.4 },
     ],
-    "namedLabels": [
-      {
-        "id": "docks",
-        "name": "Docks",
-        "x": 50,
-        "y": 85,
-        "type": "harbor",
-        "desc": "The docks of Adsuren."
-      },
-      {
-        "id": "market",
-        "name": "Market",
-        "x": 50,
-        "y": 40,
-        "type": "market",
-        "desc": "The main market area."
-      }
-    ]
+    namedLabels: [
+      { id: "docks", name: "Docks", x: 90.2, y: 50.0, type: "harbor", desc: "The docks of Adsuren.", size: 1.4 },
+      { id: "market", name: "Market", x: 27.2, y: 62.0, type: "market", desc: "The main market area." },
+    ],
   },
   {
-    "id": "onaren",
-    "name": "Onaren",
-    "image": "images/cities/onaren/onaren.png",
-    "previewImage": "images/cities/onaren/onaren.png",
-    "pins": [
-      {
-        "n": 1,
-        "x": 30,
-        "y": 25.9,
-        "name": "Evonstride Stables",
-        "type": "Stables",
-        "desc": "The Evonstride Stables serve as the primary care facility for horses and mounts in O'naren. Attached to the Evonstride family home, the stables are well-maintained, with intricately carved wooden walls supported by sturdy stone columns.",
-        "size": 1.4
-      },
-      {
-        "n": 2,
-        "x": 42.3,
-        "y": 23.7,
-        "name": "The Overlook",
-        "type": "Overlook",
-        "desc": "The Overlook in O'naren is a tall, round stone tower situated on the northwestern edge of Driftglow Pond, serving as both a vantage point for the Realmwardens and a communal hub for travelers and merchants.",
-        "size": 1.4
-      },
-      {
-        "n": 3,
-        "x": 72.2,
-        "y": 20.7,
-        "name": "Temple of Tranquility",
-        "type": "Temple",
-        "desc": "The Temple of Tranquility is one of the largest and most revered structures in O'naren, standing on a terrace overlooking the northeastern side of town. It is built from smooth stone with intricate floral carvings.",
-        "size": 1.4
-      },
-      {
-        "n": 4,
-        "x": 88.5,
-        "y": 23.8,
-        "name": "Nestling Soar",
-        "type": "Inn",
-        "desc": "The Nestling Soar is a well-kept elven inn situated on the upper terrace of northeast O'naren, offering travelers a quiet and comfortable place to stay.",
-        "size": 1.4
-      },
-      {
-        "n": 5,
-        "x": 90.3,
-        "y": 39.8,
-        "name": "Truffle Trap, The",
-        "type": "poi",
-        "desc": "The Truffle Trap is the main tavern in O'naren, sitting adjacent to the Nestling Soar on the upper terrace. A four-story circular tower extends from its right side, giving the establishment a unique architectural touch.",
-        "size": 1.4
-      },
-      {
-        "n": 6,
-        "x": 89,
-        "y": 47.1,
-        "name": "Hall of O'naren",
-        "type": "poi",
-        "desc": "The Hall of O'naren serves as the center of governance for the town and the seat of Lord Itham Elle'neros.",
-        "size": 1.4
-      },
-      {
-        "n": 7,
-        "x": 72.6,
-        "y": 70.6,
-        "name": "Commons Area",
-        "type": "poi",
-        "desc": "The Commons Area is a tranquil clearing on the first terrace in the southeastern part of O'naren. At its center stands a large stone gazebo with a clear view of the cascading falls that feed the Driftglow pond.",
-        "size": 1.4
-      },
-      {
-        "n": 8,
-        "x": 62.3,
-        "y": 80.1,
-        "name": "Purposeful Poise",
-        "type": "Shop",
-        "desc": "The stylist's parlor in O'naren is an elegant establishment catering to those who seek refinement and personal grooming.",
-        "size": 1.4
-      },
-      {
-        "n": 9,
-        "x": 55.5,
-        "y": 83.2,
-        "name": "Pieces of Ra'lorn",
-        "type": "Tailor",
-        "desc": "The tailor's shop is an elegant establishment catering primarily to elven fashion, known for its expertise in elven garments.",
-        "size": 1.4
-      },
-      {
-        "n": 10,
-        "x": 87,
-        "y": 85.9,
-        "name": "Oracle",
-        "type": "Seer",
-        "desc": "The Oracle, Zanasee Tsal'daree, is known as the Weavereader, a magic user with deep ties in the Tegenwald Phet. A circular two-story structure on the upper terrace of O'naren.",
-        "size": 1.4
-      },
-      {
-        "n": 11,
-        "x": 44.3,
-        "y": 90.4,
-        "name": "Fletcher / Tannery",
-        "type": "Tannery",
-        "desc": "Two well-maintained stone buildings dedicated to the needs of hunters and woodsmen. The Fletcher is a workshop where bows and arrows are skillfully crafted.",
-        "size": 1.4
-      },
-      {
-        "n": 12,
-        "x": 32.9,
-        "y": 88.4,
-        "name": "Vocehna's Gallery",
-        "type": "poi",
-        "desc": "Vocehna Maepholaer's art gallery is on the upper terrace of O'naren, housed in a square, single-story building with smooth carved stone walls rising to a 20-foot ceiling.",
-        "size": 1.4
-      },
-      {
-        "n": 13,
-        "x": 30.9,
-        "y": 75.4,
-        "name": "Ore Masters",
-        "type": "poi",
-        "desc": "The Ore Masters is the collective name for three connected buildings operated by the Tu'osaar siblings, housing an armorsmith, a jeweler, and a weaponsmith.",
-        "size": 1.4
-      },
-      {
-        "n": 14,
-        "x": 23.9,
-        "y": 62.5,
-        "name": "Mines",
-        "type": "mines",
-        "desc": "The mines of O'naren are located on the southwest side of town, where a cave entrance opens into the rocky foothills.",
-        "size": 1.4
-      },
-      {
-        "n": 15,
-        "x": 25.2,
-        "y": 45.8,
-        "name": "Welthas' Market",
-        "type": "Store",
-        "desc": "The general store in O'naren is a two-story structure, well-stocked with essentials such as rations, travel gear, simple tools, and common goods.",
-        "size": 1.4
-      }
+    id: "onaren",
+    name: "Onaren",
+    image: "images/cities/onaren/onaren.png",
+    previewImage: "images/cities/onaren/onaren.png",
+    pins: [
+      { n:  1, x: 30.0, y: 25.9, name: "Evonstride Stables", type: "Stables", desc: "The Evonstride Stables serve as the primary care facility for horses and mounts in O'naren. Attached to the Evonstride family home, the stables are well-maintained, with intricately carved wooden walls supported by sturdy stone columns.", size: 1.4 },
+      { n:  2, x: 42.3, y: 23.7, name: "The Overlook", type: "Overlook", desc: "The Overlook in O'naren is a tall, round stone tower situated on the northwestern edge of Driftglow Pond, serving as both a vantage point for the Realmwardens and a communal hub for travelers and merchants.", size: 1.4 },
+      { n:  3, x: 72.2, y: 20.7, name: "Temple of Tranquility", type: "Temple", desc: "The Temple of Tranquility is one of the largest and most revered structures in O'naren, standing on a terrace overlooking the northeastern side of town. It is built from smooth stone with intricate floral carvings.", size: 1.4 },
+      { n:  4, x: 88.5, y: 23.8, name: "Nestling Soar", type: "Inn", desc: "The Nestling Soar is a well-kept elven inn situated on the upper terrace of northeast O'naren, offering travelers a quiet and comfortable place to stay.", size: 1.4 },
+      { n:  5, x: 90.3, y: 39.8, name: "Truffle Trap, The", type: "poi", desc: "The Truffle Trap is the main tavern in O'naren, sitting adjacent to the Nestling Soar on the upper terrace. A four-story circular tower extends from its right side, giving the establishment a unique architectural touch.", size: 1.4 },
+      { n:  6, x: 89.0, y: 47.1, name: "Hall of O'naren", type: "poi", desc: "The Hall of O'naren serves as the center of governance for the town and the seat of Lord Itham Elle'neros.", size: 1.4 },
+      { n:  7, x: 72.6, y: 70.6, name: "Commons Area", type: "poi", desc: "The Commons Area is a tranquil clearing on the first terrace in the southeastern part of O'naren. At its center stands a large stone gazebo with a clear view of the cascading falls that feed the Driftglow pond.", size: 1.4 },
+      { n:  8, x: 62.3, y: 80.1, name: "Purposeful Poise", type: "Shop", desc: "The stylist's parlor in O'naren is an elegant establishment catering to those who seek refinement and personal grooming.", size: 1.4 },
+      { n:  9, x: 55.5, y: 83.2, name: "Pieces of Ra'lorn", type: "Tailor", desc: "The tailor's shop is an elegant establishment catering primarily to elven fashion, known for its expertise in elven garments.", size: 1.4 },
+      { n: 10, x: 87.0, y: 85.9, name: "Oracle", type: "Seer", desc: "The Oracle, Zanasee Tsal'daree, is known as the Weavereader, a magic user with deep ties in the Tegenwald Phet. A circular two-story structure on the upper terrace of O'naren.", size: 1.4 },
+      { n: 11, x: 44.3, y: 90.4, name: "Fletcher / Tannery", type: "Tannery", desc: "Two well-maintained stone buildings dedicated to the needs of hunters and woodsmen. The Fletcher is a workshop where bows and arrows are skillfully crafted.", size: 1.4 },
+      { n: 12, x: 32.9, y: 88.4, name: "Vocehna's Gallery", type: "poi", desc: "Vocehna Maepholaer's art gallery is on the upper terrace of O'naren, housed in a square, single-story building with smooth carved stone walls rising to a 20-foot ceiling.", size: 1.4 },
+      { n: 13, x: 30.9, y: 75.4, name: "Ore Masters", type: "poi", desc: "The Ore Masters is the collective name for three connected buildings operated by the Tu'osaar siblings, housing an armorsmith, a jeweler, and a weaponsmith.", size: 1.4 },
+      { n: 14, x: 23.9, y: 62.5, name: "Mines", type: "mines", desc: "The mines of O'naren are located on the southwest side of town, where a cave entrance opens into the rocky foothills.", size: 1.4 },
+      { n: 15, x: 25.2, y: 45.8, name: "Welthas' Market", type: "Store", desc: "The general store in O'naren is a two-story structure, well-stocked with essentials such as rations, travel gear, simple tools, and common goods.", size: 1.4 },
     ],
-    "namedLabels": []
+    namedLabels: [
+
+    ],
   },
   {
-    "id": "scarwatch-hold",
-    "name": "Scarwatch Hold",
-    "image": "images/cities/scarwatch-hold/scarwatch-hold.png",
-    "previewImage": "images/cities/scarwatch-hold/scarwatch-hold.png",
-    "pins": [
-      {
-        "n": 1,
-        "name": "Outer Gatehouse",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 2,
-        "name": "Barn & Stables",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 3,
-        "name": "Private Apartments",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 4,
-        "name": "Smithy",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 5,
-        "name": "Ilho's Gems",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 6,
-        "name": "General Goods",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 7,
-        "name": "Merchantile",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 8,
-        "name": "Bank",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 9,
-        "name": "Trader's Market",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 10,
-        "name": "The Hoot & Howl Tavern",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 11,
-        "name": "Sanctuary",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 12,
-        "name": "Watchtower Inn",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 13,
-        "name": "Scarwatch House",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 14,
-        "name": "Inner Gatehouse",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 15,
-        "name": "Palisades",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      },
-      {
-        "n": 16,
-        "name": "Citadel",
-        "desc": "",
-        "x": 50,
-        "y": 50,
-        "type": "poi"
-      }
+    id: "scarwatch-hold",
+    name: "Scarwatch Hold",
+    image: "images/cities/scarwatch-hold/scarwatch-hold.png",
+    previewImage: "images/cities/scarwatch-hold/scarwatch-hold.png",
+    pins: [
+      { n:  1, x: 43.2, y: 73.4, name: "Outer Gatehouse", type: "Gate", desc: "This gatehouse is the first stop for those seeking to enter the Scarwatch Hold. The guards here greet outsiders, watch for potential threats, and permit entrance to citizens and peaceful visitors.", size: 1.4 },
+      { n:  2, x: 52.6, y: 62.0, name: "Barn & Stables", type: "poi", desc: "The Barn & Stables shelter the Hold’s livestock. It also serves merchants and travelers who need a place to shelter their mounts and wagons while visiting the Hold. Animals housed here receive a box stall or pen, food, and grooming.  Animals are well taken care of in this clean, roomy location.", size: 1.4 },
+      { n:  3, x: 20.6, y: 59.0, name: "Private Apartments", type: "House", desc: "Folks live here", size: 1.4 },
+      { n:  4, x: 31.7, y: 57.5, name: "Smithy", type: "Smithy", desc: "Sells and crafts metal tools, armor, equipment and weapons.", size: 1.4 },
+      { n:  5, x: 31.6, y: 52.0, name: "Ilho's Gems", type: "Shop", desc: "Jewelry and Gems are sold here", size: 1.4 },
+      { n:  6, x: 31.4, y: 46.3, name: "General Goods", type: "poi", desc: "", size: 1.4 },
+      { n:  7, x: 31.0, y: 37.5, name: "Merchantile", type: "poi", desc: "", size: 1.4 },
+      { n:  8, x: 19.8, y: 36.0, name: "Bank", type: "poi", desc: "The Hold’s residents and visitors store their most valuable belongings and savings in the bank.  This bank is not part of the Realm Depository & Exchange System that exists in other locations in Myrdae.  The bank relies on the Hold’s soldiers for protection.  Guards rotate shifts here each harmon, but most don’t want this assignment because there isn’t much to do.\n", size: 1.4 },
+      { n:  9, x: 29.4, y: 27.9, name: "Trader's Market", type: "Market", desc: "You can find basic supplies, groceries and various goods here.", size: 1.4 },
+      { n: 10, x: 41.9, y: 19.6, name: "The Hoot & Howl Tavern", type: "Tavern", desc: "The food served here ", size: 1.4 },
+      { n: 11, x: 51.4, y: 24.2, name: "Sanctuary", type: "poi", desc: "", size: 1.4 },
+      { n: 12, x: 41.9, y: 30.7, name: "Watchtower Inn", type: "Inn", desc: "Can find lodging here", size: 1.4 },
+      { n: 13, x: 44.7, y: 47.2, name: "Scarwatch House", type: "poi", desc: "", size: 1.4 },
+      { n: 14, x: 57.3, y: 43.5, name: "Inner Gatehouse", type: "Gate", desc: "This gatehouse houses on-duty soldiers and separates the civilian areas of the Hold from the Palisades and Citadel.", size: 1.4 },
+      { n: 15, x: 72.1, y: 42.1, name: "Palisades", type: "POI", desc: "The sheltered palisades are where the Hold’s defenders live and practice combat drills.", size: 1.4 },
+      { n: 16, x: 86.4, y: 43.5, name: "Citadel", type: "poi", desc: "The Warden governs the Hold from its Citadel, a stone stronghold solidly built to withstand assault. Multiple towers rise above the main building, which is 30 feet tall. The citadel shelters emergency resources, municipal chambers, and the Hold’s armed forces. Militaristic banners and upholstered furniture decorate its dignified interior.", size: 1.4 },
+      { n: 17, x: 74.7, y: 24.3, name: "Performance/Jousting Field", type: "poi", desc: "This area serves as a training ground most days, but also houses tournaments that generally take place each harmon. ", size: 1.4 },
     ],
-    "namedLabels": []
-  }
+    namedLabels: [
+
+    ],
+  },
+  {
+    id: "basctdelm",
+    name: "basctdelm",
+    image: "images/cities/basctdelm/basctdelm.png",
+    previewImage: "images/cities/basctdelm/basctdelm.PNG",
+    pins: [
+      { n:  1, x: 10.8, y: 18.5, name: "Talward Keep", type: "Keep", desc: "", size: 1.4 },
+      { n:  2, x: 14.5, y: 35.7, name: "House of Myr", type: "House", desc: "", size: 1.4 },
+      { n:  3, x: 26.0, y: 19.9, name: "Talward Garrison", type: "Garrison", desc: "", size: 1.4 },
+      { n:  4, x: 26.8, y: 37.6, name: "The Queen’s Gate", type: "Gate", desc: "" },
+      { n:  5, x: 21.6, y: 50.0, name: "Greenscape Park", type: "Park", desc: "" },
+      { n:  6, x: 31.1, y: 48.1, name: "Vault of Basctdelm", type: "Vault", desc: "" },
+      { n:  7, x: 50.0, y: 50.0, name: "Trader’s Market", type: "poi", desc: "" },
+      { n:  8, x: 50.0, y: 50.0, name: "The Beacon", type: "poi", desc: "" },
+      { n:  9, x: 50.0, y: 50.0, name: "Dripping Dagger Tavern", type: "poi", desc: "" },
+      { n: 10, x: 50.0, y: 50.0, name: "Last Prince Inn", type: "poi", desc: "" },
+      { n: 11, x: 50.0, y: 50.0, name: "Grey Fiddle Inn", type: "poi", desc: "" },
+      { n: 12, x: 50.0, y: 50.0, name: "Haystack Inn", type: "poi", desc: "" },
+      { n: 13, x: 50.0, y: 50.0, name: "The Waiting Ship Inn", type: "poi", desc: "" },
+      { n: 14, x: 50.0, y: 50.0, name: "Double Mice Inn", type: "poi", desc: "" },
+      { n: 15, x: 50.0, y: 50.0, name: "Ye Little Giant Tavern", type: "poi", desc: "" },
+      { n: 16, x: 50.0, y: 50.0, name: "Plethora of Possibilities", type: "poi", desc: "" },
+      { n: 17, x: 50.0, y: 50.0, name: "Monbereth’s Armory", type: "poi", desc: "" },
+      { n: 18, x: 50.0, y: 50.0, name: "Strongbow", type: "poi", desc: "" },
+      { n: 19, x: 50.0, y: 50.0, name: "Mindful Mix", type: "poi", desc: "" },
+      { n: 20, x: 50.0, y: 50.0, name: "Seems So", type: "poi", desc: "" },
+      { n: 21, x: 50.0, y: 50.0, name: "Flawless Crafts", type: "poi", desc: "" },
+      { n: 22, x: 50.0, y: 50.0, name: "Meadow of the Morning Sun", type: "poi", desc: "" },
+      { n: 23, x: 50.0, y: 50.0, name: "Temple of Tiash", type: "poi", desc: "" },
+      { n: 24, x: 50.0, y: 50.0, name: "Shrine to Addan", type: "poi", desc: "" },
+      { n: 25, x: 50.0, y: 50.0, name: "Braethyn’s Archives", type: "Library", desc: "The Braethyn’s Archives is the largest library in Basctdelm, comprised of:\nan Admittance Area where visitors are cleared before access to the library, \nthe Main Library where all of the books and scrolls are organized, \nthe Preserved Collection which is the restricted fourth floor where the most valuable archives are stored, and \nthe Undercroft where miscellaneous parchments are used to create the tomes and scrolls of the library. \n" },
+      { n: 26, x: 50.0, y: 50.0, name: "One for Everyone", type: "poi", desc: "" },
+      { n: 27, x: 50.0, y: 50.0, name: "The Promissory", type: "poi", desc: "" },
+      { n: 28, x: 50.0, y: 50.0, name: "Fragrant Plunge", type: "poi", desc: "" },
+    ],
+    namedLabels: [
+
+    ],
+  },
 ];

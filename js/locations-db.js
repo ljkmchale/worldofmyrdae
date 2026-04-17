@@ -2013,7 +2013,7 @@ const WORLD_LOCATIONS = {
             "y": 31.66,
             "region": "Halesworth",
             "description": "Basctdelm is the capital of Halesworth and the seat of imperial authority for the Bathaen Empire, rising from a massive island anchored along the eastern edge of Lake Tribathe. Securely separated from the mainland by water on all sides save two controlled crossings, the city was shaped first for defense and governance, and only secondarily for trade. Its isolation is intentional—Basctdelm is not a crossroads, but a stronghold.",
-            "cityMap": "basctdelm-city-map",
+            "cityMap": "city-viewer.html?city=basctdelm",
             "link": "https://docs.google.com/document/d/1kaDz6BPYRFUbRPyZefm41tVdlCHEUBqiZkgKtnDw1qk/edit?tab=t.0",
             "fontFamily": "Simonetta",
             "fontSize": 16,
