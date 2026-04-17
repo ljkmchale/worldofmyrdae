@@ -220,7 +220,7 @@ const CITY_MAPS = [
     id: "basctdelm",
     name: "basctdelm",
     image: "images/cities/basctdelm/basctdelm.png",
-    previewImage: "images/cities/basctdelm/basctdelm.PNG",
+    previewImage: "images/cities/basctdelm/basctdelm.png",
     pins: [
       { n:  1, x: 10.8, y: 18.5, name: "Talward Keep", type: "Keep", desc: "" },
       { n:  2, x: 14.5, y: 35.7, name: "House of Myr", type: "House", desc: "" },
@@ -275,18 +275,6 @@ const CITY_MAPS = [
       { n: 12, x: 77.4, y: 43.7, name: "Night’s Favor", type: "oratory", desc: "The Night's Favor is an oratory dedicated to Phoe, the Hooded Lady, and Sylunara, the Evening Radiance.  The stone and Shadewood structure, adorned with subtle carvings representing phases of the moons and cloaked figures, hints at the secretive and transformative nature of its deities.\n" },
       { n: 13, x: 74.5, y: 52.5, name: "Fiard’s Arms & Armor", type: "Smithy", desc: "Fiard’s Arms & Armory is the go-to location for weapons and armor in Shademoor, catering to locals, travelers, and adventurers alike. The stone shop is divided into two sections: the circular front room, which serves as the display and sales area, and the rectangular forge at the rear, where Fiard works tirelessly. \n" },
       { n: 14, x: 71.2, y: 74.7, name: "Pirli’s Stalls", type: "stables", desc: "Pirli’s Stalls is the main stable in Shademoor, located just outside of town square behind the blacksmith. The operation is run by Pirli Sinton, a kind and hard-working widow, with the help of her daughter, Layla, and a quiet but skilled half-orc named Trum. The stables are built from light oak wood and are large enough to house a dozen horses comfortably. The facility includes individual stalls, a small tack room, and a spacious loft where Trum resides. The stable yard is well-maintained, with plenty of space for horses to exercise and graze.\n" },
-    ],
-    namedLabels: [
-
-    ],
-  },
-  {
-    id: "abbey of light",
-    name: "Abbey of light",
-    image: "images/cities/abbey of light/abbey of light.png",
-    previewImage: "images/cities/abbey of light/abbey of light.png",
-    pins: [
-
     ],
     namedLabels: [
 
