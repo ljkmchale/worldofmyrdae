@@ -656,6 +656,9 @@
       container.addEventListener('mouseup', (e) => {
         if (isDraggingMap) return; // Ignore drag end
 
+        // Don't add a new pin if the user was dragging or clicking an existing city pin
+        if (CityEditor.isActive() && e.target.closest('.city-pin')) return;
+
         // Check if click was on a location marker (for roads tab)
         if (Editor.state && Editor.state.tab === 'roads') {
           const clickedMarker = e.target.closest('.marker-group');
@@ -1609,15 +1612,15 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
             defaultWorkflow = {
               ...vaeNode,
               "1":  {"class_type":"LoadImage","inputs":{"image":sketchFilename}},
-              "1r": {"class_type":"ImageScale","inputs":{"image":["1",0],"upscale_method":"lanczos","width":1024,"height":1024,"crop":"disabled"}},
+              "12": {"class_type":"ImageScale","inputs":{"image":["1",0],"upscale_method":"lanczos","width":1024,"height":1024,"crop":"disabled"}},
               "2":  {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":modelName}},
-              "3":  {"class_type":"VAEEncode","inputs":{"pixels":["1r",0],"vae":vaeRef}},
+              "3":  {"class_type":"VAEEncode","inputs":{"pixels":["12",0],"vae":vaeRef}},
               "4":  {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":prompt}},
               "5":  {"class_type":"CLIPTextEncode","inputs":{"clip":["2",1],"text":negPrompt}},
               "10": {"class_type":"ControlNetLoader","inputs":{"control_net_name":"control_v11f1e_sd15_tile.pth"}},
               "11": {"class_type":"ControlNetApplyAdvanced","inputs":{
                       "positive":["4",0],"negative":["5",0],
-                      "control_net":["10",0],"image":["1r",0],
+                      "control_net":["10",0],"image":["12",0],
                       "strength":0.55,"start_percent":0.0,"end_percent":1.0}},
               "6":  {"class_type":"KSampler","inputs":{"model":["2",0],"positive":["11",0],"negative":["11",1],"latent_image":["3",0],"denoise":denoise,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
               "7":  {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":vaeRef}},
