@@ -15,8 +15,7 @@ Key pages:
 - `http://localhost:3000/map.html` — read-only interactive map viewer
 - `http://localhost:3000/map-3d-planet.html` — 3D rotating globe
 - `http://localhost:3000/embed-map.html` — embeddable map (same as map.html, for iframe use)
-- `http://localhost:3000/city-emberstran.html` — standalone city map for Emberstran
-- `http://localhost:3000/city-tratta.html` — standalone city map for Tratta
+- `http://localhost:3000/city-viewer.html` — unified city map viewer (all cities, driven by js/city-maps.js)
 
 ## Architecture
 
@@ -33,6 +32,7 @@ Key pages:
 | File | Purpose |
 |------|---------|
 | `js/locations-db.js` | the entire world database |
+| `js/city-maps.js` | city maps registry — pins and images for each city |
 | `js/map-overlay.js` | SVG overlay renderer, tooltips, territory borders |
 | `js/boat-animations.js` | `BoatFleet` class — animated boats + sea monster on water routes |
 | `js/dragon-overlay.js` | `DragonFlyover` module — golden dragon flyover animation above Arbescar |

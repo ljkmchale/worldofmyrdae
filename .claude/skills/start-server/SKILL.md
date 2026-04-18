@@ -21,6 +21,7 @@ Start the World of Myrdae development server.
 4. Tell the user the server is running and give them these links:
    - Editor: http://localhost:3000/editor.html
    - Map viewer: http://localhost:3000/map.html
+   - City viewer: http://localhost:3000/city-viewer.html
    - 3D Globe: http://localhost:3000/map-3d-planet.html
    - Home: http://localhost:3000/index.html
 

@@ -1389,7 +1389,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -1,
             "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=climbor"
         },
         {
             "id": "felden",

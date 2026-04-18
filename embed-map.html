@@ -276,7 +276,7 @@
             left: 0.6rem;
             color: var(--color-gold);
             font-size: 0.75rem;
-            pointer-events: none;
+            cursor: text;
         }
 
         #location-search {
@@ -739,7 +739,7 @@
             <!-- Search Box -->
             <div class="search-box">
                 <div class="search-input-wrap">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <i class="fa-solid fa-magnifying-glass search-icon" onclick="document.getElementById('location-search').focus()"></i>
                     <input type="text" id="location-search" placeholder="Search locations..." autocomplete="off" spellcheck="false">
                 </div>
                 <div class="search-results" id="search-results" style="display:none;"></div>

@@ -10,6 +10,7 @@ Steps:
 1. Get the current timestamp in format `YYYYMMDD_HHMMSS` using Bash: `date +%Y%m%d_%H%M%S`
 2. Copy these files into `/backups/` with the timestamp suffix:
    - `js/locations-db.js` → `backups/locations-db.<timestamp>.js`
+   - `js/city-maps.js` → `backups/city-maps.<timestamp>.js`
    - `js/map-overlay.js` → `backups/map-overlay.<timestamp>.js`
    - `js/editor.js` → `backups/editor.<timestamp>.js`
    - `js/boat-animations.js` → `backups/boat-animations.<timestamp>.js`

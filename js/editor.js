@@ -10,7 +10,10 @@ const Editor = (function () {
         locations: [],
         roads: [],
         regions: [],
-        editingWaypointIndex: null
+        editingWaypointIndex: null,
+        undoStack: [],
+        redoStack: [],
+        regionFilter: ''
     };
 
     /** Initialize Editor State */
@@ -75,6 +78,53 @@ const Editor = (function () {
         document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: state }));
 
         renderLists();
+
+        // --- Keyboard shortcuts ---
+        document.addEventListener('keydown', (e) => {
+            const tag = document.activeElement?.tagName?.toLowerCase();
+            const inInput = ['input', 'textarea', 'select'].includes(tag);
+
+            // Ctrl/Cmd+Z → undo
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+                e.preventDefault();
+                undo();
+                return;
+            }
+            // Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z → redo
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+                e.preventDefault();
+                redo();
+                return;
+            }
+            // Ctrl/Cmd+S → save current form
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (state.tab === 'locations' && document.getElementById('location-form-area').style.display !== 'none') {
+                    saveLocation();
+                } else if (state.tab === 'roads' && state.selectedRoadId) {
+                    saveRoad();
+                }
+                return;
+            }
+            // Esc → cancel (only when not focused in a form field)
+            if (e.key === 'Escape' && !inInput) {
+                if (state.tab === 'locations') cancelLocation();
+                else if (state.tab === 'roads') cancelRoad();
+                return;
+            }
+            // Arrow keys → nudge selected location x/y (only when not typing in a field)
+            if (!inInput && state.tab === 'locations' && state.selectedLocId &&
+                document.getElementById('location-form-area').style.display !== 'none') {
+                const step = e.shiftKey ? 1.0 : 0.1;
+                const xEl = document.getElementById('loc-x');
+                const yEl = document.getElementById('loc-y');
+                if (!xEl || !yEl) return;
+                if (e.key === 'ArrowLeft')  { e.preventDefault(); xEl.value = (parseFloat(xEl.value) - step).toFixed(2); previewLocation(); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); xEl.value = (parseFloat(xEl.value) + step).toFixed(2); previewLocation(); }
+                else if (e.key === 'ArrowUp')   { e.preventDefault(); yEl.value = (parseFloat(yEl.value) - step).toFixed(2); previewLocation(); }
+                else if (e.key === 'ArrowDown') { e.preventDefault(); yEl.value = (parseFloat(yEl.value) + step).toFixed(2); previewLocation(); }
+            }
+        });
     }
 
     function switchTab(tabName) {
@@ -187,15 +237,66 @@ const Editor = (function () {
 
     // --- Locations ---
 
+    // --- Undo / Redo ---
+
+    function pushUndo() {
+        state.undoStack.push({
+            locations: JSON.parse(JSON.stringify(state.locations)),
+            roads: JSON.parse(JSON.stringify(state.roads))
+        });
+        if (state.undoStack.length > 50) state.undoStack.shift();
+        state.redoStack = [];
+        updateUndoButtons();
+    }
+
+    function undo() {
+        if (state.undoStack.length === 0) return;
+        state.redoStack.push({
+            locations: JSON.parse(JSON.stringify(state.locations)),
+            roads: JSON.parse(JSON.stringify(state.roads))
+        });
+        const prev = state.undoStack.pop();
+        state.locations = prev.locations;
+        state.roads = prev.roads;
+        renderLists();
+        refreshMap();
+        exportData().catch(console.error);
+        updateUndoButtons();
+    }
+
+    function redo() {
+        if (state.redoStack.length === 0) return;
+        state.undoStack.push({
+            locations: JSON.parse(JSON.stringify(state.locations)),
+            roads: JSON.parse(JSON.stringify(state.roads))
+        });
+        const next = state.redoStack.pop();
+        state.locations = next.locations;
+        state.roads = next.roads;
+        renderLists();
+        refreshMap();
+        exportData().catch(console.error);
+        updateUndoButtons();
+    }
+
+    function updateUndoButtons() {
+        const undoBtn = document.getElementById('btn-undo');
+        const redoBtn = document.getElementById('btn-redo');
+        if (undoBtn) undoBtn.disabled = state.undoStack.length === 0;
+        if (redoBtn) redoBtn.disabled = state.redoStack.length === 0;
+    }
+
     function renderLists() {
         renderLocationList();
         renderRoadList();
         updateLocationDropdowns();
+        populateRegionFilter();
     }
 
     function renderLocationList(filter = '') {
         const list = document.getElementById('location-list');
         const q = filter.trim().toLowerCase();
+        const regionQ = state.regionFilter;
         list.innerHTML = '<option value="">-- Select a Location --</option>';
 
         // Group locations by type
@@ -206,13 +307,14 @@ const Editor = (function () {
             ruins: 'Ruins', region: 'Region Labels', water: 'Water Labels', river: 'River Labels'
         };
 
-        // Filter first, then group
-        const visible = q
+        // Filter first, then group — apply both text search and region filter
+        const visible = (q || regionQ)
             ? state.locations.filter(loc =>
-                (loc.name || '').toLowerCase().includes(q) ||
-                (loc.id || '').toLowerCase().includes(q) ||
-                (loc.type || '').toLowerCase().includes(q) ||
-                (loc.region || '').toLowerCase().includes(q))
+                (!regionQ || (loc.region || '') === regionQ) &&
+                (!q || (loc.name || '').toLowerCase().includes(q) ||
+                        (loc.id || '').toLowerCase().includes(q) ||
+                        (loc.type || '').toLowerCase().includes(q) ||
+                        (loc.region || '').toLowerCase().includes(q)))
             : state.locations;
 
         const grouped = {};
@@ -293,8 +395,10 @@ const Editor = (function () {
         document.getElementById('loc-opacity').value = loc.opacity !== undefined ? loc.opacity : '';
         document.getElementById('loc-hideLabel').checked = !!loc.hideLabel;
 
-        // Update list to show active state (though on dropdown it just sets value)
-        // renderLocationList(); // Removed to avoid re-rendering and losing focus if needed, select already handles value
+        // Pan map to the selected location
+        if (loc.x !== undefined && loc.y !== undefined) {
+            MapController.panToLocation('map-container', loc.x, loc.y, 4);
+        }
     }
 
     function newLocation(x, y) {
@@ -462,6 +566,7 @@ const Editor = (function () {
     }
 
     function saveLocation(skipListRender = false) {
+        if (!skipListRender) pushUndo();
         const locData = getLocationFromForm();
         const id = locData.id;
 
@@ -508,6 +613,7 @@ const Editor = (function () {
     function deleteLocation() {
         if (!state.selectedLocId) return;
         if (confirm('Are you sure you want to delete this location?')) {
+            pushUndo();
             state.locations = state.locations.filter(l => l.id !== state.selectedLocId);
             cancelLocation();
             refreshMap();
@@ -1082,6 +1188,7 @@ const Editor = (function () {
     }
 
     function saveRoad(isNew = false) {
+        if (!isNew) pushUndo();
         const searchId = state.selectedRoadId || document.getElementById('road-id').value;
         const { roadData, startLocId, endLocId, existing, id } = getRoadFromForm(isNew, searchId);
 
@@ -1157,6 +1264,7 @@ const Editor = (function () {
     function deleteRoad() {
         if (!state.selectedRoadId) return;
         if (confirm('Are you sure you want to delete this road?')) {
+            pushUndo();
             state.roads = state.roads.filter(r => r.id !== state.selectedRoadId);
             cancelRoad();
             refreshMap();
@@ -1176,6 +1284,133 @@ const Editor = (function () {
         state.selectedRoadId = null;
         document.getElementById('road-form-area').style.display = 'none';
         renderRoadList();
+    }
+
+    // --- Duplicate Location ---
+
+    function duplicateLocation() {
+        if (!state.selectedLocId) return;
+        const loc = state.locations.find(l => l.id === state.selectedLocId);
+        if (!loc) return;
+
+        const copy = JSON.parse(JSON.stringify(loc));
+        copy.x = Math.min(99, parseFloat((copy.x + 1).toFixed(1)));
+        copy.y = Math.min(99, parseFloat((copy.y + 1).toFixed(1)));
+
+        let baseId = loc.id + '-copy';
+        let newId = baseId;
+        let counter = 1;
+        while (state.locations.find(l => l.id === newId)) newId = baseId + (counter++);
+        copy.id = newId;
+        copy.name = (loc.name || loc.id) + ' (Copy)';
+
+        state.selectedLocId = null;
+        document.getElementById('location-form-area').style.display = 'block';
+        document.getElementById('form-title').textContent = 'New Location (Duplicate)';
+        document.getElementById('btn-del-loc').style.display = 'none';
+        const list = document.getElementById('location-list');
+        if (list) list.value = '';
+
+        document.getElementById('loc-id').value = copy.id;
+        document.getElementById('loc-name').value = copy.name.replace(/\n/g, '\\n');
+        document.getElementById('loc-x').value = copy.x;
+        document.getElementById('loc-y').value = copy.y;
+        document.getElementById('loc-type').value = copy.type || 'town';
+        document.getElementById('loc-region').value = copy.region || '';
+        document.getElementById('loc-desc').value = copy.description || '';
+        document.getElementById('loc-details').value = copy.details || '';
+        document.getElementById('loc-link').value = copy.link || '';
+        document.getElementById('loc-cityMap').value = copy.cityMap || '';
+        document.getElementById('loc-fontFamily').value = copy.fontFamily || '';
+        document.getElementById('loc-fontSize').value = copy.fontSize || '';
+        document.getElementById('loc-fontWeight').value = copy.fontWeight || '';
+        document.getElementById('loc-fontStyle').value = copy.fontStyle || '';
+        document.getElementById('loc-markerSize').value = copy.markerSize !== undefined ? copy.markerSize : 0.25;
+        document.getElementById('loc-markerOffsetX').value = copy.markerOffsetX || 0;
+        document.getElementById('loc-markerOffsetY').value = copy.markerOffsetY || 0;
+        document.getElementById('loc-labelOffsetX').value = copy.labelOffsetX || '';
+        document.getElementById('loc-labelOffsetY').value = copy.labelOffsetY || '';
+        document.getElementById('loc-labelAlign').value = copy.labelAlign || '';
+        document.getElementById('loc-rotation').value = copy.rotation || '';
+        document.getElementById('loc-textCurve').value = copy.textCurve !== undefined ? copy.textCurve : '';
+        document.getElementById('loc-opacity').value = copy.opacity !== undefined ? copy.opacity : '';
+        document.getElementById('loc-hideLabel').checked = !!copy.hideLabel;
+    }
+
+    // --- Region Filter ---
+
+    function getUniqueRegions() {
+        const seen = new Set();
+        return state.locations
+            .map(l => l.region || '')
+            .filter(r => r && !seen.has(r) && seen.add(r))
+            .sort();
+    }
+
+    function populateRegionFilter() {
+        const regions = getUniqueRegions();
+
+        const filterSel = document.getElementById('region-filter');
+        if (filterSel) {
+            const cur = filterSel.value;
+            filterSel.innerHTML = '<option value="">All Regions</option>';
+            regions.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r;
+                opt.textContent = r;
+                if (r === cur) opt.selected = true;
+                filterSel.appendChild(opt);
+            });
+        }
+
+        const renameSel = document.getElementById('rename-region-old');
+        if (renameSel) {
+            const cur = renameSel.value;
+            renameSel.innerHTML = '<option value="">— Select region to rename —</option>';
+            regions.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r;
+                opt.textContent = r;
+                if (r === cur) opt.selected = true;
+                renameSel.appendChild(opt);
+            });
+        }
+    }
+
+    function filterByRegion(region) {
+        state.regionFilter = region;
+        renderLocationList(document.getElementById('location-search')?.value || '');
+    }
+
+    // --- Batch Region Rename ---
+
+    function renameRegion(oldName, newName) {
+        if (!oldName || !newName || oldName === newName) return;
+        pushUndo();
+        let count = 0;
+        state.locations.forEach(loc => {
+            if (loc.region === oldName) { loc.region = newName; count++; }
+        });
+        if (count > 0) {
+            if (state.regionFilter === oldName) state.regionFilter = newName;
+            renderLists();
+            exportData().catch(console.error);
+            alert(`Updated ${count} location${count !== 1 ? 's' : ''}: "${oldName}" → "${newName}".`);
+        } else {
+            alert(`No locations found with region "${oldName}".`);
+        }
+    }
+
+    function applyRenameRegion() {
+        const oldEl = document.getElementById('rename-region-old');
+        const newEl = document.getElementById('rename-region-new');
+        if (!oldEl || !newEl) return;
+        const oldVal = oldEl.value.trim();
+        const newVal = newEl.value.trim();
+        if (!oldVal) { alert('Select a region to rename.'); return; }
+        if (!newVal) { alert('Enter a new region name.'); return; }
+        renameRegion(oldVal, newVal);
+        newEl.value = '';
     }
 
     // --- Utility ---
@@ -1369,6 +1604,17 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         // Core
         exportData,
         reloadPage,
-        refreshMap
+        refreshMap,
+
+        // Undo / Redo
+        undo,
+        redo,
+
+        // Duplicate
+        duplicateLocation,
+
+        // Region filter & rename
+        filterByRegion,
+        applyRenameRegion
     };
 })();

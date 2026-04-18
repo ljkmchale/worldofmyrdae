@@ -132,6 +132,10 @@
           <button class="btn btn-secondary" onclick="Editor.reloadPage()" style="flex: 1;"><i
               class="fa-solid fa-rotate-right"></i> Reload Data</button>
         </div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+          <button id="btn-undo" class="btn btn-secondary" onclick="Editor.undo()" style="flex:1;" disabled title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+          <button id="btn-redo" class="btn btn-secondary" onclick="Editor.redo()" style="flex:1;" disabled title="Redo (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+        </div>
       </div>
 
       <!-- Editor Tabs -->
@@ -145,8 +149,14 @@
       <div id="tab-locations" class="tab-content active" style="padding: 1rem;">
         <p style="font-size: 0.8rem; color: #888;">Click on the map to place a new location.</p>
 
+        <select id="region-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%;"
+          onchange="Editor.filterByRegion(this.value)">
+          <option value="">All Regions</option>
+        </select>
+
         <div style="position:relative; margin-bottom:0.4rem;">
-          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; pointer-events:none;"></i>
+          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('location-search').focus()"></i>
           <input type="text" id="location-search" placeholder="Search locations…" autocomplete="off"
             style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
             oninput="Editor.filterLocationList(this.value)">
@@ -280,13 +290,30 @@
             </div>
           </details>
 
-          <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-primary" onclick="Editor.saveLocation()">Save Location</button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="Editor.saveLocation()" title="Save (Ctrl+S)">Save Location</button>
+            <button class="btn btn-secondary" onclick="Editor.duplicateLocation()" title="Clone this location as a new entry"><i class="fa-solid fa-copy"></i> Duplicate</button>
             <button class="btn btn-secondary" onclick="Editor.cancelLocation()">Cancel</button>
             <button class="btn" onclick="Editor.deleteLocation()"
               style="background:#500; border-color:#800; color:#fff;" id="btn-del-loc">Delete</button>
           </div>
         </div>
+
+        <!-- Batch Region Rename -->
+        <details style="margin-top:1.25rem; border-top:1px solid #333; padding-top:0.75rem;">
+          <summary style="cursor:pointer; color:#888; font-size:0.8rem; user-select:none;">&#9998; Rename Region (batch)</summary>
+          <div style="margin-top:0.5rem; display:flex; flex-direction:column; gap:0.4rem;">
+            <select id="rename-region-old" class="form-control"
+              style="font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem;">
+              <option value="">— Select region to rename —</option>
+            </select>
+            <input type="text" id="rename-region-new" class="form-control" placeholder="New region name"
+              style="font-size:0.82rem;">
+            <button class="btn btn-secondary" onclick="Editor.applyRenameRegion()" style="font-size:0.8rem;">
+              <i class="fa-solid fa-pen-to-square"></i> Apply Rename
+            </button>
+          </div>
+        </details>
       </div>
 
       <!-- City Map Tab Content -->
@@ -305,24 +332,47 @@
           </div>
         </div>
 
+        <div id="city-world-link" style="display:none; margin-bottom:0.75rem;">
+          <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">Linked World Location</label>
+          <div style="display:flex; gap:0.5rem;">
+            <select id="city-loc-select" class="form-control"
+              style="flex:1; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.4rem;">
+              <option value="">— None —</option>
+            </select>
+            <button class="btn btn-secondary" onclick="CityEditor.linkWorldLocation()" style="white-space:nowrap; font-size:0.8rem; padding:0.3rem 0.6rem;">Link</button>
+          </div>
+          <div id="city-link-status" style="font-size:0.72rem; color:#888; margin-top:0.25rem; min-height:1rem; font-style:italic;"></div>
+        </div>
+
         <div id="city-pin-controls" style="display:none;">
           <div style="position:relative; margin-bottom:0.5rem;">
-            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; pointer-events:none;"></i>
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('city-pin-search').focus()"></i>
             <input type="text" id="city-pin-search" placeholder="Search pins…" autocomplete="off"
               style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
               oninput="CityEditor.filterList(this.value)">
           </div>
 
           <select id="city-pin-list" class="form-control"
-            style="margin-bottom: 0.75rem; font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; width:100%;"
+            style="margin-bottom: 0.5rem; font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; width:100%;"
             onchange="CityEditor.selectPin(this.value)">
           </select>
+          <button class="btn btn-secondary" onclick="CityEditor.addNamedLabel()" style="width:100%; margin-bottom:0.75rem; font-size:0.8rem;">
+            <i class="fa-solid fa-tag"></i> Add Named Label
+          </button>
         </div>
 
         <div id="city-pin-form" style="display:none;">
           <h3 id="city-pin-name" style="margin:0 0 0.75rem; color:var(--color-gold); font-family:'Cinzel',serif; font-size:0.95rem;"></h3>
-          <p style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;"><i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.</p>
+          <p id="city-form-hint" style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;"><i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.</p>
           <div class="form-inline">
+            <div id="city-pin-n-row" class="form-group" style="flex:0 0 80px;">
+              <label>Pin #</label>
+              <input type="number" id="city-pin-n" class="form-control" min="1" step="1" oninput="CityEditor.updateFromForm()">
+            </div>
+            <div id="city-label-id-row" class="form-group" style="flex:1; display:none;">
+              <label>ID</label>
+              <input type="text" id="city-label-id" class="form-control" oninput="CityEditor.updateFromForm()">
+            </div>
             <div class="form-group" style="flex:1;">
               <label>X (%)</label>
               <input type="number" id="city-pin-x" class="form-control" step="0.1" oninput="CityEditor.updateFromForm()">
@@ -350,7 +400,7 @@
               style="width:100%; accent-color:var(--color-gold);"
               oninput="document.getElementById('city-pin-size-val').textContent=parseFloat(this.value).toFixed(1); CityEditor.updateFromForm()">
           </div>
-          <button class="btn" onclick="CityEditor.deletePin()" 
+          <button id="city-delete-btn" class="btn" onclick="CityEditor.deletePin()"
             style="background:#500; border-color:#800; color:#fff; width:100%; margin-top:0.5rem;">
             <i class="fa-solid fa-trash"></i> Delete This Pin
           </button>
@@ -371,7 +421,7 @@
         <p style="font-size: 0.8rem; color: #888;">Select a road to edit, or click 'New Road' to start plotting.</p>
 
         <div style="position:relative; margin-bottom:0.4rem;">
-          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; pointer-events:none;"></i>
+          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('road-search').focus()"></i>
           <input type="text" id="road-search" placeholder="Search roads…" autocomplete="off"
             style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
             oninput="Editor.filterRoadList(this.value)">
@@ -848,11 +898,13 @@ const CityEditor = (function () {
 
     MapController.reset('map-container');
 
+    document.getElementById('city-world-link').style.display   = 'block';
     document.getElementById('city-pin-controls').style.display = 'block';
     document.getElementById('city-action-btns').style.display  = 'flex';
     document.getElementById('city-pin-form').style.display     = 'none';
     selectedKey = null;
     populateList();
+    populateWorldLocSelect(cityId);
 
     // Watch pan/zoom to re-render pins
     _watchTransform();
@@ -870,6 +922,7 @@ const CityEditor = (function () {
     _setOverlay(true);
     document.querySelectorAll('.city-pin').forEach(el => el.remove());
     document.getElementById('map-image').src = 'images/Myrdae.jpg';
+    document.getElementById('city-world-link').style.display   = 'none';
     document.getElementById('city-pin-controls').style.display = 'none';
     document.getElementById('city-action-btns').style.display  = 'none';
     document.getElementById('city-pin-form').style.display     = 'none';
@@ -916,8 +969,23 @@ const CityEditor = (function () {
     const form = document.getElementById('city-pin-form');
     if (!loc) { form.style.display = 'none'; highlightPin(null); return; }
 
+    const isLabel = key.startsWith('id:');
+    document.getElementById('city-pin-n-row').style.display    = isLabel ? 'none' : '';
+    document.getElementById('city-label-id-row').style.display = isLabel ? '' : 'none';
+    document.getElementById('city-form-hint').innerHTML = isLabel
+      ? '<i class="fa-solid fa-circle-info"></i> Drag the label on the map, or edit coordinates directly.'
+      : '<i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.';
+    document.getElementById('city-delete-btn').innerHTML = isLabel
+      ? '<i class="fa-solid fa-trash"></i> Delete This Label'
+      : '<i class="fa-solid fa-trash"></i> Delete This Pin';
+
     form.style.display = 'block';
-    document.getElementById('city-pin-name').textContent = loc.name || ('Pin ' + loc.n);
+    document.getElementById('city-pin-name').textContent = loc.name || (isLabel ? 'Label' : 'Pin ' + loc.n);
+    if (isLabel) {
+      document.getElementById('city-label-id').value = loc.id || '';
+    } else {
+      document.getElementById('city-pin-n').value = loc.n;
+    }
     document.getElementById('city-pin-x').value = loc.x.toFixed(1);
     document.getElementById('city-pin-y').value = loc.y.toFixed(1);
     document.getElementById('city-pin-name-input').value = loc.name || '';
@@ -932,6 +1000,20 @@ const CityEditor = (function () {
   function updateFromForm() {
     const loc = getLoc(selectedKey);
     if (!loc) return;
+    const isLabel = selectedKey.startsWith('id:');
+    if (isLabel) {
+      const newId = document.getElementById('city-label-id').value.trim();
+      if (newId && newId !== loc.id) {
+        loc.id = newId;
+        selectedKey = 'id:' + newId;
+        document.getElementById('city-pin-list').value = selectedKey;
+        populateList(document.getElementById('city-pin-search').value);
+        document.getElementById('city-pin-list').value = selectedKey;
+      }
+    } else {
+      const newN = parseInt(document.getElementById('city-pin-n').value);
+      if (newN > 0) loc.n = newN;
+    }
     loc.x    = parseFloat(document.getElementById('city-pin-x').value) || loc.x;
     loc.y    = parseFloat(document.getElementById('city-pin-y').value) || loc.y;
     loc.name = document.getElementById('city-pin-name-input').value;
@@ -966,6 +1048,28 @@ const CityEditor = (function () {
     renderPins();
     selectPin('pin:' + newPin.__editorKey);
     document.getElementById('city-pin-list').value = 'pin:' + newPin.__editorKey;
+  }
+
+  // ── Add named label at map center ─────────────────────────
+  function addNamedLabel() {
+    if (!cityData) return;
+    const existing = cityData.namedLabels || (cityData.namedLabels = []);
+    let idx = 1;
+    while (existing.find(l => l.id === 'label-' + idx)) idx++;
+    const newLabel = {
+      id: 'label-' + idx,
+      name: 'New Label',
+      x: 50,
+      y: 50,
+      type: 'district',
+      desc: '',
+      size: 1.0,
+    };
+    existing.push(newLabel);
+    populateList();
+    renderPins();
+    selectPin('id:' + newLabel.id);
+    document.getElementById('city-pin-list').value = 'id:' + newLabel.id;
   }
 
   // ── Delete active pin ──────────────────────────────────────
@@ -1210,7 +1314,55 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
 
   function getActiveCityId() { return activeCityId; }
 
-  return { open, loadCity, selectPin, filterList, updateFromForm, addPin, deletePin, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
+  // ── World location link ────────────────────────────────────
+  function populateWorldLocSelect(cityId) {
+    const sel = document.getElementById('city-loc-select');
+    const status = document.getElementById('city-link-status');
+    sel.innerHTML = '<option value="">— None —</option>';
+    status.textContent = '';
+
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const sorted = [...locs].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    const targetUrl = 'city-viewer.html?city=' + cityId;
+
+    sorted.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.id;
+      opt.textContent = loc.name + (loc.region ? ' (' + loc.region + ')' : '');
+      if (loc.cityMap === targetUrl) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    if (sel.value) status.textContent = 'Currently linked to ' + (sorted.find(l => l.id === sel.value) || {}).name;
+  }
+
+  async function linkWorldLocation() {
+    const locId   = document.getElementById('city-loc-select').value;
+    const status  = document.getElementById('city-link-status');
+    const locs    = (Editor.state && Editor.state.locations) || [];
+    const targetUrl = 'city-viewer.html?city=' + activeCityId;
+
+    // Clear any existing link for this city
+    locs.forEach(l => { if (l.cityMap === targetUrl) delete l.cityMap; });
+
+    if (locId) {
+      const loc = locs.find(l => l.id === locId);
+      if (!loc) { status.textContent = 'Location not found.'; return; }
+      loc.cityMap = targetUrl;
+    }
+
+    status.textContent = 'Saving…';
+    try {
+      await Editor.exportData();
+      status.textContent = locId
+        ? 'Linked to ' + (locs.find(l => l.id === locId) || {}).name + ' ✓'
+        : 'Link cleared ✓';
+    } catch (e) {
+      status.textContent = 'Save failed: ' + e.message;
+    }
+  }
+
+  return { open, loadCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
 })();
 </script>
   <!-- AI Wizard Modal -->
