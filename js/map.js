@@ -76,9 +76,11 @@ const MapController = (function () {
             if (state.pointY > 0) state.pointY = 0;
             if (state.pointY < state.ch - ih) state.pointY = state.ch - ih;
 
+            // At the base zoom level, keep fully fitting axes anchored as before,
+            // but allow panning on any axis where the image still overflows.
             if (state.scale === 1) {
-                state.pointX = 0;
-                state.pointY = 0;
+                if (iw <= state.cw) state.pointX = 0;
+                if (ih <= state.ch) state.pointY = 0;
             }
 
             const transformStr = `translate3d(${state.pointX}px, ${state.pointY}px, 0) scale(${state.scale})`;
@@ -99,7 +101,7 @@ const MapController = (function () {
         };
 
         if (mapImg.complete) onReady();
-        else mapImg.onload = onReady;
+        mapImg.addEventListener('load', onReady);
 
         // Use ResizeObserver instead of window resize to handle flexbox rendering delays
         // and sidebar toggle resizing smoothly.

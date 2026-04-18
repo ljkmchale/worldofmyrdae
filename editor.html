@@ -749,8 +749,18 @@ const CityEditor = (function () {
   let cityData    = null;  // deep copy of the active city entry from CITY_MAPS
   let allData     = null;  // deep copy of all CITY_MAPS
   let activeCityId = null;
-  let selectedKey  = null; // "n:1" or "id:north-gate"
+  let selectedKey  = null; // "pin:<internal-key>" or "id:north-gate"
   let cityMapActive = false;
+  let nextPinKey = 1;
+
+  function ensurePinKeys() {
+    if (!allData) return;
+    allData.forEach(city => {
+      (city.pins || []).forEach(pin => {
+        if (!pin.__editorKey) pin.__editorKey = 'p' + (nextPinKey++);
+      });
+    });
+  }
 
   // ── Open the tab (populate city selector) ──────────────────
   async function open() {
@@ -826,6 +836,7 @@ const CityEditor = (function () {
       pins: (c.pins || []).map(p => ({ ...p })),
       namedLabels: (c.namedLabels || []).map(l => ({ ...l })),
     }));
+    ensurePinKeys();
     cityData = allData.find(c => c.id === cityId);
 
     // Swap map image, hide world overlay
@@ -878,7 +889,7 @@ const CityEditor = (function () {
     cityData.pins.forEach(loc => {
       if (q && !loc.name.toLowerCase().includes(q) && !String(loc.n).includes(q)) return;
       const opt = document.createElement('option');
-      opt.value = 'n:' + loc.n;
+      opt.value = 'pin:' + loc.__editorKey;
       opt.textContent = loc.n + '. ' + loc.name;
       sel.appendChild(opt);
     });
@@ -895,7 +906,7 @@ const CityEditor = (function () {
 
   function getLoc(key) {
     if (!cityData || !key) return null;
-    if (key.startsWith('n:')) return cityData.pins.find(l => l.n === parseInt(key.slice(2)));
+    if (key.startsWith('pin:')) return cityData.pins.find(l => l.__editorKey === key.slice(4));
     return (cityData.namedLabels || []).find(l => l.id === key.slice(3));
   }
 
@@ -940,6 +951,7 @@ const CityEditor = (function () {
     const nextN = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
     
     const newPin = {
+      __editorKey: 'p' + (nextPinKey++),
       n: nextN,
       x: parseFloat(x.toFixed(1)),
       y: parseFloat(y.toFixed(1)),
@@ -952,8 +964,8 @@ const CityEditor = (function () {
     cityData.pins.push(newPin);
     populateList();
     renderPins();
-    selectPin('n:' + nextN);
-    document.getElementById('city-pin-list').value = 'n:' + nextN;
+    selectPin('pin:' + newPin.__editorKey);
+    document.getElementById('city-pin-list').value = 'pin:' + newPin.__editorKey;
   }
 
   // ── Delete active pin ──────────────────────────────────────
@@ -964,8 +976,8 @@ const CityEditor = (function () {
 
     if (!confirm(`Are you sure you want to delete "${loc.name || ('Pin ' + loc.n)}"?`)) return;
 
-    if (selectedKey.startsWith('n:')) {
-      const idx = cityData.pins.findIndex(p => p.n === loc.n);
+    if (selectedKey.startsWith('pin:')) {
+      const idx = cityData.pins.findIndex(p => p.__editorKey === loc.__editorKey);
       if (idx !== -1) cityData.pins.splice(idx, 1);
     } else {
       const idx = (cityData.namedLabels || []).findIndex(l => l.id === loc.id);
@@ -1047,7 +1059,7 @@ const CityEditor = (function () {
       overlay.appendChild(g);
     }
 
-    cityData.pins.forEach(l => makePin(l, 'n:' + l.n, false));
+    cityData.pins.forEach(l => makePin(l, 'pin:' + l.__editorKey, false));
     (cityData.namedLabels || []).forEach(l => {
       if (l.type === 'sea' || l.type === 'direction') return;
       makePin(l, 'id:' + l.id, true);
@@ -1177,6 +1189,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
         pins: (c.pins || []).map(p => ({ ...p })),
         namedLabels: (c.namedLabels || []).map(l => ({ ...l })),
       }));
+      ensurePinKeys();
       cityData = allData.find(c => c.id === activeCityId);
 
       populateList();
