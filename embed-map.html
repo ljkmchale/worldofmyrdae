@@ -720,9 +720,6 @@
             <button class="map-btn" id="awakening-btn" onclick="replayGreatAwakening()" title="Replay The Awakening">
                 <i class="fa-solid fa-bolt-lightning"></i>
             </button>
-            <button class="map-btn" id="relief-toggle" onclick="toggleRelief()" title="Toggle Relief Shading" style="opacity:0.5;">
-                <i class="fa-solid fa-mountain"></i>
-            </button>
         </div>
 
         <!-- Title card shown during pre-awakening reveal -->
@@ -787,7 +784,7 @@
         <!-- Flash overlay -->
         <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%);"></div>
         <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
-            <!-- Sub-terrain layer goes here (z-index: 1) -->
+            <!-- Depth-map layer is inserted here at runtime (z-index: 1) -->
             <!-- Main map -->
             <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
             <!-- Pre-Awakening map: z-index 15 — covers current map + SVG overlay during Awakening animation -->
@@ -805,7 +802,7 @@
     <script src="js/dragon-overlay.js"></script>
     <script src="js/boat-animations.js"></script>
     <script src="js/location-search.js"></script>
-    <script src="js/relief-shading.js"></script>
+    <script src="js/depth-map.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -820,14 +817,8 @@
             MapOverlay.init('map-container', 'map-image');
             DragonFlyover.init('map-container', 'map-image');
             LocationSearch.init('map-container');
-            ReliefShading.init('map-image', 'map-layer-group');
+            DepthMapRenderer.init('map-image', 'map-layer-group');
         });
-
-        function toggleRelief() {
-            const active = ReliefShading.toggle();
-            const btn = document.getElementById('relief-toggle');
-            if (btn) btn.style.opacity = active ? '1' : '0.5';
-        }
 
         function toggleTerritories() {
             const img = document.getElementById('territories-layer');
