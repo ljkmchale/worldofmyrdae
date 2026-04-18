@@ -687,24 +687,36 @@
       const container = document.getElementById('map-container');
       const mapImg = document.getElementById('map-image');
 
-      // We need to capture mousedown/mouseup to differentiate drag vs click
-      let isDraggingMap = false;
-      let startX, startY;
+      // Track drag state globally so releasing after a pan does not place a location.
+      let mapPointerDown = false;
+      let suppressNextMapClick = false;
+      let startX = 0;
+      let startY = 0;
 
       container.addEventListener('mousedown', (e) => {
-        isDraggingMap = false;
+        if (e.button !== 0) return;
+        mapPointerDown = true;
+        suppressNextMapClick = false;
         startX = e.clientX;
         startY = e.clientY;
       });
 
-      container.addEventListener('mousemove', (e) => {
+      window.addEventListener('mousemove', (e) => {
+        if (!mapPointerDown || suppressNextMapClick) return;
         if (Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3) {
-          isDraggingMap = true;
+          suppressNextMapClick = true;
         }
       });
 
-      container.addEventListener('mouseup', (e) => {
-        if (isDraggingMap) return; // Ignore drag end
+      window.addEventListener('mouseup', () => {
+        mapPointerDown = false;
+      });
+
+      container.addEventListener('click', (e) => {
+        if (suppressNextMapClick) {
+          suppressNextMapClick = false;
+          return;
+        }
 
         // Don't add a new pin if the user was dragging or clicking an existing city pin
         if (CityEditor.isActive() && e.target.closest('.city-pin')) return;
@@ -745,6 +757,8 @@
         } else {
           Editor.handleMapClick(imgX, imgY);
         }
+
+        suppressNextMapClick = false;
       });
     });
 

@@ -720,6 +720,9 @@
             <button class="map-btn" id="awakening-btn" onclick="replayGreatAwakening()" title="Replay The Awakening">
                 <i class="fa-solid fa-bolt-lightning"></i>
             </button>
+            <button class="map-btn" id="relief-toggle" onclick="toggleRelief()" title="Toggle Relief Shading" style="opacity:0.5;">
+                <i class="fa-solid fa-mountain"></i>
+            </button>
         </div>
 
         <!-- Title card shown during pre-awakening reveal -->
@@ -802,6 +805,7 @@
     <script src="js/dragon-overlay.js"></script>
     <script src="js/boat-animations.js"></script>
     <script src="js/location-search.js"></script>
+    <script src="js/relief-shading.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -816,7 +820,14 @@
             MapOverlay.init('map-container', 'map-image');
             DragonFlyover.init('map-container', 'map-image');
             LocationSearch.init('map-container');
+            ReliefShading.init('map-image', 'map-layer-group');
         });
+
+        function toggleRelief() {
+            const active = ReliefShading.toggle();
+            const btn = document.getElementById('relief-toggle');
+            if (btn) btn.style.opacity = active ? '1' : '0.5';
+        }
 
         function toggleTerritories() {
             const img = document.getElementById('territories-layer');
