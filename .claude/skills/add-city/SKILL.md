@@ -1,10 +1,19 @@
 ---
 name: add-city
-description: Add a new city map entry to js/city-maps.js (the city viewer registry). Use when adding a new detailed city map with pins and labels to city-viewer.html — distinct from add-location which adds a world map marker.
+description: Add a new city map entry to the city registry. Use when adding a new detailed city map with pins and labels to city-viewer.html — distinct from add-location which adds a world map marker.
 argument-hint: [city name and details]
 ---
 
-Help the user add a new city entry to `js/city-maps.js`.
+Help the user add a new city entry to the city registry.
+
+## Architecture (important — read first)
+
+City data is split across two files:
+
+1. **`js/city-maps.js`** — thin index (metadata only: id, name, image, previewImage). No pins or labels.
+2. **`js/cities/<id>.js`** — full city data (pins and named labels). Loaded on demand.
+
+Both files must be updated when adding a new city.
 
 ## Process
 
@@ -15,43 +24,50 @@ Help the user add a new city entry to `js/city-maps.js`.
    - Initial pins (optional) — user may want to start with zero pins and add them in the editor UI. That's fine.
    - Named labels (optional) — district names, sea names, direction labels, etc.
 
-2. **Create the ID** — kebab-case version of the city name. E.g. "Fort Ashveil" → `fort-ashveil`. Grep city-maps.js to confirm it's unique.
+2. **Create the ID** — kebab-case version of the city name. E.g. "Fort Ashveil" → `fort-ashveil`. Grep js/city-maps.js to confirm it's unique.
 
 3. **Backup first** — run the `/backup` skill before editing.
 
-4. **Read the end of `js/city-maps.js`** — find the closing `];` of the CITY_MAPS array to know where to insert.
-
-5. **Insert the new city entry** before the closing `];`. Follow this format exactly:
+4. **Create `js/cities/<id>.js`** — the per-city data file. Use this exact format:
 
 ```js
-  {
-    id: "city-id",
-    name: "City Name",
-    image: "images/cities/city-id/city-id.PNG",
-    previewImage: "images/cities/city-id/city-id.PNG",
-    pins: [],
-    namedLabels: [],
-  },
+window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+window.CITY_MAPS_REGISTRY["city-id"] = {
+  id: "city-id",
+  name: "City Name",
+  image: "images/cities/city-id/city-id.PNG",
+  previewImage: "images/cities/city-id/city-id.PNG",
+  pins: [],
+  namedLabels: [],
+};
 ```
 
 If the user provides initial pins, format each as:
 ```js
-{ n: 1, x: 50.0, y: 50.0, name: "Pin Name", type: "landmark", desc: "Description.", size: 1.3 },
+    { n:  1, x: 50.0, y: 50.0, name: "Pin Name", type: "landmark", desc: "Description.", size: 1.3 },
 ```
 
 If the user provides named labels, format each as:
 ```js
-{ id: "label-id", name: "Label Name", x: 50.0, y: 50.0, type: "district", desc: "Description." },
+    { id: "label-id", name: "Label Name", x: 50.0, y: 50.0, type: "district", desc: "Description." },
 ```
 
-6. **Confirm** — tell the user the city was added. Remind them they can open the City Map tab in the editor at http://localhost:3000/editor.html to drag and place pins visually.
+5. **Append to `js/city-maps.js`** — add a one-line entry to the `CITY_MAPS` array before the closing `];`. Metadata only, no pins:
+
+```js
+  { id: "city-id", name: "City Name", image: "images/cities/city-id/city-id.PNG", previewImage: "images/cities/city-id/city-id.PNG" },
+```
+
+6. **Confirm** — tell the user both files were updated. Remind them they can open the City Map tab in the editor at http://localhost:3000/editor.html to drag and place pins visually.
 
 ## Pin types (common values)
 tavern, inn, market, shop, temple, shrine, keep, fortress, landmark, harbor, gate, district, warehouse, stables, arena, college, bank, tower, cemetery, sea, direction
 
 ## Rules
 - Always backup before editing
-- IDs must be unique — grep for the proposed ID first
+- IDs must be unique — grep for the proposed ID in js/city-maps.js first
 - x/y are percentages (0–100), not pixels
 - `n` values in pins are sequential starting at 1
 - namedLabels `id` values are kebab-case, unique within the city
+- NEVER add pins/labels to js/city-maps.js — that file is metadata only
+- ALWAYS create both files: js/cities/<id>.js AND update js/city-maps.js
