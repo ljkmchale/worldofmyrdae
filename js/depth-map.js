@@ -234,7 +234,6 @@ const DepthMapRenderer = (function () {
       blur(elevations, width, height);
 
       // ── Smooth water-proximity gradient ───────────────────────────────────────
-      // Start as 0/1 float array, then blur repeatedly WITHOUT thresholding.
       // 14 passes at 25% scale spreads ~7px in canvas = ~28px at full res →
       // a wide, gradual coastal fade (land melts into ocean rather than hard edge).
       const waterProx    = new Float32Array(width * height);
@@ -252,7 +251,6 @@ const DepthMapRenderer = (function () {
         }
         waterProx.set(waterProxBuf);
       }
-      // Binary mask (thresholded) for is-water queries
       blurBinaryMask(waterMaskBin, width, height, 2);
 
       // ── Render ────────────────────────────────────────────────────────────────
@@ -271,7 +269,7 @@ const DepthMapRenderer = (function () {
           const cr = cleanedData[idx], cg = cleanedData[idx+1], cb = cleanedData[idx+2];
           const isWater = waterMaskBin[idx1d] === 1;
 
-          // ── Water pixels: blend toward WATER_FILL ─────────────────────────
+          // Water pixels: blend toward WATER_FILL
           if (isWater) {
             imageData.data[idx]     = Math.round(cr + (WATER_FILL[0] - cr) * 0.22);
             imageData.data[idx + 1] = Math.round(cg + (WATER_FILL[1] - cg) * 0.22);
@@ -280,7 +278,7 @@ const DepthMapRenderer = (function () {
             continue;
           }
 
-          // ── Outline pixels: cover with cleaned colour ─────────────────────
+          // Outline pixels: cover with cleaned colour at full opacity
           const origLum = 0.299 * sourceData[idx] + 0.587 * sourceData[idx+1] + 0.114 * sourceData[idx+2];
           if (origLum < OL_HIGH) {
             imageData.data[idx]     = cr;
@@ -290,23 +288,18 @@ const DepthMapRenderer = (function () {
             continue;
           }
 
-          // ── Coastal fade: blend land → water colour based on proximity ────
-          // waterProx[i] is ~1.0 at the water edge, fading to 0 going inland.
-          // smoothstep sharpens the near-water transition.
+          // Coastal fade: blend land → water colour based on proximity gradient
           const prox = waterProx[idx1d];
           if (prox > 0.02) {
-            const fade = smoothstep(0.02, 0.55, prox); // 0→1 as we approach water
-            const outR = Math.round(cr + (WATER_FILL[0] - cr) * fade);
-            const outG = Math.round(cg + (WATER_FILL[1] - cg) * fade);
-            const outB = Math.round(cb + (WATER_FILL[2] - cb) * fade);
-            imageData.data[idx]     = outR;
-            imageData.data[idx + 1] = outG;
-            imageData.data[idx + 2] = outB;
+            const fade = smoothstep(0.02, 0.55, prox);
+            imageData.data[idx]     = Math.round(cr + (WATER_FILL[0] - cr) * fade);
+            imageData.data[idx + 1] = Math.round(cg + (WATER_FILL[1] - cg) * fade);
+            imageData.data[idx + 2] = Math.round(cb + (WATER_FILL[2] - cb) * fade);
             imageData.data[idx + 3] = 255;
             continue;
           }
 
-          // ── Inland land: low-alpha hillshade / contour overlay ─────────────
+          // Inland land: low-alpha hillshade / contour overlay
           const xm1 = Math.max(0, x - 1), xp1 = Math.min(width - 1, x + 1);
           const ym1 = Math.max(0, y - 1), yp1 = Math.min(height - 1, y + 1);
           const center = elevations[idx1d];
