@@ -103,7 +103,36 @@ const server = http.createServer((req, res) => {
         url = url.slice(0, -1);
     }
 
-    // Handle POST request to save city-maps.js
+    // Handle POST request to save a single city file (js/cities/<id>.js)
+    if (req.method === 'POST' && url.startsWith('/save-city/')) {
+        const cityId = url.slice('/save-city/'.length);
+        if (!/^[a-z0-9-]+$/i.test(cityId) || cityId.length > 80) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: 'Invalid city ID' }));
+            return;
+        }
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            try {
+                const citiesDir = path.join(PUBLIC_DIR, 'js', 'cities');
+                fs.mkdirSync(citiesDir, { recursive: true });
+                const filePath = path.join(citiesDir, cityId + '.js');
+                const relative = path.relative(citiesDir, filePath);
+                if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('Invalid path');
+                fs.writeFileSync(filePath, body);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, message: 'City saved: ' + cityId }));
+            } catch (err) {
+                console.error('Save City Error:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+        return;
+    }
+
+    // Handle POST request to save city-maps.js (thin index)
     if (req.method === 'POST' && url === '/save-city-map') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });

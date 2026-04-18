@@ -406,20 +406,22 @@
     </div>
   </div>
 
-<script src="js/city-maps.js"></script>
 <script>
 'use strict';
 
 // ── RESOLVE CITY FROM URL PARAM ─────────────────────────────
 const _params = new URLSearchParams(window.location.search);
 const _cityId = _params.get('city') || '';
-const _city   = CITY_MAPS.find(c => c.id === _cityId);
+const _safeId = /^[a-z0-9-]+$/i.test(_cityId) ? _cityId : '';
 
-if (!_city) {
-  document.getElementById('not-found').style.display = 'flex';
-  document.getElementById('not-found-msg').textContent =
-    _cityId ? `No city registered with id "${_cityId}".` : 'Add ?city=<id> to the URL.';
-} else {
+function _initCity(_city) {
+  if (!_city) {
+    document.getElementById('not-found').style.display = 'flex';
+    document.getElementById('not-found-msg').textContent =
+      _cityId ? `No city registered with id "${_cityId}".` : 'Add ?city=<id> to the URL.';
+    return;
+  }
+  {
   // ── POPULATE STATIC CONTENT ────────────────────────────────
   document.title            = _city.name + ' \u2014 City Map | World of Myrdae';
   document.getElementById('city-name-title').textContent = _city.name;
@@ -826,6 +828,17 @@ if (!_city) {
     }
 
   })();
+  } // end _initCity block
+} // end _initCity function
+
+if (!_safeId) {
+  _initCity(null);
+} else {
+  const _s = document.createElement('script');
+  _s.src = 'js/cities/' + _safeId + '.js?v=' + Date.now();
+  _s.onload = () => _initCity((window.CITY_MAPS_REGISTRY || {})[_safeId] || null);
+  _s.onerror = () => _initCity(null);
+  document.head.appendChild(_s);
 }
 </script>
 </body>

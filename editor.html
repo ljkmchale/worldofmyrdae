@@ -796,19 +796,29 @@
 
 <script>
 const CityEditor = (function () {
-  let cityData    = null;  // deep copy of the active city entry from CITY_MAPS
-  let allData     = null;  // deep copy of all CITY_MAPS
+  let cityData    = null;  // deep copy of the active city entry
   let activeCityId = null;
   let selectedKey  = null; // "pin:<internal-key>" or "id:north-gate"
   let cityMapActive = false;
   let nextPinKey = 1;
 
   function ensurePinKeys() {
-    if (!allData) return;
-    allData.forEach(city => {
-      (city.pins || []).forEach(pin => {
-        if (!pin.__editorKey) pin.__editorKey = 'p' + (nextPinKey++);
-      });
+    if (!cityData) return;
+    (cityData.pins || []).forEach(pin => {
+      if (!pin.__editorKey) pin.__editorKey = 'p' + (nextPinKey++);
+    });
+  }
+
+  // Load js/cities/<id>.js and register it in CITY_MAPS_REGISTRY
+  function _loadCityFile(id) {
+    return new Promise((resolve, reject) => {
+      if ((window.CITY_MAPS_REGISTRY || {})[id]) { resolve(); return; }
+      const s = document.createElement('script');
+      s.dataset.cityFile = id;
+      s.src = 'js/cities/' + id + '.js?v=' + Date.now();
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('City file not found: js/cities/' + id + '.js'));
+      document.head.appendChild(s);
     });
   }
 
@@ -849,11 +859,11 @@ const CityEditor = (function () {
       console.warn('City image discovery failed:', e);
     }
 
-    if (activeCityId) loadCity(activeCityId);
+    if (activeCityId) await loadCity(activeCityId);
   }
 
   // ── Load a city into the editor ────────────────────────────
-  function loadCity(cityId) {
+  async function loadCity(cityId) {
     if (!cityId) return;
 
     // Handle newly discovered city (not yet in CITY_MAPS)
@@ -863,15 +873,10 @@ const CityEditor = (function () {
       const opt = Array.from(sel.options).find(o => o.value === cityId);
       const img = opt ? opt.dataset.image : ('images/cities/' + rawId + '/' + rawId + '.png');
       const capName = rawId.charAt(0).toUpperCase() + rawId.slice(1);
-      const newEntry = {
-        id: rawId,
-        name: capName,
-        image: img,
-        previewImage: img,
-        pins: [],
-        namedLabels: [],
-      };
+      const newEntry = { id: rawId, name: capName, image: img, previewImage: img };
       CITY_MAPS.push(newEntry);
+      window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+      window.CITY_MAPS_REGISTRY[rawId] = { ...newEntry, pins: [], namedLabels: [] };
       // Replace the option with a normal one
       if (opt) { opt.value = rawId; opt.textContent = capName; }
       return loadCity(rawId);
@@ -881,13 +886,26 @@ const CityEditor = (function () {
     if (cityMapActive) _setOverlay(true);
 
     activeCityId = cityId;
-    allData = CITY_MAPS.map(c => ({
-      ...c,
-      pins: (c.pins || []).map(p => ({ ...p })),
-      namedLabels: (c.namedLabels || []).map(l => ({ ...l })),
-    }));
+
+    // Load city data file if not already in registry
+    try {
+      await _loadCityFile(cityId);
+    } catch (e) {
+      console.warn('Could not load city file:', e.message);
+    }
+
+    const src = (window.CITY_MAPS_REGISTRY || {})[cityId];
+    if (!src) {
+      alert('City data not found for: ' + cityId + '\nMake sure js/cities/' + cityId + '.js exists.');
+      return;
+    }
+
+    cityData = {
+      ...src,
+      pins: (src.pins || []).map(p => ({ ...p })),
+      namedLabels: (src.namedLabels || []).map(l => ({ ...l })),
+    };
     ensurePinKeys();
-    cityData = allData.find(c => c.id === cityId);
 
     // Swap map image, hide world overlay
     const img = document.getElementById('map-image');
@@ -1216,46 +1234,53 @@ const CityEditor = (function () {
       .observe(img, { attributes: true, attributeFilter: ['style'] });
   }
 
-  // ── Save entire CITY_MAPS back to city-maps.js ──────────────
+  // ── Save active city to js/cities/<id>.js ──────────────────
   function save() {
-    if (!allData) return;
+    if (!cityData || !activeCityId) return;
     const status = document.getElementById('city-save-status');
     status.textContent = 'Saving…'; status.style.color = '#888';
 
-    function serializeCity(c) {
+    function serializeCityFile(c) {
       const pins = c.pins.map(l => {
-        let s = `      { n: ${String(l.n).padStart(2)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, name: ${JSON.stringify(l.name)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)}`;
+        let s = `    { n: ${String(l.n).padStart(2)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, name: ${JSON.stringify(l.name)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)}`;
         if (l.size && l.size !== 1.0) s += `, size: ${parseFloat(l.size).toFixed(1)}`;
         return s + ' },';
       }).join('\n');
       const named = (c.namedLabels || []).map(l => {
-        let s = `      { id: ${JSON.stringify(l.id)}, name: ${JSON.stringify(l.name)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)}`;
+        let s = `    { id: ${JSON.stringify(l.id)}, name: ${JSON.stringify(l.name)}, x: ${l.x.toFixed(1)}, y: ${l.y.toFixed(1)}, type: ${JSON.stringify(l.type)}, desc: ${JSON.stringify(l.desc)}`;
         if (l.size && l.size !== 1.0) s += `, size: ${parseFloat(l.size).toFixed(1)}`;
         return s + ' },';
       }).join('\n');
-      return `  {\n    id: ${JSON.stringify(c.id)},\n    name: ${JSON.stringify(c.name)},\n    image: ${JSON.stringify(c.image)},\n    previewImage: ${JSON.stringify(c.previewImage)},\n    pins: [\n${pins}\n    ],\n    namedLabels: [\n${named}\n    ],\n  },`;
+      return `window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};\nwindow.CITY_MAPS_REGISTRY[${JSON.stringify(c.id)}] = {\n  id: ${JSON.stringify(c.id)},\n  name: ${JSON.stringify(c.name)},\n  image: ${JSON.stringify(c.image)},\n  previewImage: ${JSON.stringify(c.previewImage)},\n  pins: [\n${pins}\n  ],\n  namedLabels: [\n${named}\n  ],\n};\n`;
     }
 
-    const output = `/**
- * City Maps Registry — World of Myrdae
- * Add a new city by adding an entry to CITY_MAPS.
- * Each city needs: id, name, image (path), and pins array.
- * Pin positions are edited via the City Map tab in editor.html.
- */
-const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
+    function serializeThinIndex(maps) {
+      const pad = 26;
+      const entries = maps.map(c => {
+        const idStr = JSON.stringify(c.id).padEnd(pad);
+        const nameStr = JSON.stringify(c.name).padEnd(pad);
+        const imgStr = JSON.stringify(c.image);
+        const prevStr = JSON.stringify(c.previewImage);
+        return `  { id: ${idStr}, name: ${nameStr}, image: ${imgStr}, previewImage: ${prevStr} },`;
+      }).join('\n');
+      return `/**\n * City Maps Index — World of Myrdae\n * Thin registry: id, name, image paths only. No pins or labels here.\n * Pin/label data lives in js/cities/<id>.js, loaded on demand.\n */\nconst CITY_MAPS = [\n${entries}\n];\n`;
+    }
 
-    fetch('/save-city-map', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: output })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          // Sync live CITY_MAPS object
-          allData.forEach(c => {
-            const existing = CITY_MAPS.find(m => m.id === c.id);
-            if (existing) Object.assign(existing, c);
-          });
+    const cityOutput  = serializeCityFile(cityData);
+    const indexOutput = serializeThinIndex(CITY_MAPS);
+
+    Promise.all([
+      fetch('/save-city/' + activeCityId, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: cityOutput }),
+      fetch('/save-city-map',             { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: indexOutput }),
+    ])
+      .then(([r1, r2]) => Promise.all([r1.json(), r2.json()]))
+      .then(([res1, res2]) => {
+        if (res1.success && res2.success) {
+          window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+          window.CITY_MAPS_REGISTRY[activeCityId] = cityData;
           status.textContent = 'Saved ✓'; status.style.color = '#4caf50';
         } else {
-          status.textContent = 'Error: ' + res.error; status.style.color = '#e44';
+          status.textContent = 'Error: ' + (res1.error || res2.error); status.style.color = '#e44';
         }
       })
       .catch(err => { status.textContent = 'Save failed: ' + err.message; status.style.color = '#e44'; });
@@ -1265,7 +1290,7 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
 
   function isActive() { return cityMapActive; }
 
-  // ── Reload city-maps.js from disk and re-render pins ───────
+  // ── Reload active city file from disk and re-render pins ───
   async function reloadData() {
     if (!activeCityId) return;
     const btn = Array.from(document.querySelectorAll('button')).find(b =>
@@ -1275,26 +1300,22 @@ const CITY_MAPS = [\n${allData.map(serializeCity).join('\n')}\n];\n`;
     if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reloading…'; }
 
     try {
-      // Fetch fresh city-maps.js and eval it in a sandboxed way
-      const res = await fetch('js/city-maps.js?v=' + Date.now());
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
+      // Remove cached registry entry and script tag so we get a fresh fetch
+      if (window.CITY_MAPS_REGISTRY) delete window.CITY_MAPS_REGISTRY[activeCityId];
+      const old = document.querySelector(`script[data-city-file="${activeCityId}"]`);
+      if (old) old.remove();
 
-      // Extract the CITY_MAPS array literal and re-parse into the live global
-      // We do this by creating a temporary script that overwrites CITY_MAPS
-      const script = document.createElement('script');
-      script.textContent = text + '\n// reload complete';
-      document.head.appendChild(script);
-      document.head.removeChild(script);
+      await _loadCityFile(activeCityId);
 
-      // Re-deep-copy from the freshly-updated global
-      allData = CITY_MAPS.map(c => ({
-        ...c,
-        pins: (c.pins || []).map(p => ({ ...p })),
-        namedLabels: (c.namedLabels || []).map(l => ({ ...l })),
-      }));
+      const src = (window.CITY_MAPS_REGISTRY || {})[activeCityId];
+      if (!src) throw new Error('City data not found after reload');
+
+      cityData = {
+        ...src,
+        pins: (src.pins || []).map(p => ({ ...p })),
+        namedLabels: (src.namedLabels || []).map(l => ({ ...l })),
+      };
       ensurePinKeys();
-      cityData = allData.find(c => c.id === activeCityId);
 
       populateList();
       renderPins();
