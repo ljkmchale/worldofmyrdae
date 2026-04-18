@@ -153,48 +153,6 @@ const DepthMapRenderer = (function () {
     return contourBand * (0.18 + slopeMask * 0.28 + mountainMask * 0.16);
   }
 
-  function sampleCoastProximity(isWater, neighbors) {
-    if (isWater) return 0;
-    return neighbors.some(Boolean) ? 1 : 0;
-  }
-
-  function sampleInlandCoastColor(sourceData, waterMask, width, height, x, y) {
-    let totalR = 0;
-    let totalG = 0;
-    let totalB = 0;
-    let samples = 0;
-
-    for (let oy = -2; oy <= 2; oy++) {
-      for (let ox = -2; ox <= 2; ox++) {
-        if (ox === 0 && oy === 0) continue;
-        const sx = x + ox;
-        const sy = y + oy;
-        if (sx < 0 || sy < 0 || sx >= width || sy >= height) continue;
-        const sIdx1d = sy * width + sx;
-        if (waterMask[sIdx1d] === 1) continue;
-
-        const sIdx = sIdx1d * 4;
-        const sr = sourceData[sIdx];
-        const sg = sourceData[sIdx + 1];
-        const sb = sourceData[sIdx + 2];
-        const lum = 0.299 * sr + 0.587 * sg + 0.114 * sb;
-        if (lum < 50) continue;
-
-        totalR += sr;
-        totalG += sg;
-        totalB += sb;
-        samples++;
-      }
-    }
-
-    if (!samples) return null;
-    return [
-      Math.round(totalR / samples),
-      Math.round(totalG / samples),
-      Math.round(totalB / samples)
-    ];
-  }
-
   function init(imgId, layerGroupId) {
     const img = document.getElementById(imgId);
     const group = document.getElementById(layerGroupId);
@@ -272,15 +230,11 @@ const DepthMapRenderer = (function () {
             continue;
           }
 
-          const coastProximity = sampleCoastProximity(isWater, neighboringWater);
-          const sourceLum = 0.299 * sr + 0.587 * sg + 0.114 * sb;
-          if (coastProximity > 0 && sourceLum < 78) {
-            const inlandColor = sampleInlandCoastColor(sourceData, waterMaskBin, width, height, x, y);
-            const coastColor = inlandColor || [sr, sg, sb];
-            imageData.data[idx] = coastColor[0];
-            imageData.data[idx + 1] = coastColor[1];
-            imageData.data[idx + 2] = coastColor[2];
-            imageData.data[idx + 3] = 255;
+          if (neighboringWater.some(Boolean)) {
+            imageData.data[idx] = 0;
+            imageData.data[idx + 1] = 0;
+            imageData.data[idx + 2] = 0;
+            imageData.data[idx + 3] = 0;
             continue;
           }
           const center = elevations[idx1d];
