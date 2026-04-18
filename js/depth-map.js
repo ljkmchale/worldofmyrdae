@@ -158,6 +158,43 @@ const DepthMapRenderer = (function () {
     return neighbors.some(Boolean) ? 1 : 0;
   }
 
+  function sampleInlandCoastColor(sourceData, waterMask, width, height, x, y) {
+    let totalR = 0;
+    let totalG = 0;
+    let totalB = 0;
+    let samples = 0;
+
+    for (let oy = -2; oy <= 2; oy++) {
+      for (let ox = -2; ox <= 2; ox++) {
+        if (ox === 0 && oy === 0) continue;
+        const sx = x + ox;
+        const sy = y + oy;
+        if (sx < 0 || sy < 0 || sx >= width || sy >= height) continue;
+        const sIdx1d = sy * width + sx;
+        if (waterMask[sIdx1d] === 1) continue;
+
+        const sIdx = sIdx1d * 4;
+        const sr = sourceData[sIdx];
+        const sg = sourceData[sIdx + 1];
+        const sb = sourceData[sIdx + 2];
+        const lum = 0.299 * sr + 0.587 * sg + 0.114 * sb;
+        if (lum < 50) continue;
+
+        totalR += sr;
+        totalG += sg;
+        totalB += sb;
+        samples++;
+      }
+    }
+
+    if (!samples) return null;
+    return [
+      Math.round(totalR / samples),
+      Math.round(totalG / samples),
+      Math.round(totalB / samples)
+    ];
+  }
+
   function init(imgId, layerGroupId) {
     const img = document.getElementById(imgId);
     const group = document.getElementById(layerGroupId);
@@ -177,51 +214,16 @@ const DepthMapRenderer = (function () {
     img.insertAdjacentElement('afterend', _canvas);
 
     function compute() {
-      const naturalW = img.naturalWidth;
-      const naturalH = img.naturalHeight;
-      if (!naturalW || !naturalH) return;
-
-      // Run at 25% scale: 16× faster, and blur passes spread ~4× wider visually,
-      // which is what creates the smooth coastal feathering gradient.
-      const SCALE  = 0.25;
-      const width  = Math.floor(naturalW * SCALE);
-      const height = Math.floor(naturalH * SCALE);
+      const width = img.naturalWidth;
+      const height = img.naturalHeight;
+      if (!width || !height) return;
 
       const sourceCanvas = document.createElement('canvas');
-      sourceCanvas.width  = width;
+      sourceCanvas.width = width;
       sourceCanvas.height = height;
       const sourceCtx = sourceCanvas.getContext('2d', { willReadFrequently: true });
       sourceCtx.drawImage(img, 0, 0, width, height);
       const sourceData = sourceCtx.getImageData(0, 0, width, height).data;
-
-      // ── Outline removal pre-pass (same GLSL logic as map-3d-planet.html) ──────
-      const OL_LOW  = 0.02 * 255;
-      const OL_HIGH = 0.22 * 255;
-      const OL_OFF  = 3; // ~10px at full res scaled to 25%
-      const cleanedData = new Uint8ClampedArray(sourceData);
-      for (let y = OL_OFF; y < height - OL_OFF; y++) {
-        for (let x = OL_OFF; x < width - OL_OFF; x++) {
-          const i  = (y * width + x) * 4;
-          const sr = sourceData[i], sg = sourceData[i + 1], sb = sourceData[i + 2];
-          const lum = 0.299 * sr + 0.587 * sg + 0.114 * sb;
-          if (lum >= OL_HIGH) continue;
-          if (isWaterPixel(sr / 255, sg / 255, sb / 255)) continue;
-          const iU = ((y - OL_OFF) * width +  x          ) * 4;
-          const iD = ((y + OL_OFF) * width +  x          ) * 4;
-          const iL = ( y           * width + (x - OL_OFF)) * 4;
-          const iR = ( y           * width + (x + OL_OFF)) * 4;
-          const nbR = (sourceData[iU] + sourceData[iD] + sourceData[iL] + sourceData[iR]) * 0.25;
-          const nbG = (sourceData[iU+1]+sourceData[iD+1]+sourceData[iL+1]+sourceData[iR+1]) * 0.25;
-          const nbB = (sourceData[iU+2]+sourceData[iD+2]+sourceData[iL+2]+sourceData[iR+2]) * 0.25;
-          const t     = Math.max(0, Math.min(1, (lum - OL_LOW) / (OL_HIGH - OL_LOW)));
-          const blend = 1 - t * t * (3 - 2 * t);
-          cleanedData[i]     = Math.round(sr + (nbR - sr) * blend);
-          cleanedData[i + 1] = Math.round(sg + (nbG - sg) * blend);
-          cleanedData[i + 2] = Math.round(sb + (nbB - sb) * blend);
-        }
-      }
-
-      // ── Elevation + binary water mask ─────────────────────────────────────────
       const elevations = new Float32Array(width * height);
       const waterMaskBin = new Uint8Array(width * height);
       for (let i = 0; i < elevations.length; i++) {
@@ -232,104 +234,92 @@ const DepthMapRenderer = (function () {
         waterMaskBin[i]  = isWaterPixel(r, g, b) ? 1 : 0;
       }
       blur(elevations, width, height);
-
-      // ── Smooth water-proximity gradient ───────────────────────────────────────
-      // 14 passes at 25% scale spreads ~7px in canvas = ~28px at full res →
-      // a wide, gradual coastal fade (land melts into ocean rather than hard edge).
-      const waterProx    = new Float32Array(width * height);
-      const waterProxBuf = new Float32Array(width * height);
-      for (let i = 0; i < waterMaskBin.length; i++) waterProx[i] = waterMaskBin[i];
-      for (let pass = 0; pass < 14; pass++) {
-        for (let y = 1; y < height - 1; y++) {
-          for (let x = 1; x < width - 1; x++) {
-            waterProxBuf[y * width + x] = (
-              waterProx[(y-1)*width+(x-1)] + waterProx[(y-1)*width+x] + waterProx[(y-1)*width+(x+1)] +
-              waterProx[ y   *width+(x-1)] + waterProx[ y   *width+x] + waterProx[ y   *width+(x+1)] +
-              waterProx[(y+1)*width+(x-1)] + waterProx[(y+1)*width+x] + waterProx[(y+1)*width+(x+1)]
-            ) / 9;
-          }
-        }
-        waterProx.set(waterProxBuf);
-      }
       blurBinaryMask(waterMaskBin, width, height, 2);
 
-      // ── Render ────────────────────────────────────────────────────────────────
-      _canvas.width  = width;
+      _canvas.width = width;
       _canvas.height = height;
       const outputCtx = _canvas.getContext('2d');
       const imageData = outputCtx.createImageData(width, height);
-
-      const lightX = -0.62, lightY = -0.58, lightZ = 0.68;
-      const lightLength = Math.sqrt(lightX*lightX + lightY*lightY + lightZ*lightZ);
+      const lightX = -0.62;
+      const lightY = -0.58;
+      const lightZ = 0.68;
+      const lightLength = Math.sqrt(lightX * lightX + lightY * lightY + lightZ * lightZ);
 
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
           const idx1d = y * width + x;
-          const idx   = idx1d * 4;
-          const cr = cleanedData[idx], cg = cleanedData[idx+1], cb = cleanedData[idx+2];
+          const idx = idx1d * 4;
+          const sr = sourceData[idx];
+          const sg = sourceData[idx + 1];
+          const sb = sourceData[idx + 2];
           const isWater = waterMaskBin[idx1d] === 1;
+          const xm1 = Math.max(0, x - 1);
+          const xp1 = Math.min(width - 1, x + 1);
+          const ym1 = Math.max(0, y - 1);
+          const yp1 = Math.min(height - 1, y + 1);
+          const neighboringWater = [
+            waterMaskBin[ym1 * width + x] === 1,
+            waterMaskBin[yp1 * width + x] === 1,
+            waterMaskBin[y * width + xm1] === 1,
+            waterMaskBin[y * width + xp1] === 1
+          ];
 
-          // Water pixels: blend toward WATER_FILL
           if (isWater) {
-            imageData.data[idx]     = Math.round(cr + (WATER_FILL[0] - cr) * 0.22);
-            imageData.data[idx + 1] = Math.round(cg + (WATER_FILL[1] - cg) * 0.22);
-            imageData.data[idx + 2] = Math.round(cb + (WATER_FILL[2] - cb) * 0.22);
+            imageData.data[idx] = Math.round(sr + (WATER_FILL[0] - sr) * 0.22);
+            imageData.data[idx + 1] = Math.round(sg + (WATER_FILL[1] - sg) * 0.22);
+            imageData.data[idx + 2] = Math.round(sb + (WATER_FILL[2] - sb) * 0.22);
             imageData.data[idx + 3] = 255;
             continue;
           }
 
-          // Outline pixels: cover with cleaned colour at full opacity
-          const origLum = 0.299 * sourceData[idx] + 0.587 * sourceData[idx+1] + 0.114 * sourceData[idx+2];
-          if (origLum < OL_HIGH) {
-            imageData.data[idx]     = cr;
-            imageData.data[idx + 1] = cg;
-            imageData.data[idx + 2] = cb;
+          const coastProximity = sampleCoastProximity(isWater, neighboringWater);
+          const sourceLum = 0.299 * sr + 0.587 * sg + 0.114 * sb;
+          if (coastProximity > 0 && sourceLum < 78) {
+            const inlandColor = sampleInlandCoastColor(sourceData, waterMaskBin, width, height, x, y);
+            const coastColor = inlandColor || [sr, sg, sb];
+            imageData.data[idx] = coastColor[0];
+            imageData.data[idx + 1] = coastColor[1];
+            imageData.data[idx + 2] = coastColor[2];
             imageData.data[idx + 3] = 255;
             continue;
           }
-
-          // Coastal fade: blend land → water colour based on proximity gradient
-          const prox = waterProx[idx1d];
-          if (prox > 0.02) {
-            const fade = smoothstep(0.02, 0.55, prox);
-            imageData.data[idx]     = Math.round(cr + (WATER_FILL[0] - cr) * fade);
-            imageData.data[idx + 1] = Math.round(cg + (WATER_FILL[1] - cg) * fade);
-            imageData.data[idx + 2] = Math.round(cb + (WATER_FILL[2] - cb) * fade);
-            imageData.data[idx + 3] = 255;
-            continue;
-          }
-
-          // Inland land: low-alpha hillshade / contour overlay
-          const xm1 = Math.max(0, x - 1), xp1 = Math.min(width - 1, x + 1);
-          const ym1 = Math.max(0, y - 1), yp1 = Math.min(height - 1, y + 1);
           const center = elevations[idx1d];
           const gx = (
-            elevations[ym1*width+xp1] + 2*elevations[y*width+xp1] + elevations[yp1*width+xp1] -
-            elevations[ym1*width+xm1] - 2*elevations[y*width+xm1] - elevations[yp1*width+xm1]
+            elevations[ym1 * width + xp1] + 2 * elevations[y * width + xp1] + elevations[yp1 * width + xp1] -
+            elevations[ym1 * width + xm1] - 2 * elevations[y * width + xm1] - elevations[yp1 * width + xm1]
           ) / 8;
           const gy = (
-            elevations[yp1*width+xm1] + 2*elevations[yp1*width+x] + elevations[yp1*width+xp1] -
-            elevations[ym1*width+xm1] - 2*elevations[ym1*width+x] - elevations[ym1*width+xp1]
+            elevations[yp1 * width + xm1] + 2 * elevations[yp1 * width + x] + elevations[yp1 * width + xp1] -
+            elevations[ym1 * width + xm1] - 2 * elevations[ym1 * width + x] - elevations[ym1 * width + xp1]
           ) / 8;
-          const slopeValue = Math.sqrt(gx*gx + gy*gy);
-          const normalX = -gx * 10.5, normalY = -gy * 10.5, normalZ = 1;
-          const normalLength = Math.sqrt(normalX*normalX + normalY*normalY + normalZ*normalZ);
+          const slopeValue = Math.sqrt(gx * gx + gy * gy);
+          const normalX = -gx * 10.5;
+          const normalY = -gy * 10.5;
+          const normalZ = 1;
+          const normalLength = Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
           const shadeValue = clamp(
-            ((normalX/normalLength)*(lightX/lightLength) +
-             (normalY/normalLength)*(lightY/lightLength) +
-             (normalZ/normalLength)*(lightZ/lightLength)) * 0.72 + 0.50,
-            0.18, 1
+            ((normalX / normalLength) * (lightX / lightLength) +
+             (normalY / normalLength) * (lightY / lightLength) +
+             (normalZ / normalLength) * (lightZ / lightLength)) * 0.72 + 0.50,
+            0.18,
+            1
           );
-          const contourStrength  = sampleContourStrength(center, slopeValue);
-          const shadowStrength    = smoothstep(0.50, 0.20, shadeValue) * smoothstep(0.008, 0.06, slopeValue);
+          const contourStrength = sampleContourStrength(center, slopeValue);
+          const shadowStrength = smoothstep(0.50, 0.20, shadeValue) * smoothstep(0.008, 0.06, slopeValue);
           const highlightStrength = smoothstep(0.62, 0.90, shadeValue) * smoothstep(0.008, 0.05, slopeValue);
           const overlayAlpha = clamp(
-            contourStrength * 0.30 + shadowStrength * 0.18 + highlightStrength * 0.11, 0, 0.30
+            contourStrength * 0.30 + shadowStrength * 0.18 + highlightStrength * 0.11,
+            0,
+            0.30
           );
           let overlayColor = SHADOW_COLOR;
-          if (highlightStrength > shadowStrength && contourStrength < 0.12) overlayColor = HIGHLIGHT_COLOR;
-          if (contourStrength >= Math.max(shadowStrength, highlightStrength) * 0.85) overlayColor = CONTOUR_COLOR;
-          imageData.data[idx]     = overlayColor[0];
+          if (highlightStrength > shadowStrength && contourStrength < 0.12) {
+            overlayColor = HIGHLIGHT_COLOR;
+          }
+          if (contourStrength >= Math.max(shadowStrength, highlightStrength) * 0.85) {
+            overlayColor = CONTOUR_COLOR;
+          }
+          imageData.data[idx] = overlayColor[0];
           imageData.data[idx + 1] = overlayColor[1];
           imageData.data[idx + 2] = overlayColor[2];
           imageData.data[idx + 3] = Math.round(overlayAlpha * 255);
