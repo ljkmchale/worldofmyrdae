@@ -70,7 +70,16 @@ const MapOverlay = (function () {
         if (Array.isArray(pt) && pt.length === 2) {
             return { x: pt[0], y: pt[1], locationId: null };
         }
+        if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+            return { x: pt.x, y: pt.y, locationId: pt.locationId || null };
+        }
         return null;
+    }
+
+    function getRoadPointSource(road) {
+        if (Array.isArray(road.points) && road.points.length > 0) return road.points;
+        if (Array.isArray(road.waypoints) && road.waypoints.length > 0) return road.waypoints;
+        return [];
     }
 
     function measurePercentPath(points) {
@@ -113,13 +122,14 @@ const MapOverlay = (function () {
         if (!data || !Array.isArray(data.roads)) return;
 
         data.roads.forEach((road) => {
-            if (!road.points || road.points.length < 2) return;
+            const roadPoints = getRoadPointSource(road);
+            if (roadPoints.length < 2) return;
             if (road.type === 'water-route') return;
 
             let lastNamedPoint = null;
             let segmentPoints = [];
 
-            road.points.forEach((rawPoint) => {
+            roadPoints.forEach((rawPoint) => {
                 const point = getRoadPointPercent(rawPoint);
                 if (!point) return;
 
@@ -297,11 +307,12 @@ const MapOverlay = (function () {
                 roadGroup.setAttribute('class', 'overlay-roads');
                 let roadsRendered = 0;
                 data.roads.forEach(road => {
-                    if (road.points && road.points.length >= 2) {
+                    const roadPoints = getRoadPointSource(road);
+                    if (roadPoints.length >= 2) {
                         addRoad(roadGroup, road, locMap, natW, natH);
                         roadsRendered++;
                     } else {
-                        console.warn('Road skipped (needs at least 2 points):', road.id, 'points:', road.points?.length || 0);
+                        console.warn('Road skipped (needs at least 2 points):', road.id, 'points:', roadPoints.length);
                     }
                 });
                 svg.appendChild(roadGroup);
@@ -1241,7 +1252,7 @@ const MapOverlay = (function () {
                 reversedPath.setAttribute('stroke', 'none');
 
                 // Reverse the path: re-calculate from road points in reverse order
-                const reversedRoad = { ...road, points: [...road.points].reverse() };
+                const reversedRoad = { ...road, points: [...getRoadPointSource(road)].reverse() };
                 const reversedD = calculatePathD(reversedRoad);
                 if (reversedD) {
                     reversedPath.setAttribute('d', reversedD);
@@ -1308,14 +1319,15 @@ const MapOverlay = (function () {
      * Calculate path string for a road (internal helper)
      */
     function calculatePathD(road) {
-        if (!road.points || road.points.length < 2) {
-            console.warn('Road has insufficient points:', road.id, 'points:', road.points?.length || 0);
+        const roadPoints = getRoadPointSource(road);
+        if (roadPoints.length < 2) {
+            console.warn('Road has insufficient points:', road.id, 'points:', roadPoints.length);
             return '';
         }
 
         // Resolve points
         const points = [];
-        road.points.forEach((pt, idx) => {
+        roadPoints.forEach((pt, idx) => {
             if (typeof pt === 'string') {
                 const loc = locMap.get(pt);
                 if (loc) {
@@ -1327,6 +1339,8 @@ const MapOverlay = (function () {
                 }
             } else if (Array.isArray(pt) && pt.length === 2) {
                 points.push({ x: (pt[0] / 100) * natW, y: (pt[1] / 100) * natH });
+            } else if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+                points.push({ x: (pt.x / 100) * natW, y: (pt.y / 100) * natH });
             }
         });
 
