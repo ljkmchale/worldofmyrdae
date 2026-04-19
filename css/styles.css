@@ -1157,6 +1157,11 @@ p {
   transform: scale(1.18);
 }
 
+.tt-biome-preview-wrap img {
+  object-position: center center;
+  transform: scale(1.04);
+}
+
 .tt-img-wrap::after {
   content: '';
   position: absolute;

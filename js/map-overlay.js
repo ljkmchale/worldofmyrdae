@@ -15,6 +15,14 @@ const MapOverlay = (function () {
     let roadLinksByLocation = new Map();
     let initializedContainers = []; // Track which containers have been explicitly initialized
     let tooltipHeaderImageCache = new Map();
+    const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
+        mountains: 'images/tooltips/biomes/mountains.png',
+        forest: 'images/tooltips/biomes/forest.png',
+        swamp: 'images/tooltips/biomes/swamp.png',
+        desert: 'images/tooltips/biomes/desert.png',
+        highlands: 'images/tooltips/biomes/highlands.png',
+        meadow: 'images/tooltips/biomes/meadow.png'
+    });
 
     const MAP_MILES_PER_PERCENT = 25;
     const TRAVEL_MILES_PER_DAY = {
@@ -802,6 +810,48 @@ const MapOverlay = (function () {
         return type === 'water' || type === 'river';
     }
 
+    function normalizeTooltipMatchText(value) {
+        return (value || '')
+            .toLowerCase()
+            .replace(/['’]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function textIncludesAny(text, keywords) {
+        return keywords.some((keyword) => text.includes(keyword));
+    }
+
+    function getBiomeTooltipHeaderImage(loc) {
+        if (!loc || (loc.type !== 'nature' && loc.type !== 'region')) return null;
+
+        const text = normalizeTooltipMatchText([
+            loc.name,
+            loc.description,
+            loc.region
+        ].filter(Boolean).join(' '));
+
+        let biome = null;
+
+        if (textIncludesAny(text, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) {
+            biome = 'desert';
+        } else if (textIncludesAny(text, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) {
+            biome = 'swamp';
+        } else if (textIncludesAny(text, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) {
+            biome = 'forest';
+        } else if (textIncludesAny(text, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) {
+            biome = 'mountains';
+        } else if (textIncludesAny(text, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) {
+            biome = 'highlands';
+        } else if (textIncludesAny(text, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) {
+            biome = 'meadow';
+        } else if (loc.type === 'region') {
+            biome = 'mountains';
+        }
+
+        return biome ? TOOLTIP_BIOME_IMAGE_PATHS[biome] : null;
+    }
+
     function generateTooltipHeaderImage(loc) {
         if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
 
@@ -919,14 +969,15 @@ const MapOverlay = (function () {
             </div>` : '';
 
         const cityPreviewImage = getCityPreviewImage(loc);
-        const previewImage = cityPreviewImage || generateTooltipHeaderImage(loc);
+        const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
+        const previewImage = cityPreviewImage || biomePreviewImage || generateTooltipHeaderImage(loc);
         const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
         const desc = truncate(loc.description, 160);
         const details = truncate(loc.details, 100);
 
         if (previewImage) {
             tooltip.innerHTML = `
-                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${cityPreviewImage ? ' tt-city-preview-wrap' : ' tt-generated-preview-wrap'}">
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${cityPreviewImage ? ' tt-city-preview-wrap' : biomePreviewImage ? ' tt-biome-preview-wrap' : ' tt-generated-preview-wrap'}">
                     <img src="${previewImage}" alt="${loc.name}">
                     ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
                     <div class="tt-name-overlay">${loc.name}</div>
