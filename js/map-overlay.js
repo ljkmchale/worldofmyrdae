@@ -812,6 +812,8 @@ const MapOverlay = (function () {
             loc.id || loc.name || 'location',
             loc.x,
             loc.y,
+            loc.tooltipImageOffsetX || 0,
+            loc.tooltipImageOffsetY || 0,
             mapImg.currentSrc || mapImg.src || 'map'
         ].join('|');
 
@@ -825,8 +827,10 @@ const MapOverlay = (function () {
         const cropAspect = width / height;
         const cropWidth = mapImg.naturalWidth * 0.18;
         const cropHeight = cropWidth / cropAspect;
-        const centerX = (loc.x / 100) * mapImg.naturalWidth;
-        const centerY = (loc.y / 100) * mapImg.naturalHeight;
+        const offsetX = (typeof loc.tooltipImageOffsetX === 'number' ? loc.tooltipImageOffsetX : 0) / 100 * mapImg.naturalWidth;
+        const offsetY = (typeof loc.tooltipImageOffsetY === 'number' ? loc.tooltipImageOffsetY : 0) / 100 * mapImg.naturalHeight;
+        const centerX = (loc.x / 100) * mapImg.naturalWidth + offsetX;
+        const centerY = (loc.y / 100) * mapImg.naturalHeight + offsetY;
 
         let sx = centerX - cropWidth / 2;
         let sy = centerY - cropHeight * 0.58;
@@ -914,14 +918,15 @@ const MapOverlay = (function () {
                 ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
             </div>` : '';
 
-        const previewImage = getCityPreviewImage(loc) || generateTooltipHeaderImage(loc);
+        const cityPreviewImage = getCityPreviewImage(loc);
+        const previewImage = cityPreviewImage || generateTooltipHeaderImage(loc);
         const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
         const desc = truncate(loc.description, 160);
         const details = truncate(loc.details, 100);
 
         if (previewImage) {
             tooltip.innerHTML = `
-                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}">
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${cityPreviewImage ? ' tt-city-preview-wrap' : ' tt-generated-preview-wrap'}">
                     <img src="${previewImage}" alt="${loc.name}">
                     ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
                     <div class="tt-name-overlay">${loc.name}</div>

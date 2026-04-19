@@ -3526,6 +3526,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -15,
             "labelOffsetY": 20,
+            "tooltipImageOffsetX": 4,
             "fontStyle": "Normal"
         },
         {
