@@ -11,6 +11,24 @@ window.MyrdaeWorldClock = (function () {
         Garnest: '#eda566',
         Briscarn: '#b9d0ea'
     };
+    const SEASON_DETAILS = {
+        Natali: {
+            knownAs: 'Season of Birth',
+            similarTo: 'Spring'
+        },
+        Sultra: {
+            knownAs: 'Season of Light',
+            similarTo: 'Summer'
+        },
+        Garnest: {
+            knownAs: 'Season of Gathering',
+            similarTo: 'Fall'
+        },
+        Briscarn: {
+            knownAs: 'Season of Fading',
+            similarTo: 'Winter'
+        }
+    };
     const HARMONS = [
         { name: 'Talil', days: 48, season: 'Garnest' },
         { name: 'Paramor', days: 48, season: 'Briscarn' },
@@ -197,6 +215,10 @@ window.MyrdaeWorldClock = (function () {
         const minute = Math.floor((dayHourProgress - hour) * 60);
         const dayOfYear = dayIndex + 1;
         const harmonInfo = getHarmonInfo(dayOfYear);
+        const seasonDetails = SEASON_DETAILS[harmonInfo.season] || {
+            knownAs: harmonInfo.season,
+            similarTo: 'Unknown'
+        };
 
         return {
             totalWorldHours,
@@ -206,6 +228,8 @@ window.MyrdaeWorldClock = (function () {
             hour,
             minute,
             season: harmonInfo.season,
+            seasonKnownAs: seasonDetails.knownAs,
+            seasonSimilarTo: seasonDetails.similarTo,
             harmonName: harmonInfo.harmonName,
             dayOfHarmon: harmonInfo.dayOfHarmon,
             stretch: harmonInfo.stretch,
@@ -289,8 +313,15 @@ window.MyrdaeWorldClock = (function () {
         function syncUi(state) {
             if (display) display.textContent = state.compactLabel;
             if (wheel) wheel.innerHTML = renderWheelMarkup(state);
-            if (wheelDate) wheelDate.textContent = `The Renewing  ·  ${state.fullDateLabel}`;
-            if (wheelMeta) wheelMeta.textContent = `${state.season}  ·  Stretch ${state.stretch}  ·  ${state.hourLabel}`;
+            if (wheelDate) wheelDate.textContent = state.fullDateLabel;
+            if (wheelMeta) {
+                wheelMeta.innerHTML = [
+                    `<div><strong>Season:</strong> ${state.season}</div>`,
+                    `<div><strong>Known As:</strong> ${state.seasonKnownAs}</div>`,
+                    `<div><strong>Similar To:</strong> ${state.seasonSimilarTo}</div>`,
+                    `<div><strong>Stretch:</strong> ${state.stretch}  ·  <strong>Hour:</strong> ${state.hourLabel}</div>`
+                ].join('');
+            }
             if (daySlider) daySlider.value = String(state.dayOfYear);
             if (hourSlider) hourSlider.value = String(state.hour);
             setDayLabel(state.dayOfYear);
