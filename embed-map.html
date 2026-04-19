@@ -881,6 +881,13 @@
                 panel.style.opacity = '1';
                 panel.style.transform = 'scale(1) translateX(0)';
                 btn.style.opacity = '1';
+                const searchInput = document.getElementById('location-search');
+                if (searchInput) {
+                    requestAnimationFrame(() => {
+                        searchInput.focus();
+                        searchInput.select();
+                    });
+                }
             }
         }
 
