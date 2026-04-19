@@ -3,6 +3,12 @@
 set -euo pipefail
 
 branch="$(git branch --show-current)"
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  echo "Usage: ./push-git.sh \"Commit message\""
+  echo "   or: npm run push -- \"Commit message\""
+  exit 0
+fi
+
 message="${1:-Update map project}"
 
 if [[ -z "$branch" ]]; then
