@@ -14,6 +14,7 @@ const MapOverlay = (function () {
     let roadGroup = null;
     let roadLinksByLocation = new Map();
     let initializedContainers = []; // Track which containers have been explicitly initialized
+    let tooltipHeaderImageCache = new Map();
 
     const MAP_MILES_PER_PERCENT = 25;
     const TRAVEL_MILES_PER_DAY = {
@@ -780,7 +781,80 @@ const MapOverlay = (function () {
         const cityId = match[1];
         const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
         const entry = cityMaps.find(c => c.id === cityId);
-        return entry && entry.previewImage ? entry.previewImage : null;
+        return entry ? (entry.previewImage || entry.image || null) : null;
+    }
+
+    function getTooltipMapImage() {
+        for (const entry of initializedContainers) {
+            const mapImg = document.getElementById(entry.imageId);
+            if (mapImg && mapImg.complete && mapImg.naturalWidth && mapImg.naturalHeight) {
+                return mapImg;
+            }
+        }
+        return document.getElementById('map-image');
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function generateTooltipHeaderImage(loc) {
+        if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
+
+        const mapImg = getTooltipMapImage();
+        if (!mapImg || !mapImg.complete || !mapImg.naturalWidth || !mapImg.naturalHeight) return null;
+
+        const cacheKey = [
+            loc.id || loc.name || 'location',
+            loc.x,
+            loc.y,
+            mapImg.currentSrc || mapImg.src || 'map'
+        ].join('|');
+
+        if (tooltipHeaderImageCache.has(cacheKey)) {
+            return tooltipHeaderImageCache.get(cacheKey);
+        }
+
+        const canvas = document.createElement('canvas');
+        const width = 560;
+        const height = 300;
+        const cropAspect = width / height;
+        const cropWidth = mapImg.naturalWidth * 0.18;
+        const cropHeight = cropWidth / cropAspect;
+        const centerX = (loc.x / 100) * mapImg.naturalWidth;
+        const centerY = (loc.y / 100) * mapImg.naturalHeight;
+
+        let sx = centerX - cropWidth / 2;
+        let sy = centerY - cropHeight * 0.58;
+        sx = clamp(sx, 0, Math.max(0, mapImg.naturalWidth - cropWidth));
+        sy = clamp(sy, 0, Math.max(0, mapImg.naturalHeight - cropHeight));
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(mapImg, sx, sy, cropWidth, cropHeight, 0, 0, width, height);
+
+        const vignette = ctx.createLinearGradient(0, 0, 0, height);
+        vignette.addColorStop(0, 'rgba(12, 10, 8, 0.08)');
+        vignette.addColorStop(0.55, 'rgba(10, 8, 8, 0.14)');
+        vignette.addColorStop(1, 'rgba(5, 5, 8, 0.72)');
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, width, height);
+
+        const shade = ctx.createRadialGradient(width * 0.5, height * 0.45, width * 0.08, width * 0.5, height * 0.45, width * 0.7);
+        shade.addColorStop(0, 'rgba(255, 220, 150, 0.06)');
+        shade.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
+        ctx.fillStyle = shade;
+        ctx.fillRect(0, 0, width, height);
+
+        const imageUrl = canvas.toDataURL('image/jpeg', 0.88);
+        tooltipHeaderImageCache.set(cacheKey, imageUrl);
+        return imageUrl;
     }
 
     /**
@@ -826,7 +900,7 @@ const MapOverlay = (function () {
                 ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
             </div>` : '';
 
-        const previewImage = getCityPreviewImage(loc);
+        const previewImage = getCityPreviewImage(loc) || generateTooltipHeaderImage(loc);
         const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
         const desc = truncate(loc.description, 160);
         const details = truncate(loc.details, 100);
