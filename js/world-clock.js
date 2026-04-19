@@ -176,9 +176,6 @@ window.MyrdaeWorldClock = (function () {
                 <line x1="${pointerStart.x}" y1="${pointerStart.y}" x2="${pointerEnd.x}" y2="${pointerEnd.y}" stroke="rgba(45,44,48,0.85)" stroke-width="2.2" stroke-linecap="round"></line>
                 <circle cx="${cx}" cy="${cy}" r="3.5" fill="rgba(45,44,48,0.95)"></circle>
                 <circle cx="${marker.x}" cy="${marker.y}" r="4.5" fill="#d4af37" stroke="rgba(45,44,48,0.8)" stroke-width="1.2"></circle>
-                <text x="${cx}" y="${cy - 12}" text-anchor="middle" fill="rgba(77,64,49,0.95)" font-family="Cinzel, serif" font-size="12">The Renewing</text>
-                <text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="rgba(82,72,58,0.92)" font-family="Cormorant Garamond, serif" font-size="13">${state.fullDateLabel}</text>
-                <text x="${cx}" y="${cy + 28}" text-anchor="middle" fill="rgba(82,72,58,0.92)" font-family="Cormorant Garamond, serif" font-size="12">${state.hourLabel}  ·  Stretch ${state.stretch}</text>
             </svg>
         `;
     }
@@ -262,6 +259,8 @@ window.MyrdaeWorldClock = (function () {
         const panel = document.getElementById(panelId);
         const display = document.getElementById(displayId);
         const wheel = document.getElementById('world-clock-wheel');
+        const wheelDate = document.getElementById('world-clock-date');
+        const wheelMeta = document.getElementById('world-clock-meta');
         const daySlider = document.getElementById(daySliderId);
         const hourSlider = document.getElementById(hourSliderId);
         const dayLabel = document.getElementById(dayLabelId);
@@ -289,6 +288,8 @@ window.MyrdaeWorldClock = (function () {
         function syncUi(state) {
             if (display) display.textContent = state.compactLabel;
             if (wheel) wheel.innerHTML = renderWheelMarkup(state);
+            if (wheelDate) wheelDate.textContent = `The Renewing  ·  ${state.fullDateLabel}`;
+            if (wheelMeta) wheelMeta.textContent = `${state.season}  ·  Stretch ${state.stretch}  ·  ${state.hourLabel}`;
             if (daySlider) daySlider.value = String(state.dayOfYear);
             if (hourSlider) hourSlider.value = String(state.hour);
             setDayLabel(state.dayOfYear);
