@@ -23,6 +23,12 @@ const MapOverlay = (function () {
         highlands: 'images/tooltips/biomes/highlands.png',
         meadow: 'images/tooltips/biomes/meadow.png'
     });
+    const TOOLTIP_WATER_IMAGE_PATHS = Object.freeze({
+        ocean: 'images/tooltips/water/ocean.png',
+        coast: 'images/tooltips/water/coast.png',
+        lake: 'images/tooltips/water/lake.png',
+        river: 'images/tooltips/water/river.png'
+    });
 
     const MAP_MILES_PER_PERCENT = 25;
     const TRAVEL_MILES_PER_DAY = {
@@ -852,6 +858,34 @@ const MapOverlay = (function () {
         return biome ? TOOLTIP_BIOME_IMAGE_PATHS[biome] : null;
     }
 
+    function getWaterTooltipHeaderImage(loc) {
+        if (!loc || !isWaterTooltipType(loc.type)) return null;
+
+        const text = normalizeTooltipMatchText([
+            loc.name,
+            loc.description,
+            loc.region
+        ].filter(Boolean).join(' '));
+
+        if (loc.type === 'river' || textIncludesAny(text, ['river', 'run', 'flow', 'brook'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.river;
+        }
+
+        if (textIncludesAny(text, ['lake', 'loch', 'basin', 'mere'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.lake;
+        }
+
+        if (textIncludesAny(text, ['bay', 'cove', 'inlet', 'strait', 'harbor', 'harbour', 'span', 'plunge'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.coast;
+        }
+
+        if (textIncludesAny(text, ['sea', 'ocean', 'deep'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+        }
+
+        return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+    }
+
     function generateTooltipHeaderImage(loc) {
         if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
 
@@ -970,14 +1004,15 @@ const MapOverlay = (function () {
 
         const cityPreviewImage = getCityPreviewImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
-        const previewImage = cityPreviewImage || biomePreviewImage || generateTooltipHeaderImage(loc);
+        const waterPreviewImage = getWaterTooltipHeaderImage(loc);
+        const previewImage = cityPreviewImage || biomePreviewImage || waterPreviewImage || generateTooltipHeaderImage(loc);
         const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
         const desc = truncate(loc.description, 160);
         const details = truncate(loc.details, 100);
 
         if (previewImage) {
             tooltip.innerHTML = `
-                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${cityPreviewImage ? ' tt-city-preview-wrap' : biomePreviewImage ? ' tt-biome-preview-wrap' : ' tt-generated-preview-wrap'}">
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${cityPreviewImage ? ' tt-city-preview-wrap' : (biomePreviewImage || waterPreviewImage) ? ' tt-biome-preview-wrap' : ' tt-generated-preview-wrap'}">
                     <img src="${previewImage}" alt="${loc.name}">
                     ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
                     <div class="tt-name-overlay">${loc.name}</div>
