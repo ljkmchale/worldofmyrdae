@@ -1,9 +1,40 @@
 /**
- * Coordinate grid overlay for World of Myrdae.
- * Draws a 0-100 percentage grid aligned to the map image.
+ * Earth-style latitude/longitude grid overlay for World of Myrdae.
+ * Assumes the map image behaves like an equirectangular projection.
  */
 const CoordGrid = (function () {
   let active = false;
+
+  const MINOR_LON_STEP = 15;
+  const MAJOR_LON_STEP = 30;
+  const MINOR_LAT_STEP = 15;
+  const MAJOR_LAT_STEP = 30;
+
+  function lonToX(lon, natW) {
+    return ((lon + 180) / 360) * natW;
+  }
+
+  function latToY(lat, natH) {
+    return ((90 - lat) / 180) * natH;
+  }
+
+  function formatLongitude(lon) {
+    if (lon === 0) return '0deg';
+    return `${Math.abs(lon)}deg${lon < 0 ? 'W' : 'E'}`;
+  }
+
+  function formatLatitude(lat) {
+    if (lat === 0) return '0deg';
+    return `${Math.abs(lat)}deg${lat < 0 ? 'S' : 'N'}`;
+  }
+
+  function makeText(svg, attrs, textContent) {
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    Object.entries(attrs).forEach(([key, value]) => text.setAttribute(key, value));
+    text.textContent = textContent;
+    svg.appendChild(text);
+    return text;
+  }
 
   function init(containerId, imageId) {
     const container = document.getElementById(containerId);
@@ -32,86 +63,121 @@ const CoordGrid = (function () {
       svg.style.display = active ? '' : 'none';
       svg.style.zIndex = '6';
 
-      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-      const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-      shadow.setAttribute('id', containerId + '-coord-grid-shadow');
-      shadow.setAttribute('x', '-20%');
-      shadow.setAttribute('y', '-20%');
-      shadow.setAttribute('width', '140%');
-      shadow.setAttribute('height', '140%');
-      const drop = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
-      drop.setAttribute('dx', '0');
-      drop.setAttribute('dy', '0');
-      drop.setAttribute('stdDeviation', '1.4');
-      drop.setAttribute('flood-color', '#081018');
-      drop.setAttribute('flood-opacity', '0.65');
-      shadow.appendChild(drop);
-      defs.appendChild(shadow);
-      svg.appendChild(defs);
-
       const minorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       const majorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const axisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
-      minorGroup.setAttribute('opacity', '0.28');
-      majorGroup.setAttribute('opacity', '0.65');
-      labelGroup.setAttribute('filter', `url(#${containerId}-coord-grid-shadow)`);
+      minorGroup.setAttribute('opacity', '0.2');
+      majorGroup.setAttribute('opacity', '0.45');
+      axisGroup.setAttribute('opacity', '0.7');
+      minorGroup.setAttribute('shape-rendering', 'crispEdges');
+      majorGroup.setAttribute('shape-rendering', 'crispEdges');
+      axisGroup.setAttribute('shape-rendering', 'crispEdges');
 
-      for (let value = 0; value <= 100; value += 5) {
-        const x = (value / 100) * natW;
-        const y = (value / 100) * natH;
-        const isMajor = value % 10 === 0;
+      for (let lon = -180; lon <= 180; lon += MINOR_LON_STEP) {
+        const x = lonToX(lon, natW);
+        const isAxis = lon === 0;
+        const isMajor = lon % MAJOR_LON_STEP === 0;
+        const targetGroup = isAxis ? axisGroup : (isMajor ? majorGroup : minorGroup);
 
-        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        vLine.setAttribute('x1', x);
-        vLine.setAttribute('y1', 0);
-        vLine.setAttribute('x2', x);
-        vLine.setAttribute('y2', natH);
-        vLine.setAttribute('stroke', isMajor ? '#d8d2b2' : '#c4bea1');
-        vLine.setAttribute('stroke-width', isMajor ? '1.15' : '0.65');
-        vLine.setAttribute('stroke-dasharray', isMajor ? '8 5' : '4 7');
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', 0);
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', natH);
+        line.setAttribute('stroke', isAxis ? '#f4edd1' : (isMajor ? '#ddd4ae' : '#c8c0a0'));
+        line.setAttribute('stroke-width', isAxis ? '1.4' : (isMajor ? '1' : '0.55'));
+        line.setAttribute('stroke-dasharray', isAxis ? 'none' : (isMajor ? '8 7' : '3 9'));
+        targetGroup.appendChild(line);
 
-        const hLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        hLine.setAttribute('x1', 0);
-        hLine.setAttribute('y1', y);
-        hLine.setAttribute('x2', natW);
-        hLine.setAttribute('y2', y);
-        hLine.setAttribute('stroke', isMajor ? '#d8d2b2' : '#c4bea1');
-        hLine.setAttribute('stroke-width', isMajor ? '1.15' : '0.65');
-        hLine.setAttribute('stroke-dasharray', isMajor ? '8 5' : '4 7');
+        if (!isMajor || lon === 180) continue;
 
-        (isMajor ? majorGroup : minorGroup).appendChild(vLine);
-        (isMajor ? majorGroup : minorGroup).appendChild(hLine);
-
-        if (!isMajor) continue;
-
-        if (value < 100) {
-          const topLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          topLabel.setAttribute('x', Math.min(x + 4, natW - 26));
-          topLabel.setAttribute('y', 18);
-          topLabel.setAttribute('fill', '#f3ecd0');
-          topLabel.setAttribute('font-size', Math.max(11, natW * 0.008));
-          topLabel.setAttribute('font-family', 'Cinzel, serif');
-          topLabel.setAttribute('letter-spacing', '0.08em');
-          topLabel.textContent = value.toString();
-          labelGroup.appendChild(topLabel);
-        }
-
-        if (value > 0 && value < 100) {
-          const sideLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          sideLabel.setAttribute('x', 8);
-          sideLabel.setAttribute('y', Math.min(y - 4, natH - 10));
-          sideLabel.setAttribute('fill', '#f3ecd0');
-          sideLabel.setAttribute('font-size', Math.max(11, natW * 0.008));
-          sideLabel.setAttribute('font-family', 'Cinzel, serif');
-          sideLabel.setAttribute('letter-spacing', '0.08em');
-          sideLabel.textContent = value.toString();
-          labelGroup.appendChild(sideLabel);
-        }
+        const label = formatLongitude(lon);
+        const labelX = Math.max(22, Math.min(x + 4, natW - 22));
+        makeText(labelGroup, {
+          x: labelX,
+          y: 20,
+          fill: '#f3ecd0',
+          stroke: 'rgba(8,16,24,0.45)',
+          'stroke-width': '0.7',
+          'paint-order': 'stroke',
+          'font-size': Math.max(11, natW * 0.0072),
+          'font-family': 'Cinzel, serif',
+          'letter-spacing': '0.08em'
+        }, label);
+        makeText(labelGroup, {
+          x: labelX,
+          y: natH - 8,
+          fill: '#f3ecd0',
+          stroke: 'rgba(8,16,24,0.45)',
+          'stroke-width': '0.7',
+          'paint-order': 'stroke',
+          'font-size': Math.max(11, natW * 0.0072),
+          'font-family': 'Cinzel, serif',
+          'letter-spacing': '0.08em'
+        }, label);
       }
+
+      for (let lat = -90; lat <= 90; lat += MINOR_LAT_STEP) {
+        const y = latToY(lat, natH);
+        const isAxis = lat === 0;
+        const isMajor = lat % MAJOR_LAT_STEP === 0;
+        const targetGroup = isAxis ? axisGroup : (isMajor ? majorGroup : minorGroup);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', 0);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', natW);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', isAxis ? '#f4edd1' : (isMajor ? '#ddd4ae' : '#c8c0a0'));
+        line.setAttribute('stroke-width', isAxis ? '1.4' : (isMajor ? '1' : '0.55'));
+        line.setAttribute('stroke-dasharray', isAxis ? 'none' : (isMajor ? '8 7' : '3 9'));
+        targetGroup.appendChild(line);
+
+        if (!isMajor || lat === -90 || lat === 90) continue;
+
+        const label = formatLatitude(lat);
+        const labelY = Math.max(14, Math.min(y - 4, natH - 12));
+        makeText(labelGroup, {
+          x: 8,
+          y: labelY,
+          fill: '#f3ecd0',
+          stroke: 'rgba(8,16,24,0.45)',
+          'stroke-width': '0.7',
+          'paint-order': 'stroke',
+          'font-size': Math.max(11, natW * 0.0072),
+          'font-family': 'Cinzel, serif',
+          'letter-spacing': '0.08em'
+        }, label);
+        makeText(labelGroup, {
+          x: natW - 42,
+          y: labelY,
+          fill: '#f3ecd0',
+          stroke: 'rgba(8,16,24,0.45)',
+          'stroke-width': '0.7',
+          'paint-order': 'stroke',
+          'font-size': Math.max(11, natW * 0.0072),
+          'font-family': 'Cinzel, serif',
+          'letter-spacing': '0.08em',
+          'text-anchor': 'end'
+        }, label);
+      }
+
+      const frame = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      frame.setAttribute('x', '1');
+      frame.setAttribute('y', '1');
+      frame.setAttribute('width', natW - 2);
+      frame.setAttribute('height', natH - 2);
+      frame.setAttribute('fill', 'none');
+      frame.setAttribute('stroke', '#e7dec0');
+      frame.setAttribute('stroke-width', '1.3');
+      frame.setAttribute('opacity', '0.42');
 
       svg.appendChild(minorGroup);
       svg.appendChild(majorGroup);
+      svg.appendChild(axisGroup);
+      svg.appendChild(frame);
       svg.appendChild(labelGroup);
       mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
     };
