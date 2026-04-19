@@ -124,6 +124,84 @@
             border-radius: 4px;
         }
 
+        .time-display-panel {
+            position: absolute;
+            right: 0.75rem;
+            bottom: 0.75rem;
+            background: rgba(5, 8, 18, 0.82);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: 6px;
+            padding: 0.38rem 0.7rem;
+            color: #faf3e0;
+            font-family: 'Cinzel', serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            text-shadow: 1px 1px 3px #000;
+            z-index: 105;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .time-controls-panel {
+            display: none;
+            position: absolute;
+            top: 0.75rem;
+            right: 3.75rem;
+            width: 220px;
+            background: rgba(5, 8, 18, 0.94);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 8px;
+            padding: 0.85rem 0.95rem;
+            color: #faf3e0;
+            font-family: 'Cinzel', serif;
+            z-index: 120;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .time-controls-panel .time-heading {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.75rem;
+            color: #d4af37;
+        }
+
+        .time-controls-panel .time-row {
+            margin-bottom: 0.85rem;
+        }
+
+        .time-controls-panel .time-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .time-controls-panel label {
+            display: block;
+            font-size: 0.7rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .time-controls-panel input[type="range"] {
+            width: 100%;
+            accent-color: #d4af37;
+            cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+            .time-controls-panel {
+                right: 0.75rem;
+                top: auto;
+                bottom: 4rem;
+                width: min(220px, calc(100vw - 1.5rem));
+            }
+
+            .time-display-panel {
+                left: 0.75rem;
+                right: auto;
+                bottom: 3.25rem;
+            }
+        }
+
         /* ---- Legend Panel ---- */
         .legend-panel {
             position: absolute;
@@ -851,10 +929,27 @@
             <button class="map-btn" id="water-routes-toggle" onclick="toggleWaterRoutes()" title="Toggle Water Routes" style="opacity:0.5;">
                 <i class="fa-solid fa-water"></i>
             </button>
+            <button class="map-btn" id="time-toggle" title="Adjust World Time" style="opacity:0.6;">
+                <i class="fa-solid fa-clock"></i>
+            </button>
             <button class="map-btn" id="awakening-btn" onclick="replayGreatAwakening()" title="Replay The Awakening">
                 <i class="fa-solid fa-bolt-lightning"></i>
             </button>
         </div>
+
+        <div class="time-controls-panel" id="time-controls" onmousedown="event.stopPropagation()">
+            <div class="time-heading">WORLD CLOCK</div>
+            <div class="time-row">
+                <label for="tc-day">Day of Year <span id="tc-day-label" style="color:#d4af37;"></span></label>
+                <input type="range" id="tc-day" min="1" max="384" value="1">
+            </div>
+            <div class="time-row">
+                <label for="tc-hour">Hour <span id="tc-hour-label" style="color:#d4af37;"></span></label>
+                <input type="range" id="tc-hour" min="0" max="23" value="0">
+            </div>
+        </div>
+
+        <div class="time-display-panel" id="season-display"></div>
 
         <!-- Title card shown during pre-awakening reveal -->
         <div id="awakening-title">
@@ -935,6 +1030,7 @@
     <script src="js/map.js"></script>
     <script src="js/map-overlay.js"></script>
     <script src="js/dragon-overlay.js"></script>
+    <script src="js/world-clock.js"></script>
     <script src="js/boat-animations.js"></script>
     <script src="js/location-search.js"></script>
     <script src="js/depth-map.js"></script>
@@ -955,6 +1051,17 @@
             LocationSearch.init('map-container');
             DepthMapRenderer.init('map-image', 'map-layer-group');
             CoordGrid.init('map-container', 'map-image');
+            if (window.MyrdaeWorldClock) {
+                window.MyrdaeWorldClock.installControls({
+                    buttonId: 'time-toggle',
+                    panelId: 'time-controls',
+                    displayId: 'season-display',
+                    daySliderId: 'tc-day',
+                    hourSliderId: 'tc-hour',
+                    dayLabelId: 'tc-day-label',
+                    hourLabelId: 'tc-hour-label'
+                });
+            }
         });
 
         function toggleGrid() {

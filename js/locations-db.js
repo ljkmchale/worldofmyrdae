@@ -13689,7 +13689,6 @@ const WORLD_LOCATIONS = {
             "shipName": "Ironkeel",
             "shipType": "Brigantine",
             "captainName": "Captain Torvald Drask",
-            "animationDuration": 100,
             "routePurpose": "military",
             "cargo": "Swords, armor, mercenaries",
             "riskLevel": "low"

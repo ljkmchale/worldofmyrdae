@@ -40,6 +40,7 @@ const SAILING_SPEEDS = {
     'Ship': 68,
     default: 68
 };
+const FALLBACK_DAY_REAL_MS = 60 * 60 * 1000;
 
 function _measurePathMiles(points) {
     let totalPercent = 0;
@@ -53,6 +54,23 @@ function _measurePathMiles(points) {
 
 function _getSailingSpeed(shipType) {
     return SAILING_SPEEDS[shipType] || SAILING_SPEEDS.default;
+}
+
+function _getFallbackWorldHours(now = performance.now()) {
+    return (now / FALLBACK_DAY_REAL_MS) * 24;
+}
+
+function _getRouteProgress(roundTripWorldHours, startOffset = 0, now = performance.now()) {
+    if (window.MyrdaeWorldClock && typeof window.MyrdaeWorldClock.getRouteProgress === 'function') {
+        return window.MyrdaeWorldClock.getRouteProgress(roundTripWorldHours, startOffset, now);
+    }
+
+    if (!roundTripWorldHours || roundTripWorldHours <= 0) {
+        return ((startOffset % 1) + 1) % 1;
+    }
+
+    const totalWorldHours = _getFallbackWorldHours(now);
+    return (((totalWorldHours / roundTripWorldHours) + startOffset) % 1 + 1) % 1;
 }
 
 function _getWaterRouteDisplayName(route, pathPoints, locMap) {
@@ -179,16 +197,13 @@ class BoatFleet {
             const pathPoints = this.calculatePathPoints(route);
             if (pathPoints.length < 2) return;
 
-            // Use per-route duration (seconds → ms) or randomized default
-            const baseDuration = route.animationDuration
-                ? route.animationDuration * 1000
-                : 90000 + (routeIdx * 8000) + (Math.random() * 30000);
-
             const shipName    = route.shipName    || route.name || 'Unknown Vessel';
             const shipType    = route.shipType    || 'Ship';
             const captainName = route.captainName || 'Unknown';
             const routeMiles  = _measurePathMiles(pathPoints);
             const sailingSpeed = _getSailingSpeed(shipType);
+
+            const sailingDays = routeMiles / sailingSpeed;
             const routeName   = _getWaterRouteDisplayName(route, pathPoints, this.locMap);
             
             // Use saved boatColor, or look up default by type, or fallback to blue
@@ -205,7 +220,6 @@ class BoatFleet {
                 route,
                 id: `boat-${route.id}`,
                 startOffset: routeIdx * 0.17, // Randomize starting position along the loop
-                duration: baseDuration * 2,   // Duration is for the full round trip (A->B->A)
                 pathPoints,
                 element: null,
                 shipName,
@@ -214,6 +228,7 @@ class BoatFleet {
                 routeName,
                 routeMiles,
                 sailingSpeed,
+                roundTripWorldHours: Math.max(sailingDays * 24 * 2, 0.25),
                 shipTooltipImage,
                 boatColor,
                 boatSizeMul,
@@ -412,7 +427,8 @@ class BoatFleet {
 
     updateBoat(boat) {
         // Raw progress from 0 to 1 for the total round trip
-        const totalProgress = ((Date.now() / boat.duration) + boat.startOffset) % 1;
+        const now = performance.now();
+        const totalProgress = _getRouteProgress(boat.roundTripWorldHours, boat.startOffset, now);
         
         // Split progress: 0.0-0.5 is forward, 0.5-1.0 is backward
         let raw, reversed;
