@@ -142,12 +142,21 @@
             backdrop-filter: blur(8px);
         }
 
+        .time-display-panel strong {
+            display: block;
+            margin-bottom: 0.18rem;
+            font-size: 0.66rem;
+            letter-spacing: 0.14em;
+            color: #d4af37;
+            text-transform: uppercase;
+        }
+
         .time-controls-panel {
             display: none;
             position: absolute;
             top: 0.75rem;
             right: 3.75rem;
-            width: 220px;
+            width: 300px;
             background: rgba(5, 8, 18, 0.94);
             border: 1px solid rgba(212, 175, 55, 0.4);
             border-radius: 8px;
@@ -179,6 +188,12 @@
             display: block;
             font-size: 0.7rem;
             margin-bottom: 0.35rem;
+        }
+
+        .time-wheel {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            margin-bottom: 0.85rem;
         }
 
         .time-controls-panel input[type="range"] {
@@ -939,6 +954,7 @@
 
         <div class="time-controls-panel" id="time-controls" onmousedown="event.stopPropagation()">
             <div class="time-heading">WORLD CLOCK</div>
+            <div class="time-wheel" id="world-clock-wheel"></div>
             <div class="time-row">
                 <label for="tc-day">Day of Year <span id="tc-day-label" style="color:#d4af37;"></span></label>
                 <input type="range" id="tc-day" min="1" max="384" value="1">
@@ -949,7 +965,7 @@
             </div>
         </div>
 
-        <div class="time-display-panel" id="season-display"></div>
+        <div class="time-display-panel"><strong>World Date</strong><div id="season-display"></div></div>
 
         <!-- Title card shown during pre-awakening reveal -->
         <div id="awakening-title">
