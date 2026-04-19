@@ -4,6 +4,7 @@ window.MyrdaeWorldClock = (function () {
     const YEAR_DAYS = 384;
     const STRETCH_DAYS = 8;
     const YEAR_HOURS = YEAR_DAYS * HOURS_PER_DAY;
+    const WHEEL_YEAR_START_ANGLE = -135;
     const WHEEL_SEASON_COLORS = {
         Natali: '#c7e3ac',
         Sultra: '#ffe79a',
@@ -121,7 +122,7 @@ window.MyrdaeWorldClock = (function () {
         const harmonOuter = 78;
         const harmonInner = 42;
         const activeDayOfYear = state.dayOfYear - 1;
-        const dayAngle = (activeDayOfYear / YEAR_DAYS) * 360;
+        const dayAngle = WHEEL_YEAR_START_ANGLE + ((activeDayOfYear / YEAR_DAYS) * 360);
         const pointerStart = polarToCartesian(cx, cy, 16, dayAngle);
         const pointerEnd = polarToCartesian(cx, cy, 70, dayAngle);
         const marker = polarToCartesian(cx, cy, seasonOuter + 4, dayAngle);
