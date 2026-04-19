@@ -773,6 +773,16 @@ const MapOverlay = (function () {
         markerGroup.appendChild(label);
     }
 
+    function getCityPreviewImage(loc) {
+        if (!loc.cityMap) return null;
+        const match = loc.cityMap.match(/[?&]city=([^&]+)/);
+        if (!match) return null;
+        const cityId = match[1];
+        const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
+        const entry = cityMaps.find(c => c.id === cityId);
+        return entry && entry.previewImage ? entry.previewImage : null;
+    }
+
     /**
      * Show tooltip with location details
      */
@@ -810,21 +820,46 @@ const MapOverlay = (function () {
                 <div style="font-family:'Cormorant Garamond', serif;font-size:0.78rem;color:#8f8770;font-style:italic;margin-top:0.35rem;">Approximate miles and horse-cart travel days.</div>
             </div>
         ` : '';
+        const linksSection = (loc.link || loc.cityMap) ? `
+            <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                ${loc.cityMap ? `<a href="${loc.cityMap}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
+                ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
+            </div>` : '';
 
-        tooltip.innerHTML = `
-            <div class="tooltip-header" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
-                <span class="tooltip-icon" style="font-size: 1.1rem;">${icon}</span>
-                <span class="tooltip-name" style="font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">${loc.name}</span>
-            </div>
-            <div class="tooltip-type" style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #a0a0a0; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(212,175,55,0.2);">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
-            ${loc.description ? `<div class="tooltip-desc" style="font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: #d0d0d0; line-height: 1.4;">${loc.description}</div>` : ''}
-            ${loc.details ? `<div class="tooltip-details" style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: #888; font-style: italic; margin-top: 0.3rem;">${loc.details}</div>` : ''}
-            ${roadSection}
-            ${(loc.link || loc.cityMap) ? `<div class="tooltip-link" style="margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid rgba(212,175,55,0.2); display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                ${loc.cityMap ? `<a href="${loc.cityMap}" target="_blank" rel="noopener noreferrer" style="font-family: 'Cinzel', serif; font-size: 0.75rem; color: #d4af37; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border: 1px solid rgba(212,175,55,0.5); border-radius: 3px; transition: all 0.2s;" onmouseenter="this.style.background='rgba(212,175,55,0.15)';this.style.borderColor='#d4af37'" onmouseleave="this.style.background='transparent';this.style.borderColor='rgba(212,175,55,0.5)'">&#9680; City Map</a>` : ''}
-                ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #ffd700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.2s;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More <span style="font-size: 0.9em;">→</span></a>` : ''}
-            </div>` : ''}
-        `;
+        const previewImage = getCityPreviewImage(loc);
+        const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
+        const desc = truncate(loc.description, 160);
+        const details = truncate(loc.details, 100);
+
+        if (previewImage) {
+            tooltip.innerHTML = `
+                <div class="tt-img-wrap">
+                    <img src="${previewImage}" alt="${loc.name}">
+                    <div class="tt-name-overlay">${loc.name}</div>
+                </div>
+                <div class="tt-body">
+                    <div class="tt-type">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
+                    ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                    ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                    ${roadSection}
+                    ${linksSection}
+                </div>
+            `;
+        } else {
+            tooltip.innerHTML = `
+                <div class="tt-no-img-header">
+                    <span style="font-size:1.1rem;">${icon}</span>
+                    <span class="tt-no-img-name">${loc.name}</span>
+                </div>
+                <div class="tt-body">
+                    <div class="tt-type">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
+                    ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                    ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                    ${roadSection}
+                    ${linksSection}
+                </div>
+            `;
+        }
 
         tooltip.style.display = 'block';
         tooltip.style.pointerEvents = 'auto';

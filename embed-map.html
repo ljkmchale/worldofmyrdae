@@ -611,6 +611,80 @@
             animation: ash-charge 0.5s ease-in-out infinite;
         }
 
+        /* ── City-Viewer Style Tooltips ── */
+        .map-tooltip {
+            width: 280px !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            box-shadow: 0 8px 36px rgba(0,0,0,0.75) !important;
+            background: rgba(10,10,15,0.97) !important;
+            border: 1px solid rgba(212,175,55,0.35) !important;
+            padding: 0 !important;
+        }
+        .tt-img-wrap {
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+        .tt-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 40%;
+            filter: contrast(1.08) saturate(1.2) brightness(0.9);
+            display: block;
+        }
+        .tt-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(5,5,8,0.85) 100%);
+        }
+        .tt-name-overlay {
+            position: absolute;
+            bottom: 0.55rem;
+            left: 0.85rem;
+            right: 0.85rem;
+            z-index: 2;
+            font-family: 'Cinzel', serif;
+            font-size: 0.92rem;
+            color: #d4af37;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+        }
+        .tt-no-img-header {
+            padding: 0.7rem 0.9rem 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tt-no-img-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        .tt-body {
+            padding: 0.55rem 0.9rem 0.8rem;
+        }
+        .tt-type {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.35rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        .tt-desc {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9rem;
+            color: #d0d0d0;
+            line-height: 1.5;
+        }
+
         #muerg-host {
             position: absolute;
             width: 4px;
@@ -799,6 +873,7 @@
     </div>
 
     <script src="js/locations-db.js"></script>
+    <script src="js/city-maps.js"></script>
     <script src="js/campaign-data.js"></script>
     <script src="js/map.js"></script>
     <script src="js/map-overlay.js"></script>
