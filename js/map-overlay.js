@@ -12,13 +12,130 @@ const MapOverlay = (function () {
     let natW = 0;
     let natH = 0;
     let roadGroup = null;
+    let roadLinksByLocation = new Map();
     let initializedContainers = []; // Track which containers have been explicitly initialized
+
+    const MAP_MILES_PER_PERCENT = 25;
+    const TRAVEL_MILES_PER_DAY = {
+        major: 24,
+        minor: 18,
+        default: 20
+    };
 
     function isEditorMode() {
         return typeof document !== 'undefined' && document.body && document.body.classList.contains('editor-mode');
     }
 
     function getData() { return data; }
+
+    function getRoadTravelSpeed(roadType) {
+        return TRAVEL_MILES_PER_DAY[roadType] || TRAVEL_MILES_PER_DAY.default;
+    }
+
+    function getRoadDisplayName(road, fromLoc, toLoc) {
+        if (road.name && road.name.trim()) return road.name.trim();
+        if (fromLoc && toLoc) return `${fromLoc.name} to ${toLoc.name}`;
+        if (road.id) {
+            return road.id
+                .replace(/[-_]+/g, ' ')
+                .replace(/\broad\b/gi, '')
+                .replace(/\bcrossroad\b/gi, 'Crossroad')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+        return 'Road Connection';
+    }
+
+    function getRoadPointPercent(pt) {
+        if (typeof pt === 'string') {
+            const loc = locMap.get(pt);
+            return loc ? { x: loc.x, y: loc.y, locationId: loc.id } : null;
+        }
+        if (Array.isArray(pt) && pt.length === 2) {
+            return { x: pt[0], y: pt[1], locationId: null };
+        }
+        return null;
+    }
+
+    function measurePercentPath(points) {
+        let total = 0;
+        for (let i = 1; i < points.length; i++) {
+            const dx = points[i].x - points[i - 1].x;
+            const dy = points[i].y - points[i - 1].y;
+            total += Math.sqrt(dx * dx + dy * dy);
+        }
+        return total;
+    }
+
+    function addRoadLink(fromId, toId, road, percentDistance) {
+        if (!fromId || !toId || fromId === toId) return;
+        const fromLoc = locMap.get(fromId);
+        const toLoc = locMap.get(toId);
+        if (!fromLoc || !toLoc) return;
+
+        const miles = percentDistance * MAP_MILES_PER_PERCENT;
+        const speed = getRoadTravelSpeed(road.type);
+        const days = miles / speed;
+        const entries = roadLinksByLocation.get(fromId) || [];
+
+        entries.push({
+            destinationId: toId,
+            destinationName: toLoc.name,
+            roadId: road.id || '',
+            roadName: getRoadDisplayName(road, fromLoc, toLoc),
+            roadType: road.type || 'road',
+            miles,
+            days
+        });
+
+        entries.sort((a, b) => a.miles - b.miles);
+        roadLinksByLocation.set(fromId, entries);
+    }
+
+    function buildRoadLinks() {
+        roadLinksByLocation = new Map();
+        if (!data || !Array.isArray(data.roads)) return;
+
+        data.roads.forEach((road) => {
+            if (!road.points || road.points.length < 2) return;
+            if (road.type === 'water-route') return;
+
+            let lastNamedPoint = null;
+            let segmentPoints = [];
+
+            road.points.forEach((rawPoint) => {
+                const point = getRoadPointPercent(rawPoint);
+                if (!point) return;
+
+                if (!segmentPoints.length) {
+                    segmentPoints.push(point);
+                } else {
+                    const prev = segmentPoints[segmentPoints.length - 1];
+                    if (prev.x !== point.x || prev.y !== point.y) {
+                        segmentPoints.push(point);
+                    }
+                }
+
+                if (!point.locationId) return;
+
+                if (!lastNamedPoint) {
+                    lastNamedPoint = point;
+                    segmentPoints = [point];
+                    return;
+                }
+
+                const percentDistance = measurePercentPath(segmentPoints);
+                if (percentDistance > 0) {
+                    addRoadLink(lastNamedPoint.locationId, point.locationId, road, percentDistance);
+                    addRoadLink(point.locationId, lastNamedPoint.locationId, road, percentDistance);
+                }
+
+                lastNamedPoint = point;
+                segmentPoints = [point];
+            });
+        });
+    }
 
     /**
      * Initialize the overlay on a map container
@@ -144,6 +261,8 @@ const MapOverlay = (function () {
             } else {
                 console.warn('No locations data available for road routing');
             }
+
+            buildRoadLinks();
 
             // Render region labels
             if (data.regions) {
@@ -674,6 +793,23 @@ const MapOverlay = (function () {
 
         const icon = typeIcons[loc.type] || '📍';
         const typeName = loc.type.charAt(0).toUpperCase() + loc.type.slice(1);
+        const roadLinks = loc.id ? (roadLinksByLocation.get(loc.id) || []) : [];
+        const tooltipRoadLinks = roadLinks.slice(0, 6).map((link) => {
+            const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
+            return `
+                <div style="display:flex;justify-content:space-between;gap:0.75rem;font-family:'Cormorant Garamond', serif;font-size:0.9rem;color:#d7cfbb;">
+                    <span><strong style="color:#efe4bd;">${link.roadName}</strong></span>
+                    <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${daysText}</span>
+                </div>
+            `;
+        }).join('');
+        const roadSection = tooltipRoadLinks ? `
+            <div class="tooltip-roads" style="margin-top:0.55rem;padding-top:0.45rem;border-top:1px solid rgba(212,175,55,0.2);">
+                <div style="font-family:'Inter', sans-serif;font-size:0.68rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.35rem;">Connected By Road</div>
+                <div style="display:flex;flex-direction:column;gap:0.2rem;">${tooltipRoadLinks}</div>
+                <div style="font-family:'Cormorant Garamond', serif;font-size:0.78rem;color:#8f8770;font-style:italic;margin-top:0.35rem;">Approximate miles and horse-cart travel days.</div>
+            </div>
+        ` : '';
 
         tooltip.innerHTML = `
             <div class="tooltip-header" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
@@ -683,6 +819,7 @@ const MapOverlay = (function () {
             <div class="tooltip-type" style="font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #a0a0a0; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(212,175,55,0.2);">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
             ${loc.description ? `<div class="tooltip-desc" style="font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; color: #d0d0d0; line-height: 1.4;">${loc.description}</div>` : ''}
             ${loc.details ? `<div class="tooltip-details" style="font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: #888; font-style: italic; margin-top: 0.3rem;">${loc.details}</div>` : ''}
+            ${roadSection}
             ${(loc.link || loc.cityMap) ? `<div class="tooltip-link" style="margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid rgba(212,175,55,0.2); display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
                 ${loc.cityMap ? `<a href="${loc.cityMap}" target="_blank" rel="noopener noreferrer" style="font-family: 'Cinzel', serif; font-size: 0.75rem; color: #d4af37; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border: 1px solid rgba(212,175,55,0.5); border-radius: 3px; transition: all 0.2s;" onmouseenter="this.style.background='rgba(212,175,55,0.15)';this.style.borderColor='#d4af37'" onmouseleave="this.style.background='transparent';this.style.borderColor='rgba(212,175,55,0.5)'">&#9680; City Map</a>` : ''}
                 ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #ffd700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.2s;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More <span style="font-size: 0.9em;">→</span></a>` : ''}

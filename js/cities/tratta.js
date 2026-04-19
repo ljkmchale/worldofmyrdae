@@ -32,6 +32,8 @@ window.CITY_MAPS_REGISTRY["tratta"] = {
     { n: 25, x: 48.0, y: 17.2, name: "Bathhouse", type: "bathhouse", desc: "Public bathhouse in the upper ring.", size: 1.4 },
     { n: 26, x: 40.7, y: 76.0, name: "Triage", type: "medical", desc: "A triage and healing station in the lower ring.", size: 1.5 },
     { n: 27, x: 83.9, y: 68.8, name: "Lovely Loft", type: "brothel", desc: "Tratta's most notable brothel, near the harbor.", size: 1.5 },
+    { n: 24, x: 13.1, y: 34.9, name: "Stables", type: "poi", desc: "", size: 1.4 },
+    { n: 21, x: 20.1, y: 50.6, name: "Shrine of Knowledge", type: "poi", desc: "", size: 1.4 },
   ],
   namedLabels: [
     { id: "north-gate", name: "North Gate", x: 50.3, y: 5.8, type: "gate", desc: "Primary northern entrance to Tratta." },

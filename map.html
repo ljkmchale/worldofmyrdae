@@ -758,6 +758,9 @@
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
               <i class="fa-solid fa-crosshairs"></i>
             </button>
+            <button class="map-btn" id="grid-toggle" onclick="toggleGrid()" title="Toggle Coordinate Grid" style="opacity:0.5;">
+              <i class="fa-solid fa-table-cells-large"></i>
+            </button>
             <button class="map-btn" id="water-routes-toggle" onclick="toggleWaterRoutes()" title="Toggle Water Routes" style="opacity:0.5;">
               <i class="fa-solid fa-water"></i>
             </button>
@@ -853,6 +856,7 @@
   <script src="js/boat-animations.js"></script>
   <script src="js/location-search.js"></script>
   <script src="js/depth-map.js"></script>
+  <script src="js/coord-grid.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -867,7 +871,17 @@
       DragonFlyover.init('map-container', 'map-image');
       LocationSearch.init('map-container');
       DepthMapRenderer.init('map-image', 'map-layer-group');
+      CoordGrid.init('map-container', 'map-image');
     });
+
+    function toggleGrid() {
+      const visible = CoordGrid.toggle('map-container');
+      const btn = document.getElementById('grid-toggle');
+      if (btn) {
+        btn.style.opacity = visible ? '1' : '0.5';
+        btn.title = visible ? 'Hide Coordinate Grid' : 'Show Coordinate Grid';
+      }
+    }
 
     function toggleTerritories() {
   const img = document.getElementById('territories-layer');

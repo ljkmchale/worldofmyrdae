@@ -17,10 +17,67 @@ function _getBoatTooltip() {
 
 const RISK_COLORS = { low: '#4caf50', medium: '#ff9800', high: '#f44336', deadly: '#9c27b0' };
 const PURPOSE_LABELS = { merchant: 'Merchant Trade', military: 'Military Patrol', exploration: 'Exploration', smuggling: 'Smuggling', fishing: 'Fishing', passenger: 'Passenger' };
+const MAP_MILES_PER_PERCENT = 25;
+const SAILING_SPEEDS = {
+    'Caravel': 72,
+    'Sloop': 84,
+    'Brigantine': 78,
+    'Galleon': 66,
+    'Frigate': 82,
+    'Merchant Cog': 58,
+    'Longship': 88,
+    'Warship': 80,
+    'Fishing Vessel': 46,
+    'Ship': 68,
+    default: 68
+};
+
+function _measurePathMiles(points) {
+    let totalPercent = 0;
+    for (let i = 1; i < points.length; i += 1) {
+        const dx = points[i].x - points[i - 1].x;
+        const dy = points[i].y - points[i - 1].y;
+        totalPercent += Math.sqrt((dx * dx) + (dy * dy));
+    }
+    return totalPercent * MAP_MILES_PER_PERCENT;
+}
+
+function _getSailingSpeed(shipType) {
+    return SAILING_SPEEDS[shipType] || SAILING_SPEEDS.default;
+}
+
+function _getWaterRouteDisplayName(route, pathPoints, locMap) {
+    if (route.name && route.name.trim()) return route.name.trim();
+
+    const endpointIds = pathPoints
+        .map(point => point.locationId)
+        .filter(Boolean);
+
+    if (endpointIds.length >= 2) {
+        const start = locMap.get(endpointIds[0]);
+        const end = locMap.get(endpointIds[endpointIds.length - 1]);
+        if (start && end) return `${start.name} to ${end.name}`;
+    }
+
+    if (route.id) {
+        return route.id
+            .replace(/[-_]+/g, ' ')
+            .replace(/\bsea\b/gi, '')
+            .replace(/\bwater\b/gi, '')
+            .replace(/\broute\b/gi, '')
+            .replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+
+    return 'Water Route';
+}
 
 function _showBoatTooltip(e, boat) {
     const tt = _getBoatTooltip();
     let extra = '';
+    const sailingDays = boat.routeMiles / boat.sailingSpeed;
+    const sailingLabel = sailingDays < 1
+        ? `${(sailingDays * 24).toFixed(1)} hrs by sail`
+        : `${sailingDays.toFixed(1)} days by sail`;
     if (boat.routePurpose || boat.cargo || boat.riskLevel) {
         const purposeLabel = PURPOSE_LABELS[boat.routePurpose] || boat.routePurpose || '';
         const riskColor = RISK_COLORS[boat.riskLevel] || '#a0a0a0';
@@ -35,6 +92,8 @@ function _showBoatTooltip(e, boat) {
         <div style="font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#4da6ff;margin-bottom:0.3rem;">&#9875; ${boat.shipName}</div>
         <div style="font-size:0.7rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(77,166,255,0.25);">${boat.shipType}</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;">Captain: <em>${boat.captainName}</em></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;"><em>${boat.routeName}</em></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;">${Math.round(boat.routeMiles)} miles • ${sailingLabel}</div>
         ${extra}
     `;
     tt.style.display = 'block';
@@ -107,6 +166,9 @@ class BoatFleet {
             const shipName    = route.shipName    || route.name || 'Unknown Vessel';
             const shipType    = route.shipType    || 'Ship';
             const captainName = route.captainName || 'Unknown';
+            const routeMiles  = _measurePathMiles(pathPoints);
+            const sailingSpeed = _getSailingSpeed(shipType);
+            const routeName   = _getWaterRouteDisplayName(route, pathPoints, this.locMap);
             
             // Use saved boatColor, or look up default by type, or fallback to blue
             const boatColor   = route.boatColor || this.typeColors[shipType] || '#4da6ff';
@@ -127,6 +189,9 @@ class BoatFleet {
                 shipName,
                 shipType,
                 captainName,
+                routeName,
+                routeMiles,
+                sailingSpeed,
                 boatColor,
                 boatSizeMul,
                 routePurpose,
@@ -169,12 +234,12 @@ class BoatFleet {
         src.forEach(pt => {
             if (typeof pt === 'string') {
                 const loc = this.locMap.get(pt);
-                if (loc) points.push({ x: loc.x, y: loc.y });
+                if (loc) points.push({ x: loc.x, y: loc.y, locationId: loc.id });
                 else console.warn(`Boat route "${route.id}": location "${pt}" not found in map`);
             } else if (Array.isArray(pt)) {
-                points.push({ x: pt[0], y: pt[1] });
+                points.push({ x: pt[0], y: pt[1], locationId: null });
             } else if (pt && typeof pt.x === 'number') {
-                points.push({ x: pt.x, y: pt.y });
+                points.push({ x: pt.x, y: pt.y, locationId: pt.locationId || null });
             }
         });
         return points;
