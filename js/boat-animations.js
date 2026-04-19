@@ -18,6 +18,15 @@ function _getBoatTooltip() {
 const RISK_COLORS = { low: '#4caf50', medium: '#ff9800', high: '#f44336', deadly: '#9c27b0' };
 const PURPOSE_LABELS = { merchant: 'Merchant Trade', military: 'Military Patrol', exploration: 'Exploration', smuggling: 'Smuggling', fishing: 'Fishing', passenger: 'Passenger' };
 const MAP_MILES_PER_PERCENT = 25;
+const SHIP_TOOLTIP_IMAGES = {
+    'Caravel': 'images/tooltips/ships/caravel.png',
+    'Sloop': 'images/tooltips/ships/sloop.png',
+    'Brigantine': 'images/tooltips/ships/brigantine.png',
+    'Galleon': 'images/tooltips/ships/galleon.png',
+    'Frigate': 'images/tooltips/ships/frigate.png',
+    'Merchant Cog': 'images/tooltips/ships/merchant-cog.png',
+    'Longship': 'images/tooltips/ships/longship.png'
+};
 const SAILING_SPEEDS = {
     'Caravel': 72,
     'Sloop': 84,
@@ -71,6 +80,11 @@ function _getWaterRouteDisplayName(route, pathPoints, locMap) {
     return 'Water Route';
 }
 
+function _getShipTooltipImage(boat) {
+    if (!boat) return null;
+    return boat.shipTooltipImage || SHIP_TOOLTIP_IMAGES[boat.shipType] || null;
+}
+
 function _showBoatTooltip(e, boat) {
     const tt = _getBoatTooltip();
     let extra = '';
@@ -88,13 +102,20 @@ function _showBoatTooltip(e, boat) {
         if (riskLabel) extra += `<div style="margin-top:0.2rem;">Risk: <span style="color:${riskColor};font-weight:600;">${riskLabel}</span></div>`;
         extra += `</div>`;
     }
+    const shipTooltipImage = _getShipTooltipImage(boat);
     tt.innerHTML = `
-        <div style="font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:#4da6ff;margin-bottom:0.3rem;">&#9875; ${boat.shipName}</div>
-        <div style="font-size:0.7rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(77,166,255,0.25);">${boat.shipType}</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;">Captain: <em>${boat.captainName}</em></div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;"><em>${boat.routeName}</em></div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#d0d0d0;">${Math.round(boat.routeMiles)} miles • ${sailingLabel}</div>
-        ${extra}
+        <div class="${shipTooltipImage ? 'tt-img-wrap tt-water-img-wrap tt-boat-header' : 'tt-water-static-header tt-boat-header'}">
+            <div class="tt-water-badge">⚓ Sea Route</div>
+            ${shipTooltipImage ? `<img src="${shipTooltipImage}" alt="${boat.shipType}" onerror="this.closest('.tt-img-wrap')?.classList.remove('tt-img-wrap','tt-water-img-wrap');this.closest('div').className='tt-water-static-header tt-boat-header';this.remove();">` : ''}
+            <div class="tt-name-overlay">${boat.shipName}</div>
+        </div>
+        <div class="tt-body">
+            <div class="tt-type">${boat.shipType}</div>
+            <div class="tt-desc">Captain: <em>${boat.captainName}</em></div>
+            <div class="tt-desc" style="margin-top:0.2rem;"><em>${boat.routeName}</em></div>
+            <div class="tt-desc" style="margin-top:0.2rem;">${Math.round(boat.routeMiles)} miles • ${sailingLabel}</div>
+            ${extra}
+        </div>
     `;
     tt.style.display = 'block';
     _positionBoatTooltip(e);
@@ -177,6 +198,7 @@ class BoatFleet {
             const routePurpose = route.routePurpose || '';
             const cargo        = route.cargo        || '';
             const riskLevel    = route.riskLevel    || '';
+            const shipTooltipImage = route.shipTooltipImage || route.shipPreviewImage || null;
 
             // Create exactly ONE boat per route so name/captain are unique
             this.boats.push({
@@ -192,6 +214,7 @@ class BoatFleet {
                 routeName,
                 routeMiles,
                 sailingSpeed,
+                shipTooltipImage,
                 boatColor,
                 boatSizeMul,
                 routePurpose,

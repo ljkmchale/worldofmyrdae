@@ -3,7 +3,7 @@ window.CITY_MAPS_REGISTRY["tratta"] = {
   id: "tratta",
   name: "Tratta",
   image: "images/cities/tratta/tratta.PNG",
-  previewImage: "images/tratta.jpg",
+  previewImage: "images/cities/tratta/tratta.PNG",
   pins: [
     { n:  1, x: 41.1, y: 26.2, name: "The Anchored Spire", type: "Tavern", desc: "A well-known tavern and meeting point in the heart of Tratta's upper ring." },
     { n:  2, x: 32.0, y: 50.7, name: "SeaRoute Colosseum", type: "arena", desc: "Tratta's grand fighting arena. Gladiatorial bouts, beast fights, and spectacle draw crowds from across Yearning Vale.", size: 1.3 },

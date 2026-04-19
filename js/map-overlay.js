@@ -798,6 +798,10 @@ const MapOverlay = (function () {
         return Math.min(Math.max(value, min), max);
     }
 
+    function isWaterTooltipType(type) {
+        return type === 'water' || type === 'river';
+    }
+
     function generateTooltipHeaderImage(loc) {
         if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
 
@@ -846,6 +850,15 @@ const MapOverlay = (function () {
         ctx.fillStyle = vignette;
         ctx.fillRect(0, 0, width, height);
 
+        if (isWaterTooltipType(loc.type)) {
+            const waterTint = ctx.createLinearGradient(0, 0, width, height);
+            waterTint.addColorStop(0, 'rgba(72, 140, 196, 0.18)');
+            waterTint.addColorStop(0.55, 'rgba(28, 88, 144, 0.12)');
+            waterTint.addColorStop(1, 'rgba(6, 29, 56, 0.26)');
+            ctx.fillStyle = waterTint;
+            ctx.fillRect(0, 0, width, height);
+        }
+
         const shade = ctx.createRadialGradient(width * 0.5, height * 0.45, width * 0.08, width * 0.5, height * 0.45, width * 0.7);
         shade.addColorStop(0, 'rgba(255, 220, 150, 0.06)');
         shade.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
@@ -877,6 +890,7 @@ const MapOverlay = (function () {
 
         const icon = typeIcons[loc.type] || '📍';
         const typeName = loc.type.charAt(0).toUpperCase() + loc.type.slice(1);
+        const waterTooltip = isWaterTooltipType(loc.type);
         const roadLinks = loc.id ? (roadLinksByLocation.get(loc.id) || []) : [];
         const tooltipRoadLinks = roadLinks.slice(0, 6).map((link) => {
             const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
@@ -907,8 +921,9 @@ const MapOverlay = (function () {
 
         if (previewImage) {
             tooltip.innerHTML = `
-                <div class="tt-img-wrap">
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}">
                     <img src="${previewImage}" alt="${loc.name}">
+                    ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
                     <div class="tt-name-overlay">${loc.name}</div>
                 </div>
                 <div class="tt-body">

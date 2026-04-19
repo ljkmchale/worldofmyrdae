@@ -4,7 +4,7 @@
  * Pin/label data lives in js/cities/<id>.js, loaded on demand.
  */
 const CITY_MAPS = [
-  { id: "tratta"                  , name: "Tratta"                  , image: "images/cities/tratta/tratta.PNG", previewImage: "images/tratta.jpg" },
+  { id: "tratta"                  , name: "Tratta"                  , image: "images/cities/tratta/tratta.PNG", previewImage: "images/cities/tratta/tratta.PNG" },
   { id: "emberstran"              , name: "Emberstran"              , image: "images/cities/emberstran/emberstran.PNG", previewImage: "images/cities/emberstran/emberstran.PNG" },
   { id: "nauldeaus"               , name: "Nauldeaus"               , image: "images/cities/nauldeaus/nauldeaus.PNG", previewImage: "images/cities/nauldeaus/nauldeaus.PNG" },
   { id: "adsuren"                 , name: "Adsuren"                 , image: "images/cities/adsuren/adsuren.PNG", previewImage: "images/cities/adsuren/adsuren.PNG" },
