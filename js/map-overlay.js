@@ -33,7 +33,7 @@ const MapOverlay = (function () {
     }
 
     function getRoadDisplayName(road, fromLoc, toLoc) {
-        if (road.name && road.name.trim()) return road.name.trim();
+        if (road.name && road.name.trim()) return road.name.trim().replace(/[\r\n]+/g, ' ');
         if (fromLoc && toLoc) return `${fromLoc.name} to ${toLoc.name}`;
         if (road.id) {
             return road.id
