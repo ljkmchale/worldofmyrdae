@@ -88,6 +88,21 @@ const Editor = (function () {
         document.addEventListener('keydown', (e) => {
             const tag = document.activeElement?.tagName?.toLowerCase();
             const inInput = ['input', 'textarea', 'select'].includes(tag);
+            const searchInput = document.getElementById('location-search');
+
+            if (!inInput && e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                e.preventDefault();
+                if (state.tab !== 'locations') {
+                    switchTab('locations');
+                }
+                if (searchInput) {
+                    requestAnimationFrame(() => {
+                        searchInput.focus();
+                        searchInput.select();
+                    });
+                }
+                return;
+            }
 
             // Ctrl/Cmd+Z → undo
             if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
@@ -380,6 +395,20 @@ const Editor = (function () {
         renderLocationList(query);
     }
 
+    function focusLocationOnMap(loc, targetScale = 4) {
+        if (!loc || loc.x === undefined || loc.y === undefined) return;
+
+        const applyFocus = () => {
+            const currentState = MapController.getInstanceState('map-container');
+            const desiredScale = Math.max(currentState?.scale || 1, targetScale);
+            MapController.panToLocation('map-container', loc.x, loc.y, desiredScale);
+        };
+
+        applyFocus();
+        requestAnimationFrame(applyFocus);
+        setTimeout(applyFocus, 120);
+    }
+
     function selectLocation(id) {
         state.selectedLocId = id;
         state.locationPlacementMode = false;
@@ -425,7 +454,7 @@ const Editor = (function () {
 
         // Pan map to the selected location
         if (loc.x !== undefined && loc.y !== undefined) {
-            MapController.panToLocation('map-container', loc.x, loc.y, 4);
+            focusLocationOnMap(loc, 4);
         }
     }
 

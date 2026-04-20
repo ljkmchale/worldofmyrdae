@@ -1338,6 +1338,30 @@ p {
   border-bottom: 1px solid rgba(212,175,55,0.2);
 }
 
+.tt-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  margin-bottom: 0.4rem;
+}
+
+.tt-meta .tt-type {
+  display: flex;
+  gap: 0.45rem;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.tt-meta-label {
+  color: #8f8566;
+  min-width: 4.2rem;
+}
+
+.tt-meta-value {
+  color: #d8cc9f;
+}
+
 .tt-desc {
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.9rem;

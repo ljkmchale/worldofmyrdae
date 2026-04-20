@@ -1095,6 +1095,20 @@ const MapOverlay = (function () {
         return imageUrl;
     }
 
+    function getTooltipDescription(loc) {
+        if (!loc || !loc.description) return '';
+
+        const raw = String(loc.description).trim();
+        if (!raw) return '';
+
+        const typeName = loc.type ? loc.type.replace(/-/g, ' ').trim() : '';
+        if (!typeName) return raw;
+
+        const escapedType = typeName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const duplicatePrefixPattern = new RegExp(`^${escapedType}(?:\\s*(?:[-:.,]|\\u2022)\\s*|\\s+)`, 'i');
+        return raw.replace(duplicatePrefixPattern, '').trim();
+    }
+
     /**
      * Show tooltip with location details
      */
@@ -1144,8 +1158,14 @@ const MapOverlay = (function () {
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
         const previewImage = cityPreviewImage || biomePreviewImage || waterPreviewImage || generateTooltipHeaderImage(loc);
         const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
-        const desc = truncate(loc.description, 160);
+        const desc = truncate(getTooltipDescription(loc), 160);
         const details = truncate(loc.details, 100);
+        const metaSection = `
+            <div class="tt-meta">
+                <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
+                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${loc.region}</span></div>` : ''}
+            </div>
+        `;
 
         if (previewImage) {
             tooltip.innerHTML = `
@@ -1155,7 +1175,7 @@ const MapOverlay = (function () {
                     <div class="tt-name-overlay">${loc.name}</div>
                 </div>
                 <div class="tt-body">
-                    <div class="tt-type">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
+                    ${metaSection}
                     ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                     ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                     ${roadSection}
@@ -1169,7 +1189,7 @@ const MapOverlay = (function () {
                     <span class="tt-no-img-name">${loc.name}</span>
                 </div>
                 <div class="tt-body">
-                    <div class="tt-type">${typeName}${loc.region ? ' • ' + loc.region : ''}</div>
+                    ${metaSection}
                     ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                     ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                     ${roadSection}
