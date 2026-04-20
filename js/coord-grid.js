@@ -5,11 +5,16 @@ const CoordGrid = (function () {
   let active = false;
   const instances = new Map();
 
-  const HEX_SIZE_RATIO = 0.028;
+  // Calibrated against images/Myrdae (v.4.2.c - Hex).jpg (12800x7200).
+  const HEX_REFERENCE = Object.freeze({
+    width: 12800,
+    height: 7200,
+    size: 21.25,
+    originX: 10.625,
+    originY: 18.4
+  });
   const HEX_STROKE = 'rgba(236, 225, 190, 0.58)';
   const HEX_FILL = 'rgba(212, 175, 55, 0.05)';
-  const HEX_LABEL_FILL = 'rgba(246, 236, 206, 0.88)';
-  const HEX_LABEL_SHADOW = 'rgba(8, 16, 24, 0.62)';
 
   function toColumnLabel(index) {
     let value = index + 1;
@@ -40,19 +45,23 @@ const CoordGrid = (function () {
   }
 
   function buildGridMetrics(natW, natH) {
-    const size = natW * HEX_SIZE_RATIO;
+    const scaleX = natW / HEX_REFERENCE.width;
+    const scaleY = natH / HEX_REFERENCE.height;
+    const size = HEX_REFERENCE.size * scaleX;
     const hexHeight = Math.sqrt(3) * size;
     const horizontalStep = 1.5 * size;
     const verticalStep = hexHeight;
+    const originX = HEX_REFERENCE.originX * scaleX;
+    const originY = HEX_REFERENCE.originY * scaleY;
     const cells = [];
 
     for (let col = 0; ; col++) {
-      const cx = size + col * horizontalStep;
+      const cx = originX + col * horizontalStep;
       if (cx - size > natW + size) break;
 
       const yOffset = col % 2 === 0 ? 0 : hexHeight / 2;
       for (let row = 0; ; row++) {
-        const cy = hexHeight / 2 + yOffset + row * verticalStep;
+        const cy = originY + yOffset + row * verticalStep;
         if (cy - hexHeight / 2 > natH + hexHeight / 2) break;
 
         cells.push({
@@ -72,6 +81,8 @@ const CoordGrid = (function () {
       natH,
       size,
       hexHeight,
+      originX,
+      originY,
       cells
     };
   }
@@ -143,9 +154,6 @@ const CoordGrid = (function () {
       opacity: '0.92',
       'shape-rendering': 'geometricPrecision'
     });
-    const labelGroup = makeSvgElement('g', {
-      opacity: '0.9'
-    });
 
     metrics.cells.forEach((cell) => {
       const polygon = makeSvgElement('polygon', {
@@ -155,21 +163,6 @@ const CoordGrid = (function () {
         'stroke-width': Math.max(1, metrics.natW * 0.00022)
       });
       cellGroup.appendChild(polygon);
-
-      const label = makeSvgElement('text', {
-        x: cell.cx,
-        y: cell.cy + metrics.size * 0.12,
-        fill: HEX_LABEL_FILL,
-        stroke: HEX_LABEL_SHADOW,
-        'stroke-width': '0.65',
-        'paint-order': 'stroke',
-        'font-size': Math.max(10, metrics.natW * 0.0046),
-        'font-family': 'Cinzel, serif',
-        'letter-spacing': '0.06em',
-        'text-anchor': 'middle'
-      });
-      label.textContent = cell.code;
-      labelGroup.appendChild(label);
     });
 
     const frame = makeSvgElement('rect', {
@@ -184,7 +177,6 @@ const CoordGrid = (function () {
 
     svg.appendChild(cellGroup);
     svg.appendChild(frame);
-    svg.appendChild(labelGroup);
     mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
   }
 

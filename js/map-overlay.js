@@ -1320,11 +1320,11 @@ const MapOverlay = (function () {
                 haloColor = 'rgba(200, 220, 240, 0.6)';
                 break;
             case 'water-route':
-                strokeColor = '#1E90FF'; // DodgerBlue for water routes
-                strokeWidth = Math.max(natW * 0.0002, 1.5);
-                strokeOpacity = '0.7';
-                dashArray = `${natW * 0.0005}, ${natW * 0.0003}`; // Dashed water routes
-                haloColor = 'rgba(135, 206, 250, 0.4)'; // Light sky blue halo
+                strokeColor = '#3b8fd6'; // Muted sea blue to match the road family better
+                strokeWidth = Math.max(natW * 0.00012, 1);
+                strokeOpacity = '0.82';
+                dashArray = `${natW * 0.00028}, ${natW * 0.00024}`; // Tight short dashes like minor roads
+                haloColor = 'rgba(33, 73, 115, 0.85)'; // Dark blue edge instead of a glowing route
                 break;
             case 'border':
                 strokeColor = '#5c4a4a'; // Muted brownish red
