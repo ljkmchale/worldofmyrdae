@@ -8,6 +8,7 @@ const MapOverlay = (function () {
     let tooltip = null;
     let hideTimer = null;
     let overlayVisible = true;
+    let tooltipsEnabled = true;
     let locMap = new Map(); // Shared location map
     let natW = 0;
     let natH = 0;
@@ -42,6 +43,26 @@ const MapOverlay = (function () {
     }
 
     function getData() { return data; }
+
+    function hideTooltipImmediately() {
+        if (!tooltip) return;
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+        tooltip.style.display = 'none';
+        tooltip.style.pointerEvents = 'none';
+    }
+
+    function setTooltipsEnabled(enabled) {
+        tooltipsEnabled = enabled !== false;
+        if (!tooltipsEnabled) hideTooltipImmediately();
+        return tooltipsEnabled;
+    }
+
+    function areTooltipsEnabled() {
+        return tooltipsEnabled;
+    }
 
     function getRoadTravelSpeed(roadType) {
         return TRAVEL_MILES_PER_DAY[roadType] || TRAVEL_MILES_PER_DAY.default;
@@ -90,6 +111,111 @@ const MapOverlay = (function () {
             total += Math.sqrt(dx * dx + dy * dy);
         }
         return total;
+    }
+
+    function measurePercentDistance(fromPoint, toPoint) {
+        if (!fromPoint || !toPoint) return 0;
+        return measurePercentPath([fromPoint, toPoint]);
+    }
+
+    function percentToMiles(percentDistance) {
+        return percentDistance * MAP_MILES_PER_PERCENT;
+    }
+
+    function milesToDays(miles, milesPerDay) {
+        if (!milesPerDay || milesPerDay <= 0) return 0;
+        return miles / milesPerDay;
+    }
+
+    function getLocationById(locationId) {
+        return locationId ? locMap.get(locationId) || null : null;
+    }
+
+    function findNearestLocation(x, y, maxPercentDistance = 1.5) {
+        if (typeof x !== 'number' || typeof y !== 'number' || !locMap.size) return null;
+
+        let nearest = null;
+        let nearestDistance = Infinity;
+
+        locMap.forEach((loc) => {
+            if (typeof loc.x !== 'number' || typeof loc.y !== 'number') return;
+            const distance = measurePercentDistance({ x, y }, loc);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = loc;
+            }
+        });
+
+        if (!nearest || nearestDistance > maxPercentDistance) return null;
+        return nearest;
+    }
+
+    function findRouteBetweenLocations(fromId, toId) {
+        if (!fromId || !toId || fromId === toId) return null;
+        if (!roadLinksByLocation.has(fromId) || !roadLinksByLocation.has(toId)) return null;
+
+        const distances = new Map([[fromId, 0]]);
+        const travelDays = new Map([[fromId, 0]]);
+        const previous = new Map();
+        const visited = new Set();
+
+        while (true) {
+            let currentId = null;
+            let currentDistance = Infinity;
+
+            distances.forEach((distance, locationId) => {
+                if (!visited.has(locationId) && distance < currentDistance) {
+                    currentDistance = distance;
+                    currentId = locationId;
+                }
+            });
+
+            if (!currentId) break;
+            if (currentId === toId) break;
+
+            visited.add(currentId);
+
+            const links = roadLinksByLocation.get(currentId) || [];
+            links.forEach((link) => {
+                const nextDistance = currentDistance + link.miles;
+                const knownDistance = distances.has(link.destinationId) ? distances.get(link.destinationId) : Infinity;
+                if (nextDistance < knownDistance) {
+                    distances.set(link.destinationId, nextDistance);
+                    travelDays.set(link.destinationId, (travelDays.get(currentId) || 0) + link.days);
+                    previous.set(link.destinationId, {
+                        fromId: currentId,
+                        link
+                    });
+                }
+            });
+        }
+
+        if (!distances.has(toId)) return null;
+
+        const path = [];
+        let cursor = toId;
+        while (cursor) {
+            path.unshift(cursor);
+            const previousEntry = previous.get(cursor);
+            if (!previousEntry) break;
+            cursor = previousEntry.fromId;
+        }
+
+        if (!path.length || path[0] !== fromId) return null;
+
+        const segments = [];
+        for (let i = 1; i < path.length; i++) {
+            const current = path[i];
+            const entry = previous.get(current);
+            if (entry) segments.push(entry.link);
+        }
+
+        return {
+            path,
+            miles: distances.get(toId) || 0,
+            days: travelDays.get(toId) || 0,
+            segments
+        };
     }
 
     function addRoadLink(fromId, toId, road, percentDistance) {
@@ -973,7 +1099,7 @@ const MapOverlay = (function () {
      * Show tooltip with location details
      */
     function showTooltip(e, loc) {
-        if (!tooltip) return;
+        if (!tooltip || !tooltipsEnabled) return;
 
         // Cancel any pending hide — prevents flicker when moving between marker dot and label
         if (hideTimer) {
@@ -1089,6 +1215,10 @@ const MapOverlay = (function () {
 
     function hideTooltip(e) {
         if (!tooltip) return;
+        if (!tooltipsEnabled) {
+            hideTooltipImmediately();
+            return;
+        }
 
         // Cancel any previous pending hide
         if (hideTimer) {
@@ -1416,7 +1546,15 @@ const MapOverlay = (function () {
     return {
         init: init,
         toggle: toggle,
+        setTooltipsEnabled: setTooltipsEnabled,
+        areTooltipsEnabled: areTooltipsEnabled,
         getData: getData,
+        getLocationById: getLocationById,
+        findNearestLocation: findNearestLocation,
+        measurePercentDistance: measurePercentDistance,
+        percentToMiles: percentToMiles,
+        milesToDays: milesToDays,
+        findRouteBetweenLocations: findRouteBetweenLocations,
         refreshRoad: refreshRoad,
         addRoadToMap: addRoadToMap
     };

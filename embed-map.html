@@ -83,6 +83,16 @@
             color: #000;
         }
 
+        .map-btn i {
+            font-size: 0.95rem;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+            transition: transform 0.2s ease;
+        }
+
+        .map-btn:hover i {
+            transform: scale(1.06);
+        }
+
         .map-image {
             width: 100%;
             height: auto;
@@ -122,6 +132,123 @@
             z-index: 100;
             pointer-events: none;
             border-radius: 4px;
+        }
+
+        .map-measure-panel {
+            position: absolute;
+            top: 0.75rem;
+            right: 3.75rem;
+            width: min(23rem, calc(100vw - 5rem));
+            background: linear-gradient(180deg, rgba(18, 15, 12, 0.96), rgba(6, 6, 10, 0.94));
+            border: 1px solid rgba(212, 175, 55, 0.42);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            color: #f4e7bd;
+            z-index: 120;
+            box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px);
+        }
+
+        .measure-heading {
+            font-family: 'Cinzel', serif;
+            font-size: 0.86rem;
+            letter-spacing: 0.16em;
+            color: #f2d27c;
+            margin-bottom: 0.45rem;
+        }
+
+        .measure-copy,
+        .measure-route-copy {
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: rgba(244, 231, 189, 0.9);
+        }
+
+        .measure-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-top: 0.55rem;
+            font-size: 0.8rem;
+        }
+
+        .measure-row span,
+        .measure-stats span,
+        .measure-route-label,
+        .measure-pace-label {
+            color: rgba(230, 214, 163, 0.72);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.72rem;
+        }
+
+        .measure-row strong,
+        .measure-stats strong {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.98rem;
+            line-height: 1.15;
+            text-align: right;
+        }
+
+        .measure-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.65rem;
+            margin: 0.8rem 0;
+        }
+
+        .measure-stats > div {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 10px;
+            padding: 0.65rem 0.75rem;
+        }
+
+        .measure-stats strong {
+            display: block;
+            text-align: left;
+            margin-top: 0.2rem;
+            color: #fff4cf;
+        }
+
+        .measure-pace-label {
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .measure-pace-select {
+            width: 100%;
+            border-radius: 9px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            background: rgba(12, 11, 16, 0.92);
+            color: #f5e8c4;
+            padding: 0.55rem 0.7rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.98rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .measure-route-label {
+            margin-bottom: 0.28rem;
+        }
+
+        .measure-clear-btn {
+            margin-top: 0.85rem;
+            width: 100%;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: 9px;
+            background: linear-gradient(180deg, rgba(78, 38, 18, 0.86), rgba(36, 16, 12, 0.92));
+            color: #f7e7b2;
+            padding: 0.58rem 0.8rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+        }
+
+        .measure-clear-btn:hover {
+            background: linear-gradient(180deg, rgba(102, 48, 22, 0.92), rgba(52, 20, 14, 0.96));
         }
 
         .time-display-panel {
@@ -232,6 +359,13 @@
                 left: 0.75rem;
                 right: auto;
                 bottom: 3.25rem;
+            }
+
+            .map-measure-panel {
+                right: 0.75rem;
+                top: auto;
+                bottom: 4rem;
+                width: min(21rem, calc(100vw - 1.5rem));
             }
         }
 
@@ -942,22 +1076,28 @@
     <div class="map-container" id="map-container">
         <div class="map-controls">
             <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
-                <i class="fa-solid fa-house"></i>
+                <i class="fa-solid fa-compass"></i>
             </button>
             <button class="map-btn" id="legend-toggle" onclick="toggleLegend()" title="Legend & Search">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
             <button class="map-btn" id="overlay-toggle" onclick="toggleOverlay()" title="Toggle Locations">
-                <i class="fa-solid fa-location-dot"></i>
+                <i class="fa-solid fa-map-location-dot"></i>
+            </button>
+            <button class="map-btn" id="tooltips-toggle" onclick="toggleTooltips()" title="Hide Tooltips">
+                <i class="fa-solid fa-scroll"></i>
             </button>
             <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Show Territories" style="opacity:0.5;">
-                <i class="fa-solid fa-flag"></i>
+                <i class="fa-solid fa-landmark-flag"></i>
             </button>
             <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker">
                 <i class="fa-solid fa-crosshairs"></i>
             </button>
-            <button class="map-btn" id="grid-toggle" onclick="toggleGrid()" title="Toggle Coordinate Grid" style="opacity:0.5;">
+            <button class="map-btn" id="grid-toggle" onclick="toggleGrid()" title="Toggle Hex Grid" style="opacity:0.5;">
                 <i class="fa-solid fa-table-cells-large"></i>
+            </button>
+            <button class="map-btn" id="measure-toggle" onclick="toggleMeasure()" title="Show Hex Ruler" style="opacity:0.5;">
+                <i class="fa-solid fa-ruler-combined"></i>
             </button>
             <button class="map-btn" id="water-routes-toggle" onclick="toggleWaterRoutes()" title="Toggle Water Routes" style="opacity:0.5;">
                 <i class="fa-solid fa-water"></i>
@@ -985,6 +1125,40 @@
                 <label for="tc-hour">Hour <span id="tc-hour-label" style="color:#d4af37;"></span></label>
                 <input type="range" id="tc-hour" min="0" max="23" value="0">
             </div>
+        </div>
+
+        <div class="map-measure-panel" id="measure-panel" style="display:none;" onmousedown="event.stopPropagation()">
+            <div class="measure-heading">HEX RULER</div>
+            <div class="measure-copy" id="measure-status">Click two locations or two points on the map.</div>
+            <div class="measure-row">
+                <span>From</span>
+                <strong id="measure-from">Click the map for a starting point</strong>
+            </div>
+            <div class="measure-row">
+                <span>To</span>
+                <strong id="measure-to">Click the map for a destination</strong>
+            </div>
+            <div class="measure-stats">
+                <div>
+                    <span>Direct</span>
+                    <strong id="measure-direct">--</strong>
+                </div>
+                <div>
+                    <span>Days</span>
+                    <strong id="measure-days">--</strong>
+                </div>
+            </div>
+            <label class="measure-pace-label" for="measure-pace">Travel Pace</label>
+            <select id="measure-pace" class="measure-pace-select">
+                <option value="road">Road March</option>
+                <option value="trail">Trail Pace</option>
+                <option value="wild">Wilderness</option>
+                <option value="mounted">Mounted</option>
+                <option value="ship">By Ship</option>
+            </select>
+            <div class="measure-route-label">Named Route</div>
+            <div class="measure-route-copy" id="measure-route">No route selected</div>
+            <button type="button" class="measure-clear-btn" id="measure-clear">Clear Measure</button>
         </div>
 
         <div class="time-display-panel"><strong>World Date</strong><div id="season-display"></div></div>
@@ -1073,6 +1247,7 @@
     <script src="js/location-search.js"></script>
     <script src="js/depth-map.js"></script>
     <script src="js/coord-grid.js"></script>
+    <script src="js/map-measure.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1089,6 +1264,20 @@
             LocationSearch.init('map-container');
             DepthMapRenderer.init('map-image', 'map-layer-group');
             CoordGrid.init('map-container', 'map-image');
+            window.mapMeasure = MapMeasureTool.init({
+                containerId: 'map-container',
+                imageId: 'map-image',
+                panelId: 'measure-panel',
+                buttonId: 'measure-toggle',
+                fromLabelId: 'measure-from',
+                toLabelId: 'measure-to',
+                directLabelId: 'measure-direct',
+                daysLabelId: 'measure-days',
+                routeLabelId: 'measure-route',
+                statusLabelId: 'measure-status',
+                paceSelectId: 'measure-pace',
+                clearButtonId: 'measure-clear'
+            });
             if (window.MyrdaeWorldClock) {
                 window.MyrdaeWorldClock.installControls({
                     buttonId: 'time-toggle',
@@ -1107,8 +1296,12 @@
             const btn = document.getElementById('grid-toggle');
             if (btn) {
                 btn.style.opacity = visible ? '1' : '0.5';
-                btn.title = visible ? 'Hide Coordinate Grid' : 'Show Coordinate Grid';
+                btn.title = visible ? 'Hide Hex Grid' : 'Show Hex Grid';
             }
+        }
+
+        function toggleMeasure() {
+            if (window.mapMeasure) window.mapMeasure.toggle();
         }
 
         function toggleTerritories() {
@@ -1133,6 +1326,15 @@
             if (btn) {
                 btn.style.opacity = visible ? '1' : '0.5';
                 btn.title = visible ? 'Hide Locations' : 'Show Locations';
+            }
+        }
+
+        function toggleTooltips() {
+            const enabled = MapOverlay.setTooltipsEnabled(!MapOverlay.areTooltipsEnabled());
+            const btn = document.getElementById('tooltips-toggle');
+            if (btn) {
+                btn.style.opacity = enabled ? '1' : '0.5';
+                btn.title = enabled ? 'Hide Tooltips' : 'Show Tooltips';
             }
         }
 
@@ -1196,7 +1398,8 @@
                 const imgY = (mouseY - ty) / imgDisplayHeight * 100;
 
                 if (imgX >= 0 && imgX <= 100 && imgY >= 0 && imgY <= 100) {
-                    display.textContent = `X: ${imgX.toFixed(1)}  Y: ${imgY.toFixed(1)}`;
+                    const hex = typeof CoordGrid !== 'undefined' ? CoordGrid.describePoint(imgX, imgY, containerId) : null;
+                    display.textContent = `${hex ? `Hex: ${hex.code}  ` : ''}X: ${imgX.toFixed(1)}  Y: ${imgY.toFixed(1)}`;
                     display.style.color = '#ffd700';
                 } else {
                     display.textContent = 'X: —  Y: —';

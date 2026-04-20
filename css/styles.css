@@ -866,6 +866,132 @@ p {
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
+.map-measure-panel {
+  position: absolute;
+  top: 0.85rem;
+  right: 4.4rem;
+  z-index: 120;
+  width: min(24rem, calc(100% - 5.6rem));
+  background: linear-gradient(180deg, rgba(18, 15, 12, 0.96), rgba(6, 6, 10, 0.94));
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  border-radius: 12px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.4);
+  padding: 0.9rem 1rem;
+  color: #f4e7bd;
+  backdrop-filter: blur(10px);
+}
+
+.measure-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.16em;
+  color: #f2d27c;
+  margin-bottom: 0.45rem;
+}
+
+.measure-copy,
+.measure-route-copy {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(244, 231, 189, 0.9);
+}
+
+.measure-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-top: 0.55rem;
+  font-size: 0.8rem;
+}
+
+.measure-row span,
+.measure-stats span,
+.measure-route-label,
+.measure-pace-label {
+  color: rgba(230, 214, 163, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+.measure-row strong,
+.measure-stats strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  line-height: 1.15;
+  text-align: right;
+}
+
+.measure-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.8rem 0;
+}
+
+.measure-stats > div {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+}
+
+.measure-stats strong {
+  display: block;
+  text-align: left;
+  margin-top: 0.2rem;
+  color: #fff4cf;
+}
+
+.measure-pace-label {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.measure-pace-select {
+  width: 100%;
+  border-radius: 9px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(12, 11, 16, 0.92);
+  color: #f5e8c4;
+  padding: 0.55rem 0.7rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.98rem;
+  margin-bottom: 0.8rem;
+}
+
+.measure-route-label {
+  margin-bottom: 0.28rem;
+}
+
+.measure-clear-btn {
+  margin-top: 0.85rem;
+  width: 100%;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(78, 38, 18, 0.86), rgba(36, 16, 12, 0.92));
+  color: #f7e7b2;
+  padding: 0.58rem 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.measure-clear-btn:hover {
+  background: linear-gradient(180deg, rgba(102, 48, 22, 0.92), rgba(52, 20, 14, 0.96));
+}
+
+@media (max-width: 900px) {
+  .map-measure-panel {
+    right: 0.75rem;
+    top: auto;
+    bottom: 4rem;
+    width: min(22rem, calc(100% - 1.5rem));
+  }
+}
+
 /* --- Marker dots --- */
 .marker-dot {
   fill: #d4af37;

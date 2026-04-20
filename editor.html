@@ -27,7 +27,10 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background: #050508;
+      background:
+        radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(120, 20, 20, 0.14), transparent 28%),
+        #050508;
     }
 
     .editor-layout {
@@ -40,8 +43,7 @@
       width: 400px;
       min-width: 400px;
       flex-shrink: 0;
-      background: #111;
-      border-right: 1px solid var(--color-gold);
+      position: relative;
       display: flex;
       flex-direction: column;
       z-index: 10;
@@ -89,15 +91,12 @@
     .map-btn {
       width: 40px;
       height: 40px;
-      background: rgba(10, 10, 15, 0.8);
-      border: 1px solid var(--color-gold);
-      color: var(--color-gold);
-      border-radius: 4px;
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all 0.25s ease;
     }
 
     .map-btn:hover {
@@ -105,16 +104,20 @@
       color: #000;
     }
 
+    .map-btn i {
+      font-size: 0.95rem;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+      transition: transform 0.2s ease;
+    }
+
+    .map-btn:hover i {
+      transform: scale(1.06);
+    }
+
     .map-coords {
       position: absolute;
       bottom: 1rem;
       left: 1rem;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 0.25rem 0.5rem;
-      border: 1px solid var(--color-gold);
-      color: var(--color-gold);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
       z-index: 100;
       pointer-events: none;
     }
@@ -124,37 +127,63 @@
 <body class="editor-mode">
   <div class="editor-layout">
     <div class="editor-sidebar" id="editor-sidebar">
-      <div style="padding: 1rem; border-bottom: 1px solid #333; text-align: center;">
-        <h2 style="margin: 0; color: var(--color-gold); font-family: 'Cinzel', serif;">Map Editor</h2>
-        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-          <button class="btn btn-secondary" onclick="Editor.refreshMap()" style="flex: 1;"><i
+      <div class="editor-hero">
+        <div class="editor-hero-kicker">World of Myrdae</div>
+        <h2 class="editor-title">Map Editor</h2>
+        <p class="editor-subtitle">Shape the atlas with the same dark-fantasy polish the map reveals in its tooltips.</p>
+        <div class="editor-action-row">
+          <button class="btn btn-secondary btn-flex" onclick="Editor.refreshMap()"><i
               class="fa-solid fa-sync"></i> Refresh Map</button>
-          <button class="btn btn-secondary" onclick="Editor.reloadPage()" style="flex: 1;"><i
+          <button class="btn btn-secondary btn-flex" onclick="Editor.reloadPage()"><i
               class="fa-solid fa-rotate-right"></i> Reload Data</button>
         </div>
-        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-          <button id="btn-undo" class="btn btn-secondary" onclick="Editor.undo()" style="flex:1;" disabled title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i> Undo</button>
-          <button id="btn-redo" class="btn btn-secondary" onclick="Editor.redo()" style="flex:1;" disabled title="Redo (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+        <div class="editor-action-row editor-action-row-tight">
+          <button id="btn-undo" class="btn btn-secondary btn-flex" onclick="Editor.undo()" disabled title="Nothing to undo"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+          <button id="btn-redo" class="btn btn-secondary btn-flex" onclick="Editor.redo()" disabled title="Nothing to redo"><i class="fa-solid fa-rotate-right"></i> Redo</button>
         </div>
       </div>
 
       <!-- Editor Tabs -->
-      <div class="editor-tabs">
+      <div class="editor-tabs editor-tab-panel">
         <button class="editor-tab active" onclick="Editor.switchTab('locations')">Locations</button>
         <button class="editor-tab" onclick="Editor.switchTab('roads')">Roads</button>
         <button class="editor-tab" onclick="CityEditor.open()">City Map</button>
       </div>
 
       <!-- Locations Tab Content -->
-      <div id="tab-locations" class="tab-content active" style="padding: 1rem;">
-        <p style="font-size: 0.8rem; color: #888;">Click on the map to place a new location.</p>
+      <div id="tab-locations" class="tab-content active editor-scroll-panel">
+        <p class="editor-intro">Select an existing location to edit it, or explicitly start placement to add a new one.</p>
 
+        <div class="editor-action-row" style="margin-top:0; margin-bottom:0.75rem;">
+          <button id="btn-new-location" class="btn btn-primary btn-flex" onclick="Editor.toggleNewLocationMode()">
+            <i class="fa-solid fa-plus"></i> New Location
+          </button>
+        </div>
+        <p id="location-placement-hint" class="editor-intro" style="margin-top:0; margin-bottom:0.75rem; font-size:0.92rem;">
+          Placement mode is off. Clicking the map will not create a location.
+        </p>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Region Filter</label>
+          <span id="region-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
         <select id="region-filter" class="form-control"
-          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%;"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
           onchange="Editor.filterByRegion(this.value)">
           <option value="">All Regions</option>
         </select>
 
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Type Filter</label>
+          <span id="type-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
+        <select id="type-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
+          onchange="Editor.filterByType(this.value)">
+          <option value="">All Types</option>
+        </select>
+
+        <label for="location-search" style="display:block; font-size:0.75rem; color:#888; margin-bottom:0.25rem;">Search</label>
         <div style="position:relative; margin-bottom:0.4rem;">
           <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('location-search').focus()"></i>
           <input type="text" id="location-search" placeholder="Search locations…" autocomplete="off"
@@ -168,8 +197,8 @@
           <!-- Populated by JS -->
         </select>
 
-        <div id="location-form-area" style="display: none;">
-          <h3 id="form-title" style="margin-top:0; color:var(--color-gold);">Edit Location</h3>
+        <div id="location-form-area" class="editor-section-card" style="display: none;">
+          <h3 id="form-title" class="editor-section-title">Edit Location</h3>
 
           <div class="form-group">
             <label>ID (auto-generated if empty)</label>
@@ -250,8 +279,8 @@
             </select>
           </div>
 
-          <details style="margin-top: 1rem; margin-bottom: 1rem;">
-            <summary style="cursor: pointer; color: var(--color-gold); font-size: 0.9rem;">Advanced Typography / Markers
+          <details class="editor-details">
+            <summary>Advanced Typography / Markers
             </summary>
             <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
               <div class="form-group"><label>Font Family</label><input type="text" id="loc-fontFamily"
@@ -290,18 +319,17 @@
             </div>
           </details>
 
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="editor-action-wrap">
             <button class="btn btn-primary" onclick="Editor.saveLocation()" title="Save (Ctrl+S)">Save Location</button>
             <button class="btn btn-secondary" onclick="Editor.duplicateLocation()" title="Clone this location as a new entry"><i class="fa-solid fa-copy"></i> Duplicate</button>
             <button class="btn btn-secondary" onclick="Editor.cancelLocation()">Cancel</button>
-            <button class="btn" onclick="Editor.deleteLocation()"
-              style="background:#500; border-color:#800; color:#fff;" id="btn-del-loc">Delete</button>
+            <button class="btn btn-danger" onclick="Editor.deleteLocation()" id="btn-del-loc">Delete</button>
           </div>
         </div>
 
         <!-- Batch Region Rename -->
-        <details style="margin-top:1.25rem; border-top:1px solid #333; padding-top:0.75rem;">
-          <summary style="cursor:pointer; color:#888; font-size:0.8rem; user-select:none;">&#9998; Rename Region (batch)</summary>
+        <details class="editor-details editor-details-muted">
+          <summary>&#9998; Rename Region (batch)</summary>
           <div style="margin-top:0.5rem; display:flex; flex-direction:column; gap:0.4rem;">
             <select id="rename-region-old" class="form-control"
               style="font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem;">
@@ -317,8 +345,8 @@
       </div>
 
       <!-- City Map Tab Content -->
-      <div id="tab-citymap" class="tab-content" style="padding: 1rem; display: none;">
-        <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">Select a city, then drag pins to reposition them. Click Save when done.</p>
+      <div id="tab-citymap" class="tab-content editor-scroll-panel" style="display: none;">
+        <p class="editor-intro">Select a city, then drag pins to reposition them. Click Save when done.</p>
 
         <div class="form-group" style="margin-bottom: 0.75rem;">
           <label style="font-size:0.75rem; color:#888;">City</label>
@@ -361,8 +389,8 @@
           </button>
         </div>
 
-        <div id="city-pin-form" style="display:none;">
-          <h3 id="city-pin-name" style="margin:0 0 0.75rem; color:var(--color-gold); font-family:'Cinzel',serif; font-size:0.95rem;"></h3>
+        <div id="city-pin-form" class="editor-section-card" style="display:none;">
+          <h3 id="city-pin-name" class="editor-section-title" style="margin:0 0 0.75rem;"></h3>
           <p id="city-form-hint" style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;"><i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.</p>
           <div class="form-inline">
             <div id="city-pin-n-row" class="form-group" style="flex:0 0 80px;">
@@ -400,8 +428,8 @@
               style="width:100%; accent-color:var(--color-gold);"
               oninput="document.getElementById('city-pin-size-val').textContent=parseFloat(this.value).toFixed(1); CityEditor.updateFromForm()">
           </div>
-          <button id="city-delete-btn" class="btn" onclick="CityEditor.deletePin()"
-            style="background:#500; border-color:#800; color:#fff; width:100%; margin-top:0.5rem;">
+          <button id="city-delete-btn" class="btn btn-danger" onclick="CityEditor.deletePin()"
+            style="width:100%; margin-top:0.5rem;">
             <i class="fa-solid fa-trash"></i> Delete This Pin
           </button>
         </div>
@@ -417,8 +445,18 @@
       </div>
 
       <!-- Roads Tab Content -->
-      <div id="tab-roads" class="tab-content" style="padding: 1rem; display: none;">
-        <p style="font-size: 0.8rem; color: #888;">Select a road to edit, or click 'New Road' to start plotting.</p>
+      <div id="tab-roads" class="tab-content editor-scroll-panel" style="display: none;">
+        <p class="editor-intro">Select a road to edit, or click 'New Road' to start plotting.</p>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Region Filter</label>
+          <span id="road-region-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
+        <select id="road-region-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
+          onchange="Editor.filterRoadsByRegion(this.value)">
+          <option value="">All Connected Regions</option>
+        </select>
 
         <div style="position:relative; margin-bottom:0.4rem;">
           <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('road-search').focus()"></i>
@@ -436,8 +474,8 @@
         <button class="btn btn-secondary" onclick="Editor.newRoad()" style="width: 100%; margin-bottom: 1rem;">+ New
           Road</button>
 
-        <div id="road-form-area" style="display: none;">
-          <h3 id="road-form-title" style="margin-top:0; color:var(--color-gold);">Edit Road</h3>
+        <div id="road-form-area" class="editor-section-card" style="display: none;">
+          <h3 id="road-form-title" class="editor-section-title">Edit Road</h3>
 
           <div class="form-group">
             <label>ID</label>
@@ -453,7 +491,8 @@
               <option value="water-route">Boat Route / Sea Lane</option>
               <option value="border">Border</option>
             </select>
-            <small style="display:block; margin-top:0.4rem; color:#888; font-size:0.85rem;">Boat routes are saved as water-route and will animate boats on the map instead of drawing a road line.</small>
+            <small style="display:block; margin-top:0.4rem; color:#888; font-size:0.82rem;">Boat routes animate ships on the map instead of drawing a line.</small>
+            <small id="vessel-hint" style="display:block; margin-top:0.25rem; color:#4da6ff; font-size:0.78rem; font-style:italic;"><i class="fa-solid fa-ship"></i> Switch to "Boat Route / Sea Lane" to configure vessel name, captain, cargo &amp; animation.</small>
           </div>
 
           <div id="ship-details-section" style="display:none; background:rgba(0,60,100,0.15); border:1px solid rgba(30,144,255,0.25); border-radius:4px; padding:0.75rem; margin-bottom:0.75rem;">
@@ -537,8 +576,8 @@
             <label><input type="checkbox" id="road-curved" checked onchange="Editor.previewRoad()"> Curved Lines</label>
           </div>
 
-          <details style="margin-top: 1rem; margin-bottom: 1rem;">
-            <summary style="cursor: pointer; color: var(--color-gold); font-size: 0.9rem;">Advanced Road Styling
+          <details class="editor-details">
+            <summary>Advanced Road Styling
             </summary>
             <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
               <div class="form-group"><label>Color Override</label><input type="text" id="road-color"
@@ -555,8 +594,8 @@
             </div>
           </details>
 
-          <details style="margin-top: 0; margin-bottom: 1rem;">
-            <summary style="cursor: pointer; color: var(--color-gold); font-size: 0.9rem;">Road Label Typography
+          <details class="editor-details">
+            <summary>Road Label Typography
             </summary>
             <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
               <div class="form-group"><label>Font Family</label><input type="text" id="road-fontFamily"
@@ -612,21 +651,22 @@
               <i class="fa-solid fa-trash"></i> Clear Waypoints
             </button>
           </div>
-          <p style="font-size: 0.75rem; color: #aaa;">
-            <i class="fa-solid fa-circle-info"></i> Roads must start and end at locations. Use dropdowns above or click
-            location markers on the map. Click empty map areas to add intermediate waypoints (optional). Click the
-            pencil icon to edit waypoint coordinates.
+          <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 0.25rem;">
+            <i class="fa-solid fa-circle-info"></i> Roads must start and end at locations. Use dropdowns above or click location markers on the map.
+          </p>
+          <p id="waypoint-map-hint" style="display:none; font-size:0.78rem; color:#4da6ff; font-style:italic; margin-top:0.25rem; padding:0.4rem 0.6rem; background:rgba(30,144,255,0.08); border:1px solid rgba(30,144,255,0.2); border-radius:4px;">
+            <i class="fa-solid fa-map-location-dot"></i> Start &amp; end are set — click anywhere on the map to add intermediate waypoints. Click the <i class="fa-solid fa-pencil" style="font-size:0.7rem;"></i> icon to edit a waypoint's coordinates.
           </p>
 
-          <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+          <div class="editor-action-wrap" style="margin-top: 1rem;">
             <button class="btn btn-primary" onclick="Editor.saveRoad()" style="flex: 1;">
               <i class="fa-solid fa-floppy-disk"></i> Save Road
             </button>
             <button class="btn btn-secondary" onclick="Editor.cancelRoad()" style="flex: 1;">
               Cancel
             </button>
-            <button class="btn" onclick="Editor.deleteRoad()"
-              style="background:#500; border-color:#800; color:#fff; flex: 1;" id="btn-del-road">
+            <button class="btn btn-danger" onclick="Editor.deleteRoad()"
+              style="flex: 1;" id="btn-del-road">
               <i class="fa-solid fa-trash"></i> Delete
             </button>
           </div>
@@ -642,7 +682,15 @@
       <div class="map-container" id="map-container">
         <div class="map-controls">
           <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
-            <i class="fa-solid fa-house"></i>
+            <i class="fa-solid fa-compass"></i>
+          </button>
+          <button class="map-btn" id="tooltips-toggle" onclick="toggleTooltips()" title="Hide Tooltips"
+            style="opacity: 1;">
+            <i class="fa-solid fa-scroll"></i>
+          </button>
+          <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Show Territories"
+            style="opacity: 0.5;">
+            <i class="fa-solid fa-flag"></i>
           </button>
           <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker"
             style="opacity: 1;">
@@ -651,6 +699,9 @@
         </div>
         <div class="map-coords" id="map-coords">X: — Y: —</div>
         <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+        <img src="images/Myrdae (v.4.2.c - Territory Layer).png" alt="Territories of Myrdae" id="territories-layer"
+          draggable="false"
+          style="display:none; position:absolute; top:0; left:0; width:100%; height:auto; z-index:2; pointer-events:none;">
         <svg id="city-pins-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:200; overflow:visible;"></svg>
       </div>
     </div>
@@ -673,9 +724,14 @@
       MapController.init('map-container', 'map-image', {
         onTransform: (transformStr, scale, tx, ty) => {
           const overlay = document.getElementById('map-container-overlay');
+          const territories = document.getElementById('territories-layer');
           if (overlay) {
             overlay.style.transform = transformStr;
             overlay.style.transformOrigin = '0 0';
+          }
+          if (territories) {
+            territories.style.transform = transformStr;
+            territories.style.transformOrigin = '0 0';
           }
         }
       });
@@ -773,6 +829,26 @@
         display.style.display = 'none';
         btn.style.opacity = '0.5';
       }
+    }
+
+    function toggleTooltips() {
+      const btn = document.getElementById('tooltips-toggle');
+      const enabled = MapOverlay.setTooltipsEnabled(!MapOverlay.areTooltipsEnabled());
+      if (btn) {
+        btn.style.opacity = enabled ? '1' : '0.5';
+        btn.title = enabled ? 'Hide Tooltips' : 'Show Tooltips';
+      }
+    }
+
+    function toggleTerritories() {
+      const layer = document.getElementById('territories-layer');
+      const btn = document.getElementById('territories-toggle');
+      if (!layer || !btn) return;
+
+      const visible = layer.style.display === 'block';
+      layer.style.display = visible ? 'none' : 'block';
+      btn.style.opacity = visible ? '0.5' : '1';
+      btn.title = visible ? 'Show Territories' : 'Hide Territories';
     }
 
     document.getElementById('map-container').addEventListener('mousemove', (e) => {
@@ -975,10 +1051,10 @@ const CityEditor = (function () {
 
     // Swap map image, hide world overlay
     const img = document.getElementById('map-image');
-    img.src = cityData.image;
     cityMapActive = true;
-    img.onload = () => { _setOverlay(false); renderPins(); };
-    if (img.complete && img.naturalWidth) { _setOverlay(false); renderPins(); }
+    img.onload = () => { _setOverlay(false); _setTerritories(false); renderPins(); };
+    img.src = cityData.image;
+    if (img.complete && img.naturalWidth) { _setOverlay(false); _setTerritories(false); renderPins(); }
 
     MapController.reset('map-container');
 
@@ -1000,12 +1076,32 @@ const CityEditor = (function () {
     if (ov) ov.style.visibility = visible ? 'visible' : 'hidden';
   }
 
+  function _setTerritories(visible) {
+    const layer = document.getElementById('territories-layer');
+    const btn = document.getElementById('territories-toggle');
+    if (layer) layer.style.display = visible ? 'block' : 'none';
+    if (btn) {
+      btn.style.opacity = visible ? '1' : '0.5';
+      btn.title = visible ? 'Hide Territories' : 'Show Territories';
+    }
+  }
+
+  function _restoreWorldOverlay() {
+    _setOverlay(true);
+    if (typeof MapOverlay !== 'undefined') {
+      MapOverlay.init('map-container', 'map-image');
+    }
+  }
+
   // ── Exit city mode, restore world map ──────────────────────
   function exitCityMode() {
     cityMapActive = false;
-    _setOverlay(true);
     document.querySelectorAll('.city-pin').forEach(el => el.remove());
-    document.getElementById('map-image').src = 'images/Myrdae.jpg';
+    const img = document.getElementById('map-image');
+    img.onload = () => { _restoreWorldOverlay(); };
+    img.src = 'images/Myrdae.jpg';
+    if (img.complete && img.naturalWidth) _restoreWorldOverlay();
+    _setTerritories(false);
     document.getElementById('city-world-link').style.display   = 'none';
     document.getElementById('city-pin-controls').style.display = 'none';
     document.getElementById('city-action-btns').style.display  = 'none';

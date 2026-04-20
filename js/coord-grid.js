@@ -1,39 +1,191 @@
 /**
- * Earth-style latitude/longitude grid overlay for World of Myrdae.
- * Assumes the map image behaves like an equirectangular projection.
+ * Hex grid overlay and lookup helpers for World of Myrdae.
  */
 const CoordGrid = (function () {
   let active = false;
+  const instances = new Map();
 
-  const MINOR_LON_STEP = 15;
-  const MAJOR_LON_STEP = 30;
-  const MINOR_LAT_STEP = 15;
-  const MAJOR_LAT_STEP = 30;
+  const HEX_SIZE_RATIO = 0.028;
+  const HEX_STROKE = 'rgba(236, 225, 190, 0.58)';
+  const HEX_FILL = 'rgba(212, 175, 55, 0.05)';
+  const HEX_LABEL_FILL = 'rgba(246, 236, 206, 0.88)';
+  const HEX_LABEL_SHADOW = 'rgba(8, 16, 24, 0.62)';
 
-  function lonToX(lon, natW) {
-    return ((lon + 180) / 360) * natW;
+  function toColumnLabel(index) {
+    let value = index + 1;
+    let result = '';
+    while (value > 0) {
+      const remainder = (value - 1) % 26;
+      result = String.fromCharCode(65 + remainder) + result;
+      value = Math.floor((value - 1) / 26);
+    }
+    return result;
   }
 
-  function latToY(lat, natH) {
-    return ((90 - lat) / 180) * natH;
+  function makeSvgElement(tagName, attrs) {
+    const element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+    Object.entries(attrs || {}).forEach(([key, value]) => element.setAttribute(key, value));
+    return element;
   }
 
-  function formatLongitude(lon) {
-    if (lon === 0) return '0deg';
-    return `${Math.abs(lon)}deg${lon < 0 ? 'W' : 'E'}`;
+  function getHexPoints(cx, cy, size) {
+    const points = [];
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 180) * (60 * i);
+      const x = cx + size * Math.cos(angle);
+      const y = cy + size * Math.sin(angle);
+      points.push(`${x},${y}`);
+    }
+    return points.join(' ');
   }
 
-  function formatLatitude(lat) {
-    if (lat === 0) return '0deg';
-    return `${Math.abs(lat)}deg${lat < 0 ? 'S' : 'N'}`;
+  function buildGridMetrics(natW, natH) {
+    const size = natW * HEX_SIZE_RATIO;
+    const hexHeight = Math.sqrt(3) * size;
+    const horizontalStep = 1.5 * size;
+    const verticalStep = hexHeight;
+    const cells = [];
+
+    for (let col = 0; ; col++) {
+      const cx = size + col * horizontalStep;
+      if (cx - size > natW + size) break;
+
+      const yOffset = col % 2 === 0 ? 0 : hexHeight / 2;
+      for (let row = 0; ; row++) {
+        const cy = hexHeight / 2 + yOffset + row * verticalStep;
+        if (cy - hexHeight / 2 > natH + hexHeight / 2) break;
+
+        cells.push({
+          col,
+          row,
+          code: `${toColumnLabel(col)}${row + 1}`,
+          cx,
+          cy,
+          xPercent: (cx / natW) * 100,
+          yPercent: (cy / natH) * 100
+        });
+      }
+    }
+
+    return {
+      natW,
+      natH,
+      size,
+      hexHeight,
+      cells
+    };
   }
 
-  function makeText(svg, attrs, textContent) {
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    Object.entries(attrs).forEach(([key, value]) => text.setAttribute(key, value));
-    text.textContent = textContent;
-    svg.appendChild(text);
-    return text;
+  function findNearestCell(metrics, xPx, yPx) {
+    if (!metrics || !metrics.cells.length) return null;
+
+    let nearest = null;
+    let nearestDistanceSq = Infinity;
+
+    metrics.cells.forEach((cell) => {
+      const dx = cell.cx - xPx;
+      const dy = cell.cy - yPx;
+      const distanceSq = dx * dx + dy * dy;
+      if (distanceSq < nearestDistanceSq) {
+        nearestDistanceSq = distanceSq;
+        nearest = cell;
+      }
+    });
+
+    return nearest;
+  }
+
+  function ensureMetrics(containerId, mapImg) {
+    const natW = mapImg.naturalWidth;
+    const natH = mapImg.naturalHeight;
+    if (!natW || !natH) return null;
+
+    const cached = instances.get(containerId);
+    if (cached && cached.metrics && cached.metrics.natW === natW && cached.metrics.natH === natH) {
+      return cached.metrics;
+    }
+
+    const metrics = buildGridMetrics(natW, natH);
+    const instance = cached || {};
+    instance.metrics = metrics;
+    instances.set(containerId, instance);
+    return metrics;
+  }
+
+  function drawGrid(containerId, imageId) {
+    const container = document.getElementById(containerId);
+    const mapImg = document.getElementById(imageId);
+    if (!container || !mapImg) return;
+
+    const existing = document.getElementById(containerId + '-coord-grid');
+    if (existing) existing.remove();
+
+    const metrics = ensureMetrics(containerId, mapImg);
+    if (!metrics) return;
+
+    const svg = makeSvgElement('svg', {
+      id: containerId + '-coord-grid',
+      class: 'coord-grid-overlay',
+      viewBox: `0 0 ${metrics.natW} ${metrics.natH}`,
+      preserveAspectRatio: 'xMinYMin meet'
+    });
+
+    svg.style.width = '100%';
+    svg.style.height = 'auto';
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.pointerEvents = 'none';
+    svg.style.display = active ? '' : 'none';
+    svg.style.zIndex = '6';
+
+    const cellGroup = makeSvgElement('g', {
+      opacity: '0.92',
+      'shape-rendering': 'geometricPrecision'
+    });
+    const labelGroup = makeSvgElement('g', {
+      opacity: '0.9'
+    });
+
+    metrics.cells.forEach((cell) => {
+      const polygon = makeSvgElement('polygon', {
+        points: getHexPoints(cell.cx, cell.cy, metrics.size),
+        fill: HEX_FILL,
+        stroke: HEX_STROKE,
+        'stroke-width': Math.max(1, metrics.natW * 0.00022)
+      });
+      cellGroup.appendChild(polygon);
+
+      const label = makeSvgElement('text', {
+        x: cell.cx,
+        y: cell.cy + metrics.size * 0.12,
+        fill: HEX_LABEL_FILL,
+        stroke: HEX_LABEL_SHADOW,
+        'stroke-width': '0.65',
+        'paint-order': 'stroke',
+        'font-size': Math.max(10, metrics.natW * 0.0046),
+        'font-family': 'Cinzel, serif',
+        'letter-spacing': '0.06em',
+        'text-anchor': 'middle'
+      });
+      label.textContent = cell.code;
+      labelGroup.appendChild(label);
+    });
+
+    const frame = makeSvgElement('rect', {
+      x: '1',
+      y: '1',
+      width: metrics.natW - 2,
+      height: metrics.natH - 2,
+      fill: 'none',
+      stroke: 'rgba(231, 222, 192, 0.55)',
+      'stroke-width': '1.3'
+    });
+
+    svg.appendChild(cellGroup);
+    svg.appendChild(frame);
+    svg.appendChild(labelGroup);
+    mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
   }
 
   function init(containerId, imageId) {
@@ -41,151 +193,15 @@ const CoordGrid = (function () {
     const mapImg = document.getElementById(imageId);
     if (!container || !mapImg) return;
 
-    const draw = () => {
-      const existing = document.getElementById(containerId + '-coord-grid');
-      if (existing) existing.remove();
+    const instance = instances.get(containerId) || {};
+    instance.imageId = imageId;
+    instances.set(containerId, instance);
 
-      const natW = mapImg.naturalWidth;
-      const natH = mapImg.naturalHeight;
-      if (!natW || !natH) return;
-
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('id', containerId + '-coord-grid');
-      svg.setAttribute('class', 'coord-grid-overlay');
-      svg.setAttribute('viewBox', `0 0 ${natW} ${natH}`);
-      svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
-      svg.style.width = '100%';
-      svg.style.height = 'auto';
-      svg.style.position = 'absolute';
-      svg.style.top = '0';
-      svg.style.left = '0';
-      svg.style.pointerEvents = 'none';
-      svg.style.display = active ? '' : 'none';
-      svg.style.zIndex = '6';
-
-      const minorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      const majorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      const axisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-      minorGroup.setAttribute('opacity', '0.2');
-      majorGroup.setAttribute('opacity', '0.45');
-      axisGroup.setAttribute('opacity', '0.7');
-      minorGroup.setAttribute('shape-rendering', 'crispEdges');
-      majorGroup.setAttribute('shape-rendering', 'crispEdges');
-      axisGroup.setAttribute('shape-rendering', 'crispEdges');
-
-      for (let lon = -180; lon <= 180; lon += MINOR_LON_STEP) {
-        const x = lonToX(lon, natW);
-        const isAxis = lon === 0;
-        const isMajor = lon % MAJOR_LON_STEP === 0;
-        const targetGroup = isAxis ? axisGroup : (isMajor ? majorGroup : minorGroup);
-
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x);
-        line.setAttribute('y1', 0);
-        line.setAttribute('x2', x);
-        line.setAttribute('y2', natH);
-        line.setAttribute('stroke', isAxis ? '#f4edd1' : (isMajor ? '#ddd4ae' : '#c8c0a0'));
-        line.setAttribute('stroke-width', isAxis ? '1.4' : (isMajor ? '1' : '0.55'));
-        line.setAttribute('stroke-dasharray', isAxis ? 'none' : (isMajor ? '8 7' : '3 9'));
-        targetGroup.appendChild(line);
-
-        if (!isMajor || lon === 180) continue;
-
-        const label = formatLongitude(lon);
-        const labelX = Math.max(22, Math.min(x + 4, natW - 22));
-        makeText(labelGroup, {
-          x: labelX,
-          y: 20,
-          fill: '#f3ecd0',
-          stroke: 'rgba(8,16,24,0.45)',
-          'stroke-width': '0.7',
-          'paint-order': 'stroke',
-          'font-size': Math.max(11, natW * 0.0072),
-          'font-family': 'Cinzel, serif',
-          'letter-spacing': '0.08em'
-        }, label);
-        makeText(labelGroup, {
-          x: labelX,
-          y: natH - 8,
-          fill: '#f3ecd0',
-          stroke: 'rgba(8,16,24,0.45)',
-          'stroke-width': '0.7',
-          'paint-order': 'stroke',
-          'font-size': Math.max(11, natW * 0.0072),
-          'font-family': 'Cinzel, serif',
-          'letter-spacing': '0.08em'
-        }, label);
-      }
-
-      for (let lat = -90; lat <= 90; lat += MINOR_LAT_STEP) {
-        const y = latToY(lat, natH);
-        const isAxis = lat === 0;
-        const isMajor = lat % MAJOR_LAT_STEP === 0;
-        const targetGroup = isAxis ? axisGroup : (isMajor ? majorGroup : minorGroup);
-
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', 0);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', natW);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', isAxis ? '#f4edd1' : (isMajor ? '#ddd4ae' : '#c8c0a0'));
-        line.setAttribute('stroke-width', isAxis ? '1.4' : (isMajor ? '1' : '0.55'));
-        line.setAttribute('stroke-dasharray', isAxis ? 'none' : (isMajor ? '8 7' : '3 9'));
-        targetGroup.appendChild(line);
-
-        if (!isMajor || lat === -90 || lat === 90) continue;
-
-        const label = formatLatitude(lat);
-        const labelY = Math.max(14, Math.min(y - 4, natH - 12));
-        makeText(labelGroup, {
-          x: 8,
-          y: labelY,
-          fill: '#f3ecd0',
-          stroke: 'rgba(8,16,24,0.45)',
-          'stroke-width': '0.7',
-          'paint-order': 'stroke',
-          'font-size': Math.max(11, natW * 0.0072),
-          'font-family': 'Cinzel, serif',
-          'letter-spacing': '0.08em'
-        }, label);
-        makeText(labelGroup, {
-          x: natW - 42,
-          y: labelY,
-          fill: '#f3ecd0',
-          stroke: 'rgba(8,16,24,0.45)',
-          'stroke-width': '0.7',
-          'paint-order': 'stroke',
-          'font-size': Math.max(11, natW * 0.0072),
-          'font-family': 'Cinzel, serif',
-          'letter-spacing': '0.08em',
-          'text-anchor': 'end'
-        }, label);
-      }
-
-      const frame = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      frame.setAttribute('x', '1');
-      frame.setAttribute('y', '1');
-      frame.setAttribute('width', natW - 2);
-      frame.setAttribute('height', natH - 2);
-      frame.setAttribute('fill', 'none');
-      frame.setAttribute('stroke', '#e7dec0');
-      frame.setAttribute('stroke-width', '1.3');
-      frame.setAttribute('opacity', '0.42');
-
-      svg.appendChild(minorGroup);
-      svg.appendChild(majorGroup);
-      svg.appendChild(axisGroup);
-      svg.appendChild(frame);
-      svg.appendChild(labelGroup);
-      mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
-    };
-
+    const render = () => drawGrid(containerId, imageId);
     if (mapImg.complete && mapImg.naturalWidth) {
-      draw();
+      render();
     } else {
-      mapImg.addEventListener('load', draw, { once: true });
+      mapImg.addEventListener('load', render, { once: true });
     }
   }
 
@@ -196,5 +212,27 @@ const CoordGrid = (function () {
     return active;
   }
 
-  return { init, toggle };
+  function describePoint(xPercent, yPercent, containerId) {
+    const instance = instances.get(containerId);
+    if (!instance || !instance.metrics) return null;
+
+    const xPx = (xPercent / 100) * instance.metrics.natW;
+    const yPx = (yPercent / 100) * instance.metrics.natH;
+    const cell = findNearestCell(instance.metrics, xPx, yPx);
+    if (!cell) return null;
+
+    return {
+      code: cell.code,
+      col: cell.col,
+      row: cell.row,
+      centerXPercent: cell.xPercent,
+      centerYPercent: cell.yPercent
+    };
+  }
+
+  return {
+    init,
+    toggle,
+    describePoint
+  };
 })();
