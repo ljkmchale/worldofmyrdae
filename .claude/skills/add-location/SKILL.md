@@ -10,11 +10,11 @@ Help the user add a new location to `js/locations-db.js`.
 
 1. **Gather info** — If $ARGUMENTS doesn't supply everything, ask the user for:
    - Name (required)
-   - Type: city | town | village | landmark | dungeon | ruin | port | fortress | region | other
-   - x, y coordinates as percentage of map image (0–100). If unknown, ask user to look at the editor to find approximate position, or suggest a reasonable region.
+   - Type: `capital` | `city` | `small-city` | `town` | `village` | `port` | `ruins` | `landmark` | `nature` | `poi` | `region` | `water` | `river`
+   - x, y coordinates as percentage of map image (0–100). If unknown, ask user to open the editor, click **New Location** to enter placement mode, then click the map to get coordinates.
    - Region name (which existing region it belongs to)
    - Short description (1–2 sentences of flavor text)
-   - fontSize (default: 14 for small places, 16 for towns, 18–20 for cities)
+   - fontSize (default: 14 for villages/landmarks, 16 for towns, 18–20 for cities/capitals)
    - markerSize (default: 0.15 for small, 0.2 for medium, 0.25 for large)
 
 2. **Create the ID** — kebab-case version of the name, lowercase, no special chars. E.g. "Fort Ashveil" → `fort-ashveil`

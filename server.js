@@ -4,10 +4,9 @@ const path = require('path');
 const { spawn } = require('child_process');
 const net = require('net');
 
-const PORT = process.env.PORT || 3000;
+const DEFAULT_PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const COMFY_PORT = 8188;
-const PUBLIC_DIR = __dirname;
-const PUBLIC_DIR_REAL = fs.realpathSync(PUBLIC_DIR);
+const DEFAULT_BUNDLED_ROOT = __dirname;
 
 // Simple .env loader
 if (fs.existsSync(path.join(__dirname, '.env'))) {
@@ -20,15 +19,79 @@ if (fs.existsSync(path.join(__dirname, '.env'))) {
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 let comfyProcess = null;
+let server = null;
+let runtimeConfig = createRuntimeConfig();
 
-function resolvePublicPath(requestPath) {
+function createRuntimeConfig(options = {}) {
+    const bundledRoot = path.resolve(options.bundledRoot || DEFAULT_BUNDLED_ROOT);
+    const bundledRootReal = fs.realpathSync(bundledRoot);
+    const requestedDataRoot = options.dataRoot
+        ? path.resolve(options.dataRoot)
+        : (process.env.MYRDAE_DATA_DIR ? path.resolve(process.env.MYRDAE_DATA_DIR) : bundledRootReal);
+
+    fs.mkdirSync(requestedDataRoot, { recursive: true });
+
+    const requestedPort = options.port !== undefined ? Number(options.port) : DEFAULT_PORT;
+
+    return {
+        port: Number.isFinite(requestedPort) ? requestedPort : DEFAULT_PORT,
+        bundledRootReal,
+        dataRootReal: fs.realpathSync(requestedDataRoot),
+        autoStartComfy: options.autoStartComfy !== false
+    };
+}
+
+function normalizeRelativePath(requestPath) {
     const relativePath = requestPath.startsWith('/') ? requestPath.slice(1) : requestPath;
-    const resolvedPath = path.resolve(PUBLIC_DIR_REAL, relativePath);
-    const relative = path.relative(PUBLIC_DIR_REAL, resolvedPath);
+    return relativePath.replace(/\\/g, '/');
+}
+
+function resolveWithinRoot(rootReal, requestPath) {
+    const relativePath = normalizeRelativePath(requestPath);
+    const resolvedPath = path.resolve(rootReal, relativePath);
+    const relative = path.relative(rootReal, resolvedPath);
     if (relative.startsWith('..') || path.isAbsolute(relative)) {
         throw new Error('Path escapes public directory');
     }
     return resolvedPath;
+}
+
+function isMutableRelativePath(requestPath) {
+    const relativePath = normalizeRelativePath(requestPath);
+    return relativePath === 'js/locations-db.js' ||
+        relativePath === 'js/city-maps.js' ||
+        relativePath === 'js/cities' ||
+        relativePath.startsWith('js/cities/') ||
+        relativePath === 'images/cities' ||
+        relativePath.startsWith('images/cities/');
+}
+
+function resolvePublicPath(requestPath) {
+    if (isMutableRelativePath(requestPath)) {
+        const dataPath = resolveWithinRoot(runtimeConfig.dataRootReal, requestPath);
+        if (fs.existsSync(dataPath)) {
+            return dataPath;
+        }
+    }
+
+    return resolveWithinRoot(runtimeConfig.bundledRootReal, requestPath);
+}
+
+function resolveWritablePath(requestPath) {
+    if (!isMutableRelativePath(requestPath)) {
+        throw new Error('Path is read-only in packaged builds');
+    }
+
+    return resolveWithinRoot(runtimeConfig.dataRootReal, requestPath);
+}
+
+function mergeUnique(entries) {
+    const seen = new Set();
+    return entries.filter((entry) => {
+        if (seen.has(entry.id)) return false;
+        seen.add(entry.id);
+        return true;
+    });
 }
 
 function parseComfyHost(rawHost, { localOnly = false } = {}) {
@@ -74,7 +137,7 @@ async function startComfyUI() {
         return;
     }
 
-    const comfyDir = path.join(path.dirname(PUBLIC_DIR), 'ComfyUI');
+    const comfyDir = path.join(path.dirname(runtimeConfig.bundledRootReal), 'ComfyUI');
     const pythonExe = path.join(comfyDir, 'venv', 'Scripts', 'python.exe');
 
     if (fs.existsSync(pythonExe)) {
@@ -96,7 +159,7 @@ async function startComfyUI() {
     }
 }
 
-const server = http.createServer((req, res) => {
+function handleRequest(req, res) {
     // Normalize URL: strip query strings and trailing slashes (except for root)
     let url = req.url.split('?')[0];
     if (url !== '/' && url.endsWith('/')) {
@@ -115,7 +178,7 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             try {
-                const citiesDir = path.join(PUBLIC_DIR, 'js', 'cities');
+                const citiesDir = resolveWritablePath('js/cities');
                 fs.mkdirSync(citiesDir, { recursive: true });
                 const filePath = path.join(citiesDir, cityId + '.js');
                 const relative = path.relative(citiesDir, filePath);
@@ -138,7 +201,7 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             try {
-                const filePath = resolvePublicPath('js/city-maps.js');
+                const filePath = resolveWritablePath('js/city-maps.js');
                 fs.writeFileSync(filePath, body);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ success: true, message: 'City maps saved' }));
@@ -267,7 +330,7 @@ const server = http.createServer((req, res) => {
                 if (!cityId || !comfyUrl) throw new Error('Missing cityId or comfyUrl');
 
                 const safeId = cityId.replace(/[^a-z0-9-]/gi, '-');
-                const cityDir = path.join(PUBLIC_DIR, 'images', 'cities', safeId);
+                const cityDir = resolveWritablePath(path.join('images', 'cities', safeId));
                 fs.mkdirSync(cityDir, { recursive: true });
                 const destPath = path.join(cityDir, safeId + '.png');
 
@@ -372,23 +435,27 @@ const server = http.createServer((req, res) => {
     // GET /api/city-images — scan images/cities/ for available city map folders
     if (req.method === 'GET' && url === '/api/city-images') {
         try {
-            const citiesDir = path.join(PUBLIC_DIR, 'images', 'cities');
             const imgExts = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'];
             const results = [];
 
-            if (fs.existsSync(citiesDir)) {
+            const scannedDirs = [
+                path.join(runtimeConfig.dataRootReal, 'images', 'cities'),
+                path.join(runtimeConfig.bundledRootReal, 'images', 'cities')
+            ];
+
+            for (const citiesDir of scannedDirs) {
+                if (!fs.existsSync(citiesDir)) continue;
+
                 const folders = fs.readdirSync(citiesDir).filter(f =>
                     fs.statSync(path.join(citiesDir, f)).isDirectory()
                 );
                 folders.forEach(folder => {
                     const folderPath = path.join(citiesDir, folder);
                     const files = fs.readdirSync(folderPath);
-                    // Find the primary map image (matches folder name, excludes *-locations.*)
                     const mapFile = files.find(f => {
                         const base = path.basename(f, path.extname(f)).toLowerCase();
                         return base === folder.toLowerCase() && imgExts.includes(path.extname(f));
                     });
-                    // Find the locations reference image
                     const locFile = files.find(f => f.toLowerCase().includes('location'));
                     results.push({
                         id: folder,
@@ -400,7 +467,7 @@ const server = http.createServer((req, res) => {
             }
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(results));
+            res.end(JSON.stringify(mergeUnique(results)));
         } catch (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: err.message }));
@@ -593,7 +660,7 @@ const server = http.createServer((req, res) => {
                 }
 
                 // Save images locally... (rest of logic)
-                const cityDir = path.join(PUBLIC_DIR, 'images', 'cities', cityId);
+                const cityDir = resolveWritablePath(path.join('images', 'cities', cityId));
                 fs.mkdirSync(cityDir, { recursive: true });
 
                 let crestLocalPath = null;
@@ -755,7 +822,7 @@ ${text}`;
         req.on('end', () => {
             try {
                 // Ensure the path is correct
-                const filePath = resolvePublicPath('js/locations-db.js');
+                const filePath = resolveWritablePath('js/locations-db.js');
                 fs.writeFileSync(filePath, body);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -827,30 +894,91 @@ ${text}`;
             res.end(content, 'utf-8');
         }
     });
-});
+}
 
-server.listen(PORT, () => {
+function logServerReady(port) {
     console.log(`===============================================`);
-    console.log(`🗺️  World of Myrdae - Local Map Editor Server`);
+    console.log(`World of Myrdae - Local Map Editor Server`);
     console.log(`===============================================`);
     console.log(`Ready! Open your browser and go to:`);
-    console.log(`http://localhost:${PORT}/editor.html`);
+    console.log(`http://localhost:${port}/editor.html`);
+    if (runtimeConfig.dataRootReal !== runtimeConfig.bundledRootReal) {
+        console.log(`Writable data directory: ${runtimeConfig.dataRootReal}`);
+    }
     console.log(`===============================================`);
     console.log(`Press Ctrl+C to stop the server.`);
+}
 
-    // Start ComfyUI automatically
-    startComfyUI();
-});
+function startServer(options = {}) {
+    runtimeConfig = createRuntimeConfig(options);
 
-// Cleanup: Kill ComfyUI process when Node exits
-const cleanup = () => {
-    if (comfyProcess) {
-        console.log(`[AI] Shutting down ComfyUI...`);
-        comfyProcess.kill();
+    if (server && server.listening) {
+        const address = server.address();
+        return Promise.resolve({
+            server,
+            port: address && typeof address === 'object' ? address.port : runtimeConfig.port,
+            dataRoot: runtimeConfig.dataRootReal
+        });
     }
-    process.exit();
+
+    server = http.createServer(handleRequest);
+
+    return new Promise((resolve, reject) => {
+        server.once('error', reject);
+        server.listen(runtimeConfig.port, () => {
+            const address = server.address();
+            const actualPort = address && typeof address === 'object' ? address.port : runtimeConfig.port;
+
+            logServerReady(actualPort);
+
+            if (runtimeConfig.autoStartComfy) {
+                startComfyUI().catch(err => {
+                    console.warn(`[AI] Failed to auto-start ComfyUI: ${err.message}`);
+                });
+            }
+
+            resolve({ server, port: actualPort, dataRoot: runtimeConfig.dataRootReal });
+        });
+    });
+}
+
+function stopServer() {
+    return new Promise((resolve) => {
+        if (comfyProcess) {
+            console.log(`[AI] Shutting down ComfyUI...`);
+            comfyProcess.kill();
+            comfyProcess = null;
+        }
+
+        if (server && server.listening) {
+            server.close(() => {
+                server = null;
+                resolve();
+            });
+            return;
+        }
+
+        server = null;
+        resolve();
+    });
+}
+
+const cleanup = () => {
+    stopServer().finally(() => process.exit());
 };
 
-process.on('SIGINT', cleanup);
-process.on('SIGTERM', cleanup);
-process.on('exit', cleanup);
+if (require.main === module) {
+    startServer().catch((err) => {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    });
+
+    process.on('SIGINT', cleanup);
+    process.on('SIGTERM', cleanup);
+}
+
+module.exports = {
+    startServer,
+    stopServer,
+    getRuntimeConfig: () => ({ ...runtimeConfig })
+};

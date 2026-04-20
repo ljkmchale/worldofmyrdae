@@ -26,7 +26,7 @@ Key pages:
 4. `js/boat-animations.js` — `BoatFleet` class; animates sailing vessels and a sea monster along `water-route` roads
 5. `js/dragon-overlay.js` — `DragonFlyover` module; animates a golden dragon flying over the Arbescar region on a 4-minute patrol cycle
 6. `js/editor.js` — UI for editing; POSTs changes to `server.js /save` which writes back to `locations-db.js`
-6. `js/map.js` — pan/zoom controller (GPU-accelerated via CSS transforms)
+7. `js/map.js` — pan/zoom controller (GPU-accelerated via CSS transforms)
 
 ### Key files
 | File | Purpose |
@@ -49,24 +49,28 @@ Key pages:
     {
       id: "lurdoba",           // kebab-case, unique
       name: "Lurdoba",
-      type: "city",            // city | town | village | landmark | region | dungeon | etc.
-      x: 77.7, y: 31.7,       // percentage coords on the map image
+      type: "city",            // capital | city | small-city | town | village | port |
+                               // ruins | landmark | nature | poi | region | water | river
+      x: 77.7, y: 31.7,       // percentage coords on the map image (0–100)
       region: "Otesurr Mountains",
       description: "...",
       fontSize: 18,
       markerSize: 0.2,
-      // Optional: fontFamily, fontWeight, fontStyle, labelOffsetX/Y, markerOffsetX/Y, rotation, opacity
+      // Optional: fontFamily, fontWeight, fontStyle, labelOffsetX/Y, markerOffsetX/Y,
+      //           rotation, opacity, textCurve, labelAlign, hideLabel, cityMap, details, link
     }
   ],
   roads: [
     {
       id: "road-id",
       name: "Road Name",
-      type: "road",            // road | path | river | trade-route | water-route | etc.
-      waypoints: [{x, y}, ...],
-      color: "#8B6914",
-      width: 2,
-      curved: true
+      type: "major",           // major | minor | river | water-route | border
+      points: ["loc-id-start", [x, y], [x, y], "loc-id-end"],  // mix of location IDs and [x,y] coords
+      color: "#8B6914",        // optional override
+      width: 2,                // optional multiplier
+      curved: true,
+      // water-route only: shipName, shipType, captainName, animationDuration, boatColor, boatSizeMultiplier
+      // optional: dashed, dashLength, gapLength, fontFamily, fontSize, labelOffset, labelSide
     }
   ],
   regions: [
@@ -91,13 +95,34 @@ Use the `/backup` skill: it timestamps and copies locations-db.js to `/backups/`
 ## Common Tasks
 
 ### Add a new location
-Use the `/add-location` skill or manually append to the `locations` array in `js/locations-db.js`. The editor UI at `/editor.html` can also do this interactively.
+Use the `/add-location` skill or manually append to the `locations` array in `js/locations-db.js`. The editor UI at `/editor.html` can also do this interactively — click **New Location** to enter placement mode, then click the map to place it.
 
 ### Validate the database
 Use `/validate-db` to check for duplicate IDs, missing required fields, out-of-bounds coordinates, and orphaned road references.
 
 ### Edit the map overlay appearance
 SVG rendering logic is in `js/map-overlay.js`. Marker shapes, label styles, tooltip HTML, and territory fill colors are all in there.
+
+### Check installer compatibility after changes
+Use `/check-installer` to verify the Windows MSI and macOS DMG installers will still build correctly. Run this whenever you add new files or directories, change `server.js` exports, or modify `electron/main.js`.
+
+## Editor Internals (`js/editor.js`)
+
+Key state properties and behaviors a future session needs to know:
+
+| State property | Purpose |
+|---|---|
+| `selectedLocId` | ID of location being edited; `'__preview__'` when creating/duplicating (ghost) |
+| `isNewPreview` | `true` while a `__preview__` ghost is in `state.locations` — cleaned up on save or cancel |
+| `locationPlacementMode` | `true` when "New Location" button has been clicked to arm map-click placement |
+| `typeFilter` | Active type filter value (mirrors the Type Filter dropdown) |
+| `regionFilter` | Active region filter value (mirrors the Region Filter dropdown) |
+
+**Placement mode**: Clicking the map only creates a new location when `locationPlacementMode === true`. Toggle via the "New Location" button (`toggleNewLocationMode()`). The button shows "Cancel Placement" while active.
+
+**Ghost preview (`__preview__`)**: When creating or duplicating a location, a ghost entry with `id: '__preview__'` and `_ghost: true` is added to `state.locations` immediately so the marker appears on the map before the first save. `saveLocation()` promotes it to a real entry; `cancelLocation()` removes it.
+
+**Filters**: Region and Type filters both support an "ACTIVE" badge + gold border when active. Both call `renderLocationList()` after updating state.
 
 ## Style Notes
 
