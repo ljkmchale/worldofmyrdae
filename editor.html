@@ -360,6 +360,20 @@
           </div>
         </div>
 
+        <div class="form-group" style="margin-bottom:0.9rem;">
+          <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">Create From World Location</label>
+          <div style="display:flex; gap:0.5rem;">
+            <select id="city-create-select" class="form-control"
+              style="flex:1; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.4rem;">
+              <option value="">-- Select a city or town --</option>
+            </select>
+            <button class="btn btn-secondary" onclick="CityEditor.createCity()" style="white-space:nowrap; font-size:0.8rem; padding:0.3rem 0.75rem;">
+              <i class="fa-solid fa-plus"></i> Create
+            </button>
+          </div>
+          <div id="city-create-status" style="font-size:0.72rem; color:#888; margin-top:0.25rem; min-height:1rem; font-style:italic;"></div>
+        </div>
+
         <div id="city-world-link" style="display:none; margin-bottom:0.75rem;">
           <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">Linked World Location</label>
           <div style="display:flex; gap:0.5rem;">
@@ -712,6 +726,7 @@
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
   <script src="js/map-overlay.js"></script>
+  <script src="js/coord-grid.js"></script>
   <script src="js/boat-animations.js"></script>
   <script src="js/editor.js"></script>
 
@@ -738,6 +753,7 @@
 
       // Crucial: init the map overlay AFTER Editor.init overrides CampaignData
       MapOverlay.init('map-container', 'map-image');
+      CoordGrid.init('map-container', 'map-image');
 
       // Wire map clicks to Editor
       const container = document.getElementById('map-container');
@@ -866,7 +882,15 @@
       let imgY = (mouseY - state.pointY) / imgDisplayHeight * 100;
       if (imgX < 0) imgX = 0; if (imgX > 100) imgX = 100;
       if (imgY < 0) imgY = 0; if (imgY > 100) imgY = 100;
-      display.textContent = `X: ${imgX.toFixed(2)}  Y: ${imgY.toFixed(2)}`;
+      const hex = typeof CoordGrid !== 'undefined' ? CoordGrid.describePoint(imgX, imgY, 'map-container') : null;
+      display.textContent = `${hex ? `Hex: ${hex.code}  ` : ''}X: ${imgX.toFixed(2)}  Y: ${imgY.toFixed(2)}`;
+    });
+
+    document.getElementById('map-container').addEventListener('mouseleave', () => {
+      const display = document.getElementById('map-coords');
+      if (display.style.display !== 'none') {
+        display.textContent = 'X: —  Y: —';
+      }
     });
   </script>
 
@@ -891,6 +915,18 @@ function formatCityDisplayName(rawId) {
     .filter(Boolean)
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
+}
+
+function slugifyCityId(rawValue) {
+  return String(rawValue || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function buildCityImagePath(cityId) {
+  return `images/cities/${cityId}/${cityId}.png`;
 }
 
 function serializeCityFileForDisk(city) {
@@ -943,6 +979,160 @@ const CityEditor = (function () {
   let selectedKey  = null; // "pin:<internal-key>" or "id:north-gate"
   let cityMapActive = false;
   let nextPinKey = 1;
+
+  function appendCityOption(cityId, cityName, selected) {
+    const sel = document.getElementById('city-select');
+    if (!sel) return;
+    let opt = Array.from(sel.options).find(o => o.value === cityId);
+    if (!opt) {
+      opt = document.createElement('option');
+      opt.value = cityId;
+      sel.appendChild(opt);
+    }
+    opt.textContent = cityName;
+    if (selected) sel.value = cityId;
+  }
+
+  function getEligibleWorldLocations() {
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const existingCityIds = new Set(CITY_MAPS.map(c => c.id));
+    return locs
+      .filter(loc => ['city', 'town'].includes(String(loc.type || '').toLowerCase()))
+      .filter(loc => {
+        const combined = `${loc.id || ''} ${loc.name || ''} ${loc.description || ''} ${loc.region || ''}`.toLowerCase();
+        return !/(^|[\s-])(crossroads?|junction|crossroad|road|path|river|route|trail|bridge|pass|nature|forest|woods?|marsh|swamp|lake|sea|ocean|bay|coast|water|region|territory)([\s-]|$)/.test(combined);
+      })
+      .filter(loc => !existingCityIds.has(loc.id))
+      .filter(loc => !loc.cityMap)
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  }
+
+  function populateCreateCitySelect(preferredLocationId) {
+    const sel = document.getElementById('city-create-select');
+    const status = document.getElementById('city-create-status');
+    if (!sel) return;
+
+    const locations = getEligibleWorldLocations();
+    sel.innerHTML = '<option value="">-- Select a city or town --</option>';
+    locations.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.id;
+      opt.textContent = loc.name + (loc.region ? ' (' + loc.region + ')' : '');
+      sel.appendChild(opt);
+    });
+
+    const preferred = preferredLocationId && locations.find(loc => loc.id === preferredLocationId)
+      ? preferredLocationId
+      : (locations[0] ? locations[0].id : '');
+    sel.value = preferred;
+
+    if (status) {
+      status.textContent = locations.length
+        ? 'Pick a world location to create and auto-link its city map.'
+        : 'All city and town locations already have city maps.';
+    }
+  }
+
+  async function createCity() {
+    const createSel = document.getElementById('city-create-select');
+    const status = document.getElementById('city-save-status');
+    const createStatus = document.getElementById('city-create-status');
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const locationId = createSel ? createSel.value : '';
+    const sourceLoc = locs.find(loc => loc.id === locationId);
+
+    if (!sourceLoc) {
+      if (createStatus) createStatus.textContent = 'Choose a world location first.';
+      return;
+    }
+
+    const cityName = String(sourceLoc.name || '').replace(/\n/g, ' ').trim();
+    const cityId = slugifyCityId(sourceLoc.id);
+    if (!cityId) {
+      if (createStatus) createStatus.textContent = 'That location does not have a valid ID for a city map.';
+      return;
+    }
+
+    const existing = CITY_MAPS.find(c => c.id === cityId);
+    if (existing) {
+      appendCityOption(existing.id, existing.name, true);
+      await loadCity(existing.id);
+      if (createStatus) createStatus.textContent = 'That location already has a city map.';
+      return;
+    }
+
+    const newCity = {
+      id: cityId,
+      name: cityName,
+      image: buildCityImagePath(cityId),
+      previewImage: buildCityImagePath(cityId),
+      pins: [],
+      namedLabels: [],
+    };
+
+    if (status) {
+      status.textContent = 'Creating city scaffold...';
+      status.style.color = '#888';
+    }
+    if (createStatus) createStatus.textContent = 'Creating and linking city map...';
+
+    try {
+      const scaffoldRes = await fetch('/api/cities/scaffold', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cityId, cityName })
+      }).then(r => r.json());
+
+      if (!scaffoldRes.success) {
+        throw new Error(scaffoldRes.error || 'Failed to create city scaffold');
+      }
+
+      upsertCityMapEntry(newCity);
+      window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+      window.CITY_MAPS_REGISTRY[cityId] = {
+        ...newCity,
+        pins: [],
+        namedLabels: [],
+      };
+
+      const [citySaveRes, indexSaveRes] = await Promise.all([
+        fetch('/save-city/' + cityId, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: serializeCityFileForDisk(newCity)
+        }).then(r => r.json()),
+        fetch('/save-city-map', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: serializeCityIndexForDisk(CITY_MAPS)
+        }).then(r => r.json())
+      ]);
+
+      if (!citySaveRes.success || !indexSaveRes.success) {
+        throw new Error(citySaveRes.error || indexSaveRes.error || 'Failed to save new city');
+      }
+
+      sourceLoc.cityMap = 'city-viewer.html?city=' + cityId;
+      await Editor.exportData();
+
+      appendCityOption(cityId, cityName, true);
+      populateCreateCitySelect();
+      await loadCity(cityId);
+
+      if (status) {
+        status.textContent = 'City scaffold created and linked to the world map location.';
+        status.style.color = '#4caf50';
+      }
+      if (createStatus) createStatus.textContent = 'Created from ' + cityName + ' and linked automatically.';
+    } catch (err) {
+      if (status) {
+        status.textContent = 'Create failed: ' + err.message;
+        status.style.color = '#e44';
+      }
+      if (createStatus) createStatus.textContent = 'Create failed: ' + err.message;
+      alert('Failed to create city: ' + err.message);
+    }
+  }
 
   function ensurePinKeys() {
     if (!cityData) return;
@@ -1000,6 +1190,8 @@ const CityEditor = (function () {
     } catch (e) {
       console.warn('City image discovery failed:', e);
     }
+
+    populateCreateCitySelect(Editor.state?.selectedLocId);
 
     if (activeCityId) await loadCity(activeCityId);
   }
@@ -1520,7 +1712,7 @@ const CityEditor = (function () {
     }
   }
 
-  return { open, loadCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
+  return { open, loadCity, createCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
 })();
 </script>
   <!-- AI Wizard Modal -->

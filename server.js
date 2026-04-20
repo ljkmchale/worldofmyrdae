@@ -214,7 +214,42 @@ function handleRequest(req, res) {
         return;
     }
 
-    // GET /api/ai/comfy-proxy — proxy GET requests to ComfyUI (e.g. history polling)
+    // Create the on-disk scaffold for a new city so the editor does not depend on a pre-made folder.
+    if (req.method === 'POST' && url === '/api/cities/scaffold') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            try {
+                const data = body ? JSON.parse(body) : {};
+                const cityId = String(data.cityId || '');
+
+                if (!/^[a-z0-9-]+$/i.test(cityId) || cityId.length > 80) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: 'Invalid city ID' }));
+                    return;
+                }
+
+                const imageDir = resolveWritablePath(path.join('images', 'cities', cityId));
+                const cityFileDir = resolveWritablePath('js/cities');
+                fs.mkdirSync(imageDir, { recursive: true });
+                fs.mkdirSync(cityFileDir, { recursive: true });
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({
+                    success: true,
+                    imageDir: `images/cities/${cityId}`,
+                    cityFile: `js/cities/${cityId}.js`
+                }));
+            } catch (err) {
+                console.error('City scaffold error:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+        return;
+    }
+
+    // GET /api/ai/comfy-proxy - proxy GET requests to ComfyUI (for example history polling)
     if (req.method === 'GET' && url === '/api/ai/comfy-proxy') {
         try {
             const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
