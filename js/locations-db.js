@@ -4742,17 +4742,18 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 73.85,
             "y": 66.1,
-            "region": "",
+            "region": "Arbescar",
             "description": "Town",
+            "link": "https://docs.google.com/document/d/1h-nnyV84AUZnSn1DgnK2msedBhNuf7rPuvPNDb9Xo1M/edit?tab=t.0#heading=h.a8iatkx7aui",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0.25,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 14,
-            "fontStyle": "Normal"
+            "labelOffsetY": 14
         },
         {
             "id": "glidderingfalls",
