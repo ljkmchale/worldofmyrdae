@@ -129,6 +129,21 @@ function isPortInUse(port) {
     });
 }
 
+function resolveComfyPythonExecutable(comfyDir) {
+    const candidates = [
+        path.join(comfyDir, 'venv', 'Scripts', 'python.exe'),
+        path.join(comfyDir, 'venv', 'bin', 'python'),
+        path.join(comfyDir, '.venv', 'Scripts', 'python.exe'),
+        path.join(comfyDir, '.venv', 'bin', 'python')
+    ];
+
+    return candidates.find(candidate => fs.existsSync(candidate)) || null;
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Function to start ComfyUI in the background
 async function startComfyUI() {
     const comfyRunning = await isPortInUse(COMFY_PORT);
@@ -138,24 +153,37 @@ async function startComfyUI() {
     }
 
     const comfyDir = path.join(path.dirname(runtimeConfig.bundledRootReal), 'ComfyUI');
-    const pythonExe = path.join(comfyDir, 'venv', 'Scripts', 'python.exe');
+    const pythonExe = resolveComfyPythonExecutable(comfyDir);
 
-    if (fs.existsSync(pythonExe)) {
+    if (pythonExe) {
         console.log(`[AI] Starting ComfyUI server with GPU acceleration...`);
         comfyProcess = spawn(pythonExe, ['main.py'], {
             cwd: comfyDir,
             stdio: 'inherit' // This pipes ComfyUI output to your terminal
         });
 
+        const launchedProcess = comfyProcess;
+
         comfyProcess.on('error', (err) => {
             console.error(`[AI] Failed to start ComfyUI: ${err.message}`);
         });
 
-        comfyProcess.on('close', (code) => {
-            console.log(`[AI] ComfyUI process exited with code ${code}`);
+        comfyProcess.on('close', async (code) => {
+            await delay(250);
+            const comfyStillRunning = await isPortInUse(COMFY_PORT);
+
+            if (comfyStillRunning) {
+                console.log(`[AI] ComfyUI startup race resolved: another instance is already serving on port ${COMFY_PORT}.`);
+            } else {
+                console.log(`[AI] ComfyUI process exited with code ${code}`);
+            }
+
+            if (comfyProcess === launchedProcess) {
+                comfyProcess = null;
+            }
         });
     } else {
-        console.warn(`[AI] ComfyUI not found at ${comfyDir}. Skipping auto-start.`);
+        console.warn(`[AI] ComfyUI Python environment not found at ${comfyDir}. Skipping auto-start.`);
     }
 }
 
@@ -529,8 +557,22 @@ function handleRequest(req, res) {
 
                 const https = require('https');
 
-                // Convert txt export URL to HTML export URL
-                const htmlExportUrl = rawDocUrl.replace(/format=\w+/, 'format=html');
+                function normalizeGoogleDocUrl(docUrl, format) {
+                    if (!docUrl || !/docs\.google\.com\/document\/d\//i.test(docUrl)) {
+                        return docUrl;
+                    }
+
+                    const match = docUrl.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/i);
+                    if (!match) {
+                        return docUrl;
+                    }
+
+                    return `https://docs.google.com/document/d/${match[1]}/export?format=${format}`;
+                }
+
+                // Always normalize share/edit links into a stable export URL so
+                // the parser gets the actual document content instead of the JS shell.
+                const htmlExportUrl = normalizeGoogleDocUrl(rawDocUrl, 'html').replace(/format=\w+/i, 'format=html');
 
                 // Fetch with redirect following, returns { data: Buffer, contentType: string }
                 function fetchUrl(targetUrl, depth) {
@@ -625,6 +667,10 @@ function handleRequest(req, res) {
                 const { data: htmlBuf } = await fetchUrl(htmlExportUrl);
                 const html = htmlBuf.toString('utf8');
 
+                if (/JavaScript isn't enabled in your browser/i.test(html) || /This browser version is no longer supported/i.test(html)) {
+                    throw new Error('Google Doc returned the interactive shell instead of export content. Check the sharing settings or doc URL.');
+                }
+
                 // Extract all image src URLs
                 const allImages = [...html.matchAll(/<img[^>]+src="([^"]+)"/gi)].map(m => m[1]);
 
@@ -654,9 +700,39 @@ function handleRequest(req, res) {
                     };
                 });
 
+                function summarizeLocationText(text) {
+                    return (text || '')
+                        .replace(/\s+/g, ' ')
+                        .replace(/\bNon-Player Characters?\b.*$/i, '')
+                        .trim();
+                }
+
+                function collectHeadingBasedLocations(allSections) {
+                    const genericHeadingPattern = /^(overview|history|citizenry|races|holidays and traditions|winterfest|government|the village council|town meetings|customs|interaction with external forces|laws|economy and trade|trade and barter|specialized craftsmanship|local resources|professional guilds|religion|central beliefs|the everlight deity.*|beliefs|the balance of elements|the festival of winterfest|religious practices|daily offerings|blessings and rituals|sacred sites|clergy and key figures|landmarks|notable.?locations?|locations?|points? of interest|lodging|meals|services provided|approaching|entering|unique items|map|city\s*map|non-player characters?)$/i;
+                    const entries = [];
+
+                    for (const section of allSections) {
+                        const heading = (section.heading || '').trim();
+                        const text = summarizeLocationText(section.text || '');
+                        if (!heading || genericHeadingPattern.test(heading)) {
+                            continue;
+                        }
+                        if (text.length < 80) {
+                            continue;
+                        }
+                        entries.push({
+                            heading,
+                            text
+                        });
+                    }
+
+                    return entries;
+                }
+
                 // Identify key sections
                 const mapSection = sections.find(s => /^(map|city\s*map)$/i.test(s.heading.trim()));
                 const locSectionIdx = sections.findIndex(s =>
+                    /landmarks/i.test(s.heading) ||
                     /notable.?locations?/i.test(s.heading) ||
                     /^locations?$/i.test(s.heading.trim()) ||
                     /points? of interest/i.test(s.heading)
@@ -675,6 +751,15 @@ function handleRequest(req, res) {
                         }
                     }
                     locSection.text = subTexts.join('\n\n');
+                }
+
+                const headingBasedLocations = collectHeadingBasedLocations(sections);
+                const formattedHeadingLocations = headingBasedLocations
+                    .map((entry, index) => `${index + 1}. ${entry.heading}: ${entry.text}`)
+                    .join('\n\n');
+
+                if (locSection && (!locSection.text || locSection.text.trim().length < 50) && formattedHeadingLocations) {
+                    locSection.text = formattedHeadingLocations;
                 }
 
                 // Source URLs for crest, map, and numbered-locations overlay
@@ -753,15 +838,16 @@ function handleRequest(req, res) {
                         originalUrl: locOverlaySrcUrl
                     },
                     locations: {
-                        found: !!locSection,
+                        found: !!locSection || headingBasedLocations.length > 0,
                         heading: locSection ? locSection.heading : '',
-                        text: locSection ? locSection.text : ''
+                        text: formattedHeadingLocations || ((locSection && locSection.text) ? locSection.text : '')
                     },
                     mapSection: {
                         found: !!mapSection,
                         heading: mapSection ? mapSection.heading : '',
                         text: mapSection ? mapSection.text : ''
                     },
+                    locationEntries: headingBasedLocations,
                     sections: sections.map(s => ({
                         heading: s.heading,
                         imageCount: s.images.length,
