@@ -952,16 +952,89 @@
   </script>
 
 <script>
+function getCityMapWorldLocations() {
+  if (typeof Editor !== 'undefined' && Editor.state && Array.isArray(Editor.state.locations) && Editor.state.locations.length) {
+    return Editor.state.locations;
+  }
+  if (typeof WORLD_LOCATIONS !== 'undefined' && Array.isArray(WORLD_LOCATIONS.locations)) {
+    return WORLD_LOCATIONS.locations;
+  }
+  return [];
+}
+
+function getCityMapRegion(cityId) {
+  const targetUrl = 'city-viewer.html?city=' + cityId;
+  const locs = getCityMapWorldLocations();
+  const linkedLoc = locs.find(loc => (loc.cityMap || '') === targetUrl);
+  if (linkedLoc && linkedLoc.region) return linkedLoc.region;
+
+  const idMatch = locs.find(loc => (loc.id || '') === cityId);
+  if (idMatch && idMatch.region) return idMatch.region;
+
+  return 'Unassigned Region';
+}
+
+function renderCityMapOptions(selectEl, entries, options = {}) {
+  if (!selectEl) return;
+
+  const {
+    placeholder = '',
+    selectedValue = '',
+    getValue = (entry) => entry.id,
+    getLabel = (entry) => entry.name || entry.id,
+  } = options;
+
+  selectEl.innerHTML = '';
+  if (placeholder) {
+    const placeholderOpt = document.createElement('option');
+    placeholderOpt.value = '';
+    placeholderOpt.textContent = placeholder;
+    selectEl.appendChild(placeholderOpt);
+  }
+
+  const grouped = new Map();
+  entries.forEach(entry => {
+    const region = getCityMapRegion(entry.id);
+    if (!grouped.has(region)) grouped.set(region, []);
+    grouped.get(region).push(entry);
+  });
+
+  Array.from(grouped.keys())
+    .sort((a, b) => {
+      if (a === 'Unassigned Region') return 1;
+      if (b === 'Unassigned Region') return -1;
+      return a.localeCompare(b);
+    })
+    .forEach(region => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = region;
+      grouped.get(region)
+        .sort((a, b) => getLabel(a).localeCompare(getLabel(b)))
+        .forEach(entry => {
+          const opt = document.createElement('option');
+          opt.value = getValue(entry);
+          opt.textContent = getLabel(entry);
+          if (entry.image) opt.dataset.image = entry.image;
+          if (entry.locationsImage) opt.dataset.locImage = entry.locationsImage;
+          if (opt.value === selectedValue) opt.selected = true;
+          optgroup.appendChild(opt);
+        });
+      selectEl.appendChild(optgroup);
+    });
+
+  if (selectedValue) selectEl.value = selectedValue;
+}
+
 // Populate the City Map dropdown in the location form
 (function populateCityMapSelect() {
   const sel = document.getElementById('loc-cityMap');
   if (!sel || typeof CITY_MAPS === 'undefined') return;
-  CITY_MAPS.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = 'city-viewer.html?city=' + c.id;
-    opt.textContent = c.name;
-    sel.appendChild(opt);
+  renderCityMapOptions(sel, CITY_MAPS, {
+    placeholder: '— None —',
+    getValue: (entry) => 'city-viewer.html?city=' + entry.id,
+    getLabel: (entry) => entry.name
   });
+  if (sel.options.length) sel.options[0].textContent = '-- None --';
 })();
 </script>
 
@@ -1063,7 +1136,7 @@ const CityEditor = (function () {
     const locs = (Editor.state && Editor.state.locations) || [];
     const existingCityIds = new Set(CITY_MAPS.map(c => c.id));
     return locs
-      .filter(loc => ['city', 'town'].includes(String(loc.type || '').toLowerCase()))
+      .filter(loc => ['city', 'small-city', 'town'].includes(String(loc.type || '').toLowerCase()))
       .filter(loc => {
         const combined = `${loc.id || ''} ${loc.name || ''} ${loc.description || ''} ${loc.region || ''}`.toLowerCase();
         return !/(^|[\s-])(crossroads?|junction|crossroad|road|path|river|route|trail|bridge|pass|nature|forest|woods?|marsh|swamp|lake|sea|ocean|bay|coast|water|region|territory)([\s-]|$)/.test(combined);
@@ -1256,13 +1329,7 @@ const CityEditor = (function () {
 
     const sel = document.getElementById('city-select');
     sel.innerHTML = '<option value="">— Select a city —</option>';
-    CITY_MAPS.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.name;
-      if (c.id === activeCityId) opt.selected = true;
-      sel.appendChild(opt);
-    });
+    const cityEntries = CITY_MAPS.map(c => ({ ...c, value: c.id }));
 
     // Discover city folders from server, add unregistered ones
     try {
@@ -1270,17 +1337,26 @@ const CityEditor = (function () {
       const knownIds = new Set(CITY_MAPS.map(c => c.id));
       discovered.forEach(d => {
         if (!knownIds.has(d.id)) {
-          const opt = document.createElement('option');
-          opt.value = '__new__:' + d.id;
-          opt.textContent = '+ Add: ' + d.name;
-          opt.dataset.image      = d.image      || ('images/cities/' + d.id + '/' + d.id + '.png');
-          opt.dataset.locImage   = d.locationsImage || '';
-          sel.appendChild(opt);
+          cityEntries.push({
+            id: d.id,
+            name: '+ Add: ' + d.name,
+            value: '__new__:' + d.id,
+            image: d.image || ('images/cities/' + d.id + '/' + d.id + '.png'),
+            locationsImage: d.locationsImage || ''
+          });
         }
       });
     } catch (e) {
       console.warn('City image discovery failed:', e);
     }
+
+    renderCityMapOptions(sel, cityEntries, {
+      placeholder: 'â€” Select a city â€”',
+      selectedValue: activeCityId,
+      getValue: (entry) => entry.value,
+      getLabel: (entry) => entry.name
+    });
+    if (sel.options.length) sel.options[0].textContent = '-- Select a city --';
 
     populateCreateCitySelect(Editor.state?.selectedLocId);
 

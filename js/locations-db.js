@@ -192,7 +192,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -57,
             "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=dunduar"
         },
         {
             "id": "mount-emberstran",
@@ -7150,7 +7151,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 5,
             "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=trailpoint"
         },
         {
             "id": "farnsby-port",
@@ -7168,7 +7170,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -30,
             "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=farnsby-port"
         },
         {
             "id": "bistron",
