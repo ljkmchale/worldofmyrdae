@@ -321,6 +321,9 @@
 
           <div class="editor-action-wrap">
             <button class="btn btn-primary" onclick="Editor.saveLocation()" title="Save (Ctrl+S)">Save Location</button>
+            <button id="btn-move-location" class="btn btn-secondary" onclick="Editor.toggleMoveLocationMode()" title="Select an existing saved location first">
+              <i class="fa-solid fa-up-down-left-right"></i> Move Location
+            </button>
             <button class="btn btn-secondary" onclick="Editor.duplicateLocation()" title="Clone this location as a new entry"><i class="fa-solid fa-copy"></i> Duplicate</button>
             <button class="btn btn-secondary" onclick="Editor.cancelLocation()">Cancel</button>
             <button class="btn btn-danger" onclick="Editor.deleteLocation()" id="btn-del-loc">Delete</button>
@@ -761,12 +764,52 @@
 
       // Track drag state globally so releasing after a pan does not place a location.
       let mapPointerDown = false;
+      let draggingLocation = false;
       let suppressNextMapClick = false;
       let startX = 0;
       let startY = 0;
 
+      function getMapPercentFromPointer(clientX, clientY) {
+        const rect = container.getBoundingClientRect();
+        const mouseX = clientX - rect.left;
+        const mouseY = clientY - rect.top;
+
+        const state = MapController.getInstanceState('map-container');
+        if (!state) return null;
+
+        const cw = container.offsetWidth;
+        const imgDisplayWidth = cw * state.scale;
+        const imgDisplayHeight = (mapImg.naturalHeight / mapImg.naturalWidth) * cw * state.scale;
+
+        return {
+          x: Math.max(0, Math.min(100, (mouseX - state.pointX) / imgDisplayWidth * 100)),
+          y: Math.max(0, Math.min(100, (mouseY - state.pointY) / imgDisplayHeight * 100))
+        };
+      }
+
       container.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
+
+        const clickedMarker = e.target.closest('.marker-group');
+        const locId = clickedMarker?.getAttribute('data-location-id');
+        if (
+          Editor.state &&
+          Editor.state.tab === 'locations' &&
+          Editor.state.moveLocationMode &&
+          locId &&
+          Editor.beginLocationMove(locId)
+        ) {
+          draggingLocation = true;
+          suppressNextMapClick = true;
+          e.stopPropagation();
+          e.preventDefault();
+          const point = getMapPercentFromPointer(e.clientX, e.clientY);
+          if (point) {
+            Editor.moveSelectedLocationPreview(point.x, point.y);
+          }
+          return;
+        }
+
         mapPointerDown = true;
         suppressNextMapClick = false;
         startX = e.clientX;
@@ -774,6 +817,15 @@
       });
 
       window.addEventListener('mousemove', (e) => {
+        if (draggingLocation) {
+          const point = getMapPercentFromPointer(e.clientX, e.clientY);
+          if (point) {
+            Editor.moveSelectedLocationPreview(point.x, point.y);
+          }
+          suppressNextMapClick = true;
+          return;
+        }
+
         if (!mapPointerDown || suppressNextMapClick) return;
         if (Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3) {
           suppressNextMapClick = true;
@@ -781,6 +833,10 @@
       });
 
       window.addEventListener('mouseup', () => {
+        if (draggingLocation) {
+          draggingLocation = false;
+          Editor.finishLocationMove();
+        }
         mapPointerDown = false;
       });
 
@@ -807,27 +863,13 @@
           }
         }
 
-        const rect = container.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        const state = MapController.getInstanceState('map-container');
-        if (!state) return;
-        const scale = state.scale;
-        const tx = state.pointX;
-        const ty = state.pointY;
-
-        const cw = container.offsetWidth;
-        const imgDisplayWidth = cw * scale;
-        const imgDisplayHeight = (mapImg.naturalHeight / mapImg.naturalWidth) * cw * scale;
-
-        const imgX = (mouseX - tx) / imgDisplayWidth * 100;
-        const imgY = (mouseY - ty) / imgDisplayHeight * 100;
+        const point = getMapPercentFromPointer(e.clientX, e.clientY);
+        if (!point) return;
 
         if (CityEditor.isActive()) {
-          CityEditor.addPin(imgX, imgY);
+          CityEditor.addPin(point.x, point.y);
         } else {
-          Editor.handleMapClick(imgX, imgY);
+          Editor.handleMapClick(point.x, point.y);
         }
 
         suppressNextMapClick = false;
@@ -836,6 +878,7 @@
 
     // Simple coordinate tracker inside editor
     function toggleCoords() {
+      if (CityEditor.isActive()) return;
       const display = document.getElementById('map-coords');
       const btn = document.getElementById('coords-toggle');
       if (display.style.display === 'none') {
@@ -867,8 +910,22 @@
       btn.title = visible ? 'Show Territories' : 'Hide Territories';
     }
 
+    function setCoordinateTrackerEnabled(enabled) {
+      const display = document.getElementById('map-coords');
+      const btn = document.getElementById('coords-toggle');
+      if (!display || !btn) return;
+
+      display.style.display = enabled ? 'block' : 'none';
+      display.textContent = 'X: — Y: —';
+      btn.style.display = enabled ? 'inline-flex' : 'none';
+    }
+
     document.getElementById('map-container').addEventListener('mousemove', (e) => {
       const display = document.getElementById('map-coords');
+      if (CityEditor.isActive()) {
+        display.textContent = 'X: — Y: —';
+        return;
+      }
       if (display.style.display === 'none') return;
       const rect = document.getElementById('map-container').getBoundingClientRect();
       const mapImg = document.getElementById('map-image');
@@ -927,6 +984,15 @@ function slugifyCityId(rawValue) {
 
 function buildCityImagePath(cityId) {
   return `images/cities/${cityId}/${cityId}.png`;
+}
+
+function imageAssetExists(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src + (src.includes('?') ? '&' : '?') + 'v=' + Date.now();
+  });
 }
 
 function serializeCityFileForDisk(city) {
@@ -1077,11 +1143,26 @@ const CityEditor = (function () {
     if (createStatus) createStatus.textContent = 'Creating and linking city map...';
 
     try {
-      const scaffoldRes = await fetch('/api/cities/scaffold', {
+      const scaffoldResponse = await fetch('/api/cities/scaffold', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cityId, cityName })
-      }).then(r => r.json());
+      });
+      const scaffoldText = await scaffoldResponse.text();
+      let scaffoldRes = null;
+
+      try {
+        scaffoldRes = scaffoldText ? JSON.parse(scaffoldText) : {};
+      } catch (parseErr) {
+        if (scaffoldText.includes('File Not Found')) {
+          throw new Error('City scaffold endpoint was not found. The server is likely running an older build and needs to be restarted.');
+        }
+        throw new Error(`City scaffold request returned non-JSON content (${scaffoldResponse.status || 'unknown status'}).`);
+      }
+
+      if (!scaffoldResponse.ok) {
+        throw new Error(scaffoldRes.error || `City scaffold request failed (${scaffoldResponse.status}).`);
+      }
 
       if (!scaffoldRes.success) {
         throw new Error(scaffoldRes.error || 'Failed to create city scaffold');
@@ -1117,13 +1198,23 @@ const CityEditor = (function () {
 
       appendCityOption(cityId, cityName, true);
       populateCreateCitySelect();
-      await loadCity(cityId);
+
+      const hasImage = await imageAssetExists(newCity.image);
+      if (hasImage) {
+        await loadCity(cityId);
+      }
 
       if (status) {
-        status.textContent = 'City scaffold created and linked to the world map location.';
+        status.textContent = hasImage
+          ? 'City scaffold created and linked to the world map location.'
+          : 'City scaffold created and linked. Generate or add the city image before opening it in City Map view.';
         status.style.color = '#4caf50';
       }
-      if (createStatus) createStatus.textContent = 'Created from ' + cityName + ' and linked automatically.';
+      if (createStatus) {
+        createStatus.textContent = hasImage
+          ? 'Created from ' + cityName + ' and linked automatically.'
+          : 'Created from ' + cityName + '. The city file exists, but its image does not yet.';
+      }
     } catch (err) {
       if (status) {
         status.textContent = 'Create failed: ' + err.message;
@@ -1241,6 +1332,21 @@ const CityEditor = (function () {
     };
     ensurePinKeys();
 
+    const imageReady = cityData.image ? await imageAssetExists(cityData.image) : false;
+    if (!imageReady) {
+      cityMapActive = false;
+      document.getElementById('city-world-link').style.display   = 'none';
+      document.getElementById('city-pin-controls').style.display = 'none';
+      document.getElementById('city-action-btns').style.display  = 'none';
+      document.getElementById('city-pin-form').style.display     = 'none';
+      const status = document.getElementById('city-save-status');
+      if (status) {
+        status.textContent = `City scaffold exists, but the map image is missing: ${cityData.image}`;
+        status.style.color = '#e0a84b';
+      }
+      return;
+    }
+
     // Swap map image, hide world overlay
     const img = document.getElementById('map-image');
     cityMapActive = true;
@@ -1248,6 +1354,7 @@ const CityEditor = (function () {
     img.src = cityData.image;
     if (img.complete && img.naturalWidth) { _setOverlay(false); _setTerritories(false); renderPins(); }
 
+    setCoordinateTrackerEnabled(false);
     MapController.reset('map-container');
 
     document.getElementById('city-world-link').style.display   = 'block';
@@ -1294,6 +1401,7 @@ const CityEditor = (function () {
     img.src = 'images/Myrdae.jpg';
     if (img.complete && img.naturalWidth) _restoreWorldOverlay();
     _setTerritories(false);
+    setCoordinateTrackerEnabled(true);
     document.getElementById('city-world-link').style.display   = 'none';
     document.getElementById('city-pin-controls').style.display = 'none';
     document.getElementById('city-action-btns').style.display  = 'none';
@@ -1817,7 +1925,7 @@ const CityEditor = (function () {
           </div>
           <div class="form-group">
             <label>Model Checkpoint <span style="font-size:0.7rem; color:#888;">(filename in ComfyUI models/checkpoints/)</span></label>
-            <input type="text" id="ai-model-name" class="form-control" value="realisticVisionV60B1_v51HyperVAE.safetensors" placeholder="e.g. realisticVisionV60B1_v51HyperVAE.safetensors" style="font-size:0.8rem;">
+            <input type="text" id="ai-model-name" class="form-control" value="Realistic_Vision_V6.0_NV_B1_fp16.safetensors" placeholder="e.g. Realistic_Vision_V6.0_NV_B1_fp16.safetensors" style="font-size:0.8rem;">
             <p style="font-size:0.72rem; color:#f0a500; margin:0.3rem 0 0;">Realistic Vision V6 recommended for photorealistic aerial city renders (Glaspero style). DreamShaper 8 available as alternative for illustrated/painted map style.</p>
           </div>
           <div style="display:flex; gap:1rem;">
@@ -1876,6 +1984,13 @@ const CityEditor = (function () {
       let pins = [];
       let currentStep = 1;
 
+      function findWorldLocationForCity(cityId, allLocations) {
+        if (!cityId) return null;
+        return allLocations.find(l => l.cityMap && l.cityMap.includes('city=' + cityId))
+          || allLocations.find(l => l.id === cityId)
+          || null;
+      }
+
       function open() {
         console.log('[AI] Opening Wizard...');
         document.getElementById('ai-wizard-modal').style.display = 'flex';
@@ -1885,10 +2000,28 @@ const CityEditor = (function () {
 
         if (typeof Editor !== 'undefined' && Editor.state && Editor.state.selectedLocId) {
             foundLoc = allLocations.find(l => l.id === Editor.state.selectedLocId);
-        } else if (typeof CityEditor !== 'undefined') {
+        }
+
+        if (!foundLoc && typeof CityEditor !== 'undefined') {
             const activeCityId = CityEditor.getActiveCityId();
             if (activeCityId) {
-                foundLoc = allLocations.find(l => l.cityMap && l.cityMap.includes('city=' + activeCityId));
+                foundLoc = findWorldLocationForCity(activeCityId, allLocations);
+            }
+        }
+
+        if (!foundLoc) {
+            const citySelect = document.getElementById('city-select');
+            const selectedCityId = citySelect && citySelect.value ? citySelect.value : '';
+            if (selectedCityId) {
+                foundLoc = findWorldLocationForCity(selectedCityId, allLocations);
+            }
+        }
+
+        if (!foundLoc) {
+            const createSelect = document.getElementById('city-create-select');
+            const selectedLocationId = createSelect && createSelect.value ? createSelect.value : '';
+            if (selectedLocationId) {
+                foundLoc = allLocations.find(l => l.id === selectedLocationId) || null;
             }
         }
 
@@ -1904,6 +2037,63 @@ const CityEditor = (function () {
 
         // Leave fields blank if no location was auto-detected — let user fill them in
         nextStep(1);
+      }
+
+      function formatComfyError(errorPayload, usedCustomWorkflow) {
+        if (!errorPayload) {
+          return 'ComfyUI returned an unknown error.';
+        }
+
+        if (typeof errorPayload === 'string') {
+          if (errorPayload.includes('Prompt outputs failed validation')) {
+            return usedCustomWorkflow
+              ? 'ComfyUI rejected the current workflow JSON. It likely references missing nodes, models, or invalid connections. Clear the Workflow JSON box to use the built-in default workflow, then try again.'
+              : 'ComfyUI rejected the generated workflow. This usually means a required checkpoint, ControlNet model, or node is missing in ComfyUI.';
+          }
+          return errorPayload;
+        }
+
+        const message = errorPayload.message || errorPayload.type || 'ComfyUI returned an error.';
+        const details = errorPayload.details || errorPayload.errors || errorPayload.extra_info || null;
+        const detailText = details ? JSON.stringify(details) : '';
+
+        if (`${message} ${detailText}`.includes('Prompt outputs failed validation')) {
+          return usedCustomWorkflow
+            ? `ComfyUI rejected the current workflow JSON. It likely references missing nodes, models, or invalid connections. Clear the Workflow JSON box to use the built-in default workflow, then try again.${detailText ? ' Details: ' + detailText : ''}`
+            : `ComfyUI rejected the generated workflow. This usually means a required checkpoint, ControlNet model, or node is missing in ComfyUI.${detailText ? ' Details: ' + detailText : ''}`;
+        }
+
+        return detailText ? `${message} Details: ${detailText}` : message;
+      }
+
+      async function fetchAvailableComfyCheckpoints(host) {
+        const res = await fetch(`/api/ai/comfy-proxy?host=${encodeURIComponent(host)}&endpoint=/object_info`);
+        const data = await res.json();
+        const options = data?.CheckpointLoaderSimple?.input?.required?.ckpt_name?.[0];
+        return Array.isArray(options) ? options : [];
+      }
+
+      async function resolveComfyCheckpointName(host, requestedName) {
+        const installed = await fetchAvailableComfyCheckpoints(host);
+        if (!installed.length) {
+          return { modelName: requestedName, installed, substituted: false };
+        }
+
+        if (requestedName && installed.includes(requestedName)) {
+          return { modelName: requestedName, installed, substituted: false };
+        }
+
+        const lowerRequested = (requestedName || '').toLowerCase();
+        const caseInsensitiveMatch = installed.find(name => name.toLowerCase() === lowerRequested);
+        if (caseInsensitiveMatch) {
+          return { modelName: caseInsensitiveMatch, installed, substituted: caseInsensitiveMatch !== requestedName };
+        }
+
+        const preferredMatch = installed.find(name => /realistic[_ -]?vision/i.test(name))
+          || installed.find(name => /dreamshaper/i.test(name))
+          || installed[0];
+
+        return { modelName: preferredMatch, installed, substituted: preferredMatch !== requestedName };
       }
 
       function close() { document.getElementById('ai-wizard-modal').style.display = 'none'; }
@@ -2091,7 +2281,7 @@ const CityEditor = (function () {
         const steps = parseInt(document.getElementById('ai-steps').value) || 30;
         const cfg = parseFloat(document.getElementById('ai-cfg').value) || 7;
         const denoise = parseFloat(document.getElementById('ai-denoise').value) || 0.88;
-        const modelName = document.getElementById('ai-model-name').value.trim() || 'realisticVisionV60B1_v51HyperVAE.safetensors';
+        const requestedModelName = document.getElementById('ai-model-name').value.trim() || 'Realistic_Vision_V6.0_NV_B1_fp16.safetensors';
         let workflowStr = document.getElementById('ai-comfy-workflow').value || localStorage.getItem('comfy_workflow_json');
 
         nextStep(4);
@@ -2121,6 +2311,14 @@ const CityEditor = (function () {
 
           status.textContent = "Connecting to ComfyUI...";
           progress.style.width = "12%";
+
+          const resolvedCheckpoint = await resolveComfyCheckpointName(host, requestedModelName);
+          const modelName = resolvedCheckpoint.modelName;
+          document.getElementById('ai-model-name').value = modelName;
+          if (resolvedCheckpoint.substituted) {
+            status.textContent = `Using installed checkpoint: ${modelName}`;
+            progress.style.width = "15%";
+          }
 
           const seed = Math.floor(Math.random() * 1000000);
           // noVAE models (name contains NV or noVAE) need a separate VAELoader node
@@ -2162,6 +2360,7 @@ const CityEditor = (function () {
             };
           }
 
+          const usingCustomWorkflow = !!(workflowStr && workflowStr.trim());
           const workflow = JSON.parse(workflowStr || JSON.stringify(defaultWorkflow));
           status.textContent = sketchFilename ? `Using sketch as img2img base (denoise ${denoise})…` : "Generating from prompt (no sketch found)…";
           progress.style.width = "18%";
@@ -2171,7 +2370,7 @@ const CityEditor = (function () {
               body: JSON.stringify({ host, payload: { prompt: workflow } })
           }).then(r => r.json());
 
-          if (promptRes.error) throw new Error(typeof promptRes.error === 'string' ? promptRes.error : (promptRes.error.message || JSON.stringify(promptRes.error)));
+          if (promptRes.error) throw new Error(formatComfyError(promptRes.error, usingCustomWorkflow));
           const promptId = promptRes.prompt_id;
 
           let finished = false, attempts = 0;

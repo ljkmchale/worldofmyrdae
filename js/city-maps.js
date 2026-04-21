@@ -16,4 +16,5 @@ const CITY_MAPS = [
   { id: "farview"                 , name: "Farview"                 , image: "images/cities/farview/farview.png", previewImage: "images/cities/farview/farview.png" },
   { id: "glaspero"                , name: "Glaspero"                , image: "images/cities/glaspero/glaspero.png", previewImage: "images/cities/glaspero/glaspero.png" },
   { id: "climbor"                 , name: "Climbor"                 , image: "images/cities/climbor/climbor.png", previewImage: "images/cities/climbor/climbor.png" },
+  { id: "everlight"               , name: "Everlight"               , image: "images/cities/everlight/everlight.png", previewImage: "images/cities/everlight/everlight.png" },
 ];

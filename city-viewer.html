@@ -360,7 +360,6 @@
             <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,1)" flood-opacity="1"/>
           </filter>
         </defs>
-        <g id="coord-grid-layer" style="display:none;"></g>
         <g id="named-labels-layer"></g>
         <g id="numbered-markers-layer"></g>
       </svg>
@@ -379,17 +378,11 @@
     <div class="ctrl-sep"></div>
     <button class="ctrl-btn active" id="btn-markers" title="Toggle Location Pins">&#9711;</button>
     <button class="ctrl-btn" id="btn-labels"   title="Toggle Named Labels">Aa</button>
-    <button class="ctrl-btn" id="btn-coords"   title="Toggle Coordinates">&#8862;</button>
     <div class="ctrl-sep"></div>
   </div>
 
   <!-- ZOOM BADGE -->
   <div id="zoom-badge">1.0&times;</div>
-
-  <!-- COORDINATE DISPLAY -->
-  <div id="coord-display" style="position:fixed;bottom:1rem;left:1rem;z-index:50;font-family:'Cinzel',serif;font-size:0.72rem;color:#d4af37;background:rgba(8,8,14,0.92);border:1px solid rgba(212,175,55,0.5);border-radius:3px;padding:0.4rem 0.6rem;pointer-events:none;">
-    x: 0.0  y: 0.0
-  </div>
 
   <!-- HINT -->
   <div id="hint">Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Hover markers for details</div>
@@ -576,17 +569,6 @@ function _initCity(_city) {
     });
 
     // ── COORDINATE DISPLAY ────────────────────────────────────
-    const coordDisplay = document.getElementById('coord-display');
-    viewport.addEventListener('mousemove', (e) => {
-      const rect = viewport.getBoundingClientRect();
-      const natDisp  = s.bw / s.imgW;
-      const curTotal = natDisp * s.scale;
-      const xs = (e.clientX - rect.left - s.pointX) / curTotal;
-      const ys = (e.clientY - rect.top  - s.pointY) / curTotal;
-      coordDisplay.textContent = `x: ${((xs/s.imgW)*100).toFixed(1)}  y: ${((ys/s.imgH)*100).toFixed(1)}`;
-    });
-    viewport.addEventListener('mouseleave', () => { coordDisplay.textContent = 'x: 0.0  y: 0.0'; });
-
     // ── TOUCH PAN/PINCH ───────────────────────────────────────
     let lastPinchDist = 0;
     viewport.addEventListener('touchstart', (e) => {
@@ -796,36 +778,6 @@ function _initCity(_city) {
       document.getElementById('named-labels-layer').style.opacity = labelsOn ? '1' : '0';
       this.classList.toggle('active', labelsOn);
     });
-
-    let coordsOn = false;
-    const coordGridLayer = document.getElementById('coord-grid-layer');
-    document.getElementById('btn-coords').addEventListener('click', function () {
-      coordsOn = !coordsOn;
-      coordGridLayer.style.display = coordsOn ? 'block' : 'none';
-      this.classList.toggle('active', coordsOn);
-      if (coordsOn && coordGridLayer.children.length === 0) buildCoordinateGrid();
-    });
-
-    function buildCoordinateGrid() {
-      coordGridLayer.innerHTML = '';
-      const ns = (tag, attrs) => {
-        const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-        Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
-        return el;
-      };
-      for (let x = 0; x <= 100; x += 10) {
-        const px = (x/100)*s.imgW;
-        coordGridLayer.appendChild(ns('line', { x1:px, y1:0, x2:px, y2:s.imgH, stroke:'rgba(212,175,55,0.25)', 'stroke-width':'0.5', 'pointer-events':'none' }));
-        const t = ns('text', { x:px, y:12, 'text-anchor':'middle', 'font-family':'Cinzel', 'font-size':'8', fill:'rgba(212,175,55,0.5)', 'pointer-events':'none' });
-        t.textContent = x; coordGridLayer.appendChild(t);
-      }
-      for (let y = 0; y <= 100; y += 10) {
-        const py = (y/100)*s.imgH;
-        coordGridLayer.appendChild(ns('line', { x1:0, y1:py, x2:s.imgW, y2:py, stroke:'rgba(212,175,55,0.25)', 'stroke-width':'0.5', 'pointer-events':'none' }));
-        const t = ns('text', { x:4, y:py+3, 'font-family':'Cinzel', 'font-size':'8', fill:'rgba(212,175,55,0.5)', 'pointer-events':'none' });
-        t.textContent = y; coordGridLayer.appendChild(t);
-      }
-    }
 
   })();
   } // end _initCity block

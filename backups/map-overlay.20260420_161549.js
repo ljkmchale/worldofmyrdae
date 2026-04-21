@@ -935,11 +935,6 @@ const MapOverlay = (function () {
         return entry ? (entry.previewImage || entry.image || null) : null;
     }
 
-    function getCustomTooltipHeaderImage(loc) {
-        if (!loc || !loc.tooltipImage) return null;
-        return loc.tooltipImage;
-    }
-
     function getTooltipMapImage() {
         for (const entry of initializedContainers) {
             const mapImg = document.getElementById(entry.imageId);
@@ -1158,11 +1153,10 @@ const MapOverlay = (function () {
                 ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
             </div>` : '';
 
-        const customPreviewImage = getCustomTooltipHeaderImage(loc);
         const cityPreviewImage = getCityPreviewImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
-        const previewImage = customPreviewImage || cityPreviewImage || biomePreviewImage || waterPreviewImage || generateTooltipHeaderImage(loc);
+        const previewImage = cityPreviewImage || biomePreviewImage || waterPreviewImage || generateTooltipHeaderImage(loc);
         const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
         const desc = truncate(getTooltipDescription(loc), 160);
         const details = truncate(loc.details, 100);
@@ -1175,7 +1169,7 @@ const MapOverlay = (function () {
 
         if (previewImage) {
             tooltip.innerHTML = `
-                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${customPreviewImage ? ' tt-generated-preview-wrap' : cityPreviewImage ? ' tt-city-preview-wrap' : (biomePreviewImage || waterPreviewImage) ? ' tt-biome-preview-wrap' : ' tt-generated-preview-wrap'}">
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${cityPreviewImage ? ' tt-city-preview-wrap' : (biomePreviewImage || waterPreviewImage) ? ' tt-biome-preview-wrap' : ' tt-generated-preview-wrap'}">
                     <img src="${previewImage}" alt="${loc.name}">
                     ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
                     <div class="tt-name-overlay">${loc.name}</div>

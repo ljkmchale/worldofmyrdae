@@ -4743,7 +4743,6 @@ const WORLD_LOCATIONS = {
             "y": 66,
             "region": "Arbescar",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1h-nnyV84AUZnSn1DgnK2msedBhNuf7rPuvPNDb9Xo1M/edit?tab=t.0#heading=h.a8iatkx7aui",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -4752,8 +4751,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 14,
-            "cityMap": "city-viewer.html?city=everlight"
+            "labelOffsetY": 14
         },
         {
             "id": "glidderingfalls",
@@ -4762,8 +4760,7 @@ const WORLD_LOCATIONS = {
             "x": 72.89,
             "y": 69.49,
             "region": "Arbescar",
-            "description": "A thunderous waterfall in Arbescar that empties into the Eye of Arbescar, veiling the surrounding cliffs and pine-choked crags in constant silver mist.",
-            "details": "Legends say two gold dragons, C'Mey and Wyndessa, have hidden caves near the falls and sometimes appear in the spray at dusk.",
+            "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 10,
             "fontWeight": "300",
