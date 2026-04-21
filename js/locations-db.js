@@ -267,7 +267,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -56,
             "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=ulgrey"
         },
         {
             "id": "tower-of-zibeus",
@@ -4241,7 +4242,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -48,
             "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=aerley"
         },
         {
             "id": "staghand",
@@ -6905,7 +6907,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -1,
-            "labelOffsetY": -11
+            "labelOffsetY": -11,
+            "cityMap": "city-viewer.html?city=olestack"
         },
         {
             "id": "mulshear",
@@ -7025,17 +7028,18 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 78.3,
             "y": 32.3,
-            "region": "Range of Otesurr",
+            "region": "Uldrea",
             "description": "A town off the coast of The Broken Deep.",
+            "cityMap": "city-viewer.html?city=kallilos",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0.25,
             "markerOffsetX": 12,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "sari-lenora",
@@ -7043,17 +7047,18 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 77.9,
             "y": 34.4,
-            "region": "Range of Otesurr",
-            "description": "A rugged northern settlement.",
+            "region": "Uldrea",
+            "description": "Coastal Town",
+            "cityMap": "city-viewer.html?city=sari-lenora",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "clador",
@@ -7061,17 +7066,18 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 77.4,
             "y": 36.3,
-            "region": "Range of Otesurr",
+            "region": "Uldrea",
             "description": "A rugged mountain settlement.",
+            "cityMap": "city-viewer.html?city=clador",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
+            "fontStyle": "Normal",
             "markerSize": 0.25,
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "labelOffsetY": 3
         },
         {
             "id": "buvero",
@@ -7640,7 +7646,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -6,
             "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=sandgrave"
         },
         {
             "id": "silvermead-knolls",

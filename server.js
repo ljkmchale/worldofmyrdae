@@ -361,7 +361,7 @@ function handleRequest(req, res) {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
             try {
-                const { cityId, comfyUrl } = JSON.parse(body);
+                const { cityId, comfyUrl, alsoSaveSketch } = JSON.parse(body);
                 if (!cityId || !comfyUrl) throw new Error('Missing cityId or comfyUrl');
 
                 const safeId = cityId.replace(/[^a-z0-9-]/gi, '-');
@@ -392,6 +392,9 @@ function handleRequest(req, res) {
                 console.log('[AI] Downloading generated image from ComfyUI:', comfyUrl);
                 const imgBuf = await fetchBuf(comfyUrl);
                 fs.writeFileSync(destPath, imgBuf);
+                if (alsoSaveSketch) {
+                    fs.writeFileSync(path.join(cityDir, 'sketch.png'), imgBuf);
+                }
                 console.log('[AI] Saved image to:', destPath);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });

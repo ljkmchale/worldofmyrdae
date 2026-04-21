@@ -1,0 +1,110 @@
+{
+  "2": {
+    "inputs": {
+      "ckpt_name": "DreamShaper_8_pruned.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple"
+  },
+  "3": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage"
+  },
+  "4": {
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "(masterpiece:1.2), (best quality:1.2), (consistent style),\n(strict orthographic top-down town map:1.4), (hand-drawn fantasy cartographer map:1.35), (no perspective:1.3),\n(flat map view:1.4), (2D layout:1.3), (no depth:1.3)\n\nhand-drawn parchment map of [CITY NAME],\nsmall medieval fantasy [SETTLEMENT TYPE], top-down settlement layout,\naged parchment, ink and graphite linework, soft hand-sketched strokes,\n\nfantasy town map, cartographer parchment sketch, DnD settlement map,\nnot a technical blueprint, not an architectural sheet,\n\nshow an actual town layout with many visible buildings and streets,\nclustered houses, inns, taverns, shops, market stalls, storehouses, workshops,\npaths, roads, courtyards, plazas, walls, gates, shoreline, docks, piers,\n\n[EXPECTED BUILDINGS],\n\nsimple building footprints, readable blocks, enclosed compounds,\nsparse trees and terrain marks, light shoreline detail, clean negative space,\nminimal shading, dark ink outlines, slightly imperfect hand-drawn lines,\n\n[SCALE AND CONTEXT],\n\n[UNIQUE LAYOUT BRIEF]"
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "5": {
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "perspective, angled view, isometric, oblique, 3d, depth, horizon,\nrealistic aerial photo, satellite view, photorealistic,\n\narchitectural blueprint, construction sheet, floor plan, empty parchment,\nblank page, border frame only, guide lines, rulers, measurements,\n\npainted map, colored illustration, watercolor, vibrant colors,\ndetailed roofs, shingles, textures, shadows, lighting,\n\npeople, characters, text, labels, numbers, compass, icons, UI,\n\nclutter, over-detailing, dense textures, foliage detail,\ntrees with detail, grass detail, environment rendering"
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "6": {
+    "inputs": {
+      "seed": 424242,
+      "steps": 34,
+      "cfg": 5.8,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "latent_image": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "KSampler"
+  },
+  "9": {
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "(strict orthographic top-down town map:1.4), (flat map view:1.4), (2D layout:1.3), (no depth:1.3), hand-drawn parchment fantasy settlement map, medieval cartographer sketch, visible buildings and streets, clustered structures, market square, docks, shoreline, dark ink outlines, unique local arrangement"
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "10": {
+    "inputs": {
+      "conditioning_to": [
+        "4",
+        0
+      ],
+      "conditioning_from": [
+        "9",
+        0
+      ],
+      "conditioning_to_strength": 0.55
+    },
+    "class_type": "ConditioningAverage"
+  },
+  "7": {
+    "inputs": {
+      "samples": [
+        "6",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "VAEDecode"
+  },
+  "8": {
+    "inputs": {
+      "filename_prefix": "Myrdae_DraftPlan",
+      "images": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "SaveImage"
+  }
+}

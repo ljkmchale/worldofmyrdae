@@ -17,4 +17,11 @@ const CITY_MAPS = [
   { id: "glaspero"                , name: "Glaspero"                , image: "images/cities/glaspero/glaspero.png", previewImage: "images/cities/glaspero/glaspero.png" },
   { id: "climbor"                 , name: "Climbor"                 , image: "images/cities/climbor/climbor.png", previewImage: "images/cities/climbor/climbor.png" },
   { id: "everlight"               , name: "Everlight"               , image: "images/cities/everlight/everlight.png", previewImage: "images/cities/everlight/everlight.png" },
+  { id: "aerley"                  , name: "Aerley"                  , image: "images/cities/aerley/aerley.png", previewImage: "images/cities/aerley/aerley.png" },
+  { id: "olestack"                , name: "Ole'stack"               , image: "images/cities/olestack/olestack.png", previewImage: "images/cities/olestack/olestack.png" },
+  { id: "sandgrave"               , name: "Sandgrave"               , image: "images/cities/sandgrave/sandgrave.png", previewImage: "images/cities/sandgrave/sandgrave.png" },
+  { id: "kallilos"                , name: "Kallilos"                , image: "images/cities/kallilos/kallilos.png", previewImage: "images/cities/kallilos/kallilos.png" },
+  { id: "sari-lenora"             , name: "Sari Lenora"             , image: "images/cities/sari-lenora/sari-lenora.png", previewImage: "images/cities/sari-lenora/sari-lenora.png" },
+  { id: "clador"                  , name: "Clador"                  , image: "images/cities/clador/clador.png", previewImage: "images/cities/clador/clador.png" },
+  { id: "ulgrey"                  , name: "Ulgrey"                  , image: "images/cities/ulgrey/ulgrey.png", previewImage: "images/cities/ulgrey/ulgrey.png" },
 ];

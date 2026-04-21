@@ -1902,64 +1902,22 @@ const CityEditor = (function () {
           </div>
         </div>
 
-        <!-- Step 3: Generation -->
+        <!-- Step 3: Review -->
         <div id="ai-step-3" class="wizard-step" style="display:none;">
-          <h3 style="color:var(--color-gold); margin-top:0;">Step 3: Map Generation</h3>
+          <h3 style="color:var(--color-gold); margin-top:0;">Step 3: Review &amp; Create</h3>
           <div class="form-group">
-            <label>ComfyUI Host</label>
-            <div style="display:flex; gap:0.5rem; align-items:center;">
-              <input type="text" id="ai-comfy-host" class="form-control" value="http://127.0.0.1:8188" style="flex:1;" oninput="AIWizard.resetConnectionStatus()">
-              <button class="btn btn-secondary" id="ai-btn-test-conn" onclick="AIWizard.testConnection()" style="min-width:120px; white-space:nowrap;">
-                <i class="fa-solid fa-plug"></i> Test
-              </button>
-            </div>
-            <div id="ai-conn-status" style="margin-top:0.4rem; font-size:0.8rem; min-height:1.2rem;"></div>
+            <p style="font-size:0.8rem; color:#d8c690; margin:0 0 0.75rem;">
+              ComfyUI is temporarily disabled in this wizard. The city will be created using any local artwork already present in the city folder, such as <code>sketch.png</code>, <code>scetch.png</code>, or <code>{cityId}.png</code>.
+            </p>
           </div>
           <div class="form-group">
-            <label>Generation Prompt</label>
-            <textarea id="ai-gen-prompt" class="form-control" rows="4"></textarea>
+            <label>Sketch Brief</label>
+            <textarea id="ai-gen-prompt" class="form-control" rows="7"></textarea>
+            <p style="font-size:0.75rem; color:#888; margin:0.4rem 0 0;">
+              This is now just a reusable planning brief for external image tools. The wizard will not send it to ComfyUI.
+            </p>
           </div>
-          <div class="form-group">
-            <label>Negative Prompt</label>
-            <textarea id="ai-neg-prompt" class="form-control" rows="2" placeholder="blurry, ugly, modern...">blurry, low quality, distorted, ugly, deformed, modern buildings, anime, manga, photorealistic aerial photo, satellite view, realism, glossy 3d render, flat colors, oversaturated, abstract, noise, watermark, text, labels, numbers, letters, signature, interior view, street level, eye-level view, low angle, horizon, cinematic perspective, isometric, oblique angle, 3d diorama, miniature, single building close-up, dark, gloomy, people, figures, crowds, coastline, harbor, docks, ships, islands, port city</textarea>
-          </div>
-          <div class="form-group">
-            <label>Model Checkpoint <span style="font-size:0.7rem; color:#888;">(filename in ComfyUI models/checkpoints/)</span></label>
-            <input type="text" id="ai-model-name" class="form-control" value="Realistic_Vision_V6.0_NV_B1_fp16.safetensors" placeholder="e.g. Realistic_Vision_V6.0_NV_B1_fp16.safetensors" style="font-size:0.8rem;">
-            <p style="font-size:0.72rem; color:#f0a500; margin:0.3rem 0 0;">Realistic Vision V6 is preferred for photorealistic aerial city renders, but the generator will fall back to an installed checkpoint automatically if that model is unavailable.</p>
-          </div>
-          <div style="display:flex; gap:1rem;">
-            <div class="form-group" style="flex:2;">
-              <label>Map LoRA <span style="font-size:0.7rem; color:#888;">(filename in ComfyUI models/loras/)</span></label>
-              <input type="text" id="ai-lora-name" class="form-control" value="game-map-lora.safetensors" placeholder="e.g. game-map-lora.safetensors" style="font-size:0.8rem;">
-            </div>
-            <div class="form-group" style="flex:1;">
-              <label>LoRA Strength <span id="ai-lora-strength-val" style="color:var(--color-gold);">0.95</span></label>
-              <input type="range" id="ai-lora-strength" min="0" max="1.5" step="0.05" value="0.95" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-lora-strength-val').textContent=parseFloat(this.value).toFixed(2)">
-            </div>
-          </div>
-          <div style="display:flex; gap:1rem;">
-            <div class="form-group" style="flex:1;">
-              <label>Steps <span id="ai-steps-val" style="color:var(--color-gold);">18</span></label>
-              <input type="range" id="ai-steps" min="10" max="80" value="18" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-steps-val').textContent=this.value">
-            </div>
-            <div class="form-group" style="flex:1;">
-              <label>CFG <span id="ai-cfg-val" style="color:var(--color-gold);">7</span></label>
-              <input type="range" id="ai-cfg" min="1" max="15" value="7" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-cfg-val').textContent=this.value">
-            </div>
-            <div class="form-group" style="flex:1;">
-              <label>Denoise <span id="ai-denoise-val" style="color:var(--color-gold);">0.40</span></label>
-              <input type="range" id="ai-denoise" min="0.2" max="1.0" step="0.01" value="0.40" style="width:100%; accent-color:var(--color-gold);" oninput="document.getElementById('ai-denoise-val').textContent=parseFloat(this.value).toFixed(2)">
-            </div>
-          </div>
-          <p style="font-size:0.75rem; color:#4da6ff; margin:0 0 0.75rem;"><i class="fa-solid fa-circle-info"></i> A local sketch/map is used first. If none exists, the wizard falls back to a top-down style reference. <strong>Denoise</strong>: around 0.35–0.45 works best for style-only fallback; higher values tend to drift away from usable map layouts.</p>
-          <div class="form-group">
-            <label>Workflow JSON <span style="font-size:0.7rem; color:#666;">(Optional — overrides default img2img workflow)</span></label>
-            <textarea id="ai-comfy-workflow" class="form-control" rows="6" 
-              placeholder='Paste API JSON here...'
-              oninput="localStorage.setItem('comfy_workflow_json', this.value)"></textarea>
-          </div>
-          
+
           <div id="ai-pins-preview" style="margin-top:1rem; background:#000; border:1px solid #333; border-radius:4px; padding:0.5rem; max-height:200px; overflow-y:auto;">
             <p style="font-size:0.75rem; color:var(--color-gold); margin-bottom:0.5rem;">Extracted Pins:</p>
             <div id="ai-pins-list" style="font-size:0.7rem; color:#888;"></div>
@@ -1967,7 +1925,7 @@ const CityEditor = (function () {
 
           <div style="margin-top:1.5rem; display:flex; gap:1rem;">
             <button class="btn btn-secondary" onclick="AIWizard.nextStep(2)">&larr; Back</button>
-            <button class="btn btn-primary" id="ai-btn-generate" onclick="AIWizard.generate()">Generate & Create City</button>
+            <button class="btn btn-primary" id="ai-btn-generate" onclick="AIWizard.generate()">Create City</button>
           </div>
         </div>
 
@@ -2001,6 +1959,56 @@ const CityEditor = (function () {
           || null;
       }
 
+      function buildSettlementContext(cityId, cityName, worldLocation) {
+        const normalizedId = (cityId || '').toLowerCase();
+        const normalizedName = (cityName || '').toLowerCase();
+        const combined = `${normalizedId} ${normalizedName}`;
+        const locationType = (worldLocation && worldLocation.type) || '';
+        const isTown = locationType === 'town' || /\btown\b/.test(combined);
+        const isLakeside = normalizedId === 'aerley';
+
+        const expectedBuildings = isTown
+          ? 'Include the expected buildings and spaces for a functional fantasy town: a modest market square with fish and produce stalls, one inn, one tavern, a blacksmith, stables, a general store, a shrine or small temple, storehouses, sheds, smokehouses, net-mending yards, a few workshops, town commons, and tightly clustered homes'
+          : 'Include the expected buildings and spaces for a functional fantasy settlement, with public buildings, service buildings, workshops, storage, and clustered homes';
+
+        const civicScale = normalizedId === 'aerley'
+          ? 'This settlement should feel small, practical, and close-knit, sized for roughly 300 residents'
+          : '';
+
+        const waterfrontContext = isLakeside
+          ? 'A\'erley is a small lakeside fishing town on the shore of a lake, so give it a working waterfront with short piers or jetties, beached rowboats or fishing boats, net racks, fish-cleaning tables, smokehouses, boathouses, lakeshore paths, and a compact shoreline market area'
+          : '';
+
+        return {
+          expectedBuildings,
+          civicScale,
+          waterfrontContext
+        };
+      }
+
+      function buildLayoutDirectives(cityId, cityName, worldLocation) {
+        const normalizedId = (cityId || '').toLowerCase();
+        const normalizedName = (cityName || '').toLowerCase();
+        const combined = `${normalizedId} ${normalizedName}`;
+        const locationType = (worldLocation && worldLocation.type) || '';
+        const isTown = locationType === 'town' || /\btown\b/.test(combined);
+        const isVillage = /village|hamlet|settlement|farm|homestead/.test(combined);
+
+        if (normalizedId === 'aerley') {
+          return 'Invent a unique layout for A\'erley instead of copying any existing fort, abbey, cloister, or walled compound. Give it a fresh lakeside fishing-town arrangement with one main shore road, a small market near the waterfront, a few side lanes, short piers, compact service yards, and loosely clustered homes around the commons.';
+        }
+
+        if (isTown) {
+          return 'Invent a unique town layout that fits the town brief. Avoid copying fortress, abbey, monastery, or citadel compounds unless the town description explicitly calls for them.';
+        }
+
+        if (isVillage) {
+          return 'Invent a unique village layout with a simple road pattern and small clusters of buildings. Avoid formal compounds or large urban blocks unless explicitly requested.';
+        }
+
+        return 'Invent a unique settlement layout that matches the provided brief rather than echoing unrelated reference compounds or site plans.';
+      }
+
       async function uploadFirstAvailableReference(host, cityId) {
         const localCandidates = [
           `images/cities/${cityId}/sketch.png`,
@@ -2017,12 +2025,7 @@ const CityEditor = (function () {
           `images/cities/${cityId}/locations-reference.PNG`
         ];
 
-        const styleFallbacks = [
-          'images/cities/nauldeaus/nauldeaus.PNG',
-          'images/cities/nauldeaus/nauldeaus.png'
-        ];
-
-        for (const localPath of [...localCandidates, ...styleFallbacks]) {
+        for (const localPath of localCandidates) {
           try {
             const upRes = await fetch('/api/ai/upload-to-comfy', {
               method: 'POST',
@@ -2034,7 +2037,7 @@ const CityEditor = (function () {
               return {
                 filename: upRes.name,
                 localPath,
-                isStyleFallback: styleFallbacks.includes(localPath)
+                isStyleFallback: false
               };
             }
           } catch (e) {
@@ -2184,44 +2187,28 @@ const CityEditor = (function () {
           }
         }
         if (n === 3) {
-          const wfField = document.getElementById('ai-comfy-workflow');
-          if (!wfField.value) {
-            const saved = localStorage.getItem('comfy_workflow_json');
-            if (saved) wfField.value = saved;
-          }
-          testConnection();
-        }
-      }
-
-      async function testConnection() {
-        const host = document.getElementById('ai-comfy-host').value || 'http://127.0.0.1:8188';
-        const statusEl = document.getElementById('ai-conn-status');
-        const btn = document.getElementById('ai-btn-test-conn');
-        const genBtn = document.getElementById('ai-btn-generate');
-
-        statusEl.innerHTML = '<span style="color:#888;"><i class="fa-solid fa-spinner fa-spin"></i> Connecting to ComfyUI…</span>';
-        if (btn) btn.disabled = true;
-        if (genBtn) genBtn.disabled = true;
-
-        try {
-          const res = await fetch(`/api/ai/comfy-proxy?host=${encodeURIComponent(host)}&endpoint=/system_stats`);
-          const data = await res.json();
-          if (data.error) throw new Error(data.error);
-          statusEl.innerHTML = '<span style="color:#4caf50;"><i class="fa-solid fa-circle-check"></i> ComfyUI is running ✓</span>';
+          const genBtn = document.getElementById('ai-btn-generate');
           if (genBtn) genBtn.disabled = false;
-        } catch (e) {
-          statusEl.innerHTML = `<span style="color:#e44;"><i class="fa-solid fa-circle-xmark"></i> ComfyUI not reachable — start it at <strong>${host}</strong> then click Test again.</span>`;
-          if (genBtn) genBtn.disabled = true;
-        } finally {
-          if (btn) btn.disabled = false;
         }
       }
 
-      function resetConnectionStatus() {
-        const statusEl = document.getElementById('ai-conn-status');
-        const genBtn = document.getElementById('ai-btn-generate');
-        if (statusEl) statusEl.innerHTML = '';
-        if (genBtn) genBtn.disabled = true;
+      async function resolvePreferredCityImage(cityId) {
+        const candidates = [
+          `images/cities/${cityId}/${cityId}.png`,
+          `images/cities/${cityId}/${cityId}.PNG`,
+          `images/cities/${cityId}/${cityId}.jpg`,
+          `images/cities/${cityId}/${cityId}.JPG`,
+          `images/cities/${cityId}/${cityId}.jpeg`,
+          `images/cities/${cityId}/${cityId}.JPEG`,
+          `images/cities/${cityId}/sketch.png`,
+          `images/cities/${cityId}/sketch.PNG`,
+          `images/cities/${cityId}/scetch.png`,
+          `images/cities/${cityId}/scetch.PNG`
+        ];
+        for (const src of candidates) {
+          if (await imageAssetExists(src)) return src;
+        }
+        return buildCityImagePath(cityId);
       }
 
       async function fetchGoogleDoc() {
@@ -2331,6 +2318,13 @@ const CityEditor = (function () {
           : '<div style="color:#888;">No pins found — check gazetteer format.</div>';
         const cityName = document.getElementById('ai-city-name').value || '';
         const cityId = document.getElementById('ai-city-id').value || '';
+        const allLocations = (window.CampaignData && typeof CampaignData.getAllLocations === 'function')
+          ? CampaignData.getAllLocations()
+          : ((window.WORLD_LOCATIONS && WORLD_LOCATIONS.locations) || []);
+        const worldLocation = findWorldLocationForCity(cityId, allLocations);
+        const settlementContext = buildSettlementContext(cityId, cityName, worldLocation);
+        const layoutDirectives = buildLayoutDirectives(cityId, cityName, worldLocation);
+        const isTown = (worldLocation && worldLocation.type === 'town') || /\btown\b/.test((cityName + ' ' + cityId).toLowerCase());
         const isFortress = /hold|fort|keep|castle|citadel|bastion|garrison|stronghold|outpost|watch/i.test(cityName + ' ' + cityId);
         const isVillage = /village|hamlet|settlement|farm|homestead/i.test(cityName + ' ' + cityId);
         const isUnderground = /underdark|undercity|underground|cavern|grotto|underhive|drow enclave|subterranean|duergar|beneath the|below the/i.test(cityName + ' ' + cityId);
@@ -2344,15 +2338,17 @@ const CityEditor = (function () {
           .join('; ');
         let styleHint;
         if (isFortress) {
-          styleHint = `painted fantasy cartography in the style of a polished Inkarnate Pro city map, true top-down overhead look, massive stone perimeter walls with circular corner towers, heavy gatehouse, cobbled inner lanes, barracks, armory, keep, stables, smithy, shrine, market square, training grounds, storehouses, hand-painted terrain, soft parchment-like shading, muted believable colors, crisp roof silhouettes, readable street layout, terrain-integrated surroundings`;
+          styleHint = `hand-drawn fantasy site plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, fortress compound drawn as simple wall lines and rectangular building blocks, gatehouses, towers, keep, barracks, armory, stables, shrine, market yard, training grounds, storehouses, sparse ground detail, readable plan layout`;
         } else if (isUnderground) {
-          styleHint = `painted fantasy cartography in the style of a polished Inkarnate Pro underground settlement map, true top-down overhead look, cavern city carved from dark rock, stone tunnels and arched passages, clustered homes, forge halls, tavern, market alcoves, shrine, guard posts, bridges over chasms, bioluminescent pools and mushrooms, hand-painted terrain, muted believable colors, clear overhead readability`;
+          styleHint = `hand-drawn fantasy site plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, underground settlement drawn as simple chamber outlines, tunnels, bridges, halls, shrines, alcoves, workshops, clustered blocky structures, sparse shading, readable plan layout`;
+        } else if (isTown) {
+          styleHint = `hand-drawn fantasy town plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, simple building rectangles and wall footprints, roads and footpaths drawn as clean lines, market square, clustered homes, inn, tavern, blacksmith, stableyard, shrine, workshops, storehouses, sparse trees only as minimal symbols, no rendered roofs, no painted landscape`;
         } else if (isVillage) {
-          styleHint = `painted fantasy cartography in the style of a polished Inkarnate Pro village map, true top-down overhead look, inland winter village, timber-framed cottages with snow-dusted rooftops, tavern, blacksmith, stables, chapel or shrine, general store, central market square, winding dirt paths, fenced yards, clustered support buildings, hand-painted terrain, muted believable colors, readable overhead composition, forest edge surroundings, no harbor or coastline`;
+          styleHint = `hand-drawn fantasy village plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, cottages and outbuildings drawn as simple rectangular footprints, dirt paths as narrow sketch lines, central green or square, shrine, blacksmith, storehouse, sparse terrain marks, no rendered roofs, no painted landscape`;
         } else {
-          styleHint = `painted fantasy cartography in the style of a polished Inkarnate Pro city map like Nauldeaus, true top-down overhead look, dense stone and timber buildings, taverns, inns, blacksmiths, temples, guard barracks, stables, marketplaces, guild halls, homes, warehouses, plazas, alleys, city wall with towers and gatehouses, docks or bridges if near water, hand-painted terrain and water, soft shading, muted believable colors, strong district layout, readable overhead streets`;
+          styleHint = `hand-drawn fantasy city plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, districts and major buildings drawn as simple block footprints, walls and gates as linework, plazas, streets, warehouses, temples, inns, barracks, market blocks, sparse terrain marks, readable plan layout, no rendered roofs, no painted landscape`;
         }
-        const genPrompt = `Create a fantasy DnD settlement map from a strict top-down overhead view. ${styleHint}. The final image should look like a finished hand-painted town map, not a realistic aerial photo. Use the same kind of stylized painted roofs, stone walls, roads, docks, water, forests, and district blocks seen in a polished fantasy city map. Every result must read like a finished town or city map with the standard buildings expected in a DnD settlement. Include believable roads, paths, blocks, public buildings, service buildings, housing clusters, and town structure. No people, no text, no labels, no numbers, no compass, no UI, no isometric angle, no oblique angle, no street-level camera. If a reference map is provided, preserve its road positions, walls, water edges, and overall settlement layout while upgrading it into a polished final city map. Key locations: ${pinNames}. Gazetteer details: ${pinDetails}.`;
+        const genPrompt = `Create a fantasy DnD settlement planning sketch from a strict orthographic top-down view. ${styleHint}. The result must look like a hand-drawn planning map or site sketch on parchment, similar to a tabletop DM draft, not a finished painted illustration and not a realistic aerial photo. Focus on wall lines, building footprints, gates, roads, paths, plazas, shoreline edges, docks, courtyards, and overall settlement structure. ${settlementContext.expectedBuildings}. ${settlementContext.civicScale}. ${settlementContext.waterfrontContext}. ${layoutDirectives}. Draw buildings mostly as simple rectangles, courtyards, enclosed compounds, and block footprints rather than textured roof forms. Keep the ground mostly open parchment with only faint grid, light shading, and minimal terrain marks. No people, no text, no labels, no numbers, no compass, no UI, no perspective, no isometric angle, no oblique angle, no street-level camera. If a reference map is provided, preserve only the broad arrangement of that same city while converting it into a cleaner hand-drawn plan. Never copy the layout of an unrelated location. Key locations: ${pinNames}. Gazetteer details: ${pinDetails}.`;
         document.getElementById('ai-gen-prompt').value = genPrompt;
         nextStep(3);
       }
@@ -2360,16 +2356,6 @@ const CityEditor = (function () {
       async function generate() {
         const cityId = document.getElementById('ai-city-id').value;
         const cityName = document.getElementById('ai-city-name').value;
-        const host = document.getElementById('ai-comfy-host').value || 'http://127.0.0.1:8188';
-        const prompt = document.getElementById('ai-gen-prompt').value;
-        const negPrompt = document.getElementById('ai-neg-prompt').value || 'blurry, low quality, distorted, ugly, modern, watermark';
-        const steps = parseInt(document.getElementById('ai-steps').value) || 30;
-        const cfg = parseFloat(document.getElementById('ai-cfg').value) || 7;
-        const denoise = parseFloat(document.getElementById('ai-denoise').value) || 0.88;
-        const requestedModelName = document.getElementById('ai-model-name').value.trim() || 'Realistic_Vision_V6.0_NV_B1_fp16.safetensors';
-        const loraName = (document.getElementById('ai-lora-name').value || '').trim();
-        const loraStrength = parseFloat(document.getElementById('ai-lora-strength').value) || 0;
-        let workflowStr = document.getElementById('ai-comfy-workflow').value || localStorage.getItem('comfy_workflow_json');
 
         nextStep(4);
         const status = document.getElementById('ai-status-text');
@@ -2382,122 +2368,15 @@ const CityEditor = (function () {
           if (!cityName.trim()) {
             throw new Error('Enter a City Name before generating.');
           }
-
-          // Use the installed fallback checkpoint if the old default model name is still in the field.
-          if (modelName === 'realisticVisionV60B1_v51HyperVAE.safetensors') {
-            modelName = 'v1-5-pruned-emaonly.safetensors';
-          }
-
-          // Use any existing map or sketch in the city folder as the img2img source.
-          let referenceImage = null;
-          status.textContent = "Checking for existing city map reference...";
-          progress.style.width = "8%";
-          referenceImage = await uploadFirstAvailableReference(host, cityId);
-
-          status.textContent = "Connecting to ComfyUI...";
-          progress.style.width = "12%";
-
-          const resolvedCheckpoint = await resolveComfyCheckpointName(host, requestedModelName);
-          const modelName = resolvedCheckpoint.modelName;
-          document.getElementById('ai-model-name').value = modelName;
-          if (resolvedCheckpoint.substituted) {
-            status.textContent = `Using installed checkpoint: ${modelName}`;
-            progress.style.width = "15%";
-          }
-
-          const seed = Math.floor(Math.random() * 1000000);
-          const clipRef = loraName ? ["9", 1] : ["2", 1];
-          const modelRef = loraName ? ["9", 0] : ["2", 0];
-          const loraNode = loraName ? {
-            "9": {
-              "class_type": "LoraLoader",
-              "inputs": {
-                "model": ["2", 0],
-                "clip": ["2", 1],
-                "lora_name": loraName,
-                "strength_model": loraStrength,
-                "strength_clip": loraStrength
-              }
-            }
-          } : {};
-          let defaultWorkflow;
-          if (referenceImage && referenceImage.filename) {
-            // img2img: an existing map/sketch is used as the latent base.
-            defaultWorkflow = {
-              ...loraNode,
-              "1":  {"class_type":"LoadImage","inputs":{"image":referenceImage.filename}},
-              "12": {"class_type":"ImageScale","inputs":{"image":["1",0],"upscale_method":"lanczos","width":1024,"height":1024,"crop":"disabled"}},
-              "2":  {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":modelName}},
-              "3":  {"class_type":"VAEEncode","inputs":{"pixels":["12",0],"vae":["2",2]}},
-              "4":  {"class_type":"CLIPTextEncode","inputs":{"clip":clipRef,"text":prompt}},
-              "5":  {"class_type":"CLIPTextEncode","inputs":{"clip":clipRef,"text":negPrompt}},
-              "6":  {"class_type":"KSampler","inputs":{"model":modelRef,"positive":["4",0],"negative":["5",0],"latent_image":["3",0],"denoise":denoise,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
-              "7":  {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["2",2]}},
-              "8":  {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
-            };
-          } else {
-            // txt2img fallback — no sketch, no ControlNet
-            defaultWorkflow = {
-              ...loraNode,
-              "2": {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":modelName}},
-              "3": {"class_type":"EmptyLatentImage","inputs":{"batch_size":1,"height":1024,"width":1024}},
-              "4": {"class_type":"CLIPTextEncode","inputs":{"clip":clipRef,"text":prompt}},
-              "5": {"class_type":"CLIPTextEncode","inputs":{"clip":clipRef,"text":negPrompt}},
-              "6": {"class_type":"KSampler","inputs":{"model":modelRef,"positive":["4",0],"negative":["5",0],"latent_image":["3",0],"denoise":1.0,"cfg":cfg,"steps":steps,"sampler_name":"dpmpp_2m","scheduler":"karras","seed":seed}},
-              "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["2",2]}},
-              "8": {"class_type":"SaveImage","inputs":{"filename_prefix":"Myrdae_AI","images":["7",0]}}
-            };
-          }
-
-          const usingCustomWorkflow = !!(workflowStr && workflowStr.trim());
-          const workflow = JSON.parse(workflowStr || JSON.stringify(defaultWorkflow));
-          if (!workflowStr && referenceImage && referenceImage.isStyleFallback && workflow["6"] && workflow["6"].inputs) {
-            workflow["6"].inputs.denoise = Math.min(workflow["6"].inputs.denoise, 0.4);
-            workflow["6"].inputs.steps = Math.min(workflow["6"].inputs.steps, 18);
-          }
-          status.textContent = referenceImage
-            ? referenceImage.isStyleFallback
-              ? `No city sketch found. Using top-down style reference (${referenceImage.localPath.split('/').pop()})${loraName ? ` + ${loraName}` : ''} with denoise ${denoise}…`
-              : `Using existing map reference (${referenceImage.localPath.split('/').pop()})${loraName ? ` + ${loraName}` : ''} with denoise ${denoise}…`
-            : `No map found in the city folder. Generating a new top-down city map from prompt${loraName ? ` + ${loraName}` : ''}…`;
-          progress.style.width = "18%";
-
-          const promptRes = await fetch('/api/ai/comfy-proxy', {
-              method: 'POST',
-              body: JSON.stringify({ host, payload: { prompt: workflow } })
-          }).then(r => r.json());
-
-          if (promptRes.error) throw new Error(formatComfyError(promptRes.error, usingCustomWorkflow));
-          const promptId = promptRes.prompt_id;
-
-          let finished = false, attempts = 0;
-          while (!finished && attempts < 120) {
-              await new Promise(r => setTimeout(r, 3000));
-              const histRes = await fetch(`/api/ai/comfy-proxy?host=${encodeURIComponent(host)}&endpoint=/history/${promptId}`).then(r => r.json());
-              if (histRes[promptId]) {
-                  finished = true;
-                  const nodeData = histRes[promptId].outputs;
-                  // Find the SaveImage node output — look for any node that has an images array
-                  const saveNode = Object.values(nodeData).find(n => n.images && n.images.length > 0);
-                  if (!saveNode) throw new Error('No image output found in ComfyUI response');
-                  const filename = saveNode.images[0].filename;
-                  await fetch('/api/ai/save-image', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ cityId, comfyUrl: `${host}/view?filename=${filename}` })
-                  }).then(r => r.json());
-              }
-              attempts++;
-              progress.style.width = (10 + (attempts * 1.5)) + "%";
-          }
-
-          if (!finished) throw new Error("ComfyUI timed out.");
+          status.textContent = "Checking for local city artwork...";
+          progress.style.width = "20%";
+          const resolvedImage = await resolvePreferredCityImage(cityId);
 
           const newCity = {
             id: cityId,
             name: cityName.trim(),
-            image: `images/cities/${cityId}/${cityId}.png`,
-            previewImage: `images/cities/${cityId}/${cityId}.png`,
+            image: resolvedImage,
+            previewImage: resolvedImage,
             pins: pins.map(pin => ({ ...pin })),
             namedLabels: [],
           };
@@ -2546,7 +2425,7 @@ const CityEditor = (function () {
         }
       }
 
-      return { open, close, nextStep, fetchGoogleDoc, parseData, generate, testConnection, resetConnectionStatus };
+      return { open, close, nextStep, fetchGoogleDoc, parseData, generate };
     })();
   </script>
 </body>
