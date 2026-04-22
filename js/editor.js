@@ -10,6 +10,10 @@ const Editor = (function () {
         locations: [],
         roads: [],
         regions: [],
+        locationDraft: null,
+        locationDraftOriginalId: null,
+        roadDraft: null,
+        roadDraftOriginalId: null,
         editingWaypointIndex: null,
         undoStack: [],
         redoStack: [],
@@ -21,66 +25,119 @@ const Editor = (function () {
         isNewPreview: false
     };
 
+    function cloneData(value) {
+        return JSON.parse(JSON.stringify(value));
+    }
+
+    function getLocationById(id) {
+        return state.locations.find(location => location.id === id) || null;
+    }
+
+    function getRoadById(id) {
+        return state.roads.find(road => road.id === id) || null;
+    }
+
+    function setActionMessage(id, text, isError = false) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = text || '';
+        el.style.color = text ? (isError ? '#ff9b8f' : '#8f8576') : '#8f8576';
+    }
+
+    function flashButton(id, html, successColor = '#0a0') {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const originalHtml = btn.innerHTML;
+        const originalBackground = btn.style.background;
+        btn.innerHTML = html;
+        btn.style.background = successColor;
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.style.background = originalBackground;
+        }, 2000);
+    }
+
+    function getRenderableLocations() {
+        const locations = cloneData(state.locations);
+        if (!state.locationDraft) return locations;
+
+        if (state.selectedLocId === '__preview__') {
+            locations.push({ ...cloneData(state.locationDraft), id: '__preview__', _ghost: true });
+            return locations;
+        }
+
+        const originalId = state.locationDraftOriginalId || state.selectedLocId;
+        const idx = locations.findIndex(location => location.id === originalId);
+        if (idx !== -1) {
+            locations[idx] = cloneData(state.locationDraft);
+        }
+        return locations;
+    }
+
+    function getRenderableRoads() {
+        const roads = cloneData(state.roads);
+        if (!state.roadDraft || !state.selectedRoadId) return roads;
+
+        const originalId = state.roadDraftOriginalId || state.selectedRoadId;
+        const idx = roads.findIndex(road => road.id === originalId);
+        if (idx !== -1) {
+            roads[idx] = cloneData(state.roadDraft);
+        }
+        return roads;
+    }
+
+    function getRenderState() {
+        return {
+            ...state,
+            locations: getRenderableLocations(),
+            roads: getRenderableRoads()
+        };
+    }
+
+    function syncCampaignDataBridge() {
+        const renderState = getRenderState();
+        window.CampaignData = {
+            init: async () => renderState,
+            getData: () => renderState,
+            getLocations: () => renderState.locations,
+            getRoads: () => renderState.roads
+        };
+        return renderState;
+    }
+
+    function syncLocationDraftFromState() {
+        if (!state.selectedLocId || state.selectedLocId === '__preview__') return;
+        const location = getLocationById(state.selectedLocId);
+        if (location) {
+            state.locationDraft = cloneData(location);
+            state.locationDraftOriginalId = location.id;
+        }
+    }
+
+    function syncRoadDraftFromState() {
+        if (!state.selectedRoadId) return;
+        const road = getRoadById(state.selectedRoadId);
+        if (road) {
+            state.roadDraft = cloneData(road);
+            state.roadDraftOriginalId = road.id;
+        }
+    }
+
     /** Initialize Editor State */
     async function init() {
-        console.log("Initializing Map Editor...");
-
         // Copy the original WORLD_LOCATIONS locally to manipulate
         if (typeof WORLD_LOCATIONS !== 'undefined') {
-            state.locations = JSON.parse(JSON.stringify(WORLD_LOCATIONS.locations || []));
-            state.roads = JSON.parse(JSON.stringify(WORLD_LOCATIONS.roads || []));
-            state.regions = JSON.parse(JSON.stringify(WORLD_LOCATIONS.regions || []));
+            state.locations = cloneData(WORLD_LOCATIONS.locations || []);
+            state.roads = cloneData(WORLD_LOCATIONS.roads || []);
+            state.regions = cloneData(WORLD_LOCATIONS.regions || []);
         } else {
             console.warn("WORLD_LOCATIONS not found. Creating empty map.");
         }
 
-        // Override CampaignData defaults locally so the map draws our editable state
-        window.CampaignData = {
-            init: async () => state,
-            getData: () => state,
-            getLocations: () => state.locations,
-            getRoads: () => state.roads
-        };
-
-        // Setup live preview for locations
-        ['loc-id', 'loc-name', 'loc-x', 'loc-y', 'loc-type', 'loc-region', 'loc-desc', 'loc-details',
-            'loc-fontFamily', 'loc-fontSize', 'loc-fontWeight', 'loc-fontStyle',
-            'loc-markerSize', 'loc-markerOffsetX', 'loc-markerOffsetY',
-            'loc-labelOffsetX', 'loc-labelOffsetY', 'loc-labelAlign', 'loc-rotation', 'loc-opacity'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('input', previewLocation);
-            });
-        // Checkbox needs 'change' event for live preview
-        const hideLabelEl = document.getElementById('loc-hideLabel');
-        if (hideLabelEl) hideLabelEl.addEventListener('change', previewLocation);
-
-        // Setup live preview for roads
-        ['road-type', 'road-curved', 'road-name', 'road-color', 'road-width',
-            'road-dashed', 'road-dashLength', 'road-gapLength',
-            'road-fontFamily', 'road-fontSize', 'road-fontWeight', 'road-fontStyle', 'road-labelOpacity',
-            'road-labelOffset', 'road-labelSide', 'road-labelReverse',
-            'ship-name', 'ship-type', 'ship-captain', 'ship-duration', 'ship-color', 'ship-size',
-            'route-purpose', 'route-cargo', 'route-risk'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('input', previewRoad);
-            });
-        
-        const shipColorPicker = document.getElementById('ship-color-picker');
-        if (shipColorPicker) {
-            shipColorPicker.addEventListener('input', () => {
-                const colorInput = document.getElementById('ship-color');
-                if (colorInput) colorInput.value = shipColorPicker.value;
-                previewRoad();
-            });
-        }
-
-        ['road-start-location', 'road-end-location'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('change', previewRoad);
-        });
+        syncCampaignDataBridge();
 
         // Broadcast the initial load to map-overlay
-        document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: state }));
+        document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: getRenderState() }));
 
         renderLists();
         updateLocationPlacementUI();
@@ -197,8 +254,9 @@ const Editor = (function () {
                         road.points[state.editingWaypointIndex] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
                         state.editingWaypointIndex = null;
                         renderRoadPoints(road.points);
+                        syncRoadDraftFromState();
                         refreshMap();
-                        saveRoad(false);
+                        saveRoad(false, { validateComplete: false, showFeedback: false });
                         return;
                     }
 
@@ -221,9 +279,10 @@ const Editor = (function () {
                     }
 
                     renderRoadPoints(road.points);
+                    syncRoadDraftFromState();
                     refreshMap();
                     // Auto-save to ensure points are persisted
-                    saveRoad(false);
+                    saveRoad(false, { validateComplete: false, showFeedback: false });
                 }
             }
         }
@@ -253,8 +312,9 @@ const Editor = (function () {
                 }
 
                 renderRoadPoints(road.points);
+                syncRoadDraftFromState();
                 refreshMap();
-                saveRoad(false);
+                saveRoad(false, { validateComplete: false, showFeedback: false });
             } else {
                 // Silently return - user needs to create/select a road first
             }
@@ -267,8 +327,8 @@ const Editor = (function () {
 
     function pushUndo() {
         state.undoStack.push({
-            locations: JSON.parse(JSON.stringify(state.locations)),
-            roads: JSON.parse(JSON.stringify(state.roads))
+            locations: cloneData(state.locations),
+            roads: cloneData(state.roads)
         });
         if (state.undoStack.length > 50) state.undoStack.shift();
         state.redoStack = [];
@@ -278,12 +338,14 @@ const Editor = (function () {
     function undo() {
         if (state.undoStack.length === 0) return;
         state.redoStack.push({
-            locations: JSON.parse(JSON.stringify(state.locations)),
-            roads: JSON.parse(JSON.stringify(state.roads))
+            locations: cloneData(state.locations),
+            roads: cloneData(state.roads)
         });
         const prev = state.undoStack.pop();
         state.locations = prev.locations;
         state.roads = prev.roads;
+        syncLocationDraftFromState();
+        syncRoadDraftFromState();
         renderLists();
         refreshMap();
         exportData().catch(console.error);
@@ -293,12 +355,14 @@ const Editor = (function () {
     function redo() {
         if (state.redoStack.length === 0) return;
         state.undoStack.push({
-            locations: JSON.parse(JSON.stringify(state.locations)),
-            roads: JSON.parse(JSON.stringify(state.roads))
+            locations: cloneData(state.locations),
+            roads: cloneData(state.roads)
         });
         const next = state.redoStack.pop();
         state.locations = next.locations;
         state.roads = next.roads;
+        syncLocationDraftFromState();
+        syncRoadDraftFromState();
         renderLists();
         refreshMap();
         exportData().catch(console.error);
@@ -415,8 +479,11 @@ const Editor = (function () {
         state.locationPlacementMode = false;
         state.moveLocationMode = false;
         updateLocationPlacementUI();
-        const loc = state.locations.find(l => l.id === id);
+        const loc = getLocationById(id);
         if (!loc) return;
+        state.locationDraft = cloneData(loc);
+        state.locationDraftOriginalId = loc.id;
+        setActionMessage('location-form-message', '');
 
         document.getElementById('location-form-area').style.display = 'block';
         document.getElementById('form-title').textContent = 'Edit Location';
@@ -465,10 +532,12 @@ const Editor = (function () {
         state.isNewPreview = true;
         state.locationPlacementMode = false;
         state.moveLocationMode = false;
+        state.locationDraftOriginalId = null;
         updateLocationPlacementUI();
         document.getElementById('location-form-area').style.display = 'block';
         document.getElementById('form-title').textContent = 'New Location';
         document.getElementById('btn-del-loc').style.display = 'none';
+        setActionMessage('location-form-message', 'Previewing a new location. Save when it looks right.');
 
         // Clear dropdown
         const list = document.getElementById('location-list');
@@ -501,15 +570,35 @@ const Editor = (function () {
         document.getElementById('loc-opacity').value = '';
         document.getElementById('loc-hideLabel').checked = false;
 
-        // Plant ghost marker at click position so it's visible immediately
-        state.locations = state.locations.filter(l => l.id !== '__preview__');
-        state.locations.push({
+        state.locationDraft = {
             id: '__preview__', name: 'New Location', type: 'town',
             x: x !== undefined ? parseFloat(x.toFixed(1)) : 50,
             y: y !== undefined ? parseFloat(y.toFixed(1)) : 50,
             _ghost: true
-        });
+        };
         _debouncedRefresh();
+    }
+
+    function validateLocationData(locData) {
+        if (!locData.name || !locData.name.trim()) {
+            return 'Location name is required.';
+        }
+        if (!locData.id || !locData.id.trim()) {
+            return 'Location ID could not be generated. Add a name or ID.';
+        }
+        if (!Number.isFinite(locData.x) || locData.x < 0 || locData.x > 100) {
+            return 'X coordinate must be between 0 and 100.';
+        }
+        if (!Number.isFinite(locData.y) || locData.y < 0 || locData.y > 100) {
+            return 'Y coordinate must be between 0 and 100.';
+        }
+
+        const originalId = state.locationDraftOriginalId || (state.selectedLocId !== '__preview__' ? state.selectedLocId : null);
+        const duplicate = state.locations.find(location => location.id === locData.id && location.id !== originalId);
+        if (duplicate) {
+            return `Location ID "${locData.id}" already exists.`;
+        }
+        return '';
     }
 
     function getLocationFromForm() {
@@ -541,7 +630,16 @@ const Editor = (function () {
         else if (isRiver) defaultDesc = "Nature";
         else if (isNature) defaultDesc = "Nature";
 
+        const originalId = state.locationDraftOriginalId || (state.selectedLocId !== '__preview__' ? state.selectedLocId : null);
+        const baseLocation = cloneData(
+            state.locationDraft ||
+            (originalId ? getLocationById(originalId) : null) ||
+            {}
+        );
+        delete baseLocation._ghost;
+
         const locData = {
+            ...baseLocation,
             id: id,
             name: name,
             type: locType,
@@ -553,18 +651,23 @@ const Editor = (function () {
 
         const details = document.getElementById('loc-details').value;
         if (details) locData.details = details;
+        else delete locData.details;
 
         const link = document.getElementById('loc-link').value.trim();
         if (link) locData.link = link;
+        else delete locData.link;
 
         const cityMap = document.getElementById('loc-cityMap').value;
         if (cityMap) locData.cityMap = cityMap;
+        else delete locData.cityMap;
 
         const setIf = (key, val, parseFn, defaultVal = undefined) => {
             if (val !== '') {
                 locData[key] = parseFn ? parseFn(val) : val;
             } else if (defaultVal !== undefined) {
                 locData[key] = defaultVal;
+            } else {
+                delete locData[key];
             }
         };
 
@@ -612,6 +715,8 @@ const Editor = (function () {
 
         if (document.getElementById('loc-hideLabel').checked) {
             locData.hideLabel = true;
+        } else {
+            delete locData.hideLabel;
         }
 
         return locData;
@@ -630,35 +735,33 @@ const Editor = (function () {
     function previewLocation() {
         if (!state.selectedLocId) return;
         const locData = getLocationFromForm();
-        if (state.selectedLocId === '__preview__') {
-            // Ghost preview for new/duplicate location
-            const previewData = { ...locData, id: '__preview__', _ghost: true };
-            const idx = state.locations.findIndex(l => l.id === '__preview__');
-            if (idx !== -1) state.locations[idx] = previewData;
-            else state.locations.push(previewData);
-            _debouncedRefresh();
-        } else {
-            const idx = state.locations.findIndex(l => l.id === state.selectedLocId);
-            if (idx !== -1) {
-                state.locations[idx] = locData;
-                _debouncedRefresh();
-            }
-        }
+        state.locationDraft = state.selectedLocId === '__preview__'
+            ? { ...locData, id: '__preview__', _ghost: true }
+            : locData;
+        setActionMessage('location-form-message', state.selectedLocId === '__preview__'
+            ? 'Previewing a new location. Save when it looks right.'
+            : 'Previewing changes. Save to commit or Cancel to revert.');
+        _debouncedRefresh();
     }
 
     function saveLocation(skipListRender = false) {
-        if (!skipListRender) pushUndo();
         const locData = getLocationFromForm();
+        const validationError = validateLocationData(locData);
+        if (validationError) {
+            setActionMessage('location-form-message', validationError, true);
+            return false;
+        }
+
+        if (!skipListRender) pushUndo();
         const id = locData.id;
 
         if (state.selectedLocId === '__preview__') {
-            // Promote ghost to real location
-            state.locations = state.locations.filter(l => l.id !== '__preview__');
             state.locations.push(locData);
             state.selectedLocId = id;
             state.isNewPreview = false;
         } else if (state.selectedLocId) {
-            const idx = state.locations.findIndex(l => l.id === state.selectedLocId);
+            const originalId = state.locationDraftOriginalId || state.selectedLocId;
+            const idx = state.locations.findIndex(l => l.id === originalId);
             if (idx !== -1) {
                 state.locations[idx] = locData;
             }
@@ -666,6 +769,9 @@ const Editor = (function () {
             state.locations.push(locData);
             state.selectedLocId = id;
         }
+
+        state.locationDraft = cloneData(locData);
+        state.locationDraftOriginalId = id;
 
         document.getElementById('loc-id').value = id;
 
@@ -674,20 +780,8 @@ const Editor = (function () {
             renderLocationList();
         }
 
-        // Show success message
-        const buttons = document.querySelectorAll('button');
-        const saveBtn = Array.from(buttons).find(btn =>
-            btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('saveLocation')
-        );
-        if (saveBtn) {
-            const origText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
-            saveBtn.style.background = '#0a0';
-            setTimeout(() => {
-                saveBtn.innerHTML = origText;
-                saveBtn.style.background = '';
-            }, 2000);
-        }
+        setActionMessage('location-form-message', 'Location saved.');
+        flashButton('btn-save-location', '<i class="fa-solid fa-check"></i> Saved!');
 
         refreshMap();
 
@@ -695,6 +789,7 @@ const Editor = (function () {
         exportData().catch(err => {
             console.error('Failed to auto-save to disk:', err);
         });
+        return true;
     }
 
     function deleteLocation() {
@@ -702,6 +797,8 @@ const Editor = (function () {
         if (confirm('Are you sure you want to delete this location?')) {
             pushUndo();
             state.locations = state.locations.filter(l => l.id !== state.selectedLocId);
+            state.locationDraft = null;
+            state.locationDraftOriginalId = null;
             cancelLocation();
             refreshMap();
             exportData().catch(err => console.error('Failed to auto-save to disk:', err));
@@ -709,13 +806,14 @@ const Editor = (function () {
     }
 
     function cancelLocation() {
-        // Remove ghost preview if exists
-        state.locations = state.locations.filter(l => l.id !== '__preview__');
         state.isNewPreview = false;
         state.selectedLocId = null;
         state.locationPlacementMode = false;
         state.moveLocationMode = false;
+        state.locationDraft = null;
+        state.locationDraftOriginalId = null;
         document.getElementById('location-form-area').style.display = 'none';
+        setActionMessage('location-form-message', '');
 
         // Clear dropdown
         const list = document.getElementById('location-list');
@@ -802,7 +900,8 @@ const Editor = (function () {
         const hasSavedSelection = !!state.selectedLocId && state.selectedLocId !== '__preview__';
         if (!hasSavedSelection || !state.moveLocationMode) return false;
 
-        saveLocation(true);
+        const saved = saveLocation(true);
+        if (!saved) return false;
         state.moveLocationMode = false;
         updateLocationPlacementUI();
         return true;
@@ -918,8 +1017,11 @@ const Editor = (function () {
 
     function selectRoad(id) {
         state.selectedRoadId = id;
-        const road = state.roads.find(r => r.id === id);
+        const road = getRoadById(id);
         if (!road) return;
+        state.roadDraft = cloneData(road);
+        state.roadDraftOriginalId = road.id;
+        setActionMessage('road-form-message', '');
 
         document.getElementById('road-form-area').style.display = 'block';
         document.getElementById('road-form-title').textContent = 'Edit Road';
@@ -1020,6 +1122,9 @@ const Editor = (function () {
         };
         state.roads.push(newRoadData);
         state.selectedRoadId = newId;
+        state.roadDraft = cloneData(newRoadData);
+        state.roadDraftOriginalId = newId;
+        setActionMessage('road-form-message', 'Road shell created. Add endpoints and waypoints, then save to finalize styling.');
 
         document.getElementById('road-form-area').style.display = 'block';
         document.getElementById('road-form-title').textContent = 'New Road';
@@ -1062,7 +1167,7 @@ const Editor = (function () {
         renderRoadPoints([]);
 
         // Auto save shell so we can add points
-        saveRoad(true);
+        saveRoad(true, { validateComplete: false, showFeedback: false, exportToDisk: false, pushHistory: false });
     }
 
     function renderRoadPoints(points) {
@@ -1145,6 +1250,7 @@ const Editor = (function () {
                             const y = parseFloat(yEl.value);
                             if (!isNaN(x) && !isNaN(y)) {
                                 road.points[idx] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
+                                syncRoadDraftFromState();
                                 refreshMap();
                             }
                         };
@@ -1168,7 +1274,7 @@ const Editor = (function () {
 
     function editWaypoint(idx) {
         if (!state.selectedRoadId) return;
-        const road = state.roads.find(r => r.id === state.selectedRoadId);
+        const road = getRoadById(state.selectedRoadId);
         if (road && road.points && idx > 0 && idx < road.points.length - 1 && Array.isArray(road.points[idx])) {
             state.editingWaypointIndex = idx;
             renderRoadPoints(road.points);
@@ -1177,7 +1283,7 @@ const Editor = (function () {
 
     function saveWaypoint(idx) {
         if (!state.selectedRoadId) return;
-        const road = state.roads.find(r => r.id === state.selectedRoadId);
+        const road = getRoadById(state.selectedRoadId);
         if (road && road.points && idx > 0 && idx < road.points.length - 1) {
             const xInput = document.getElementById(`waypoint-x-${idx}`);
             const yInput = document.getElementById(`waypoint-y-${idx}`);
@@ -1188,8 +1294,9 @@ const Editor = (function () {
                     road.points[idx] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
                     state.editingWaypointIndex = null;
                     renderRoadPoints(road.points);
+                    syncRoadDraftFromState();
                     refreshMap();
-                    saveRoad(false);
+                    saveRoad(false, { validateComplete: false, showFeedback: false });
                 }
             }
         }
@@ -1198,7 +1305,7 @@ const Editor = (function () {
     function cancelEditWaypoint() {
         state.editingWaypointIndex = null;
         if (state.selectedRoadId) {
-            const road = state.roads.find(r => r.id === state.selectedRoadId);
+            const road = getRoadById(state.selectedRoadId);
             if (road && road.points) {
                 renderRoadPoints(road.points);
             }
@@ -1207,7 +1314,7 @@ const Editor = (function () {
 
     function removeRoadPoint(idx) {
         if (!state.selectedRoadId) return;
-        const road = state.roads.find(r => r.id === state.selectedRoadId);
+        const road = getRoadById(state.selectedRoadId);
         if (road && road.points) {
             // Don't allow removing start or end locations - silently return
             if (idx === 0 || idx === road.points.length - 1) {
@@ -1216,15 +1323,16 @@ const Editor = (function () {
             road.points.splice(idx, 1);
             state.editingWaypointIndex = null; // Cancel any editing
             renderRoadPoints(road.points);
+            syncRoadDraftFromState();
             refreshMap();
             // Auto-save after removing point
-            saveRoad(false);
+            saveRoad(false, { validateComplete: false, showFeedback: false });
         }
     }
 
     function setRoadStartLocation(locationId) {
         if (!state.selectedRoadId) return;
-        const road = state.roads.find(r => r.id === state.selectedRoadId);
+        const road = getRoadById(state.selectedRoadId);
         if (road) {
             if (!road.points) road.points = [];
             if (road.points.length === 0) {
@@ -1233,14 +1341,15 @@ const Editor = (function () {
                 road.points[0] = locationId;
             }
             renderRoadPoints(road.points);
+            syncRoadDraftFromState();
             refreshMap();
-            saveRoad(false);
+            saveRoad(false, { validateComplete: false, showFeedback: false });
         }
     }
 
     function setRoadEndLocation(locationId) {
         if (!state.selectedRoadId) return;
-        const road = state.roads.find(r => r.id === state.selectedRoadId);
+        const road = getRoadById(state.selectedRoadId);
         if (road) {
             if (!road.points) road.points = [];
             // Ensure we have a start location first - silently return if not
@@ -1253,15 +1362,16 @@ const Editor = (function () {
                 road.points[road.points.length - 1] = locationId;
             }
             renderRoadPoints(road.points);
+            syncRoadDraftFromState();
             refreshMap();
-            saveRoad(false);
+            saveRoad(false, { validateComplete: false, showFeedback: false });
         }
     }
 
     function clearRoadPoints() {
         if (!state.selectedRoadId) return;
         if (confirm('Clear all waypoints from this road? (Start and end locations will remain)')) {
-            const road = state.roads.find(r => r.id === state.selectedRoadId);
+            const road = getRoadById(state.selectedRoadId);
             if (road && road.points) {
                 // Keep start and end locations, remove only waypoints
                 const start = road.points.length > 0 && typeof road.points[0] === 'string' ? road.points[0] : null;
@@ -1270,8 +1380,9 @@ const Editor = (function () {
                 if (start) road.points.push(start);
                 if (end && end !== start) road.points.push(end);
                 renderRoadPoints(road.points);
+                syncRoadDraftFromState();
                 refreshMap();
-                saveRoad(false);
+                saveRoad(false, { validateComplete: false, showFeedback: false });
             }
         }
     }
@@ -1280,7 +1391,11 @@ const Editor = (function () {
         let id = document.getElementById('road-id').value;
         if (!id) id = searchId || 'road-' + Date.now();
 
+        const existing = state.roads.find(r => r.id === searchId);
+        const baseRoad = cloneData(state.roadDraft || existing || {});
+
         const roadData = {
+            ...baseRoad,
             id: id,
             type: document.getElementById('road-type').value,
             curved: document.getElementById('road-curved').checked
@@ -1336,8 +1451,6 @@ const Editor = (function () {
         const startLocId = document.getElementById('road-start-location')?.value || '';
         const endLocId = document.getElementById('road-end-location')?.value || '';
 
-        const existing = state.roads.find(r => r.id === searchId);
-
         // If 'existing' is present, use its points array rather than freshly building one,
         // because handleMapClick writes directly to existing.points when clicking the map.
         if (existing && existing.points) {
@@ -1385,9 +1498,41 @@ const Editor = (function () {
             if (routePurpose) roadData.routePurpose = routePurpose;
             if (cargo) roadData.cargo = cargo;
             if (riskLevel) roadData.riskLevel = riskLevel;
+        } else {
+            delete roadData.shipName;
+            delete roadData.shipType;
+            delete roadData.captainName;
+            delete roadData.animationDuration;
+            delete roadData.boatColor;
+            delete roadData.boatSizeMultiplier;
+            delete roadData.routePurpose;
+            delete roadData.cargo;
+            delete roadData.riskLevel;
         }
 
         return { roadData, startLocId, endLocId, existing, id };
+    }
+
+    function validateRoadData(roadData, { validateComplete = true } = {}) {
+        if (!roadData.id || !roadData.id.trim()) {
+            return 'Road ID is required.';
+        }
+
+        const originalId = state.roadDraftOriginalId || state.selectedRoadId;
+        const duplicate = state.roads.find(road => road.id === roadData.id && road.id !== originalId);
+        if (duplicate) {
+            return `Road ID "${roadData.id}" already exists.`;
+        }
+
+        if (!validateComplete) return '';
+
+        if (!Array.isArray(roadData.points) || roadData.points.length < 2) {
+            return 'Roads must have both a start and end location before saving.';
+        }
+        if (typeof roadData.points[0] !== 'string' || typeof roadData.points[roadData.points.length - 1] !== 'string') {
+            return 'Roads must start and end at locations.';
+        }
+        return '';
     }
 
     function toggleShipDetails() {
@@ -1439,18 +1584,28 @@ const Editor = (function () {
 
     function previewRoad() {
         if (!state.selectedRoadId) return;
-        const idx = state.roads.findIndex(r => r.id === state.selectedRoadId);
-        if (idx !== -1) {
-            const { roadData } = getRoadFromForm(false, state.selectedRoadId);
-            state.roads[idx] = roadData;
-            _debouncedRefresh();
-        }
+        const { roadData } = getRoadFromForm(false, state.selectedRoadId);
+        state.roadDraft = roadData;
+        setActionMessage('road-form-message', 'Previewing road changes. Save to commit or Cancel to revert.');
+        _debouncedRefresh();
     }
 
-    function saveRoad(isNew = false) {
-        if (!isNew) pushUndo();
+    function saveRoad(isNew = false, options = {}) {
+        const {
+            validateComplete = !isNew,
+            showFeedback = !isNew,
+            exportToDisk = !isNew,
+            pushHistory = !isNew
+        } = options;
         const searchId = state.selectedRoadId || document.getElementById('road-id').value;
         const { roadData, startLocId, endLocId, existing, id } = getRoadFromForm(isNew, searchId);
+        const validationError = validateRoadData(roadData, { validateComplete });
+        if (validationError) {
+            setActionMessage('road-form-message', validationError, true);
+            return false;
+        }
+
+        if (pushHistory) pushUndo();
 
         // Find existing road to replace — try `existing` from getRoadFromForm first,
         // then fall back to searching by state.selectedRoadId (handles ID-change scenarios)
@@ -1475,6 +1630,8 @@ const Editor = (function () {
         }
 
         state.selectedRoadId = id;
+        state.roadDraft = cloneData(roadData);
+        state.roadDraftOriginalId = id;
         document.getElementById('road-id').value = id;
 
         if (!isNew) {
@@ -1485,40 +1642,19 @@ const Editor = (function () {
         // Update the display to reflect saved state
         renderRoadPoints(roadData.points);
 
-        console.log('Road saved:', roadData);
-        console.log('Road points:', roadData.points);
-        console.log('Start location exists:', state.locations.find(l => l.id === startLocId) ? 'YES' : 'NO');
-        console.log('End location exists:', state.locations.find(l => l.id === endLocId) ? 'YES' : 'NO');
-        console.log('Total roads in state:', state.roads.length);
-
-        // Show success message
-        if (!isNew) {
-            // Find the save button by looking for button with onclick containing saveRoad
-            const buttons = document.querySelectorAll('button');
-            const saveBtn = Array.from(buttons).find(btn =>
-                btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('saveRoad')
-            );
-            if (saveBtn) {
-                const origText = saveBtn.innerHTML;
-                saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
-                saveBtn.style.background = '#0a0';
-                setTimeout(() => {
-                    saveBtn.innerHTML = origText;
-                    saveBtn.style.background = '';
-                }, 2000);
-            }
+        if (showFeedback) {
+            setActionMessage('road-form-message', 'Road saved.');
+            flashButton('btn-save-road', '<i class="fa-solid fa-check"></i> Saved!');
         }
 
         refreshMap();
 
-        // Auto-save to disk when manually saving (not during auto-saves)
-        if (!isNew) {
-            // Save to disk automatically
+        if (exportToDisk) {
             exportData().catch(err => {
                 console.error('Failed to auto-save to disk:', err);
-                // Don't show error to user - they can manually save if needed
             });
         }
+        return true;
     }
 
     function deleteRoad() {
@@ -1526,6 +1662,8 @@ const Editor = (function () {
         if (confirm('Are you sure you want to delete this road?')) {
             pushUndo();
             state.roads = state.roads.filter(r => r.id !== state.selectedRoadId);
+            state.roadDraft = null;
+            state.roadDraftOriginalId = null;
             cancelRoad();
             refreshMap();
             exportData().catch(err => console.error('Failed to auto-save to disk:', err));
@@ -1534,16 +1672,20 @@ const Editor = (function () {
 
     function cancelRoad() {
         if (state.selectedRoadId) {
-            const road = state.roads.find(r => r.id === state.selectedRoadId);
+            const road = getRoadById(state.selectedRoadId);
             // Prune if this was a brand new road that was canceled before getting a valid start point
             if (road && (!road.points || road.points.length === 0 || typeof road.points[0] !== 'string')) {
                 state.roads = state.roads.filter(r => r.id !== state.selectedRoadId);
-                refreshMap();
             }
         }
         state.selectedRoadId = null;
+        state.roadDraft = null;
+        state.roadDraftOriginalId = null;
+        state.editingWaypointIndex = null;
         document.getElementById('road-form-area').style.display = 'none';
+        setActionMessage('road-form-message', '');
         renderRoadList();
+        refreshMap();
     }
 
     // --- Duplicate Location ---
@@ -1596,11 +1738,11 @@ const Editor = (function () {
         document.getElementById('loc-opacity').value = copy.opacity !== undefined ? copy.opacity : '';
         document.getElementById('loc-hideLabel').checked = !!copy.hideLabel;
 
-        // Set up ghost preview so duplicate is visible on map before first save
         state.selectedLocId = '__preview__';
         state.isNewPreview = true;
-        state.locations = state.locations.filter(l => l.id !== '__preview__');
-        state.locations.push({ ...copy, id: '__preview__', _ghost: true });
+        state.locationDraftOriginalId = null;
+        state.locationDraft = { ...copy, id: '__preview__', _ghost: true };
+        setActionMessage('location-form-message', 'Previewing a duplicated location. Save to create the new entry.');
         _debouncedRefresh();
     }
 
@@ -1743,35 +1885,8 @@ const Editor = (function () {
     // --- Utility ---
 
     function refreshMap() {
-        // Update CampaignData to return current state
-        window.CampaignData = {
-            init: async () => state,
-            getData: () => state,
-            getLocations: () => state.locations,
-            getRoads: () => state.roads
-        };
-
-        // Log current state for debugging
-        console.log('=== REFRESHING MAP ===');
-        console.log('State roads:', state.roads.length);
-        state.roads.forEach((road, idx) => {
-            console.log(`  Road ${idx}: ${road.id}, points: ${road.points?.length || 0}`, road.points);
-        });
-        console.log('State locations:', state.locations.length);
-
-        // We emit an event, MapOverlay handles the rest if it's listening to CampaignData
-        document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: state }));
-
-        // Force a small delay to ensure event is processed, then verify overlay updated
-        setTimeout(() => {
-            const overlay = document.getElementById('map-container-overlay');
-            if (overlay) {
-                const roadsInOverlay = overlay.querySelectorAll('.overlay-roads path').length;
-                console.log(`Overlay updated. Roads rendered: ${roadsInOverlay}`);
-            } else {
-                console.warn('Map overlay not found!');
-            }
-        }, 100);
+        const renderState = syncCampaignDataBridge();
+        document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: renderState }));
     }
 
     async function exportData() {
@@ -1793,11 +1908,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
 
         // If running on a local server, trigger the POST save
         if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-            const btn = document.querySelector('.btn-export');
-            const origText = btn ? btn.innerHTML : 'Save to Disk';
             try {
-                if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-
                 const response = await fetch('/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
@@ -1805,19 +1916,19 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
                 });
 
                 if (response.ok) {
-                    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
-                    setTimeout(() => { if (btn) btn.innerHTML = origText; }, 2000);
+                    return true;
                 } else {
                     throw new Error('Save failed');
                 }
             } catch (err) {
                 console.error("Save API failed. Falling back to download.", err);
                 downloadFile(str);
-                if (btn) btn.innerHTML = origText;
+                return false;
             }
         } else {
             // Fallback: Download blob
             downloadFile(str);
+            return false;
         }
     }
 
@@ -1854,6 +1965,10 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
             state.locations = data.locations || [];
             state.roads = data.roads || [];
             state.regions = data.regions || [];
+            state.locationDraft = null;
+            state.locationDraftOriginalId = null;
+            state.roadDraft = null;
+            state.roadDraftOriginalId = null;
 
             renderLists();
 
@@ -1871,21 +1986,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
             }
 
             refreshMap();
-
-            // Show success message
-            const buttons = document.querySelectorAll('button');
-            const reloadBtn = Array.from(buttons).find(btn =>
-                btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('reloadPage')
-            );
-            if (reloadBtn) {
-                const origText = reloadBtn.innerHTML;
-                reloadBtn.innerHTML = '<i class="fa-solid fa-check"></i> Reloaded!';
-                reloadBtn.style.background = '#0a0';
-                setTimeout(() => {
-                    reloadBtn.innerHTML = origText;
-                    reloadBtn.style.background = '';
-                }, 2000);
-            }
+            flashButton('btn-reload-data', '<i class="fa-solid fa-check"></i> Reloaded!');
         } catch (err) {
             console.error('Failed to reload map data:', err);
             alert('Failed to reload map data: ' + err.message);

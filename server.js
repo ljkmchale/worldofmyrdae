@@ -32,12 +32,16 @@ function createRuntimeConfig(options = {}) {
     fs.mkdirSync(requestedDataRoot, { recursive: true });
 
     const requestedPort = options.port !== undefined ? Number(options.port) : DEFAULT_PORT;
+    const envAutoStartComfy = /^(1|true|yes|on)$/i.test(process.env.MYRDAE_ENABLE_COMFY || '');
+    const autoStartComfy = options.autoStartComfy !== undefined
+        ? options.autoStartComfy !== false
+        : envAutoStartComfy;
 
     return {
         port: Number.isFinite(requestedPort) ? requestedPort : DEFAULT_PORT,
         bundledRootReal,
         dataRootReal: fs.realpathSync(requestedDataRoot),
-        autoStartComfy: options.autoStartComfy !== false
+        autoStartComfy
     };
 }
 

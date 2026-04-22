@@ -132,9 +132,9 @@
         <h2 class="editor-title">Map Editor</h2>
         <p class="editor-subtitle">Shape the atlas with the same dark-fantasy polish the map reveals in its tooltips.</p>
         <div class="editor-action-row">
-          <button class="btn btn-secondary btn-flex" onclick="Editor.refreshMap()"><i
+          <button id="btn-refresh-map" class="btn btn-secondary btn-flex" onclick="Editor.refreshMap()"><i
               class="fa-solid fa-sync"></i> Refresh Map</button>
-          <button class="btn btn-secondary btn-flex" onclick="Editor.reloadPage()"><i
+          <button id="btn-reload-data" class="btn btn-secondary btn-flex" onclick="Editor.reloadPage()"><i
               class="fa-solid fa-rotate-right"></i> Reload Data</button>
         </div>
         <div class="editor-action-row editor-action-row-tight">
@@ -320,7 +320,7 @@
           </details>
 
           <div class="editor-action-wrap">
-            <button class="btn btn-primary" onclick="Editor.saveLocation()" title="Save (Ctrl+S)">Save Location</button>
+            <button id="btn-save-location" class="btn btn-primary" onclick="Editor.saveLocation()" title="Save (Ctrl+S)">Save Location</button>
             <button id="btn-move-location" class="btn btn-secondary" onclick="Editor.toggleMoveLocationMode()" title="Select an existing saved location first">
               <i class="fa-solid fa-up-down-left-right"></i> Move Location
             </button>
@@ -328,6 +328,7 @@
             <button class="btn btn-secondary" onclick="Editor.cancelLocation()">Cancel</button>
             <button class="btn btn-danger" onclick="Editor.deleteLocation()" id="btn-del-loc">Delete</button>
           </div>
+          <div id="location-form-message" style="min-height:1.1rem; margin-top:0.55rem; font-size:0.76rem; color:#8f8576; font-style:italic;"></div>
         </div>
 
         <!-- Batch Region Rename -->
@@ -351,18 +352,6 @@
       <div id="tab-citymap" class="tab-content editor-scroll-panel" style="display: none;">
         <p class="editor-intro">Select a city, then drag pins to reposition them. Click Save when done.</p>
 
-        <div class="form-group" style="margin-bottom: 0.75rem;">
-          <label style="font-size:0.75rem; color:#888;">City</label>
-          <div style="display:flex; gap:0.5rem;">
-            <select id="city-select" class="form-control"
-              style="font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; flex:1;"
-              onchange="CityEditor.loadCity(this.value)">
-              <option value="">— Select a city —</option>
-            </select>
-            <button class="btn btn-secondary" onclick="AIWizard.open()" title="AI City Wizard" style="width:40px; padding:0;"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-          </div>
-        </div>
-
         <div class="form-group" style="margin-bottom:0.9rem;">
           <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">Create From World Location</label>
           <div style="display:flex; gap:0.5rem;">
@@ -371,10 +360,19 @@
               <option value="">-- Select a city or town --</option>
             </select>
             <button class="btn btn-secondary" onclick="CityEditor.createCity()" style="white-space:nowrap; font-size:0.8rem; padding:0.3rem 0.75rem;">
-              <i class="fa-solid fa-plus"></i> Create
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Open Wizard
             </button>
           </div>
           <div id="city-create-status" style="font-size:0.72rem; color:#888; margin-top:0.25rem; min-height:1rem; font-style:italic;"></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label style="font-size:0.75rem; color:#888;">City</label>
+            <select id="city-select" class="form-control"
+              style="font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; flex:1;"
+              onchange="CityEditor.loadCity(this.value)">
+              <option value="">— Select a city —</option>
+            </select>
         </div>
 
         <div id="city-world-link" style="display:none; margin-bottom:0.75rem;">
@@ -516,7 +514,7 @@
             <p style="margin:0 0 0.6rem; font-size:0.8rem; color:#4da6ff; font-family:'Cinzel',serif; letter-spacing:0.05em;">&#9875; Vessel Details</p>
             <div class="form-group">
               <label>Ship Name</label>
-              <input type="text" id="ship-name" class="form-control" placeholder="e.g. The Crimson Tide">
+              <input type="text" id="ship-name" class="form-control" placeholder="e.g. The Crimson Tide" oninput="Editor.previewRoad()">
             </div>
             <div class="form-group">
               <label>Ship Type</label>
@@ -533,32 +531,32 @@
                 <option value="Fishing Vessel">Fishing Vessel</option>
                 <option value="Other">Other…</option>
               </select>
-              <input type="text" id="ship-type-custom" class="form-control" style="display:none; margin-top:0.4rem;" placeholder="Custom ship type">
+              <input type="text" id="ship-type-custom" class="form-control" style="display:none; margin-top:0.4rem;" placeholder="Custom ship type" oninput="Editor.previewRoad()">
             </div>
             <div class="form-group">
               <label>Captain</label>
-              <input type="text" id="ship-captain" class="form-control" placeholder="e.g. Captain Mara Vex">
+              <input type="text" id="ship-captain" class="form-control" placeholder="e.g. Captain Mara Vex" oninput="Editor.previewRoad()">
             </div>
             <div class="form-group">
               <label>Animation Speed (seconds per loop)</label>
-              <input type="number" id="ship-duration" class="form-control" step="10" min="30" max="600" placeholder="90–120 (random default)">
+              <input type="number" id="ship-duration" class="form-control" step="10" min="30" max="600" placeholder="90–120 (random default)" oninput="Editor.previewRoad()">
             </div>
             <div class="form-group">
               <label>Boat Color</label>
               <div style="display:flex;gap:0.4rem;align-items:center;">
-                <input type="color" id="ship-color-picker" value="#4da6ff" style="width:2.5rem;height:2rem;padding:0.1rem;border:1px solid #444;border-radius:3px;background:#111;cursor:pointer;" oninput="document.getElementById('ship-color').value=this.value">
-                <input type="text" id="ship-color" class="form-control" placeholder="#4da6ff (default)" oninput="Editor.syncShipColorPicker()">
+                <input type="color" id="ship-color-picker" value="#4da6ff" style="width:2.5rem;height:2rem;padding:0.1rem;border:1px solid #444;border-radius:3px;background:#111;cursor:pointer;" oninput="document.getElementById('ship-color').value=this.value; Editor.previewRoad()">
+                <input type="text" id="ship-color" class="form-control" placeholder="#4da6ff (default)" oninput="Editor.syncShipColorPicker(); Editor.previewRoad()">
               </div>
             </div>
             <div class="form-group">
               <label>Boat Size Multiplier</label>
-              <input type="number" id="ship-size" class="form-control" step="0.1" min="0.3" max="5" placeholder="1.0 (default)">
+              <input type="number" id="ship-size" class="form-control" step="0.1" min="0.3" max="5" placeholder="1.0 (default)" oninput="Editor.previewRoad()">
             </div>
 
             <p style="margin:0.8rem 0 0.5rem; font-size:0.8rem; color:#4da6ff; font-family:'Cinzel',serif; letter-spacing:0.05em; border-top:1px solid rgba(30,144,255,0.2); padding-top:0.6rem;">Route Details</p>
             <div class="form-group">
               <label>Purpose</label>
-              <select id="route-purpose" class="form-control">
+              <select id="route-purpose" class="form-control" onchange="Editor.previewRoad()">
                 <option value="">— Select purpose —</option>
                 <option value="merchant">Merchant Trade</option>
                 <option value="military">Military Patrol</option>
@@ -570,11 +568,11 @@
             </div>
             <div class="form-group">
               <label>Cargo / Notes</label>
-              <input type="text" id="route-cargo" class="form-control" placeholder="e.g. Spices, textiles, weapons">
+              <input type="text" id="route-cargo" class="form-control" placeholder="e.g. Spices, textiles, weapons" oninput="Editor.previewRoad()">
             </div>
             <div class="form-group">
               <label>Risk Level</label>
-              <select id="route-risk" class="form-control">
+              <select id="route-risk" class="form-control" onchange="Editor.previewRoad()">
                 <option value="">— Select risk —</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -676,7 +674,7 @@
           </p>
 
           <div class="editor-action-wrap" style="margin-top: 1rem;">
-            <button class="btn btn-primary" onclick="Editor.saveRoad()" style="flex: 1;">
+            <button id="btn-save-road" class="btn btn-primary" onclick="Editor.saveRoad()" style="flex: 1;">
               <i class="fa-solid fa-floppy-disk"></i> Save Road
             </button>
             <button class="btn btn-secondary" onclick="Editor.cancelRoad()" style="flex: 1;">
@@ -691,6 +689,7 @@
             <i class="fa-solid fa-circle-info"></i> Points are auto-saved when added/removed. Click "Save Road" to
             finalize changes.
           </p>
+          <div id="road-form-message" style="min-height:1.1rem; margin-top:0.55rem; font-size:0.76rem; color:#8f8576; font-style:italic;"></div>
         </div>
       </div>
     </div>
@@ -1112,6 +1111,35 @@ function upsertCityMapEntry(city) {
   }
 }
 
+async function ensureCityScaffold(cityId, cityName) {
+  const scaffoldResponse = await fetch('/api/cities/scaffold', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cityId, cityName })
+  });
+  const scaffoldText = await scaffoldResponse.text();
+  let scaffoldRes = null;
+
+  try {
+    scaffoldRes = scaffoldText ? JSON.parse(scaffoldText) : {};
+  } catch (parseErr) {
+    if (scaffoldText.includes('File Not Found')) {
+      throw new Error('City scaffold endpoint was not found. The server is likely running an older build and needs to be restarted.');
+    }
+    throw new Error(`City scaffold request returned non-JSON content (${scaffoldResponse.status || 'unknown status'}).`);
+  }
+
+  if (!scaffoldResponse.ok) {
+    throw new Error(scaffoldRes.error || `City scaffold request failed (${scaffoldResponse.status}).`);
+  }
+
+  if (!scaffoldRes.success) {
+    throw new Error(scaffoldRes.error || 'Failed to create city scaffold');
+  }
+
+  return scaffoldRes;
+}
+
 const CityEditor = (function () {
   let cityData    = null;  // deep copy of the active city entry
   let activeCityId = null;
@@ -1167,14 +1195,13 @@ const CityEditor = (function () {
 
     if (status) {
       status.textContent = locations.length
-        ? 'Pick a world location to create and auto-link its city map.'
+        ? 'Pick a world location, then open the wizard to create and auto-link its city map.'
         : 'All city and town locations already have city maps.';
     }
   }
 
   async function createCity() {
     const createSel = document.getElementById('city-create-select');
-    const status = document.getElementById('city-save-status');
     const createStatus = document.getElementById('city-create-status');
     const locs = (Editor.state && Editor.state.locations) || [];
     const locationId = createSel ? createSel.value : '';
@@ -1200,102 +1227,8 @@ const CityEditor = (function () {
       return;
     }
 
-    const newCity = {
-      id: cityId,
-      name: cityName,
-      image: buildCityImagePath(cityId),
-      previewImage: buildCityImagePath(cityId),
-      pins: [],
-      namedLabels: [],
-    };
-
-    if (status) {
-      status.textContent = 'Creating city scaffold...';
-      status.style.color = '#888';
-    }
-    if (createStatus) createStatus.textContent = 'Creating and linking city map...';
-
-    try {
-      const scaffoldResponse = await fetch('/api/cities/scaffold', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cityId, cityName })
-      });
-      const scaffoldText = await scaffoldResponse.text();
-      let scaffoldRes = null;
-
-      try {
-        scaffoldRes = scaffoldText ? JSON.parse(scaffoldText) : {};
-      } catch (parseErr) {
-        if (scaffoldText.includes('File Not Found')) {
-          throw new Error('City scaffold endpoint was not found. The server is likely running an older build and needs to be restarted.');
-        }
-        throw new Error(`City scaffold request returned non-JSON content (${scaffoldResponse.status || 'unknown status'}).`);
-      }
-
-      if (!scaffoldResponse.ok) {
-        throw new Error(scaffoldRes.error || `City scaffold request failed (${scaffoldResponse.status}).`);
-      }
-
-      if (!scaffoldRes.success) {
-        throw new Error(scaffoldRes.error || 'Failed to create city scaffold');
-      }
-
-      upsertCityMapEntry(newCity);
-      window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
-      window.CITY_MAPS_REGISTRY[cityId] = {
-        ...newCity,
-        pins: [],
-        namedLabels: [],
-      };
-
-      const [citySaveRes, indexSaveRes] = await Promise.all([
-        fetch('/save-city/' + cityId, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: serializeCityFileForDisk(newCity)
-        }).then(r => r.json()),
-        fetch('/save-city-map', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: serializeCityIndexForDisk(CITY_MAPS)
-        }).then(r => r.json())
-      ]);
-
-      if (!citySaveRes.success || !indexSaveRes.success) {
-        throw new Error(citySaveRes.error || indexSaveRes.error || 'Failed to save new city');
-      }
-
-      sourceLoc.cityMap = 'city-viewer.html?city=' + cityId;
-      await Editor.exportData();
-
-      appendCityOption(cityId, cityName, true);
-      populateCreateCitySelect();
-
-      const hasImage = await imageAssetExists(newCity.image);
-      if (hasImage) {
-        await loadCity(cityId);
-      }
-
-      if (status) {
-        status.textContent = hasImage
-          ? 'City scaffold created and linked to the world map location.'
-          : 'City scaffold created and linked. Generate or add the city image before opening it in City Map view.';
-        status.style.color = '#4caf50';
-      }
-      if (createStatus) {
-        createStatus.textContent = hasImage
-          ? 'Created from ' + cityName + ' and linked automatically.'
-          : 'Created from ' + cityName + '. The city file exists, but its image does not yet.';
-      }
-    } catch (err) {
-      if (status) {
-        status.textContent = 'Create failed: ' + err.message;
-        status.style.color = '#e44';
-      }
-      if (createStatus) createStatus.textContent = 'Create failed: ' + err.message;
-      alert('Failed to create city: ' + err.message);
-    }
+    if (createStatus) createStatus.textContent = 'Opening wizard for ' + cityName + '...';
+    AIWizard.open({ locationId });
   }
 
   function ensurePinKeys() {
@@ -2027,6 +1960,7 @@ const CityEditor = (function () {
     const AIWizard = (function() {
       let pins = [];
       let currentStep = 1;
+      let sourceLocationId = '';
 
       function findWorldLocationForCity(cityId, allLocations) {
         if (!cityId) return null;
@@ -2085,53 +2019,21 @@ const CityEditor = (function () {
         return 'Invent a unique settlement layout that matches the provided brief rather than echoing unrelated reference compounds or site plans.';
       }
 
-      async function uploadFirstAvailableReference(host, cityId) {
-        const localCandidates = [
-          `images/cities/${cityId}/sketch.png`,
-          `images/cities/${cityId}/sketch.PNG`,
-          `images/cities/${cityId}/scetch.png`,
-          `images/cities/${cityId}/scetch.PNG`,
-          `images/cities/${cityId}/${cityId}.png`,
-          `images/cities/${cityId}/${cityId}.PNG`,
-          `images/cities/${cityId}/${cityId}.jpg`,
-          `images/cities/${cityId}/${cityId}.JPG`,
-          `images/cities/${cityId}/${cityId}.jpeg`,
-          `images/cities/${cityId}/${cityId}.JPEG`,
-          `images/cities/${cityId}/locations-reference.png`,
-          `images/cities/${cityId}/locations-reference.PNG`
-        ];
-
-        for (const localPath of localCandidates) {
-          try {
-            const upRes = await fetch('/api/ai/upload-to-comfy', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ host, localPath })
-            }).then(r => r.json());
-
-            if (upRes && upRes.name) {
-              return {
-                filename: upRes.name,
-                localPath,
-                isStyleFallback: false
-              };
-            }
-          } catch (e) {
-            // Try the next candidate.
-          }
-        }
-
-        return null;
-      }
-
-      function open() {
+      function open(options = {}) {
         console.log('[AI] Opening Wizard...');
         document.getElementById('ai-wizard-modal').style.display = 'flex';
 
         let foundLoc = null;
         const allLocations = (typeof CampaignData !== 'undefined') ? CampaignData.getLocations() : [];
+        const requestedLocationId = typeof options === 'string' ? options : (options.locationId || '');
 
-        if (typeof Editor !== 'undefined' && Editor.state && Editor.state.selectedLocId) {
+        sourceLocationId = '';
+
+        if (requestedLocationId) {
+            foundLoc = allLocations.find(l => l.id === requestedLocationId) || null;
+        }
+
+        if (!foundLoc && typeof Editor !== 'undefined' && Editor.state && Editor.state.selectedLocId) {
             foundLoc = allLocations.find(l => l.id === Editor.state.selectedLocId);
         }
 
@@ -2162,71 +2064,20 @@ const CityEditor = (function () {
             const cleanName = foundLoc.name.replace(/\\n/g, ' ').replace(/\n/g, ' ');
             document.getElementById('ai-city-name').value = cleanName;
             document.getElementById('ai-city-id').value = foundLoc.id;
+            sourceLocationId = foundLoc.id;
             if (foundLoc.link && foundLoc.link.includes('docs.google.com')) {
                 document.getElementById('ai-google-doc-url').value = foundLoc.link;
                 document.getElementById('ai-gazetteer-text').value = '';
             }
+        } else {
+            document.getElementById('ai-city-name').value = '';
+            document.getElementById('ai-city-id').value = '';
+            document.getElementById('ai-google-doc-url').value = '';
+            document.getElementById('ai-gazetteer-text').value = '';
         }
 
         // Leave fields blank if no location was auto-detected — let user fill them in
         nextStep(1);
-      }
-
-      function formatComfyError(errorPayload, usedCustomWorkflow) {
-        if (!errorPayload) {
-          return 'ComfyUI returned an unknown error.';
-        }
-
-        if (typeof errorPayload === 'string') {
-          if (errorPayload.includes('Prompt outputs failed validation')) {
-            return usedCustomWorkflow
-              ? 'ComfyUI rejected the current workflow JSON. It likely references missing nodes, models, or invalid connections. Clear the Workflow JSON box to use the built-in default workflow, then try again.'
-              : 'ComfyUI rejected the generated workflow. This usually means a required checkpoint, ControlNet model, or node is missing in ComfyUI.';
-          }
-          return errorPayload;
-        }
-
-        const message = errorPayload.message || errorPayload.type || 'ComfyUI returned an error.';
-        const details = errorPayload.details || errorPayload.errors || errorPayload.extra_info || null;
-        const detailText = details ? JSON.stringify(details) : '';
-
-        if (`${message} ${detailText}`.includes('Prompt outputs failed validation')) {
-          return usedCustomWorkflow
-            ? `ComfyUI rejected the current workflow JSON. It likely references missing nodes, models, or invalid connections. Clear the Workflow JSON box to use the built-in default workflow, then try again.${detailText ? ' Details: ' + detailText : ''}`
-            : `ComfyUI rejected the generated workflow. This usually means a required checkpoint, ControlNet model, or node is missing in ComfyUI.${detailText ? ' Details: ' + detailText : ''}`;
-        }
-
-        return detailText ? `${message} Details: ${detailText}` : message;
-      }
-
-      async function fetchAvailableComfyCheckpoints(host) {
-        const res = await fetch(`/api/ai/comfy-proxy?host=${encodeURIComponent(host)}&endpoint=/object_info`);
-        const data = await res.json();
-        const options = data?.CheckpointLoaderSimple?.input?.required?.ckpt_name?.[0];
-        return Array.isArray(options) ? options : [];
-      }
-
-      async function resolveComfyCheckpointName(host, requestedName) {
-        const installed = await fetchAvailableComfyCheckpoints(host);
-        if (!installed.length) {
-          return { modelName: requestedName, installed, substituted: false };
-        }
-
-        if (requestedName && installed.includes(requestedName)) {
-          return { modelName: requestedName, installed, substituted: false };
-        }
-
-        const lowerRequested = (requestedName || '').toLowerCase();
-        const caseInsensitiveMatch = installed.find(name => name.toLowerCase() === lowerRequested);
-        if (caseInsensitiveMatch) {
-          return { modelName: caseInsensitiveMatch, installed, substituted: caseInsensitiveMatch !== requestedName };
-        }
-
-        const preferredMatch = installed.find(name => /realistic[_ -]?vision/i.test(name))
-          || installed.find(name => /dreamshaper/i.test(name))
-          || installed[0];
-
-        return { modelName: preferredMatch, installed, substituted: preferredMatch !== requestedName };
       }
 
       function close() { document.getElementById('ai-wizard-modal').style.display = 'none'; }
@@ -2432,6 +2283,9 @@ const CityEditor = (function () {
       async function generate() {
         const cityId = document.getElementById('ai-city-id').value;
         const cityName = document.getElementById('ai-city-name').value;
+        const locs = (Editor.state && Editor.state.locations) || [];
+        const linkedLocationId = sourceLocationId || cityId;
+        const sourceLoc = locs.find(loc => loc.id === linkedLocationId) || null;
 
         nextStep(4);
         const status = document.getElementById('ai-status-text');
@@ -2444,6 +2298,10 @@ const CityEditor = (function () {
           if (!cityName.trim()) {
             throw new Error('Enter a City Name before generating.');
           }
+          status.textContent = "Creating city scaffold...";
+          progress.style.width = "12%";
+          await ensureCityScaffold(cityId, cityName.trim());
+
           status.textContent = "Checking for local city artwork...";
           progress.style.width = "20%";
           const resolvedImage = await resolvePreferredCityImage(cityId);
@@ -2485,13 +2343,51 @@ const CityEditor = (function () {
             throw new Error(citySaveRes.error || indexSaveRes.error || 'Failed to save generated city');
           }
 
+          if (sourceLoc) {
+            const targetUrl = 'city-viewer.html?city=' + cityId;
+            locs.forEach(loc => {
+              if (loc.cityMap === targetUrl && loc.id !== sourceLoc.id) delete loc.cityMap;
+            });
+            sourceLoc.cityMap = targetUrl;
+            status.textContent = "Linking world location...";
+            progress.style.width = "97%";
+            await Editor.exportData();
+          }
+
+          appendCityOption(cityId, cityName.trim(), true);
+          if (typeof CityEditor !== 'undefined' && typeof CityEditor.reloadData === 'function') {
+            await CityEditor.reloadData();
+          }
+
+          const createStatus = document.getElementById('city-create-status');
+          const saveStatus = document.getElementById('city-save-status');
+          const hasImage = await imageAssetExists(newCity.image);
+          if (createStatus) {
+            createStatus.textContent = sourceLoc
+              ? (hasImage
+                ? 'Created from ' + cityName.trim() + ' and linked automatically.'
+                : 'Created from ' + cityName.trim() + ' and linked automatically. Add artwork when ready.')
+              : (hasImage
+                ? 'Created city files. Link it to a world location if needed.'
+                : 'Created city files. Add artwork and link it to a world location when ready.');
+          }
+          if (saveStatus) {
+            saveStatus.textContent = hasImage
+              ? 'City created successfully.'
+              : 'City scaffold created successfully. Add the city image when ready.';
+            saveStatus.style.color = '#4caf50';
+          }
+
           status.textContent = "Done!";
           progress.style.width = "100%";
           setTimeout(async () => {
             close();
             await CityEditor.open();
-            await CityEditor.loadCity(cityId);
-            document.getElementById('city-select').value = cityId;
+            if (hasImage) {
+              await CityEditor.loadCity(cityId);
+            }
+            const citySelect = document.getElementById('city-select');
+            if (citySelect) citySelect.value = cityId;
           }, 1500);
 
         } catch (err) {
