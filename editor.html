@@ -431,7 +431,21 @@
           </div>
           <div class="form-group">
             <label>Type</label>
-            <input type="text" id="city-pin-type" class="form-control" oninput="CityEditor.updateFromForm()">
+            <input type="text" id="city-pin-type" class="form-control" list="city-pin-type-options" oninput="CityEditor.updateFromForm()">
+            <datalist id="city-pin-type-options">
+              <option value="poi"></option>
+              <option value="ruins"></option>
+              <option value="landmark"></option>
+              <option value="district"></option>
+              <option value="gate"></option>
+              <option value="temple"></option>
+              <option value="inn"></option>
+              <option value="shop"></option>
+              <option value="market"></option>
+              <option value="garrison"></option>
+              <option value="stables"></option>
+              <option value="warehouse"></option>
+            </datalist>
           </div>
           <div class="form-group">
             <label>Description</label>
@@ -1186,7 +1200,7 @@ const CityEditor = (function () {
         .filter(Boolean)
     );
     return locs
-      .filter(loc => ['city', 'small-city', 'town'].includes(String(loc.type || '').toLowerCase()))
+      .filter(loc => !['nature', 'region', 'water', 'river'].includes(String(loc.type || '').toLowerCase()))
       .filter(loc => {
         const combined = `${loc.id || ''} ${loc.name || ''} ${loc.description || ''} ${loc.region || ''}`.toLowerCase();
         return !/(^|[\s-])(crossroads?|junction|crossroad|road|path|river|route|trail|bridge|pass|nature|forest|woods?|marsh|swamp|lake|sea|ocean|bay|coast|water|region|territory)([\s-]|$)/.test(combined);
@@ -1202,7 +1216,7 @@ const CityEditor = (function () {
     if (!sel) return;
 
     const locations = getEligibleWorldLocations();
-    sel.innerHTML = '<option value="">-- Select a city or town --</option>';
+    sel.innerHTML = '<option value="">-- Select a world location --</option>';
     locations.forEach(loc => {
       const opt = document.createElement('option');
       opt.value = loc.id;
@@ -1537,6 +1551,54 @@ const CityEditor = (function () {
     renderPins();
   }
 
+  function normalizeCityPinType(type) {
+    return String(type || '').trim().toLowerCase();
+  }
+
+  function getCityPinMarkerStyle(loc, isNamed, isSelected) {
+    const type = normalizeCityPinType(loc.type);
+    const size = loc.size || 1.0;
+    const style = {
+      type,
+      size,
+      radius: (isNamed ? 10 : 14) * size,
+      fill: isSelected ? '#d4af37' : (isNamed ? 'rgba(212,175,55,0.9)' : 'rgba(12,9,5,0.88)'),
+      stroke: 'rgba(212,175,55,0.85)',
+      textFill: '#f0e8d0',
+      textStroke: 'rgba(0,0,0,0.8)',
+      shape: 'circle'
+    };
+
+    if (type === 'ruins') {
+      style.shape = 'diamond';
+      style.fill = isSelected ? '#d4af37' : 'rgba(69,55,44,0.92)';
+      style.stroke = isSelected ? 'rgba(244,215,120,0.95)' : 'rgba(201,155,89,0.9)';
+      style.textFill = '#f5e9cf';
+      style.textStroke = 'rgba(20,12,7,0.9)';
+    }
+
+    return style;
+  }
+
+  function appendCityPinMarkerShape(svgEl, group, markerStyle, total) {
+    const strokeWidth = (2 / total).toFixed(2);
+    if (markerStyle.shape === 'diamond') {
+      const r = markerStyle.radius;
+      group.appendChild(svgEl('polygon', {
+        points: `0,${-r} ${r},0 0,${r} ${-r},0`,
+        fill: markerStyle.fill,
+        stroke: markerStyle.stroke,
+        'stroke-width': strokeWidth
+      }));
+      return;
+    }
+
+    group.appendChild(svgEl('circle', {
+      cx: 0, cy: 0, r: markerStyle.radius,
+      fill: markerStyle.fill, stroke: markerStyle.stroke, 'stroke-width': strokeWidth
+    }));
+  }
+
   // ── Add new pin at coordinates ─────────────────────────────
   function addPin(x, y) {
     if (!cityData) return;
@@ -1630,8 +1692,8 @@ const CityEditor = (function () {
     function makePin(loc, key, isNamed) {
       const px = (loc.x / 100) * img.naturalWidth;
       const py = (loc.y / 100) * img.naturalHeight;
-      const sz = loc.size || 1.0;
-      const r  = (isNamed ? 10 : 14) * sz;
+      const markerStyle = getCityPinMarkerStyle(loc, isNamed, selectedKey === key);
+      const r  = markerStyle.radius;
       
       // Position the pin group in screen space, and let it scale with 'total'
       const g = svgEl('g', {
@@ -1642,29 +1704,25 @@ const CityEditor = (function () {
       g.dataset.key = key;
 
       const isSelected = selectedKey === key;
-      const fill   = isSelected ? '#d4af37' : (isNamed ? 'rgba(212,175,55,0.9)' : 'rgba(12,9,5,0.88)');
-      const stroke = 'rgba(212,175,55,0.85)';
 
-      const circle = svgEl('circle', {
-        cx: 0, cy: 0, r: r,
-        fill: fill, stroke: stroke, 'stroke-width': (2 / total).toFixed(2)
-      });
+      appendCityPinMarkerShape(svgEl, g, markerStyle, total);
       if (isSelected) {
-          circle.setAttribute('style', `filter: drop-shadow(0 0 ${8/total}px #d4af37);`);
+          g.setAttribute('style', `cursor:grab; pointer-events:all; filter: drop-shadow(0 0 ${8/total}px #d4af37);`);
       }
-      g.appendChild(circle);
 
       if (!isNamed) {
         const t = svgEl('text', {
           x: 0, y: 0, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-          fill: '#f0e8d0', 'font-family': 'Cinzel', 'font-size': Math.round(14 * sz) + 'px'
+          fill: markerStyle.textFill, stroke: markerStyle.textStroke, 'stroke-width': (1.1 / total).toFixed(2),
+          'paint-order': 'stroke',
+          'font-family': 'Cinzel', 'font-size': Math.round(14 * markerStyle.size) + 'px'
         });
         t.textContent = loc.n;
         g.appendChild(t);
       } else {
         const t = svgEl('text', {
           x: 0, y: r + 15, 'text-anchor': 'middle',
-          fill: '#d4af37', 'font-family': 'Cinzel', 'font-size': Math.round(12 * sz) + 'px',
+          fill: '#d4af37', 'font-family': 'Cinzel', 'font-size': Math.round(12 * markerStyle.size) + 'px',
           stroke: 'rgba(0,0,0,0.8)', 'stroke-width': (3 / total).toFixed(2), 'paint-order': 'stroke'
         });
         t.textContent = loc.name;

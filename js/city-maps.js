@@ -28,4 +28,6 @@ const CITY_MAPS = [
   { id: "farnsby-port"            , name: "Farnsby Port"            , image: "images/cities/farnsby-port/farnsby-port.png", previewImage: "images/cities/farnsby-port/farnsby-port.png" },
   { id: "dunduar"                 , name: "Dunduar"                 , image: "images/cities/dunduar/dunduar.png", previewImage: "images/cities/dunduar/dunduar.png" },
   { id: "nuwharf"                 , name: "Nuwharf"                 , image: "images/cities/nuwharf/nuwharf.png", previewImage: "images/cities/nuwharf/nuwharf.png" },
+  { id: "talbesar"                , name: "Tal'besar Ruins"         , image: "images/cities/talbesar/talbesar.png", previewImage: "images/cities/talbesar/talbesar.png" },
+  { id: "scarbrook"               , name: "Scarbrook"               , image: "images/cities/scarbrook/scarbrook.png", previewImage: "images/cities/scarbrook/scarbrook.png" },
 ];

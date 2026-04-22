@@ -6557,7 +6557,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -65,
-            "labelOffsetY": -5
+            "labelOffsetY": -5,
+            "cityMap": "city-viewer.html?city=talbesar"
         },
         {
             "id": "scarbrook",
@@ -6575,7 +6576,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -65,
             "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=scarbrook"
         },
         {
             "id": "eye-of-arbescar",

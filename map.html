@@ -1031,7 +1031,7 @@
           <!-- Flash overlay -->
           <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%);"></div>
           <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
-            <!-- Depth-map layer is inserted here at runtime (z-index: 1) -->
+            <!-- Water repaint layer is inserted here at runtime (z-index: 1) -->
             <!-- Main map -->
             <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
             <!-- Pre-Awakening map: z-index 15 — covers current map + SVG overlay during Awakening animation -->
@@ -1057,7 +1057,7 @@
   <script src="js/world-clock.js"></script>
   <script src="js/boat-animations.js"></script>
   <script src="js/location-search.js"></script>
-  <script src="js/depth-map.js"></script>
+  <script src="js/water-repaint.js"></script>
   <script src="js/coord-grid.js"></script>
   <script src="js/map-measure.js"></script>
 
@@ -1073,7 +1073,7 @@
       MapOverlay.init('map-container', 'map-image');
       DragonFlyover.init('map-container', 'map-image');
       LocationSearch.init('map-container');
-      DepthMapRenderer.init('map-image', 'map-layer-group');
+      WaterRepaintRenderer.init('map-image');
       CoordGrid.init('map-container', 'map-image');
       window.mapMeasure = MapMeasureTool.init({
         containerId: 'map-container',

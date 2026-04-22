@@ -478,11 +478,65 @@ function _initCity(_city) {
   mapImg.alt   = 'City of ' + _city.name;
 
   const ttImg  = document.getElementById('tt-image');
-  ttImg.src    = _city.previewImage || _city.image;
+  const CITY_DEFAULT_TOOLTIP_IMAGE = _city.previewImage || _city.image;
+  ttImg.src    = CITY_DEFAULT_TOOLTIP_IMAGE;
   ttImg.alt    = _city.name;
 
   const NAMED_LOCATIONS    = _city.namedLabels || [];
   const NUMBERED_LOCATIONS = _city.pins        || [];
+  const CITY_TOOLTIP_TYPE_IMAGES = {
+    poi: 'images/tooltips/city-types/poi.png',
+    tavern: 'images/tooltips/city-types/tavern.png',
+    shop: 'images/tooltips/city-types/shop.png',
+    forge: 'images/tooltips/city-types/forge.png',
+    temple: 'images/tooltips/city-types/temple.png',
+    market: 'images/tooltips/city-types/market.png',
+    harbor: 'images/tooltips/city-types/harbor.png',
+    gate: 'images/tooltips/city-types/gate.png',
+    stables: 'images/tooltips/city-types/stables.png',
+    fortress: 'images/tooltips/city-types/fortress.png',
+    archive: 'images/tooltips/city-types/archive.png',
+    tomb: 'images/tooltips/city-types/tomb.png',
+    vault: 'images/tooltips/city-types/vault.png',
+    ruins: 'images/tooltips/city-types/ruins.png'
+  };
+
+  function normalizeCityTooltipType(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function getCityTypeTooltipImage(loc) {
+    if (!loc) return CITY_DEFAULT_TOOLTIP_IMAGE;
+    if (loc.tooltipImage) return loc.tooltipImage;
+
+    const type = normalizeCityTooltipType(loc.type);
+    if (!type) return CITY_DEFAULT_TOOLTIP_IMAGE;
+
+    if (type.includes('ruin')) return CITY_TOOLTIP_TYPE_IMAGES.ruins;
+    if (type.includes('tavern') || type.includes('inn') || type.includes('lodge') || type.includes('pub') || type.includes('brothel')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.tavern;
+    }
+    if (type.includes('shop') || type.includes('store') || type.includes('tailor') || type.includes('food') || type.includes('medical')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.shop;
+    }
+    if (type.includes('smith') || type.includes('forge') || type.includes('tannery') || type.includes('fletch') || type.includes('carpentry') || type.includes('lumber')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.forge;
+    }
+    if (type.includes('temple') || type.includes('shrine') || type.includes('oratory') || type.includes('seer')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.temple;
+    }
+    if (type.includes('market') || type.includes('bathhouse')) return CITY_TOOLTIP_TYPE_IMAGES.market;
+    if (type.includes('harbor') || type === 'sea' || type === 'water' || type === 'river') return CITY_TOOLTIP_TYPE_IMAGES.harbor;
+    if (type.includes('gate')) return CITY_TOOLTIP_TYPE_IMAGES.gate;
+    if (type.includes('stable')) return CITY_TOOLTIP_TYPE_IMAGES.stables;
+    if (type.includes('garrison') || type.includes('keep') || type.includes('tower') || type.includes('stronghold') || type.includes('palace') || type.includes('hall') || type.includes('arena')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.fortress;
+    }
+    if (type.includes('library') || type.includes('college') || type.includes('university')) return CITY_TOOLTIP_TYPE_IMAGES.archive;
+    if (type.includes('cemetery') || type.includes('tomb')) return CITY_TOOLTIP_TYPE_IMAGES.tomb;
+    if (type.includes('bank') || type.includes('vault') || type.includes('warehouse')) return CITY_TOOLTIP_TYPE_IMAGES.vault;
+    return CITY_TOOLTIP_TYPE_IMAGES.poi;
+  }
 
   // ── MAP CONTROLLER ─────────────────────────────────────────
   (function () {
@@ -526,10 +580,21 @@ function _initCity(_city) {
       const iw = s.bw * s.scale;
       const ih = s.bh * s.scale;
       const M = 60;
-      s.pointX = Math.min(s.pointX,  M);
-      s.pointX = Math.max(s.pointX,  s.cw - iw - M);
-      s.pointY = Math.min(s.pointY,  M);
-      s.pointY = Math.max(s.pointY,  s.ch - ih - M);
+
+      // Keep undersized maps centered instead of snapping them to one side.
+      if (iw <= s.cw - (M * 2)) {
+        s.pointX = (s.cw - iw) / 2;
+      } else {
+        s.pointX = Math.min(s.pointX,  M);
+        s.pointX = Math.max(s.pointX,  s.cw - iw - M);
+      }
+
+      if (ih <= s.ch - (M * 2)) {
+        s.pointY = (s.ch - ih) / 2;
+      } else {
+        s.pointY = Math.min(s.pointY,  M);
+        s.pointY = Math.max(s.pointY,  s.ch - ih - M);
+      }
     }
 
     // ── RENDER ────────────────────────────────────────────────
@@ -744,14 +809,45 @@ function _initCity(_city) {
       });
     }
 
+    function normalizeCityPinType(type) {
+      return String(type || '').trim().toLowerCase();
+    }
+
+    function getCityPinMarkerStyle(loc) {
+      const type = normalizeCityPinType(loc.type);
+      const size = loc.size || 1.0;
+      const style = {
+        type,
+        size,
+        radius: 14 * size,
+        fill: 'rgba(12,9,5,0.84)',
+        stroke: 'rgba(212,175,55,0.82)',
+        haloStroke: 'rgba(212,175,55,0.35)',
+        textFill: '#f0e8d0',
+        textStroke: 'rgba(0,0,0,0.8)',
+        shape: 'circle'
+      };
+
+      if (type === 'ruins') {
+        style.shape = 'diamond';
+        style.fill = 'rgba(69,55,44,0.92)';
+        style.stroke = 'rgba(201,155,89,0.92)';
+        style.haloStroke = 'rgba(201,155,89,0.42)';
+        style.textFill = '#f5e9cf';
+        style.textStroke = 'rgba(20,12,7,0.92)';
+      }
+
+      return style;
+    }
+
     function buildNumberedMarkers() {
       const layer = document.getElementById('numbered-markers-layer');
       layer.innerHTML = '';
       NUMBERED_LOCATIONS.forEach(loc => {
         const px  = (loc.x / 100) * s.imgW;
         const py  = (loc.y / 100) * s.imgH;
-        const sz  = (loc.size || 1.0);
-        const r   = 14 * sz;
+        const markerStyle = getCityPinMarkerStyle(loc);
+        const r   = markerStyle.radius;
         const grp = svgEl('g', { style: 'pointer-events:all; cursor:pointer;' });
         grp.dataset.px = px;
         grp.dataset.py = py;
@@ -761,15 +857,28 @@ function _initCity(_city) {
         }
         grp.appendChild(svgEl('circle', {
           cx: px, cy: py, r: r * 1.15,
-          fill: 'none', stroke: 'rgba(212,175,55,0.35)', 'stroke-width': '1',
+          fill: 'none', stroke: markerStyle.haloStroke, 'stroke-width': '1',
         }));
-        grp.appendChild(svgEl('circle', {
-          cx: px, cy: py, r: r,
-          fill: 'rgba(12,9,5,0.84)', stroke: 'rgba(212,175,55,0.82)', 'stroke-width': '1.5',
-        }));
+        if (markerStyle.shape === 'diamond') {
+          grp.appendChild(svgEl('polygon', {
+            points: `${px},${py-r} ${px+r},${py} ${px},${py+r} ${px-r},${py}`,
+            fill: markerStyle.fill,
+            stroke: markerStyle.stroke,
+            'stroke-width': '1.5'
+          }));
+        } else {
+          grp.appendChild(svgEl('circle', {
+            cx: px, cy: py, r: r,
+            fill: markerStyle.fill, stroke: markerStyle.stroke, 'stroke-width': '1.5',
+          }));
+        }
         const num = svgEl('text', {
           x: px, y: py, class: 'num-label',
-          style: `font-size:${Math.round(14 * sz)}px`,
+          fill: markerStyle.textFill,
+          stroke: markerStyle.textStroke,
+          'stroke-width': '1.1',
+          'paint-order': 'stroke',
+          style: `font-size:${Math.round(14 * markerStyle.size)}px`,
         });
         num.textContent = loc.n;
         grp.appendChild(num);
@@ -786,6 +895,14 @@ function _initCity(_city) {
 
     function addTipEvents(el, loc) {
       el.addEventListener('mouseenter', (e) => {
+        const tooltipImage = getCityTypeTooltipImage(loc);
+        ttImg.onerror = () => {
+          ttImg.onerror = null;
+          ttImg.src = CITY_DEFAULT_TOOLTIP_IMAGE;
+          ttImg.alt = _city.name;
+        };
+        ttImg.src = tooltipImage;
+        ttImg.alt = loc.type ? `${loc.type} header art` : _city.name;
         ttName.textContent = loc.name || ('Location ' + loc.n);
         ttType.textContent = loc.type || '';
         ttDesc.textContent = loc.desc || '';
