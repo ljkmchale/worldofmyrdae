@@ -110,6 +110,215 @@ function getHttpModuleForUrl(targetUrl) {
     return targetUrl.protocol === 'https:' ? require('https') : http;
 }
 
+function getCampaignClockRegistryBundledPath() {
+    return path.join(runtimeConfig.bundledRootReal, 'data', 'campaign-clock-links.json');
+}
+
+function getCampaignClockRegistryWritablePath() {
+    return path.join(runtimeConfig.dataRootReal, 'data', 'campaign-clock-links.json');
+}
+
+function readCampaignClockRegistry() {
+    const candidatePaths = [
+        getCampaignClockRegistryWritablePath(),
+        getCampaignClockRegistryBundledPath()
+    ];
+
+    for (const candidatePath of candidatePaths) {
+        if (!fs.existsSync(candidatePath)) continue;
+        const parsed = JSON.parse(fs.readFileSync(candidatePath, 'utf8'));
+        return Array.isArray(parsed) ? { campaigns: parsed } : parsed;
+    }
+
+    return { campaigns: [] };
+}
+
+function writeCampaignClockRegistry(registry) {
+    const filePath = getCampaignClockRegistryWritablePath();
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(registry, null, 2) + '\n', 'utf8');
+}
+
+function extractGoogleDocId(docUrl) {
+    if (!docUrl) return null;
+
+    const raw = String(docUrl).trim();
+    const directMatch = raw.match(/^[A-Za-z0-9_-]{20,}$/);
+    if (directMatch) return directMatch[0];
+
+    try {
+        const parsed = new URL(raw);
+        const pathMatch = parsed.pathname.match(/\/document\/d\/([A-Za-z0-9_-]+)/);
+        return pathMatch ? pathMatch[1] : null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function buildGoogleDocExportUrl(docUrl) {
+    const docId = extractGoogleDocId(docUrl);
+    if (!docId) return null;
+    return `https://docs.google.com/document/d/${docId}/export?format=txt`;
+}
+
+function fetchTextWithRedirects(targetUrl, depth = 0) {
+    return new Promise((resolve, reject) => {
+        if (!targetUrl) {
+            reject(new Error('Missing target URL'));
+            return;
+        }
+
+        if (depth > 8) {
+            reject(new Error('Too many redirects'));
+            return;
+        }
+
+        const parsedUrl = new URL(targetUrl);
+        const requestModule = getHttpModuleForUrl(parsedUrl);
+        const options = {
+            headers: {
+                'User-Agent': 'Mozilla/5.0'
+            }
+        };
+
+        const request = requestModule.get(parsedUrl, options, (proxyRes) => {
+            if ([301, 302, 307, 308].includes(proxyRes.statusCode) && proxyRes.headers.location) {
+                fetchTextWithRedirects(proxyRes.headers.location, depth + 1).then(resolve, reject);
+                return;
+            }
+
+            if (proxyRes.statusCode !== 200) {
+                reject(new Error(`HTTP ${proxyRes.statusCode}`));
+                return;
+            }
+
+            const chunks = [];
+            proxyRes.on('data', chunk => chunks.push(chunk));
+            proxyRes.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+            proxyRes.on('error', reject);
+        });
+
+        request.setTimeout(15000, () => {
+            request.destroy(new Error('Google Doc request timed out'));
+        });
+        request.on('error', reject);
+    });
+}
+
+function parseCampaignDateFromDocText(text) {
+    const normalizedLines = String(text || '')
+        .replace(/\r/g, '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean);
+
+    const sessionHeaderRegex = /^(\d{1,3})\s*[-–—:]/;
+    const worldDateRegex = /^(\d{1,2})(st|nd|rd|th)\s+(?:of\s+)?([A-Za-z]+)\b/i;
+
+    let bestMatch = null;
+
+    for (let index = 0; index < normalizedLines.length; index += 1) {
+        const sessionMatch = normalizedLines[index].match(sessionHeaderRegex);
+        if (!sessionMatch) continue;
+
+        const sessionNumber = parseInt(sessionMatch[1], 10);
+        for (let lookahead = index + 1; lookahead < Math.min(normalizedLines.length, index + 8); lookahead += 1) {
+            const dateMatch = normalizedLines[lookahead].match(worldDateRegex);
+            if (!dateMatch) continue;
+
+            const candidate = {
+                sessionNumber,
+                sessionHeading: normalizedLines[index],
+                worldDateLine: normalizedLines[lookahead],
+                day: parseInt(dateMatch[1], 10),
+                harmon: dateMatch[3]
+            };
+
+            if (!bestMatch || candidate.sessionNumber > bestMatch.sessionNumber) {
+                bestMatch = candidate;
+            }
+            break;
+        }
+    }
+
+    return bestMatch;
+}
+
+function isCampaignRegistrySyncFresh(registry, maxAgeMs = 5 * 60 * 1000) {
+    if (!registry || !registry.lastSyncedAt) return false;
+    const lastSynced = Date.parse(registry.lastSyncedAt);
+    if (!Number.isFinite(lastSynced)) return false;
+    return (Date.now() - lastSynced) < maxAgeMs;
+}
+
+async function syncCampaignClockRegistry(options = {}) {
+    const { force = false, maxAgeMs = 5 * 60 * 1000 } = options;
+    const registry = readCampaignClockRegistry();
+    if (!force && isCampaignRegistrySyncFresh(registry, maxAgeMs)) {
+        return registry;
+    }
+
+    const campaigns = Array.isArray(registry.campaigns) ? registry.campaigns : [];
+    const syncedAt = new Date().toISOString();
+
+    const updatedCampaigns = await Promise.all(campaigns.map(async (campaign) => {
+        if (!campaign || !campaign.docUrl) {
+            return {
+                ...campaign,
+                syncStatus: 'skipped',
+                syncMessage: 'No docUrl configured',
+                lastSyncedAt: syncedAt
+            };
+        }
+
+        try {
+            const exportUrl = buildGoogleDocExportUrl(campaign.docUrl);
+            if (!exportUrl) {
+                throw new Error('Could not extract Google Doc ID from docUrl');
+            }
+
+            const docText = await fetchTextWithRedirects(exportUrl);
+            const parsedDate = parseCampaignDateFromDocText(docText);
+            if (!parsedDate) {
+                throw new Error('No session/world date pair found in document');
+            }
+
+            const nextAnchor = {
+                ...(campaign.anchor || {}),
+                harmon: parsedDate.harmon,
+                day: parsedDate.day
+            };
+
+            return {
+                ...campaign,
+                anchor: nextAnchor,
+                sourceSession: parsedDate.sessionNumber,
+                sourceSessionHeading: parsedDate.sessionHeading,
+                sourceWorldDateLine: parsedDate.worldDateLine,
+                syncStatus: 'ok',
+                syncMessage: `Parsed session ${parsedDate.sessionNumber}`,
+                lastSyncedAt: syncedAt
+            };
+        } catch (error) {
+            return {
+                ...campaign,
+                syncStatus: 'error',
+                syncMessage: error.message,
+                lastSyncedAt: syncedAt
+            };
+        }
+    }));
+
+    const updatedRegistry = {
+        ...registry,
+        campaigns: updatedCampaigns,
+        lastSyncedAt: syncedAt
+    };
+
+    writeCampaignClockRegistry(updatedRegistry);
+    return updatedRegistry;
+}
+
 // Function to check if a port is in use
 function isPortInUse(port) {
     return new Promise((resolve) => {
@@ -274,6 +483,38 @@ function handleRequest(req, res) {
                 res.end(JSON.stringify({ success: false, error: err.message }));
             }
         });
+        return;
+    }
+
+    if (req.method === 'GET' && url === '/api/world-clock/campaigns') {
+        (async () => {
+            try {
+                const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+                const shouldSync = params.get('sync') === '1' || params.get('sync') === 'true';
+                const registry = shouldSync ? await syncCampaignClockRegistry({ force: false }) : readCampaignClockRegistry();
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(registry));
+            } catch (err) {
+                console.error('World clock campaign load error:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        })();
+        return;
+    }
+
+    if (req.method === 'POST' && url === '/api/world-clock/sync') {
+        (async () => {
+            try {
+                const registry = await syncCampaignClockRegistry({ force: true });
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, registry }));
+            } catch (err) {
+                console.error('World clock sync error:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        })();
         return;
     }
 
@@ -1060,6 +1301,10 @@ function startServer(options = {}) {
                     console.warn(`[AI] Failed to auto-start ComfyUI: ${err.message}`);
                 });
             }
+
+            syncCampaignClockRegistry({ force: false }).catch(err => {
+                console.warn(`[World Clock] Failed to sync campaign docs on startup: ${err.message}`);
+            });
 
             resolve({ server, port: actualPort, dataRoot: runtimeConfig.dataRootReal });
         });

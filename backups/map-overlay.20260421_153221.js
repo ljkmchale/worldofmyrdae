@@ -8,7 +8,7 @@ const MapOverlay = (function () {
     let tooltip = null;
     let hideTimer = null;
     let overlayVisible = true;
-    let tooltipsEnabled = false;
+    let tooltipsEnabled = true;
     let locMap = new Map(); // Shared location map
     let natW = 0;
     let natH = 0;
@@ -609,13 +609,9 @@ const MapOverlay = (function () {
         // Pass radius=0 so collision detection never overrides user-specified label offsets
         if (loc.type === 'region' || loc.type === 'river' || sizeMultiplier === 0) {
             addLabel(markerGroup, loc, px, py, 0, natW);
-            if (isTooltipSuppressedLocation(loc)) {
-                markerGroup.style.pointerEvents = 'none';
-            } else {
-                markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
-                markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
-                markerGroup.addEventListener('mouseleave', hideTooltip);
-            }
+            markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
+            markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
+            markerGroup.addEventListener('mouseleave', hideTooltip);
             group.appendChild(markerGroup);
             return;
         }
@@ -773,13 +769,9 @@ const MapOverlay = (function () {
         }
 
         // Hover events
-        if (isTooltipSuppressedLocation(loc)) {
-            markerGroup.style.pointerEvents = 'none';
-        } else {
-            markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
-            markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
-            markerGroup.addEventListener('mouseleave', (e) => hideTooltip(e));
-        }
+        markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
+        markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
+        markerGroup.addEventListener('mouseleave', (e) => hideTooltip(e));
 
         group.appendChild(markerGroup);
     }
@@ -1122,15 +1114,11 @@ const MapOverlay = (function () {
         return raw.replace(duplicatePrefixPattern, '').trim();
     }
 
-    function isTooltipSuppressedLocation(loc) {
-        return !!(loc && typeof loc.id === 'string' && /-header$/i.test(loc.id));
-    }
-
     /**
      * Show tooltip with location details
      */
     function showTooltip(e, loc) {
-        if (!tooltip || !tooltipsEnabled || isTooltipSuppressedLocation(loc)) return;
+        if (!tooltip || !tooltipsEnabled) return;
 
         // Cancel any pending hide — prevents flicker when moving between marker dot and label
         if (hideTimer) {

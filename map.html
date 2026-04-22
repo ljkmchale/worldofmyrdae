@@ -202,6 +202,28 @@
       cursor: pointer;
     }
 
+    .time-controls-panel select,
+    .time-controls-panel .time-secondary-btn {
+      width: 100%;
+      border-radius: 9px;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      background: rgba(12, 11, 16, 0.92);
+      color: #f5e8c4;
+      padding: 0.55rem 0.7rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.98rem;
+    }
+
+    .time-controls-panel .time-secondary-btn {
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .time-controls-panel .time-secondary-btn:hover {
+      background: rgba(24, 21, 30, 0.96);
+      border-color: rgba(212, 175, 55, 0.45);
+    }
+
     @media (max-width: 900px) {
       .time-controls-panel {
         right: 1rem;
@@ -894,6 +916,15 @@
               <div class="time-wheel-meta" id="world-clock-meta"></div>
             </div>
             <div class="time-row">
+              <label for="world-clock-campaign">Campaign Anchor</label>
+              <select id="world-clock-campaign">
+                <option value="">Mirror Real-World Season</option>
+              </select>
+            </div>
+            <div class="time-row">
+              <button type="button" class="time-secondary-btn" id="world-clock-reset">Use Real-World Mirror</button>
+            </div>
+            <div class="time-row">
               <label for="tc-day">Day of Year <span id="tc-day-label" style="color:#d4af37;"></span></label>
               <input type="range" id="tc-day" min="1" max="384" value="1">
             </div>
@@ -1059,14 +1090,16 @@
         clearButtonId: 'measure-clear'
       });
       if (window.MyrdaeWorldClock) {
-        window.MyrdaeWorldClock.installControls({
+        await window.MyrdaeWorldClock.installControls({
           buttonId: 'time-toggle',
           panelId: 'time-controls',
           displayId: 'season-display',
           daySliderId: 'tc-day',
           hourSliderId: 'tc-hour',
           dayLabelId: 'tc-day-label',
-          hourLabelId: 'tc-hour-label'
+          hourLabelId: 'tc-hour-label',
+          campaignSelectId: 'world-clock-campaign',
+          campaignResetId: 'world-clock-reset'
         });
       }
     });

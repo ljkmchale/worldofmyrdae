@@ -5,6 +5,9 @@ window.MyrdaeWorldClock = (function () {
     const STRETCH_DAYS = 8;
     const YEAR_HOURS = YEAR_DAYS * HOURS_PER_DAY;
     const WHEEL_YEAR_START_ANGLE = -135;
+    const REAL_WORLD_REFERENCE_YEAR = 2026;
+    const CAMPAIGN_STORAGE_KEY = 'myrdae_world_clock_campaign';
+    const CAMPAIGN_REGISTRY_URL = '/api/world-clock/campaigns?sync=1';
     const WHEEL_SEASON_COLORS = {
         Natali: '#c7e3ac',
         Sultra: '#ffe79a',
@@ -50,6 +53,11 @@ window.MyrdaeWorldClock = (function () {
     let anchorRealMs = performance.now();
     let anchorWorldHours = (((START_YEAR - 1) * YEAR_DAYS) + (START_DAY_OF_YEAR - 1)) * HOURS_PER_DAY + START_HOUR;
     let animationStarted = false;
+    let activeTimeMode = 'default';
+    let activeCampaignId = '';
+    let activeCampaignName = '';
+    let campaignRegistry = [];
+    let campaignRegistryLoaded = false;
     const listeners = new Set();
 
     function positiveModulo(value, mod) {
@@ -96,8 +104,42 @@ window.MyrdaeWorldClock = (function () {
         };
     }
 
+    function getDayOfYearFromHarmon(harmonName, dayOfHarmon) {
+        const harmonIndex = HARMONS.findIndex(harmon => harmon.name.toLowerCase() === String(harmonName || '').toLowerCase());
+        if (harmonIndex === -1) return null;
+
+        const safeDay = Math.max(1, Math.min(HARMONS[harmonIndex].days, parseInt(dayOfHarmon, 10) || 1));
+        return HARMONS
+            .slice(0, harmonIndex)
+            .reduce((sum, harmon) => sum + harmon.days, 0) + safeDay;
+    }
+
     function formatFullDate(dayOfHarmon, harmonName, year) {
         return `${formatOrdinal(dayOfHarmon)} of ${harmonName}, ${year}`;
+    }
+
+    function getEarthDayOfYear(date) {
+        const startOfYear = new Date(date.getFullYear(), 0, 1);
+        const msPerDay = 24 * 60 * 60 * 1000;
+        return Math.floor((date - startOfYear) / msPerDay) + 1;
+    }
+
+    function getEarthYearDays(year) {
+        return new Date(year, 1, 29).getMonth() === 1 ? 366 : 365;
+    }
+
+    function mapRealDateToWorldAnchor(date = new Date()) {
+        const earthDayOfYear = getEarthDayOfYear(date);
+        const earthYearDays = getEarthYearDays(date.getFullYear());
+        const dayRatio = (earthDayOfYear - 1) / earthYearDays;
+        const worldDayOfYear = Math.min(YEAR_DAYS, Math.max(1, Math.floor(dayRatio * YEAR_DAYS) + 1));
+
+        return {
+            year: START_YEAR + (date.getFullYear() - REAL_WORLD_REFERENCE_YEAR),
+            dayOfYear: worldDayOfYear,
+            hour: date.getHours(),
+            minute: date.getMinutes()
+        };
     }
 
     function polarToCartesian(cx, cy, radius, angleDeg) {
@@ -235,7 +277,10 @@ window.MyrdaeWorldClock = (function () {
             stretch: harmonInfo.stretch,
             fullDateLabel: formatFullDate(harmonInfo.dayOfHarmon, harmonInfo.harmonName, year),
             hourLabel: formatTimeLabel(hour, minute),
-            compactLabel: `${formatFullDate(harmonInfo.dayOfHarmon, harmonInfo.harmonName, year)}  ·  ${harmonInfo.season}  ·  Stretch ${harmonInfo.stretch}  ·  ${formatTimeLabel(hour, minute)}`
+            compactLabel: `${formatFullDate(harmonInfo.dayOfHarmon, harmonInfo.harmonName, year)}  ·  ${harmonInfo.season}  ·  Stretch ${harmonInfo.stretch}  ·  ${formatTimeLabel(hour, minute)}`,
+            timeMode: activeTimeMode,
+            campaignId: activeCampaignId,
+            campaignName: activeCampaignName
         };
     }
 
@@ -256,13 +301,31 @@ window.MyrdaeWorldClock = (function () {
         requestAnimationFrame(tick);
     }
 
-    function setTime({ dayOfYear, hour }) {
+    function setAnchor({ year, dayOfYear, hour = 0, minute = 0, source = 'manual', campaignId = '', campaignName = '' }) {
+        const safeYear = Math.max(1, parseInt(year, 10) || START_YEAR);
         const safeDay = Math.min(YEAR_DAYS, Math.max(1, parseInt(dayOfYear, 10) || 1));
         const safeHour = Math.min(HOURS_PER_DAY - 1, Math.max(0, parseInt(hour, 10) || 0));
-        const currentYear = getState().year;
-        anchorWorldHours = ((((currentYear - 1) * YEAR_DAYS) + (safeDay - 1)) * HOURS_PER_DAY) + safeHour;
+        const safeMinute = Math.min(59, Math.max(0, parseInt(minute, 10) || 0));
+
+        anchorWorldHours = ((((safeYear - 1) * YEAR_DAYS) + (safeDay - 1)) * HOURS_PER_DAY) + safeHour + (safeMinute / 60);
         anchorRealMs = performance.now();
+        activeTimeMode = source;
+        activeCampaignId = campaignId || '';
+        activeCampaignName = campaignName || '';
         notifyListeners(anchorRealMs);
+    }
+
+    function setTime({ dayOfYear, hour, minute = 0 }) {
+        const currentYear = getState().year;
+        setAnchor({
+            year: currentYear,
+            dayOfYear,
+            hour,
+            minute,
+            source: activeCampaignId ? 'campaign' : 'manual',
+            campaignId: activeCampaignId,
+            campaignName: activeCampaignName
+        });
     }
 
     function getRouteProgress(roundTripWorldHours, startOffset = 0, now = performance.now()) {
@@ -271,14 +334,77 @@ window.MyrdaeWorldClock = (function () {
         return positiveModulo((totalWorldHours / roundTripWorldHours) + startOffset, 1);
     }
 
-    function installControls({
+    async function loadCampaignRegistry() {
+        if (campaignRegistryLoaded) return campaignRegistry;
+
+        try {
+            const response = await fetch(CAMPAIGN_REGISTRY_URL, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Failed to load campaign registry (${response.status})`);
+            const payload = await response.json();
+            campaignRegistry = Array.isArray(payload) ? payload : (Array.isArray(payload.campaigns) ? payload.campaigns : []);
+        } catch (error) {
+            console.warn('World clock campaign registry unavailable:', error);
+            campaignRegistry = [];
+        }
+
+        campaignRegistryLoaded = true;
+        return campaignRegistry;
+    }
+
+    function getCampaignRegistry() {
+        return campaignRegistry.slice();
+    }
+
+    function getCampaignById(campaignId) {
+        return campaignRegistry.find(campaign => campaign.id === campaignId) || null;
+    }
+
+    function normalizeCampaignAnchor(campaign) {
+        if (!campaign || !campaign.anchor) return null;
+
+        const { anchor } = campaign;
+        const resolvedDayOfYear = anchor.dayOfYear || getDayOfYearFromHarmon(anchor.harmon, anchor.day);
+        if (!resolvedDayOfYear) return null;
+
+        return {
+            year: anchor.year || START_YEAR,
+            dayOfYear: resolvedDayOfYear,
+            hour: anchor.hour || 0,
+            minute: anchor.minute || 0,
+            source: 'campaign',
+            campaignId: campaign.id,
+            campaignName: campaign.name
+        };
+    }
+
+    function applyCampaign(campaignId) {
+        const campaign = getCampaignById(campaignId);
+        const anchor = normalizeCampaignAnchor(campaign);
+        if (!campaign || !anchor) return false;
+
+        localStorage.setItem(CAMPAIGN_STORAGE_KEY, campaign.id);
+        setAnchor(anchor);
+        return true;
+    }
+
+    function initializeFromRealWorld(date = new Date()) {
+        localStorage.removeItem(CAMPAIGN_STORAGE_KEY);
+        setAnchor({
+            ...mapRealDateToWorldAnchor(date),
+            source: 'real-world'
+        });
+    }
+
+    async function installControls({
         buttonId,
         panelId,
         displayId,
         daySliderId,
         hourSliderId,
         dayLabelId,
-        hourLabelId
+        hourLabelId,
+        campaignSelectId,
+        campaignResetId
     }) {
         const button = document.getElementById(buttonId);
         const panel = document.getElementById(panelId);
@@ -290,6 +416,8 @@ window.MyrdaeWorldClock = (function () {
         const hourSlider = document.getElementById(hourSliderId);
         const dayLabel = document.getElementById(dayLabelId);
         const hourLabel = document.getElementById(hourLabelId);
+        const campaignSelect = document.getElementById(campaignSelectId);
+        const campaignReset = document.getElementById(campaignResetId);
 
         if (panel) {
             panel.addEventListener('mousedown', event => event.stopPropagation());
@@ -304,18 +432,16 @@ window.MyrdaeWorldClock = (function () {
             dayLabel.textContent = `${harmonInfo.dayOfHarmon} ${harmonInfo.harmonName}  ·  ${harmonInfo.season}  ·  ${year}`;
         }
 
-        function setHourLabel(hour) {
-            if (!hourLabel) return;
-            const state = getState();
-            hourLabel.textContent = formatTimeLabel(hour, state.hour === hour ? state.minute : 0);
-        }
-
         function syncUi(state) {
             if (display) display.textContent = state.compactLabel;
             if (wheel) wheel.innerHTML = renderWheelMarkup(state);
             if (wheelDate) wheelDate.textContent = state.fullDateLabel;
             if (wheelMeta) {
+                const modeLabel = state.campaignName
+                    ? `Campaign: ${state.campaignName}`
+                    : (state.timeMode === 'real-world' ? 'Mode: Real-world seasonal mirror' : 'Mode: Free clock');
                 wheelMeta.innerHTML = [
+                    `<div><strong>${modeLabel}</strong></div>`,
                     `<div><strong>Season:</strong> ${state.season}</div>`,
                     `<div><strong>Known As:</strong> ${state.seasonKnownAs}</div>`,
                     `<div><strong>Similar To:</strong> ${state.seasonSimilarTo}</div>`,
@@ -326,6 +452,25 @@ window.MyrdaeWorldClock = (function () {
             if (hourSlider) hourSlider.value = String(state.hour);
             setDayLabel(state.dayOfYear);
             if (hourLabel) hourLabel.textContent = state.hourLabel;
+            if (campaignSelect) campaignSelect.value = state.campaignId || '';
+        }
+
+        function populateCampaignSelect(campaigns) {
+            if (!campaignSelect) return;
+
+            const options = [
+                '<option value="">Mirror Real-World Season</option>',
+                ...campaigns.map(campaign => `<option value="${campaign.id}">${campaign.name}</option>`)
+            ];
+            campaignSelect.innerHTML = options.join('');
+        }
+
+        await loadCampaignRegistry();
+        populateCampaignSelect(getCampaignRegistry());
+
+        const storedCampaignId = localStorage.getItem(CAMPAIGN_STORAGE_KEY);
+        if (!storedCampaignId || !applyCampaign(storedCampaignId)) {
+            initializeFromRealWorld();
         }
 
         if (button && panel) {
@@ -343,7 +488,8 @@ window.MyrdaeWorldClock = (function () {
                 const current = getState();
                 setTime({
                     dayOfYear: daySlider.value,
-                    hour: hourSlider ? hourSlider.value : current.hour
+                    hour: hourSlider ? hourSlider.value : current.hour,
+                    minute: current.minute
                 });
             });
         }
@@ -353,8 +499,29 @@ window.MyrdaeWorldClock = (function () {
                 const current = getState();
                 setTime({
                     dayOfYear: daySlider ? daySlider.value : current.dayOfYear,
-                    hour: hourSlider.value
+                    hour: hourSlider.value,
+                    minute: current.minute
                 });
+            });
+        }
+
+        if (campaignSelect) {
+            campaignSelect.addEventListener('change', () => {
+                if (!campaignSelect.value) {
+                    initializeFromRealWorld();
+                    return;
+                }
+
+                if (!applyCampaign(campaignSelect.value)) {
+                    initializeFromRealWorld();
+                }
+            });
+        }
+
+        if (campaignReset) {
+            campaignReset.addEventListener('click', () => {
+                if (campaignSelect) campaignSelect.value = '';
+                initializeFromRealWorld();
             });
         }
 
@@ -379,7 +546,13 @@ window.MyrdaeWorldClock = (function () {
         getWorldHours,
         getRouteProgress,
         getHarmonInfo,
+        getDayOfYearFromHarmon,
         setTime,
+        setAnchor,
+        initializeFromRealWorld,
+        loadCampaignRegistry,
+        getCampaignRegistry,
+        applyCampaign,
         installControls
     };
 })();

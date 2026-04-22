@@ -1,0 +1,85 @@
+{
+  "campaigns": [
+    {
+      "id": "souls-of-destiny",
+      "name": "Souls of Destiny",
+      "docUrl": "https://docs.google.com/document/d/1pKpiVcOl-mjtJMUD4tuTS6A4UZP3w6ISnehpX8LORH8/edit",
+      "syncMode": "manual-doc-anchor",
+      "notes": "Session headers currently show 40th Hemist in Adsuren. Update this anchor as the campaign advances or replace it with a weekly sync job later.",
+      "anchor": {
+        "year": 1246,
+        "harmon": "Hemist",
+        "day": 41,
+        "hour": 10,
+        "minute": 0
+      },
+      "sourceSession": 3,
+      "sourceSessionHeading": "03 – FUKWAD (January 3, 2026)",
+      "sourceWorldDateLine": "41st of Hemist – The Swamps",
+      "syncStatus": "ok",
+      "syncMessage": "Parsed session 3",
+      "lastSyncedAt": "2026-04-22T13:26:56.043Z"
+    },
+    {
+      "id": "heroes-of-emberstran",
+      "name": "Heroes of Emberstran",
+      "docUrl": "https://docs.google.com/document/d/1ENCKlQLCpkjefs8AgZYXn0_89OgUmJx5ssIFMuOKut4/edit?tab=t.0",
+      "syncMode": "manual-doc-anchor",
+      "notes": "Anchor will update from the latest parseable session header in the Google Doc.",
+      "anchor": {
+        "year": 1246,
+        "harmon": "Talil",
+        "day": 34,
+        "hour": 10,
+        "minute": 0
+      },
+      "sourceSession": 21,
+      "sourceSessionHeading": "21 - He Ate a Baby (04.08)",
+      "sourceWorldDateLine": "34th of Talil, 1246",
+      "syncStatus": "ok",
+      "syncMessage": "Parsed session 21",
+      "lastSyncedAt": "2026-04-22T13:26:56.043Z"
+    },
+    {
+      "id": "a-new-adventure",
+      "name": "A New Adventure",
+      "docUrl": "https://docs.google.com/document/d/1tZbBbjOzgCiUSmUuepCE_qpsuOJpawrAia0nxYHTtjA/edit?tab=t.0#heading=h.4fu78ulbexox",
+      "syncMode": "manual-doc-anchor",
+      "notes": "Anchor will update from the latest parseable session header in the Google Doc.",
+      "anchor": {
+        "year": 1246,
+        "harmon": "Talil",
+        "day": 38,
+        "hour": 10,
+        "minute": 0
+      },
+      "sourceSession": 16,
+      "sourceSessionHeading": "16 - To the Abbey (09/18)",
+      "sourceWorldDateLine": "38th of Talil at the Pale Lantern",
+      "syncStatus": "ok",
+      "syncMessage": "Parsed session 16",
+      "lastSyncedAt": "2026-04-22T13:26:56.043Z"
+    },
+    {
+      "id": "bloody-endeaver",
+      "name": "Bloody Endeaver",
+      "docUrl": "https://docs.google.com/document/d/1p35JgGjlsAk6Ul8Y3cJC5P6Jdedr3pHSQQ29Y0ljBuc/edit?tab=t.0#heading=h.26unq82s1fzt",
+      "syncMode": "manual-doc-anchor",
+      "notes": "Anchor will update from the latest parseable session header in the Google Doc.",
+      "anchor": {
+        "year": 1246,
+        "harmon": "Paramor",
+        "day": 3,
+        "hour": 10,
+        "minute": 0
+      },
+      "sourceSession": 28,
+      "sourceSessionHeading": "28 - Better off Dead (12/08)",
+      "sourceWorldDateLine": "3rd of Paramor, 1246 in Hol’gardur",
+      "syncStatus": "ok",
+      "syncMessage": "Parsed session 28",
+      "lastSyncedAt": "2026-04-22T13:26:56.043Z"
+    }
+  ],
+  "lastSyncedAt": "2026-04-22T13:26:56.043Z"
+}

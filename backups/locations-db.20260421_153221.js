@@ -291,26 +291,6 @@ const WORLD_LOCATIONS = {
             "opacity": 1
         },
         {
-            "id": "kahlbits-veil-forest-header",
-            "name": "Forest",
-            "type": "nature",
-            "x": 63.98,
-            "y": 60.95,
-            "region": "",
-            "description": "Forest",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 11,
-            "fontWeight": "300",
-            "fontStyle": "Normal",
-            "markerSize": 0,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0,
-            "labelAlign": "middle",
-            "opacity": 1
-        },
-        {
             "id": "kahlbits-veil",
             "name": "Kahlbit's\nVeil",
             "type": "nature",
