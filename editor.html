@@ -451,9 +451,10 @@
 
         <div id="city-action-btns" style="display:none; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
           <div style="display:flex; gap:0.5rem;">
-            <button class="btn btn-primary" onclick="CityEditor.save()" style="flex:1;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            <button id="btn-city-save" class="btn btn-primary" onclick="CityEditor.save()" style="flex:1;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
             <button class="btn btn-secondary" onclick="CityEditor.resetView()" style="flex:1;"><i class="fa-solid fa-house"></i> Reset View</button>
           </div>
+          <button id="btn-city-delete" class="btn btn-danger" onclick="CityEditor.deleteCityMap()" style="width:100%;"><i class="fa-solid fa-trash"></i> Delete City Map</button>
           <button class="btn btn-secondary" onclick="CityEditor.exitCityMode()" style="width:100%; opacity:0.7;">&#8592; Back to World Map</button>
         </div>
         <div id="city-save-status" style="font-size:0.75rem; color:#888; margin-top:0.5rem; min-height:1.2rem; font-style:italic;"></div>
@@ -1111,6 +1112,23 @@ function upsertCityMapEntry(city) {
   }
 }
 
+async function fetchLiveCityEntries() {
+  const discovered = await fetch('/api/city-images').then(r => r.json());
+  const registryById = new Map((CITY_MAPS || []).map(entry => [entry.id, entry]));
+
+  return discovered.map((entry) => {
+    const known = registryById.get(entry.id) || {};
+    return {
+      id: entry.id,
+      name: known.name || entry.name,
+      image: entry.image || known.image || buildCityImagePath(entry.id),
+      previewImage: entry.image || known.previewImage || known.image || buildCityImagePath(entry.id),
+      locationsImage: entry.locationsImage || known.locationsImage || '',
+      value: entry.id
+    };
+  });
+}
+
 async function ensureCityScaffold(cityId, cityName) {
   const scaffoldResponse = await fetch('/api/cities/scaffold', {
     method: 'POST',
@@ -1162,7 +1180,11 @@ const CityEditor = (function () {
 
   function getEligibleWorldLocations() {
     const locs = (Editor.state && Editor.state.locations) || [];
-    const existingCityIds = new Set(CITY_MAPS.map(c => c.id));
+    const existingCityIds = new Set(
+      Array.from(document.getElementById('city-select')?.options || [])
+        .map(option => option.value)
+        .filter(Boolean)
+    );
     return locs
       .filter(loc => ['city', 'small-city', 'town'].includes(String(loc.type || '').toLowerCase()))
       .filter(loc => {
@@ -1221,7 +1243,7 @@ const CityEditor = (function () {
 
     const existing = CITY_MAPS.find(c => c.id === cityId);
     if (existing) {
-      appendCityOption(existing.id, existing.name, true);
+      CityEditor.appendCityOption(existing.id, existing.name, true);
       await loadCity(existing.id);
       if (createStatus) createStatus.textContent = 'That location already has a city map.';
       return;
@@ -1262,23 +1284,11 @@ const CityEditor = (function () {
 
     const sel = document.getElementById('city-select');
     sel.innerHTML = '<option value="">— Select a city —</option>';
-    const cityEntries = CITY_MAPS.map(c => ({ ...c, value: c.id }));
+    let cityEntries = CITY_MAPS.map(c => ({ ...c, value: c.id }));
 
-    // Discover city folders from server, add unregistered ones
+    // Prefer live directory discovery so deleted folders disappear from the picker.
     try {
-      const discovered = await fetch('/api/city-images').then(r => r.json());
-      const knownIds = new Set(CITY_MAPS.map(c => c.id));
-      discovered.forEach(d => {
-        if (!knownIds.has(d.id)) {
-          cityEntries.push({
-            id: d.id,
-            name: '+ Add: ' + d.name,
-            value: '__new__:' + d.id,
-            image: d.image || ('images/cities/' + d.id + '/' + d.id + '.png'),
-            locationsImage: d.locationsImage || ''
-          });
-        }
-      });
+      cityEntries = await fetchLiveCityEntries();
     } catch (e) {
       console.warn('City image discovery failed:', e);
     }
@@ -1290,6 +1300,20 @@ const CityEditor = (function () {
       getLabel: (entry) => entry.name
     });
     if (sel.options.length) sel.options[0].textContent = '-- Select a city --';
+
+    if (activeCityId && !cityEntries.find(entry => entry.id === activeCityId)) {
+      activeCityId = null;
+      cityMapActive = false;
+      document.getElementById('city-world-link').style.display = 'none';
+      document.getElementById('city-pin-controls').style.display = 'none';
+      document.getElementById('city-action-btns').style.display = 'none';
+      document.getElementById('city-pin-form').style.display = 'none';
+      const status = document.getElementById('city-save-status');
+      if (status) {
+        status.textContent = 'The previously selected city folder no longer exists on disk.';
+        status.style.color = '#e0a84b';
+      }
+    }
 
     populateCreateCitySelect(Editor.state?.selectedLocId);
 
@@ -1732,6 +1756,79 @@ const CityEditor = (function () {
       .catch(err => { status.textContent = 'Save failed: ' + err.message; status.style.color = '#e44'; });
   }
 
+  async function deleteCityMap() {
+    if (!activeCityId) return;
+
+    const cityName = (cityData && cityData.name) || activeCityId;
+    const confirmed = confirm(`Delete the city map "${cityName}"?\n\nThis will remove its city file, image folder, and index entry, and clear any world-map links to it.`);
+    if (!confirmed) return;
+
+    const status = document.getElementById('city-save-status');
+    if (status) {
+      status.textContent = 'Deleting city map…';
+      status.style.color = '#e0a84b';
+    }
+
+    try {
+      const response = await fetch('/delete-city/' + activeCityId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error || `Delete failed (${response.status})`);
+      }
+
+      const targetUrl = 'city-viewer.html?city=' + activeCityId;
+      const locs = (Editor.state && Editor.state.locations) || [];
+      let clearedLinks = 0;
+      locs.forEach(loc => {
+        if (loc.cityMap === targetUrl) {
+          delete loc.cityMap;
+          clearedLinks += 1;
+        }
+      });
+
+      const cityIdx = CITY_MAPS.findIndex(city => city.id === activeCityId);
+      if (cityIdx !== -1) CITY_MAPS.splice(cityIdx, 1);
+      if (window.CITY_MAPS_REGISTRY) delete window.CITY_MAPS_REGISTRY[activeCityId];
+
+      const indexResponse = await fetch('/save-city-map', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: serializeCityIndexForDisk(CITY_MAPS)
+      });
+      const indexPayload = await indexResponse.json();
+      if (!indexResponse.ok || !indexPayload.success) {
+        throw new Error(indexPayload.error || `City index cleanup failed (${indexResponse.status})`);
+      }
+
+      const exportSucceeded = await Editor.exportData();
+      if (!exportSucceeded) {
+        throw new Error('World data cleanup failed');
+      }
+
+      const removedCityId = activeCityId;
+      activeCityId = null;
+      cityData = null;
+      selectedKey = null;
+
+      await open();
+      exitCityMode();
+
+      const createStatus = document.getElementById('city-create-status');
+      if (createStatus) {
+        createStatus.textContent = `Deleted ${cityName}${clearedLinks ? ` and cleared ${clearedLinks} world link${clearedLinks !== 1 ? 's' : ''}` : ''}.`;
+      }
+    } catch (err) {
+      console.error('City delete failed:', err);
+      if (status) {
+        status.textContent = 'Delete failed: ' + err.message;
+        status.style.color = '#e44';
+      }
+    }
+  }
+
   function resetView() { MapController.reset('map-container'); setTimeout(renderPins, 100); }
 
   function isActive() { return cityMapActive; }
@@ -1829,7 +1926,7 @@ const CityEditor = (function () {
     }
   }
 
-  return { open, loadCity, createCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId };
+  return { open, loadCity, createCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, deleteCityMap, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId, appendCityOption };
 })();
 </script>
   <!-- AI Wizard Modal -->
@@ -2354,7 +2451,7 @@ const CityEditor = (function () {
             await Editor.exportData();
           }
 
-          appendCityOption(cityId, cityName.trim(), true);
+          CityEditor.appendCityOption(cityId, cityName.trim(), true);
           if (typeof CityEditor !== 'undefined' && typeof CityEditor.reloadData === 'function') {
             await CityEditor.reloadData();
           }

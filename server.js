@@ -455,6 +455,47 @@ function handleRequest(req, res) {
         return;
     }
 
+    // Handle POST request to delete a city map scaffold (js/cities/<id>.js + images/cities/<id>/)
+    if (req.method === 'POST' && url.startsWith('/delete-city/')) {
+        const cityId = url.slice('/delete-city/'.length);
+        if (!/^[a-z0-9-]+$/i.test(cityId) || cityId.length > 80) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: 'Invalid city ID' }));
+            return;
+        }
+
+        try {
+            const cityFilePath = resolveWritablePath(path.join('js', 'cities', cityId + '.js'));
+            const imageDirPath = resolveWritablePath(path.join('images', 'cities', cityId));
+            const deleted = {
+                cityFile: false,
+                imageDir: false
+            };
+
+            if (fs.existsSync(cityFilePath)) {
+                fs.rmSync(cityFilePath, { force: true });
+                deleted.cityFile = true;
+            }
+
+            if (fs.existsSync(imageDirPath)) {
+                fs.rmSync(imageDirPath, { recursive: true, force: true });
+                deleted.imageDir = true;
+            }
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                success: true,
+                message: 'City deleted: ' + cityId,
+                deleted
+            }));
+        } catch (err) {
+            console.error('Delete City Error:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+        return;
+    }
+
     // Create the on-disk scaffold for a new city so the editor does not depend on a pre-made folder.
     if (req.method === 'POST' && url === '/api/cities/scaffold') {
         let body = '';

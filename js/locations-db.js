@@ -7152,7 +7152,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=nuwharf"
         },
         {
             "id": "trailpoint",
@@ -14280,16 +14281,16 @@ const WORLD_LOCATIONS = {
                     70.37
                 ],
                 [
-                    65.52,
-                    69.87
+                    65.38,
+                    70
                 ],
                 [
-                    65.02,
-                    69.13
+                    65.3,
+                    69.37
                 ],
                 [
                     64.46,
-                    68.63
+                    68.79
                 ],
                 [
                     63.7,
@@ -14297,7 +14298,7 @@ const WORLD_LOCATIONS = {
                 ],
                 [
                     61.98,
-                    66.61
+                    66.83
                 ],
                 "adamont"
             ]

@@ -27,4 +27,5 @@ const CITY_MAPS = [
   { id: "trailpoint"              , name: "Trailpoint"              , image: "images/cities/trailpoint/trailpoint.png", previewImage: "images/cities/trailpoint/trailpoint.png" },
   { id: "farnsby-port"            , name: "Farnsby Port"            , image: "images/cities/farnsby-port/farnsby-port.png", previewImage: "images/cities/farnsby-port/farnsby-port.png" },
   { id: "dunduar"                 , name: "Dunduar"                 , image: "images/cities/dunduar/dunduar.png", previewImage: "images/cities/dunduar/dunduar.png" },
+  { id: "nuwharf"                 , name: "Nuwharf"                 , image: "images/cities/nuwharf/nuwharf.png", previewImage: "images/cities/nuwharf/nuwharf.png" },
 ];
