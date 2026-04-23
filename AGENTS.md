@@ -1,112 +1,250 @@
-# World of Myrdae — Codex Guide
+# World of Myrdae - Codex Guide
 
 ## What This Project Is
 
-An interactive fantasy world map editor for a D&D campaign set in **Myrdae**. It's a self-contained vanilla JS + Node.js web app with no external framework dependencies.
+An interactive fantasy world map editor and viewer for the D&D setting of Myrdae. The core app is a zero-framework HTML/CSS/vanilla-JS site served by Node.js, with an Electron wrapper for desktop builds.
 
-## Running the Project
+## Running The Project
 
 ```bash
-node server.js        # starts on http://localhost:3000
+node server.js
 ```
 
-Key pages:
-- `http://localhost:3000/editor.html` — map editor (add/edit locations, roads, regions)
-- `http://localhost:3000/map.html` — read-only interactive map viewer
-- `http://localhost:3000/map-3d-planet.html` — 3D rotating globe
-- `http://localhost:3000/embed-map.html` — embeddable map (same as map.html, for iframe use)
-- `http://localhost:3000/city-emberstran.html` — standalone city map for Emberstran
-- `http://localhost:3000/city-tratta.html` — standalone city map for Tratta
+or:
+
+```bash
+npm run start
+```
+
+Primary pages:
+
+- `http://localhost:3000/editor.html` - world editor
+- `http://localhost:3000/map.html` - main interactive world map
+- `http://localhost:3000/embed-map.html` - embeddable world map
+- `http://localhost:3000/city-viewer.html?city=tratta` - unified city map viewer
+- `http://localhost:3000/map-3d-planet.html` - 3D globe prototype
+- `http://localhost:3000/map-viewer.html` - coordinate helper/debug page
+
+Desktop shell:
+
+```bash
+npm run desktop:dev
+```
 
 ## Architecture
 
-### Data flow
-1. `js/locations-db.js` — source of truth; exports `WORLD_LOCATIONS` global with all locations, roads, and regions
-2. `js/campaign-data.js` — loads `WORLD_LOCATIONS`, provides CRUD API (`CampaignData.addLocation()`, etc.)
-3. `js/map-overlay.js` — reads campaign data, renders SVG markers/labels/tooltips onto the map image
-4. `js/boat-animations.js` — `BoatFleet` class; animates sailing vessels and a sea monster along `water-route` roads
-5. `js/dragon-overlay.js` — `DragonFlyover` module; animates a golden dragon flying over the Arbescar region on a 4-minute patrol cycle
-6. `js/editor.js` — UI for editing; POSTs changes to `server.js /save` which writes back to `locations-db.js`
-6. `js/map.js` — pan/zoom controller (GPU-accelerated via CSS transforms)
+### World data flow
 
-### Key files
+1. `js/locations-db.js` defines `WORLD_LOCATIONS` and is the source of truth for world `locations`, `roads`, and `regions`.
+2. `js/campaign-data.js` wraps that data and emits `campaign-data-updated` / `metric-changed` events.
+3. `js/map-overlay.js` renders SVG roads, markers, labels, tooltips, route info, and location interactions over the map image.
+4. Viewer feature modules plug into that layer:
+   - `js/boat-animations.js`
+   - `js/dragon-overlay.js`
+   - `js/world-clock.js`
+   - `js/location-search.js`
+   - `js/map-measure.js`
+   - `js/water-repaint.js`
+   - `js/coord-grid.js`
+5. `js/editor.js` manages the editor state, previews unsaved changes, and persists through `server.js`.
+
+### City map flow
+
+1. `js/city-maps.js` is only a thin registry of city IDs, names, and image paths.
+2. `city-viewer.html` loads a selected city and then fetches `js/cities/<city-id>.js` on demand.
+3. Each `js/cities/<city-id>.js` file registers into `window.CITY_MAPS_REGISTRY`.
+4. City assets live under `images/cities/<city-id>/`.
+
+### Desktop build flow
+
+1. `electron/main.js` starts the local server internally.
+2. In packaged builds, mutable files are overlaid from a writable data directory instead of editing the bundled app directly.
+3. `electron/preload.js` exposes a tiny `window.desktopApp` bridge.
+
+## Key Files
+
 | File | Purpose |
 |------|---------|
-| `js/locations-db.js` | the entire world database |
-| `js/map-overlay.js` | SVG overlay renderer, tooltips, territory borders |
-| `js/boat-animations.js` | `BoatFleet` class — animated boats + sea monster on water routes |
-| `js/dragon-overlay.js` | `DragonFlyover` module — golden dragon flyover animation above Arbescar |
-| `js/editor.js` | Editor UI logic, save/load, live preview |
-| `js/campaign-data.js` | Data init, persistence, cross-tab BroadcastChannel sync |
-| `js/map.js` | Zoom/pan with requestAnimationFrame |
-| `server.js` | Static file server + POST `/save` endpoint |
-| `sort_locations_by_region.py` | Utility script to sort locations-db.js entries by region |
+| `js/locations-db.js` | main world database |
+| `js/city-maps.js` | city registry with image paths |
+| `js/cities/*.js` | per-city pins and labels |
+| `js/map-overlay.js` | overlay rendering, roads, tooltips, route graph helpers |
+| `js/editor.js` | editor state, drafts, placement mode, save flows |
+| `js/world-clock.js` | Myrdae calendar model and wheel UI |
+| `js/water-repaint.js` | animated water tinting and motion overlay |
+| `js/map-measure.js` | viewer distance measurement UI |
+| `js/location-search.js` | search/filter interactions in the viewer |
+| `server.js` | static serving plus save, city, world clock, and AI endpoints |
+| `electron/main.js` | Electron app bootstrap |
+| `data/campaign-clock-links.json` | campaign anchors and Google Doc sync targets |
 
-### Data structure (WORLD_LOCATIONS)
+## Data Model Notes
+
+### `WORLD_LOCATIONS`
+
 ```js
 {
   locations: [
     {
-      id: "lurdoba",           // kebab-case, unique
+      id: "lurdoba",
       name: "Lurdoba",
-      type: "city",            // city | town | village | landmark | region | dungeon | etc.
-      x: 77.7, y: 31.7,       // percentage coords on the map image
+      type: "city",
+      x: 77.7,
+      y: 31.7,
       region: "Otesurr Mountains",
       description: "...",
       fontSize: 18,
-      markerSize: 0.2,
-      // Optional: fontFamily, fontWeight, fontStyle, labelOffsetX/Y, markerOffsetX/Y, rotation, opacity
+      markerSize: 0.2
+      // optional display/meta fields:
+      // fontFamily, fontWeight, fontStyle, labelOffsetX, labelOffsetY,
+      // markerOffsetX, markerOffsetY, rotation, opacity, textCurve,
+      // labelAlign, hideLabel, cityMap, details, link
     }
   ],
   roads: [
     {
       id: "road-id",
       name: "Road Name",
-      type: "road",            // road | path | river | trade-route | water-route | etc.
-      waypoints: [{x, y}, ...],
-      color: "#8B6914",
-      width: 2,
+      type: "major",
+      points: ["loc-a", [40.5, 20.1], "loc-b"],
       curved: true
+      // legacy `waypoints` arrays are still supported in some code paths
     }
   ],
   regions: [
     {
       id: "region-id",
       name: "Region Name",
-      color: "#rgba...",
-      points: [{x, y}, ...]
+      color: "rgba(212,175,55,0.18)",
+      points: [{ x: 10, y: 20 }, { x: 15, y: 25 }]
     }
   ]
 }
 ```
 
+Important current road types include:
+
+- `major`
+- `minor`
+- `river`
+- `border`
+- `water-route`
+
+Water routes can also carry ship metadata like `shipName`, `shipType`, `captainName`, `cargo`, `riskLevel`, and size/color overrides.
+
+### City modules
+
+Each `js/cities/<id>.js` typically exports:
+
+- `id`, `name`, `image`, `previewImage`
+- `pins`
+- `namedLabels`
+
+## Persistence And Mutable Files
+
+`js/campaign-data.js` still contains optional `localStorage` support, but it is intentionally disabled. Persistent edits should go through the server and land on disk.
+
+Writable content:
+
+- `js/locations-db.js`
+- `js/city-maps.js`
+- `js/cities/<city-id>.js`
+- `images/cities/<city-id>/...`
+- `data/campaign-clock-links.json`
+
+In Electron builds, the server overlays mutable content from:
+
+- `process.env.MYRDAE_DATA_DIR`, or
+- the Electron user-data directory fallback
+
+Anything else should be treated as bundled/read-only in packaged mode.
+
+## Important Server Routes
+
+`server.js` is not just a static server. It also owns the write API and helper endpoints:
+
+- `POST /save` - save the world database
+- `POST /save-city/:cityId` - save a per-city JS module
+- `POST /save-city-map` - save the city registry
+- `POST /api/cities/scaffold` - create starter city files/folders
+- `POST /api/cities/upload-image` - upload a city image into `images/cities/<id>/`
+- `GET /api/city-images` - discover available city image folders
+- `GET /api/world-clock/campaigns` - return campaign anchors
+- `POST /api/world-clock/sync` - refresh campaign anchors from linked Google Docs
+- `GET/POST /api/ai/comfy-proxy` - proxy ComfyUI requests
+- `POST /api/ai/upload-to-comfy` - upload images to ComfyUI
+- `POST /api/ai/save-image` - store generated city images
+- `GET /api/ai/fetch-google-doc` - fetch document text
+- `GET /api/ai/parse-gazetteer` - parse Google Doc HTML into city assets/data
+- `POST /api/ai/summarize` - Gemini-backed summarization helper
+
+## Editor Internals (`js/editor.js`)
+
+State that matters during future edits:
+
+| State property | Purpose |
+|---|---|
+| `selectedLocId` | current location selection; `'__preview__'` when placing a new draft location |
+| `selectedRoadId` | current road selection |
+| `locationDraft` | unsaved location form state |
+| `roadDraft` | unsaved road form state |
+| `locationDraftOriginalId` | original ID when editing/renaming |
+| `roadDraftOriginalId` | original road ID when editing/renaming |
+| `regionFilter` / `typeFilter` / `roadRegionFilter` | active list filters |
+| `locationPlacementMode` | whether map clicks should create a new location |
+| `moveLocationMode` | whether dragging/reposition behavior is enabled |
+| `isNewPreview` | whether the preview location is currently a temporary ghost |
+
+Important behaviors:
+
+- New locations are staged as a ghost `__preview__` item before the first save.
+- The editor replaces `window.CampaignData` with a render-state bridge so the overlay can preview unsaved edits.
+- Keyboard shortcuts exist for search (`/`), undo/redo, save, cancel, and arrow-key nudging.
+
 ## Backup System
 
-Backups of key files are stored in `/backups/` with timestamps (`20260331_143545`).
+Backups of key files are stored in `/backups/` with timestamps.
 
-**Before making significant changes to `js/locations-db.js`, always create a backup.**
+Before making significant changes to `js/locations-db.js`, create a backup.
 
-Use the `/backup` skill: it timestamps and copies locations-db.js to `/backups/`.
+Use the `/backup` skill.
 
 ## Common Tasks
 
 ### Add a new location
-Use the `/add-location` skill or manually append to the `locations` array in `js/locations-db.js`. The editor UI at `/editor.html` can also do this interactively.
 
-### Validate the database
-Use `/validate-db` to check for duplicate IDs, missing required fields, out-of-bounds coordinates, and orphaned road references.
+Use `/add-location`, edit `js/locations-db.js`, or place it through `editor.html`.
 
-### Edit the map overlay appearance
-SVG rendering logic is in `js/map-overlay.js`. Marker shapes, label styles, tooltip HTML, and territory fill colors are all in there.
+### Add or edit a city map
+
+- scaffold/update the city in `js/city-maps.js`
+- edit `js/cities/<city-id>.js`
+- place assets in `images/cities/<city-id>/`
+- verify in `city-viewer.html?city=<id>`
+
+### Validate the world database
+
+Use `/validate-db` for duplicate IDs, invalid coordinates, and reference issues.
+
+### Sort locations
+
+Use `/sort-locations` after bulk additions if ordering drift matters.
+
+### Check desktop packaging impact
+
+If changes touch Electron boot, server mutability rules, or packaged assets, review `DESKTOP_BUILD.md`.
 
 ## Style Notes
 
-- **Dark fantasy aesthetic** — CSS vars in `css/styles.css`: `--bg-primary: #050508`, `--gold: #d4af37`, `--crimson: #dc143c`
-- **Fonts** — Cinzel (headings), Cormorant Garamond (body), Simonetta (local fallback)
-- No build step, no bundler — edit files and refresh
+- Dark fantasy aesthetic lives mostly in `css/styles.css`
+- Main palette includes `--bg-primary: #050508`, `--gold: #d4af37`, `--crimson: #dc143c`
+- Fonts center on Cinzel and Cormorant Garamond
+- No bundler and no build step for normal web development
 
-## What NOT to do
+## What Not To Do
 
-- Don't use `localStorage` for persistence — `USE_LOCAL_STORAGE` is intentionally `false`; the source of truth is `locations-db.js` on disk
-- Don't add npm dependencies — the whole point is zero-dependency
-- Don't modify `backups/` files — they are read-only snapshots
+- Do not switch persistence back to `localStorage`
+- Do not add npm dependencies casually
+- Do not edit files inside `backups/`
+- Do not assume only the web server exists; check Electron implications too
+- Do not assume standalone `city-*.html` pages are the primary city flow; the current system is `city-viewer.html` plus `js/city-maps.js` and `js/cities/`

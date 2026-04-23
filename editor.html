@@ -815,6 +815,7 @@
         ) {
           draggingLocation = true;
           suppressNextMapClick = true;
+          e.stopImmediatePropagation();
           e.stopPropagation();
           e.preventDefault();
           const point = getMapPercentFromPointer(e.clientX, e.clientY);
@@ -828,7 +829,7 @@
         suppressNextMapClick = false;
         startX = e.clientX;
         startY = e.clientY;
-      });
+      }, true);
 
       window.addEventListener('mousemove', (e) => {
         if (draggingLocation) {
