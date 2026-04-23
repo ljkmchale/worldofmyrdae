@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Map | World of Myrdae</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #d4af37;
+      --gold-dim: #a08828;
+      --bg: #050508;
+      --bg-panel: rgba(8, 8, 14, 0.92);
+      --text: #c8b89a;
+      --text-dim: #6b5c48;
+      --border: rgba(212, 175, 55, 0.25);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ── MAP VIEWPORT ── */
+    #map-viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #map-viewport.grabbing { cursor: grabbing; }
+
+    /* ── LAYER GROUP — transforms applied here ── */
+    #map-layer-group {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    #city-map {
+      display: block;
+      max-width: none;
+      image-rendering: auto;
+      filter: contrast(1.12) saturate(1.35) brightness(0.88) hue-rotate(-3deg);
+    }
+
+    /* ── SVG OVERLAY ── */
+    #overlay-svg {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    /* ── WATER SHIMMER (optional, shown only if city defines shimmer coords) ── */
+    #water-shimmer {
+      position: absolute;
+      pointer-events: none;
+      background: linear-gradient(135deg,
+        rgba(100,160,220,0.14) 0%,
+        rgba(120,185,245,0.07) 50%,
+        rgba(80,140,210,0.14) 100%);
+      animation: shimmer 5s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+      border-radius: 3px;
+      display: none;
+    }
+    @keyframes shimmer {
+      0%   { opacity: 0.3; }
+      50%  { opacity: 0.65; }
+      100% { opacity: 0.3; }
+    }
+
+    /* ── FILM GRAIN ── */
+    #grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 11;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    /* ── TOP BAR ── */
+    #top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.8rem 1.25rem;
+      background: linear-gradient(to bottom, rgba(5,5,8,0.95) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    #top-bar > * { pointer-events: auto; }
+
+    .city-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 24px rgba(212,175,55,0.45);
+    }
+    .city-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      font-style: italic;
+      margin-top: 0.1rem;
+    }
+
+    /* ── RIGHT CONTROLS ── */
+    #controls {
+      position: fixed;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .ctrl-btn {
+      width: 38px; height: 38px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-family: 'Cinzel', serif;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+    .ctrl-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(212,175,55,0.1);
+    }
+    .ctrl-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(212,175,55,0.14);
+    }
+    .ctrl-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 0.15rem 0;
+    }
+
+    /* ── ZOOM BADGE ── */
+    #zoom-badge {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 50;
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.65rem;
+      border-radius: 3px;
+      letter-spacing: 0.06em;
+      pointer-events: none;
+    }
+
+    /* ── LOCATION CARD TOOLTIP ── */
+    #location-tooltip {
+      position: fixed;
+      z-index: 60;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0;
+      pointer-events: none;
+      width: 280px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s, transform 0.18s;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.75);
+      overflow: hidden;
+    }
+    #location-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #tt-image-wrap {
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      position: relative;
+    }
+    #tt-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      display: block;
+      filter: contrast(1.08) saturate(1.2) brightness(0.9);
+      transition: transform 0.4s ease;
+    }
+    #location-tooltip.visible #tt-image-wrap img {
+      transform: scale(1.04);
+    }
+    #tt-image-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(5,5,8,0.85) 100%);
+    }
+    #tt-name-overlay {
+      position: absolute;
+      bottom: 0.55rem;
+      left: 0.85rem;
+      right: 0.85rem;
+      z-index: 2;
+      font-family: 'Cinzel', serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+    .tt-body { padding: 0.65rem 0.9rem 0.8rem; }
+    .tt-type {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 0.4rem;
+      text-transform: capitalize;
+      letter-spacing: 0.04em;
+    }
+    .tt-desc { font-size: 0.83rem; color: var(--text); line-height: 1.55; }
+
+    /* ── SVG LABEL STYLES ── */
+    .named-label {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      fill: #d4af37;
+      paint-order: stroke fill;
+      stroke: rgba(0,0,0,0.85);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+    .sea-label {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-style: italic;
+      fill: rgba(110,175,230,0.88);
+      paint-order: stroke fill;
+      stroke: rgba(0,8,25,0.9);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+    }
+    .num-label {
+      font-family: 'Cinzel', serif;
+      font-size: 30px;
+      fill: #f0e8d0;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    .pulse-ring {
+      fill: none;
+      stroke: rgba(212,175,55,0.45);
+      stroke-width: 1.5;
+      animation: pulseRing 2.8s ease-out infinite;
+    }
+    @keyframes pulseRing {
+      0%   { r: 18; opacity: 0.9; }
+      100% { r: 72; opacity: 0; }
+    }
+
+    /* ── NOT FOUND MESSAGE ── */
+    #not-found {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--bg);
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+    }
+    #not-found h2 { font-size: 1.5rem; }
+    #not-found p  { font-size: 0.85rem; color: var(--text-dim); }
+
+    /* Hint text */
+    #hint {
+      position: fixed;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: var(--text-dim);
+      pointer-events: none;
+      z-index: 50;
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity 1.5s ease;
+    }
+    #hint.hidden { opacity: 0; }
+
+    /* Label edit panel */
+    #label-edit-panel {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      color: var(--gold);
+      min-width: 200px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    }
+    #label-edit-panel.visible { display: block; }
+    #label-edit-panel h4 { font-size: 0.8rem; margin-bottom: 0.6rem; color: var(--gold); letter-spacing: 0.05em; }
+    #label-edit-panel label { display: block; font-size: 0.68rem; color: var(--text-dim); margin-bottom: 0.25rem; }
+    #label-edit-size {
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.5rem;
+      margin-bottom: 0.7rem;
+    }
+    #label-edit-save {
+      width: 100%;
+      background: rgba(212,175,55,0.15);
+      border: 1px solid rgba(212,175,55,0.4);
+      border-radius: 3px;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      padding: 0.3rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #label-edit-save:hover { background: rgba(212,175,55,0.28); }
+    .ctrl-btn.edit-active { background: rgba(212,175,55,0.2); color: var(--gold); border-color: rgba(212,175,55,0.6); }
+  </style>
+</head>
+<body>
+
+  <!-- NOT FOUND FALLBACK -->
+  <div id="not-found">
+    <h2>City Not Found</h2>
+    <p id="not-found-msg">No city ID was specified in the URL.</p>
+  </div>
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div>
+      <div class="city-title" id="city-name-title">City Map</div>
+      <div class="city-subtitle" id="city-subtitle">World of Myrdae</div>
+    </div>
+  </div>
+
+  <!-- MAP VIEWPORT -->
+  <div id="map-viewport">
+    <div id="map-layer-group">
+      <img id="city-map" src="" alt="City Map" draggable="false">
+      <div id="water-shimmer"></div>
+      <svg id="overlay-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="text-drop" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,1)" flood-opacity="1"/>
+          </filter>
+        </defs>
+        <g id="named-labels-layer"></g>
+        <g id="numbered-markers-layer"></g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ATMOSPHERE OVERLAYS -->
+  <div id="grain"></div>
+
+  <!-- CONTROLS -->
+  <div id="controls">
+    <button class="ctrl-btn" id="btn-zoom-in"  title="Zoom In">+</button>
+    <button class="ctrl-btn" id="btn-zoom-out" title="Zoom Out">&#8722;</button>
+    <div class="ctrl-sep"></div>
+    <button class="ctrl-btn" id="btn-reset"    title="Reset View">&#8984;</button>
+    <div class="ctrl-sep"></div>
+    <button class="ctrl-btn active" id="btn-markers" title="Toggle Location Pins">&#9711;</button>
+    <button class="ctrl-btn" id="btn-labels"   title="Toggle Named Labels">Aa</button>
+    <div class="ctrl-sep"></div>
+    <button class="ctrl-btn" id="btn-edit-labels" title="Edit Label Sizes">&#9998;</button>
+  </div>
+
+  <!-- LABEL EDIT PANEL -->
+  <div id="label-edit-panel">
+    <h4 id="label-edit-name">Label</h4>
+    <label>Font Size (multiplier)</label>
+    <input id="label-edit-size" type="number" min="0.5" max="10" step="0.1">
+    <button id="label-edit-save">Save to File</button>
+  </div>
+
+  <!-- ZOOM BADGE -->
+  <div id="zoom-badge">1.0&times;</div>
+
+  <!-- HINT -->
+  <div id="hint">Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Hover markers for details</div>
+
+  <!-- TOOLTIP -->
+  <div id="location-tooltip">
+    <div id="tt-image-wrap">
+      <img id="tt-image" src="" alt="">
+      <div id="tt-name-overlay"></div>
+    </div>
+    <div class="tt-body">
+      <div class="tt-type" id="tt-type"></div>
+      <div class="tt-desc" id="tt-desc"></div>
+    </div>
+  </div>
+
+<script>
+'use strict';
+
+// ── RESOLVE CITY FROM URL PARAM ─────────────────────────────
+const _params = new URLSearchParams(window.location.search);
+const _cityId = _params.get('city') || '';
+const _safeId = /^[a-z0-9-]+$/i.test(_cityId) ? _cityId : '';
+
+function _initCity(_city) {
+  if (!_city) {
+    document.getElementById('not-found').style.display = 'flex';
+    document.getElementById('not-found-msg').textContent =
+      _cityId ? `No city registered with id "${_cityId}".` : 'Add ?city=<id> to the URL.';
+    return;
+  }
+  {
+  // ── POPULATE STATIC CONTENT ────────────────────────────────
+  document.title            = _city.name + ' \u2014 City Map | World of Myrdae';
+  document.getElementById('city-name-title').textContent = _city.name;
+  document.getElementById('city-subtitle').textContent   = _city.subtitle || 'City Map \u00B7 World of Myrdae';
+
+  const mapImg = document.getElementById('city-map');
+  mapImg.src   = _city.image;
+  mapImg.alt   = 'City of ' + _city.name;
+
+  const ttImg  = document.getElementById('tt-image');
+  const CITY_DEFAULT_TOOLTIP_IMAGE = _city.previewImage || _city.image;
+  ttImg.src    = CITY_DEFAULT_TOOLTIP_IMAGE;
+  ttImg.alt    = _city.name;
+
+  const NAMED_LOCATIONS    = _city.namedLabels || [];
+  const NUMBERED_LOCATIONS = _city.pins        || [];
+  const CITY_TOOLTIP_TYPE_IMAGES = {
+    poi: 'images/tooltips/city-types/poi.svg',
+    tavern: 'images/tooltips/city-types/tavern.svg',
+    shop: 'images/tooltips/city-types/shop.svg',
+    forge: 'images/tooltips/city-types/forge.svg',
+    temple: 'images/tooltips/city-types/temple.svg',
+    market: 'images/tooltips/city-types/market.svg',
+    harbor: 'images/tooltips/city-types/harbor.svg',
+    gate: 'images/tooltips/city-types/gate.svg',
+    stables: 'images/tooltips/city-types/stables.svg',
+    fortress: 'images/tooltips/city-types/fortress.svg',
+    archive: 'images/tooltips/city-types/archive.svg',
+    tomb: 'images/tooltips/city-types/tomb.svg',
+    vault: 'images/tooltips/city-types/vault.svg',
+    ruins: 'images/tooltips/city-types/ruins.svg'
+  };
+
+  function normalizeCityTooltipType(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function getCityTypeTooltipImage(loc) {
+    if (!loc) return CITY_DEFAULT_TOOLTIP_IMAGE;
+    if (loc.tooltipImage) return loc.tooltipImage;
+
+    const type = normalizeCityTooltipType(loc.type);
+    if (!type) return CITY_DEFAULT_TOOLTIP_IMAGE;
+
+    if (type.includes('ruin')) return CITY_TOOLTIP_TYPE_IMAGES.ruins;
+    if (type.includes('tavern') || type.includes('inn') || type.includes('lodge') || type.includes('pub') || type.includes('brothel')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.tavern;
+    }
+    if (type.includes('shop') || type.includes('store') || type.includes('tailor') || type.includes('food') || type.includes('medical')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.shop;
+    }
+    if (type.includes('smith') || type.includes('forge') || type.includes('tannery') || type.includes('fletch') || type.includes('carpentry') || type.includes('lumber')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.forge;
+    }
+    if (type.includes('temple') || type.includes('shrine') || type.includes('oratory') || type.includes('seer')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.temple;
+    }
+    if (type.includes('market') || type.includes('bathhouse')) return CITY_TOOLTIP_TYPE_IMAGES.market;
+    if (type.includes('harbor') || type === 'sea' || type === 'water' || type === 'river') return CITY_TOOLTIP_TYPE_IMAGES.harbor;
+    if (type.includes('gate')) return CITY_TOOLTIP_TYPE_IMAGES.gate;
+    if (type.includes('stable')) return CITY_TOOLTIP_TYPE_IMAGES.stables;
+    if (type.includes('garrison') || type.includes('keep') || type.includes('tower') || type.includes('stronghold') || type.includes('palace') || type.includes('hall') || type.includes('arena')) {
+      return CITY_TOOLTIP_TYPE_IMAGES.fortress;
+    }
+    if (type.includes('library') || type.includes('college') || type.includes('university')) return CITY_TOOLTIP_TYPE_IMAGES.archive;
+    if (type.includes('cemetery') || type.includes('tomb')) return CITY_TOOLTIP_TYPE_IMAGES.tomb;
+    if (type.includes('bank') || type.includes('vault') || type.includes('warehouse')) return CITY_TOOLTIP_TYPE_IMAGES.vault;
+    return CITY_TOOLTIP_TYPE_IMAGES.poi;
+  }
+
+  // ── MAP CONTROLLER ─────────────────────────────────────────
+  (function () {
+    const viewport   = document.getElementById('map-viewport');
+    const layerGrp   = document.getElementById('map-layer-group');
+    const overlaySvg = document.getElementById('overlay-svg');
+    const zoomBadge  = document.getElementById('zoom-badge');
+    const hint       = document.getElementById('hint');
+
+    const MIN_SCALE = 0.6;
+    const MAX_SCALE = 12;
+
+    const s = {
+      scale: 1, pointX: 0, pointY: 0,
+      isDragging: false, startX: 0, startY: 0,
+      ticking: false,
+      cw: 0, ch: 0, bw: 0, bh: 0,
+      imgW: 0, imgH: 0,
+    };
+
+    // ── DIMENSIONS ────────────────────────────────────────────
+    function updateDims() {
+      s.cw = viewport.offsetWidth || window.innerWidth;
+      s.ch = viewport.offsetHeight || window.innerHeight;
+      s.imgW = mapImg.naturalWidth;
+      s.imgH = mapImg.naturalHeight;
+      if (!s.imgW) return;
+      const ratio = Math.min(s.cw / s.imgW, s.ch / s.imgH);
+      s.bw = s.imgW * ratio;
+      s.bh = s.imgH * ratio;
+      if (s.scale === 1) {
+        s.pointX = (s.cw - s.bw) / 2;
+        s.pointY = (s.ch - s.bh) / 2;
+      }
+      overlaySvg.setAttribute('width',  s.imgW);
+      overlaySvg.setAttribute('height', s.imgH);
+    }
+
+    // ── CLAMP ─────────────────────────────────────────────────
+    function clamp() {
+      const iw = s.bw * s.scale;
+      const ih = s.bh * s.scale;
+      const M = 60;
+
+      // Keep undersized maps centered instead of snapping them to one side.
+      if (iw <= s.cw - (M * 2)) {
+        s.pointX = (s.cw - iw) / 2;
+      } else {
+        s.pointX = Math.min(s.pointX,  M);
+        s.pointX = Math.max(s.pointX,  s.cw - iw - M);
+      }
+
+      if (ih <= s.ch - (M * 2)) {
+        s.pointY = (s.ch - ih) / 2;
+      } else {
+        s.pointY = Math.min(s.pointY,  M);
+        s.pointY = Math.max(s.pointY,  s.ch - ih - M);
+      }
+    }
+
+    // ── RENDER ────────────────────────────────────────────────
+    function render() {
+      const naturalToDisplay = s.bw / s.imgW;
+      const totalScale = naturalToDisplay * s.scale;
+      layerGrp.style.transform = `translate3d(${s.pointX}px,${s.pointY}px,0) scale(${totalScale})`;
+      layerGrp.style.transformOrigin = '0 0';
+      zoomBadge.textContent = s.scale.toFixed(1) + '\u00D7';
+      updateOverlayScale(totalScale);
+      s.ticking = false;
+    }
+
+    function requestRender() {
+      if (!s.ticking) { requestAnimationFrame(render); s.ticking = true; }
+    }
+
+    // Pins now scale naturally with the map features. 
+    // We only adjust stroke-widths and effects if needed to keep them crisp.
+    function updateOverlayScale(totalScale) {
+      if (!totalScale || !isFinite(totalScale) || totalScale <= 0) return;
+      // No longer applying 1/totalScale to keep pins constant size.
+      // They will now grow and shrink with the map.
+    }
+
+    // ── INIT ──────────────────────────────────────────────────
+    function onImgReady() {
+      updateDims();
+
+      // Optional water shimmer (defined in CITY_MAPS entry as shimmer:{x,y,w,h} in 0-1 fractions)
+      if (_city.shimmer) {
+        const ws = document.getElementById('water-shimmer');
+        ws.style.left   = (_city.shimmer.x * s.imgW) + 'px';
+        ws.style.top    = (_city.shimmer.y * s.imgH) + 'px';
+        ws.style.width  = (_city.shimmer.w * s.imgW) + 'px';
+        ws.style.height = (_city.shimmer.h * s.imgH) + 'px';
+        ws.style.display = 'block';
+      }
+
+      buildNamedLabels();
+      document.getElementById('named-labels-layer').style.opacity = '1';
+      buildNumberedMarkers();
+      render();
+
+      requestAnimationFrame(() => { updateDims(); render(); });
+      setTimeout(() => hint.classList.add('hidden'), 6000);
+    }
+
+    if (mapImg.complete && mapImg.naturalWidth) onImgReady();
+    else mapImg.addEventListener('load', onImgReady);
+
+    window.addEventListener('resize', () => { updateDims(); requestRender(); });
+
+    // ── WHEEL ZOOM ────────────────────────────────────────────
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const natDisp    = s.bw / s.imgW;
+      const curTotal   = natDisp * s.scale;
+      const xs = (mx - s.pointX) / curTotal;
+      const ys = (my - s.pointY) / curTotal;
+      const factor = e.deltaY < 0 ? 1.13 : 1 / 1.13;
+      s.scale = Math.min(Math.max(MIN_SCALE, s.scale * factor), MAX_SCALE);
+      const newTotal = natDisp * s.scale;
+      s.pointX = mx - xs * newTotal;
+      s.pointY = my - ys * newTotal;
+      clamp(); requestRender();
+    }, { passive: false });
+
+    // ── MOUSE PAN ─────────────────────────────────────────────
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      s.isDragging = true;
+      s.startX = e.clientX - s.pointX;
+      s.startY = e.clientY - s.pointY;
+      viewport.classList.add('grabbing');
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!s.isDragging) return;
+      s.pointX = e.clientX - s.startX;
+      s.pointY = e.clientY - s.startY;
+      clamp(); requestRender();
+    });
+    window.addEventListener('mouseup', () => {
+      s.isDragging = false;
+      viewport.classList.remove('grabbing');
+    });
+
+    // ── COORDINATE DISPLAY ────────────────────────────────────
+    // ── TOUCH PAN/PINCH ───────────────────────────────────────
+    let lastPinchDist = 0;
+    viewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        s.isDragging = true;
+        s.startX = e.touches[0].clientX - s.pointX;
+        s.startY = e.touches[0].clientY - s.pointY;
+      } else if (e.touches.length === 2) {
+        s.isDragging = false;
+        lastPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY);
+      }
+    }, { passive: true });
+    viewport.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1 && s.isDragging) {
+        s.pointX = e.touches[0].clientX - s.startX;
+        s.pointY = e.touches[0].clientY - s.startY;
+        clamp(); requestRender();
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY);
+        const mid  = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        };
+        const rect    = viewport.getBoundingClientRect();
+        const natDisp = s.bw / s.imgW;
+        const total   = natDisp * s.scale;
+        const xs = (mid.x - rect.left - s.pointX) / total;
+        const ys = (mid.y - rect.top  - s.pointY) / total;
+        s.scale = Math.min(Math.max(MIN_SCALE, s.scale * (dist / lastPinchDist)), MAX_SCALE);
+        const newTotal = natDisp * s.scale;
+        s.pointX = (mid.x - rect.left) - xs * newTotal;
+        s.pointY = (mid.y - rect.top)  - ys * newTotal;
+        clamp(); requestRender();
+        lastPinchDist = dist;
+      }
+    }, { passive: false });
+    viewport.addEventListener('touchend', () => { s.isDragging = false; });
+
+    // ── ANIMATED PAN-TO ───────────────────────────────────────
+    function animateTo(targetScale, targetX, targetY, ms) {
+      const s0 = s.scale, x0 = s.pointX, y0 = s.pointY;
+      const t0 = performance.now();
+      function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+      function step(now) {
+        const t = Math.min((now - t0) / ms, 1), e = ease(t);
+        s.scale  = s0 + (targetScale - s0) * e;
+        s.pointX = x0 + (targetX - x0) * e;
+        s.pointY = y0 + (targetY - y0) * e;
+        render();
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function flyTo(xPct, yPct, targetScale) {
+      updateDims();
+      const natDisp  = s.bw / s.imgW;
+      const newScale = Math.min(Math.max(3, targetScale || 4), MAX_SCALE);
+      const newTotal = natDisp * newScale;
+      const px = (xPct / 100) * s.imgW * newTotal;
+      const py = (yPct / 100) * s.imgH * newTotal;
+      animateTo(newScale, s.cw / 2 - px, s.ch / 2 - py, 700);
+    }
+    window.cityFlyTo = flyTo;
+
+    // ── BUILD SVG OVERLAYS ────────────────────────────────────
+    function svgEl(tag, attrs) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+      return el;
+    }
+
+    function buildNamedLabels() {
+      const layer = document.getElementById('named-labels-layer');
+      layer.innerHTML = '';
+      NAMED_LOCATIONS.forEach(loc => {
+        const px = (loc.x / 100) * s.imgW;
+        const py = (loc.y / 100) * s.imgH;
+        const grp = svgEl('g', {});
+        grp.dataset.px = px;
+        grp.dataset.py = py;
+
+        if (loc.type === 'sea') {
+          loc.name.split(' ').forEach((word, i) => {
+            const t = svgEl('text', { x: px, y: py + i * 18, class: 'sea-label', 'text-anchor': 'middle' });
+            t.textContent = word;
+            grp.appendChild(t);
+          });
+        } else if (loc.type === 'gate') {
+          const d = svgEl('polygon', {
+            points: `${px},${py-13.5} ${px+10.5},${py} ${px},${py+13.5} ${px-10.5},${py}`,
+            fill: 'rgba(212,175,55,0.88)', stroke: 'rgba(0,0,0,0.75)', 'stroke-width': '1.2',
+            style: 'pointer-events:all; cursor:pointer;',
+          });
+          const t = svgEl('text', {
+            x: px + 18, y: py + 4.5, class: 'named-label',
+            style: 'font-size:18px; pointer-events:all; cursor:pointer;',
+          });
+          t.textContent = loc.name;
+          grp.appendChild(d); grp.appendChild(t);
+        } else {
+          const sz = loc.size || 1.0;
+          const t = svgEl('text', {
+            x: px, y: py, class: 'named-label',
+            'text-anchor': 'middle', filter: 'url(#text-drop)',
+            style: `font-size:${Math.round(16 * sz)}px; pointer-events:all; cursor:pointer;`,
+          });
+          t.textContent = loc.name;
+          grp.appendChild(t);
+        }
+
+        grp.style.pointerEvents = 'all';
+        grp.dataset.labelId = loc.id || loc.name;
+        addTipEvents(grp, loc);
+        layer.appendChild(grp);
+      });
+    }
+
+    function normalizeCityPinType(type) {
+      return String(type || '').trim().toLowerCase();
+    }
+
+    function getCityPinMarkerStyle(loc) {
+      const type = normalizeCityPinType(loc.type);
+      const size = loc.size || 1.0;
+      const style = {
+        type,
+        size,
+        radius: 14 * size,
+        fill: 'rgba(12,9,5,0.84)',
+        stroke: 'rgba(212,175,55,0.82)',
+        haloStroke: 'rgba(212,175,55,0.35)',
+        textFill: '#f0e8d0',
+        textStroke: 'rgba(0,0,0,0.8)',
+        shape: 'circle'
+      };
+
+      if (type === 'ruins') {
+        style.shape = 'diamond';
+        style.fill = 'rgba(69,55,44,0.92)';
+        style.stroke = 'rgba(201,155,89,0.92)';
+        style.haloStroke = 'rgba(201,155,89,0.42)';
+        style.textFill = '#f5e9cf';
+        style.textStroke = 'rgba(20,12,7,0.92)';
+      }
+
+      return style;
+    }
+
+    function buildNumberedMarkers() {
+      const layer = document.getElementById('numbered-markers-layer');
+      layer.innerHTML = '';
+      NUMBERED_LOCATIONS.forEach(loc => {
+        const px  = (loc.x / 100) * s.imgW;
+        const py  = (loc.y / 100) * s.imgH;
+        const markerStyle = getCityPinMarkerStyle(loc);
+        const r   = markerStyle.radius;
+        const grp = svgEl('g', { style: 'pointer-events:all; cursor:pointer;' });
+        grp.dataset.px = px;
+        grp.dataset.py = py;
+
+        if (loc.n <= 4) {
+          grp.appendChild(svgEl('circle', { cx: px, cy: py, r: r * 1.4, class: 'pulse-ring' }));
+        }
+        grp.appendChild(svgEl('circle', {
+          cx: px, cy: py, r: r * 1.15,
+          fill: 'none', stroke: markerStyle.haloStroke, 'stroke-width': '1',
+        }));
+        if (markerStyle.shape === 'diamond') {
+          grp.appendChild(svgEl('polygon', {
+            points: `${px},${py-r} ${px+r},${py} ${px},${py+r} ${px-r},${py}`,
+            fill: markerStyle.fill,
+            stroke: markerStyle.stroke,
+            'stroke-width': '1.5'
+          }));
+        } else {
+          grp.appendChild(svgEl('circle', {
+            cx: px, cy: py, r: r,
+            fill: markerStyle.fill, stroke: markerStyle.stroke, 'stroke-width': '1.5',
+          }));
+        }
+        const num = svgEl('text', {
+          x: px, y: py, class: 'num-label',
+          fill: markerStyle.textFill,
+          stroke: markerStyle.textStroke,
+          'stroke-width': '1.1',
+          'paint-order': 'stroke',
+          style: `font-size:${Math.round(14 * markerStyle.size)}px`,
+        });
+        num.textContent = loc.n;
+        grp.appendChild(num);
+        addTipEvents(grp, loc);
+        layer.appendChild(grp);
+      });
+    }
+
+    // ── TOOLTIP ───────────────────────────────────────────────
+    const tooltip  = document.getElementById('location-tooltip');
+    const ttName   = document.getElementById('tt-name-overlay');
+    const ttType   = document.getElementById('tt-type');
+    const ttDesc   = document.getElementById('tt-desc');
+
+    function addTipEvents(el, loc) {
+      el.addEventListener('mouseenter', (e) => {
+        const tooltipImage = getCityTypeTooltipImage(loc);
+        ttImg.onerror = () => {
+          ttImg.onerror = null;
+          ttImg.src = CITY_DEFAULT_TOOLTIP_IMAGE;
+          ttImg.alt = _city.name;
+        };
+        ttImg.src = tooltipImage;
+        ttImg.alt = loc.type ? `${loc.type} header art` : _city.name;
+        ttName.textContent = loc.name || ('Location ' + loc.n);
+        ttType.textContent = loc.type || '';
+        ttDesc.textContent = loc.desc || '';
+        tooltip.classList.add('visible');
+        moveTip(e);
+      });
+      el.addEventListener('mousemove', moveTip);
+      el.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+    }
+    function moveTip(e) {
+      const x = e.clientX + 18, y = e.clientY - 10;
+      const tw = tooltip.offsetWidth || 240, th = tooltip.offsetHeight || 80;
+      tooltip.style.left = Math.min(x, window.innerWidth  - tw - 12) + 'px';
+      tooltip.style.top  = Math.max(10, Math.min(y, window.innerHeight - th - 12)) + 'px';
+    }
+
+    // ── CONTROL BUTTONS ───────────────────────────────────────
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      const cx = s.cw/2, cy = s.ch/2, natDisp = s.bw/s.imgW, cur = natDisp*s.scale;
+      const xs = (cx-s.pointX)/cur, ys = (cy-s.pointY)/cur;
+      const ns = Math.min(s.scale*1.6, MAX_SCALE);
+      animateTo(ns, cx-xs*(natDisp*ns), cy-ys*(natDisp*ns), 380);
+    });
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      const cx = s.cw/2, cy = s.ch/2, natDisp = s.bw/s.imgW, cur = natDisp*s.scale;
+      const xs = (cx-s.pointX)/cur, ys = (cy-s.pointY)/cur;
+      const ns = Math.max(s.scale/1.6, MIN_SCALE);
+      animateTo(ns, cx-xs*(natDisp*ns), cy-ys*(natDisp*ns), 380);
+    });
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      updateDims();
+      animateTo(1, (s.cw-s.bw)/2, (s.ch-s.bh)/2, 650);
+    });
+
+    let markersOn = true;
+    document.getElementById('btn-markers').addEventListener('click', function () {
+      markersOn = !markersOn;
+      document.getElementById('numbered-markers-layer').style.opacity = markersOn ? '1' : '0';
+      this.classList.toggle('active', markersOn);
+    });
+
+    let labelsOn = false;
+    document.getElementById('btn-labels').addEventListener('click', function () {
+      labelsOn = !labelsOn;
+      document.getElementById('named-labels-layer').style.opacity = labelsOn ? '1' : '0';
+      this.classList.toggle('active', labelsOn);
+    });
+
+    // ── LABEL EDIT MODE ──────────────────────────────────────
+    let editLabelsOn = false;
+    let editTarget = null;
+    const editPanel = document.getElementById('label-edit-panel');
+    const editName  = document.getElementById('label-edit-name');
+    const editSize  = document.getElementById('label-edit-size');
+    const editSave  = document.getElementById('label-edit-save');
+
+    document.getElementById('btn-edit-labels').addEventListener('click', function () {
+      editLabelsOn = !editLabelsOn;
+      this.classList.toggle('edit-active', editLabelsOn);
+      if (!editLabelsOn) { editPanel.classList.remove('visible'); editTarget = null; }
+      // Ensure labels are visible in edit mode
+      if (editLabelsOn && !labelsOn) {
+        labelsOn = true;
+        document.getElementById('named-labels-layer').style.opacity = '1';
+        document.getElementById('btn-labels').classList.add('active');
+      }
+    });
+
+    document.getElementById('named-labels-layer').addEventListener('click', function (e) {
+      if (!editLabelsOn) return;
+      const grp = e.target.closest('g[data-label-id]');
+      if (!grp) return;
+      const id = grp.dataset.labelId;
+      editTarget = NAMED_LOCATIONS.find(l => (l.id || l.name) === id);
+      if (!editTarget) return;
+      editName.textContent = editTarget.name;
+      editSize.value = editTarget.size || 1.0;
+      editPanel.classList.add('visible');
+      editPanel.style.left = Math.min(e.clientX + 12, window.innerWidth - 230) + 'px';
+      editPanel.style.top  = Math.min(e.clientY - 10, window.innerHeight - 160) + 'px';
+    });
+
+    editSize.addEventListener('input', () => {
+      if (!editTarget) return;
+      editTarget.size = parseFloat(editSize.value) || 1.0;
+      buildNamedLabels();
+    });
+
+    editSave.addEventListener('click', async () => {
+      if (!editTarget || !_safeId) return;
+      const cityData = (window.CITY_MAPS_REGISTRY || {})[_safeId];
+      if (!cityData) return;
+      try {
+        const body = `window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};\nwindow.CITY_MAPS_REGISTRY[${JSON.stringify(_safeId)}] = ${JSON.stringify(cityData, null, 2)};\n`;
+        const res = await fetch('/save-city/' + _safeId, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body });
+        const json = await res.json();
+        if (json.success) {
+          editSave.textContent = 'Saved!';
+          setTimeout(() => { editSave.textContent = 'Save to File'; }, 1500);
+        } else {
+          alert('Save failed: ' + json.error);
+        }
+      } catch (err) {
+        alert('Save error: ' + err.message);
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { editPanel.classList.remove('visible'); editTarget = null; }
+    });
+
+  })();
+  } // end _initCity block
+} // end _initCity function
+
+if (!_safeId) {
+  _initCity(null);
+} else {
+  const _s = document.createElement('script');
+  _s.src = 'js/cities/' + _safeId + '.js?v=' + Date.now();
+  _s.onload = () => _initCity((window.CITY_MAPS_REGISTRY || {})[_safeId] || null);
+  _s.onerror = () => _initCity(null);
+  document.head.appendChild(_s);
+}
+</script>
+</body>
+</html>

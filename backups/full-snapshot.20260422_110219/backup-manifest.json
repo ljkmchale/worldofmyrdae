@@ -1,0 +1,17 @@
+﻿{
+    "gitStatus":  [
+                      " M data/campaign-clock-links.json",
+                      " M editor.html",
+                      " M server.js",
+                      "?? backups/boat-animations.20260422_110219.js",
+                      "?? backups/dragon-overlay.20260422_110219.js",
+                      "?? backups/editor.20260422_110219.js",
+                      "?? backups/full-snapshot.20260422_110219/",
+                      "?? backups/locations-db.20260422_110219.js",
+                      "?? backups/map-overlay.20260422_110219.js"
+                  ],
+    "timestamp":  "20260422_110219",
+    "snapshotDir":  "C:\\Users\\Larry McHale\\Desktop\\WorldofMyrdae\\backups\\full-snapshot.20260422_110219",
+    "note":  "Pre-refactor full snapshot before editor cleanup and regression testing",
+    "cwd":  "C:\\Users\\Larry McHale\\Desktop\\WorldofMyrdae"
+}

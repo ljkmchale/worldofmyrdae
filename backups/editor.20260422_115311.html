@@ -1,0 +1,2428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map Editor | World of Myrdae</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dnd-theme.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(120, 20, 20, 0.14), transparent 28%),
+        #050508;
+    }
+
+    .editor-layout {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .editor-sidebar {
+      width: 400px;
+      min-width: 400px;
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    .editor-map-area {
+      flex-grow: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .map-container {
+      flex-grow: 1;
+      cursor: crosshair;
+      background: #050508;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .map-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      will-change: transform;
+      transform-origin: 0 0;
+      backface-visibility: hidden;
+      perspective: 1000;
+      -webkit-font-smoothing: subpixel-antialiased;
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    .map-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .map-btn:hover {
+      background: var(--color-gold);
+      color: #000;
+    }
+
+    .map-btn i {
+      font-size: 0.95rem;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+      transition: transform 0.2s ease;
+    }
+
+    .map-btn:hover i {
+      transform: scale(1.06);
+    }
+
+    .map-coords {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body class="editor-mode">
+  <div class="editor-layout">
+    <div class="editor-sidebar" id="editor-sidebar">
+      <div class="editor-hero">
+        <div class="editor-hero-kicker">World of Myrdae</div>
+        <h2 class="editor-title">Map Editor</h2>
+        <p class="editor-subtitle">Shape the atlas with the same dark-fantasy polish the map reveals in its tooltips.</p>
+        <div class="editor-action-row">
+          <button id="btn-refresh-map" class="btn btn-secondary btn-flex" onclick="Editor.refreshMap()"><i
+              class="fa-solid fa-sync"></i> Refresh Map</button>
+          <button id="btn-reload-data" class="btn btn-secondary btn-flex" onclick="Editor.reloadPage()"><i
+              class="fa-solid fa-rotate-right"></i> Reload Data</button>
+        </div>
+        <div class="editor-action-row editor-action-row-tight">
+          <button id="btn-undo" class="btn btn-secondary btn-flex" onclick="Editor.undo()" disabled title="Nothing to undo"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+          <button id="btn-redo" class="btn btn-secondary btn-flex" onclick="Editor.redo()" disabled title="Nothing to redo"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+        </div>
+      </div>
+
+      <!-- Editor Tabs -->
+      <div class="editor-tabs editor-tab-panel">
+        <button class="editor-tab active" onclick="Editor.switchTab('locations')">Locations</button>
+        <button class="editor-tab" onclick="Editor.switchTab('roads')">Roads</button>
+        <button class="editor-tab" onclick="CityEditor.open()">City Map</button>
+      </div>
+
+      <!-- Locations Tab Content -->
+      <div id="tab-locations" class="tab-content active editor-scroll-panel">
+        <p class="editor-intro">Select an existing location to edit it, or explicitly start placement to add a new one.</p>
+
+        <div class="editor-action-row" style="margin-top:0; margin-bottom:0.75rem;">
+          <button id="btn-new-location" class="btn btn-primary btn-flex" onclick="Editor.toggleNewLocationMode()">
+            <i class="fa-solid fa-plus"></i> New Location
+          </button>
+        </div>
+        <p id="location-placement-hint" class="editor-intro" style="margin-top:0; margin-bottom:0.75rem; font-size:0.92rem;">
+          Placement mode is off. Clicking the map will not create a location.
+        </p>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Region Filter</label>
+          <span id="region-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
+        <select id="region-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
+          onchange="Editor.filterByRegion(this.value)">
+          <option value="">All Regions</option>
+        </select>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Type Filter</label>
+          <span id="type-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
+        <select id="type-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
+          onchange="Editor.filterByType(this.value)">
+          <option value="">All Types</option>
+        </select>
+
+        <label for="location-search" style="display:block; font-size:0.75rem; color:#888; margin-bottom:0.25rem;">Search</label>
+        <div style="position:relative; margin-bottom:0.4rem;">
+          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('location-search').focus()"></i>
+          <input type="text" id="location-search" placeholder="Search locations…" autocomplete="off"
+            style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
+            oninput="Editor.filterLocationList(this.value)">
+        </div>
+
+        <select id="location-list" class="form-control"
+          style="margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1rem; background-color: #1a1614; color: #d4af37; border: 1px solid #584433; padding: 0.5rem; cursor: pointer; width: 100%;"
+          onchange="if(this.value) { Editor.selectLocation(this.value); } else { Editor.cancelLocation(); }">
+          <!-- Populated by JS -->
+        </select>
+
+        <div id="location-form-area" class="editor-section-card" style="display: none;">
+          <h3 id="form-title" class="editor-section-title">Edit Location</h3>
+
+          <div class="form-group">
+            <label>ID (auto-generated if empty)</label>
+            <input type="text" id="loc-id" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Name (\\n for newline)</label>
+            <input type="text" id="loc-name" class="form-control" required oninput="Editor.previewLocation()">
+          </div>
+
+          <div class="form-group" style="margin-top: 0.25rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" id="loc-hideLabel" onchange="Editor.previewLocation()">
+              Hide Label <span style="color: #888; font-size: 0.8rem;">(marker only, no text on map)</span>
+            </label>
+          </div>
+
+          <div class="form-inline">
+            <div class="form-group" style="flex:1;">
+              <label>X (%)</label>
+              <input type="number" id="loc-x" class="form-control" step="0.01" required
+                oninput="Editor.previewLocation()">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Y (%)</label>
+              <input type="number" id="loc-y" class="form-control" step="0.01" required
+                oninput="Editor.previewLocation()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Type</label>
+            <select id="loc-type" class="form-control" onchange="Editor.previewLocation()">
+              <option value="capital">Capital</option>
+              <option value="city">City (Large)</option>
+              <option value="small-city">City (Small)</option>
+              <option value="town">Town</option>
+              <option value="village">Village</option>
+              <option value="port">Port</option>
+              <option value="ruins">Ruins</option>
+              <option value="landmark">Landmark</option>
+              <option value="nature">Nature / Terrain</option>
+              <option value="poi">POI</option>
+              <option value="region">Region Label</option>
+              <option value="water">Water Label</option>
+              <option value="river">River Label</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Region</label>
+            <input type="text" id="loc-region" class="form-control" oninput="Editor.previewLocation()">
+          </div>
+
+          <div class="form-group">
+            <label>Description (Tooltip)</label>
+            <textarea id="loc-desc" class="form-control" rows="2" oninput="Editor.previewLocation()"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Details (Extra Italic Info)</label>
+            <textarea id="loc-details" class="form-control" rows="2" oninput="Editor.previewLocation()"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Link URL (opens in new tab)</label>
+            <input type="text" id="loc-link" class="form-control" placeholder="https://example.com/page"
+              oninput="Editor.previewLocation()">
+          </div>
+
+          <div class="form-group">
+            <label>City Map Page <span style="color:#888;font-size:0.75rem;">(adds City Map button to tooltip)</span></label>
+            <select id="loc-cityMap" class="form-control"
+              style="font-family:'Cinzel',serif;font-size:0.85rem;background:#1a1614;color:#d4af37;border:1px solid #584433;"
+              onchange="Editor.previewLocation()">
+              <option value="">— None —</option>
+            </select>
+          </div>
+
+          <details class="editor-details">
+            <summary>Advanced Typography / Markers
+            </summary>
+            <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="form-group"><label>Font Family</label><input type="text" id="loc-fontFamily"
+                  class="form-control" placeholder="Garamond MT" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Font Size</label><input type="number" id="loc-fontSize"
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Font Weight</label><input type="text" id="loc-fontWeight"
+                  class="form-control" placeholder="300" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Font Style</label><input type="text" id="loc-fontStyle"
+                  class="form-control" placeholder="Italic" oninput="Editor.previewLocation()"></div>
+
+              <div class="form-group"><label>Marker Size Mult (0 to hide)</label><input type="number"
+                  id="loc-markerSize" class="form-control" step="0.1" value="0.25" oninput="Editor.previewLocation()">
+              </div>
+              <div class="form-group"><label>Marker Offset X</label><input type="number" id="loc-markerOffsetX"
+                  class="form-control" step="1" value="0" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Marker Offset Y</label><input type="number" id="loc-markerOffsetY"
+                  class="form-control" step="1" value="0" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Label Offset X</label><input type="number" id="loc-labelOffsetX"
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Label Offset Y</label><input type="number" id="loc-labelOffsetY"
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Label Align</label>
+                <select id="loc-labelAlign" class="form-control" onchange="Editor.previewLocation()">
+                  <option value="">Default (Left)</option>
+                  <option value="middle">Center</option>
+                  <option value="end">Right</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Rotation (degrees)</label><input type="number" id="loc-rotation"
+                  class="form-control" step="1" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Text Curve (Arc bend, e.g. -50 to 50)</label><input type="number"
+                  id="loc-textCurve" class="form-control" step="1" oninput="Editor.previewLocation()"></div>
+              <div class="form-group"><label>Opacity</label><input type="number" id="loc-opacity" class="form-control"
+                  step="0.1" max="1" min="0" oninput="Editor.previewLocation()"></div>
+            </div>
+          </details>
+
+          <div class="editor-action-wrap">
+            <button id="btn-save-location" class="btn btn-primary" onclick="Editor.saveLocation()" title="Save (Ctrl+S)">Save Location</button>
+            <button id="btn-move-location" class="btn btn-secondary" onclick="Editor.toggleMoveLocationMode()" title="Select an existing saved location first">
+              <i class="fa-solid fa-up-down-left-right"></i> Move Location
+            </button>
+            <button class="btn btn-secondary" onclick="Editor.duplicateLocation()" title="Clone this location as a new entry"><i class="fa-solid fa-copy"></i> Duplicate</button>
+            <button class="btn btn-secondary" onclick="Editor.cancelLocation()">Cancel</button>
+            <button class="btn btn-danger" onclick="Editor.deleteLocation()" id="btn-del-loc">Delete</button>
+          </div>
+          <div id="location-form-message" style="min-height:1.1rem; margin-top:0.55rem; font-size:0.76rem; color:#8f8576; font-style:italic;"></div>
+        </div>
+
+        <!-- Batch Region Rename -->
+        <details class="editor-details editor-details-muted">
+          <summary>&#9998; Rename Region (batch)</summary>
+          <div style="margin-top:0.5rem; display:flex; flex-direction:column; gap:0.4rem;">
+            <select id="rename-region-old" class="form-control"
+              style="font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem;">
+              <option value="">— Select region to rename —</option>
+            </select>
+            <input type="text" id="rename-region-new" class="form-control" placeholder="New region name"
+              style="font-size:0.82rem;">
+            <button class="btn btn-secondary" onclick="Editor.applyRenameRegion()" style="font-size:0.8rem;">
+              <i class="fa-solid fa-pen-to-square"></i> Apply Rename
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <!-- City Map Tab Content -->
+      <div id="tab-citymap" class="tab-content editor-scroll-panel" style="display: none;">
+        <p class="editor-intro">Select a city, then drag pins to reposition them. Click Save when done.</p>
+
+        <div class="form-group" style="margin-bottom:0.9rem;">
+          <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">Create From World Location</label>
+          <div style="display:flex; gap:0.5rem;">
+            <select id="city-create-select" class="form-control"
+              style="flex:1; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.4rem;">
+              <option value="">-- Select a city or town --</option>
+            </select>
+            <button class="btn btn-secondary" onclick="CityEditor.createCity()" style="white-space:nowrap; font-size:0.8rem; padding:0.3rem 0.75rem;">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Open Wizard
+            </button>
+          </div>
+          <div id="city-create-status" style="font-size:0.72rem; color:#888; margin-top:0.25rem; min-height:1rem; font-style:italic;"></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label style="font-size:0.75rem; color:#888;">City</label>
+            <select id="city-select" class="form-control"
+              style="font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; flex:1;"
+              onchange="CityEditor.loadCity(this.value)">
+              <option value="">— Select a city —</option>
+            </select>
+        </div>
+
+        <div id="city-world-link" style="display:none; margin-bottom:0.75rem;">
+          <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">Linked World Location</label>
+          <div style="display:flex; gap:0.5rem;">
+            <select id="city-loc-select" class="form-control"
+              style="flex:1; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.4rem;">
+              <option value="">— None —</option>
+            </select>
+            <button class="btn btn-secondary" onclick="CityEditor.linkWorldLocation()" style="white-space:nowrap; font-size:0.8rem; padding:0.3rem 0.6rem;">Link</button>
+          </div>
+          <div id="city-link-status" style="font-size:0.72rem; color:#888; margin-top:0.25rem; min-height:1rem; font-style:italic;"></div>
+        </div>
+
+        <div id="city-pin-controls" style="display:none;">
+          <div style="position:relative; margin-bottom:0.5rem;">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('city-pin-search').focus()"></i>
+            <input type="text" id="city-pin-search" placeholder="Search pins…" autocomplete="off"
+              style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
+              oninput="CityEditor.filterList(this.value)">
+          </div>
+
+          <select id="city-pin-list" class="form-control"
+            style="margin-bottom: 0.5rem; font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; width:100%;"
+            onchange="CityEditor.selectPin(this.value)">
+          </select>
+          <button class="btn btn-secondary" onclick="CityEditor.addNamedLabel()" style="width:100%; margin-bottom:0.75rem; font-size:0.8rem;">
+            <i class="fa-solid fa-tag"></i> Add Named Label
+          </button>
+        </div>
+
+        <div id="city-pin-form" class="editor-section-card" style="display:none;">
+          <h3 id="city-pin-name" class="editor-section-title" style="margin:0 0 0.75rem;"></h3>
+          <p id="city-form-hint" style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;"><i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.</p>
+          <div class="form-inline">
+            <div id="city-pin-n-row" class="form-group" style="flex:0 0 80px;">
+              <label>Pin #</label>
+              <input type="number" id="city-pin-n" class="form-control" min="1" step="1" oninput="CityEditor.updateFromForm()">
+            </div>
+            <div id="city-label-id-row" class="form-group" style="flex:1; display:none;">
+              <label>ID</label>
+              <input type="text" id="city-label-id" class="form-control" oninput="CityEditor.updateFromForm()">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>X (%)</label>
+              <input type="number" id="city-pin-x" class="form-control" step="0.1" oninput="CityEditor.updateFromForm()">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Y (%)</label>
+              <input type="number" id="city-pin-y" class="form-control" step="0.1" oninput="CityEditor.updateFromForm()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="city-pin-name-input" class="form-control" oninput="CityEditor.updateFromForm()">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" id="city-pin-type" class="form-control" oninput="CityEditor.updateFromForm()">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="city-pin-desc" class="form-control" rows="3" oninput="CityEditor.updateFromForm()"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Pin Size &nbsp;<span id="city-pin-size-val" style="color:var(--color-gold);">1.0</span></label>
+            <input type="range" id="city-pin-size" min="0.3" max="3.0" step="0.1" value="1.0"
+              style="width:100%; accent-color:var(--color-gold);"
+              oninput="document.getElementById('city-pin-size-val').textContent=parseFloat(this.value).toFixed(1); CityEditor.updateFromForm()">
+          </div>
+          <button id="city-delete-btn" class="btn btn-danger" onclick="CityEditor.deletePin()"
+            style="width:100%; margin-top:0.5rem;">
+            <i class="fa-solid fa-trash"></i> Delete This Pin
+          </button>
+        </div>
+
+        <div id="city-action-btns" style="display:none; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-primary" onclick="CityEditor.save()" style="flex:1;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            <button class="btn btn-secondary" onclick="CityEditor.resetView()" style="flex:1;"><i class="fa-solid fa-house"></i> Reset View</button>
+          </div>
+          <button class="btn btn-secondary" onclick="CityEditor.exitCityMode()" style="width:100%; opacity:0.7;">&#8592; Back to World Map</button>
+        </div>
+        <div id="city-save-status" style="font-size:0.75rem; color:#888; margin-top:0.5rem; min-height:1.2rem; font-style:italic;"></div>
+      </div>
+
+      <!-- Roads Tab Content -->
+      <div id="tab-roads" class="tab-content editor-scroll-panel" style="display: none;">
+        <p class="editor-intro">Select a road to edit, or click 'New Road' to start plotting.</p>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Region Filter</label>
+          <span id="road-region-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
+        <select id="road-region-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
+          onchange="Editor.filterRoadsByRegion(this.value)">
+          <option value="">All Connected Regions</option>
+        </select>
+
+        <div style="position:relative; margin-bottom:0.4rem;">
+          <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('road-search').focus()"></i>
+          <input type="text" id="road-search" placeholder="Search roads…" autocomplete="off"
+            style="width:100%; box-sizing:border-box; padding:0.4rem 0.5rem 0.4rem 2rem; background:#111; border:1px solid #584433; border-radius:4px; color:#d4af37; font-family:'Inter',sans-serif; font-size:0.85rem;"
+            oninput="Editor.filterRoadList(this.value)">
+        </div>
+
+        <select id="road-list" class="form-control"
+          style="margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1rem; background-color: #1a1614; color: #d4af37; border: 1px solid #584433; padding: 0.5rem; cursor: pointer; width: 100%;"
+          onchange="if(this.value) { Editor.selectRoad(this.value); } else { Editor.cancelRoad(); }">
+          <!-- Populated by JS -->
+        </select>
+
+        <button class="btn btn-secondary" onclick="Editor.newRoad()" style="width: 100%; margin-bottom: 1rem;">+ New
+          Road</button>
+
+        <div id="road-form-area" class="editor-section-card" style="display: none;">
+          <h3 id="road-form-title" class="editor-section-title">Edit Road</h3>
+
+          <div class="form-group">
+            <label>ID</label>
+            <input type="text" id="road-id" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Type</label>
+            <select id="road-type" class="form-control" onchange="Editor.previewRoad(); Editor.toggleShipDetails();">
+              <option value="major">Major Road</option>
+              <option value="minor">Minor Road</option>
+              <option value="river">River</option>
+              <option value="water-route">Boat Route / Sea Lane</option>
+              <option value="border">Border</option>
+            </select>
+            <small style="display:block; margin-top:0.4rem; color:#888; font-size:0.82rem;">Boat routes animate ships on the map instead of drawing a line.</small>
+            <small id="vessel-hint" style="display:block; margin-top:0.25rem; color:#4da6ff; font-size:0.78rem; font-style:italic;"><i class="fa-solid fa-ship"></i> Switch to "Boat Route / Sea Lane" to configure vessel name, captain, cargo &amp; animation.</small>
+          </div>
+
+          <div id="ship-details-section" style="display:none; background:rgba(0,60,100,0.15); border:1px solid rgba(30,144,255,0.25); border-radius:4px; padding:0.75rem; margin-bottom:0.75rem;">
+            <p style="margin:0 0 0.6rem; font-size:0.8rem; color:#4da6ff; font-family:'Cinzel',serif; letter-spacing:0.05em;">&#9875; Vessel Details</p>
+            <div class="form-group">
+              <label>Ship Name</label>
+              <input type="text" id="ship-name" class="form-control" placeholder="e.g. The Crimson Tide" oninput="Editor.previewRoad()">
+            </div>
+            <div class="form-group">
+              <label>Ship Type</label>
+              <select id="ship-type" class="form-control" onchange="Editor.handleShipTypeChange()">
+                <option value="">— Select type —</option>
+                <option value="Caravel">Caravel</option>
+                <option value="Sloop">Sloop</option>
+                <option value="Brigantine">Brigantine</option>
+                <option value="Galleon">Galleon</option>
+                <option value="Frigate">Frigate</option>
+                <option value="Merchant Cog">Merchant Cog</option>
+                <option value="Longship">Longship</option>
+                <option value="Warship">Warship</option>
+                <option value="Fishing Vessel">Fishing Vessel</option>
+                <option value="Other">Other…</option>
+              </select>
+              <input type="text" id="ship-type-custom" class="form-control" style="display:none; margin-top:0.4rem;" placeholder="Custom ship type" oninput="Editor.previewRoad()">
+            </div>
+            <div class="form-group">
+              <label>Captain</label>
+              <input type="text" id="ship-captain" class="form-control" placeholder="e.g. Captain Mara Vex" oninput="Editor.previewRoad()">
+            </div>
+            <div class="form-group">
+              <label>Animation Speed (seconds per loop)</label>
+              <input type="number" id="ship-duration" class="form-control" step="10" min="30" max="600" placeholder="90–120 (random default)" oninput="Editor.previewRoad()">
+            </div>
+            <div class="form-group">
+              <label>Boat Color</label>
+              <div style="display:flex;gap:0.4rem;align-items:center;">
+                <input type="color" id="ship-color-picker" value="#4da6ff" style="width:2.5rem;height:2rem;padding:0.1rem;border:1px solid #444;border-radius:3px;background:#111;cursor:pointer;" oninput="document.getElementById('ship-color').value=this.value; Editor.previewRoad()">
+                <input type="text" id="ship-color" class="form-control" placeholder="#4da6ff (default)" oninput="Editor.syncShipColorPicker(); Editor.previewRoad()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Boat Size Multiplier</label>
+              <input type="number" id="ship-size" class="form-control" step="0.1" min="0.3" max="5" placeholder="1.0 (default)" oninput="Editor.previewRoad()">
+            </div>
+
+            <p style="margin:0.8rem 0 0.5rem; font-size:0.8rem; color:#4da6ff; font-family:'Cinzel',serif; letter-spacing:0.05em; border-top:1px solid rgba(30,144,255,0.2); padding-top:0.6rem;">Route Details</p>
+            <div class="form-group">
+              <label>Purpose</label>
+              <select id="route-purpose" class="form-control" onchange="Editor.previewRoad()">
+                <option value="">— Select purpose —</option>
+                <option value="merchant">Merchant Trade</option>
+                <option value="military">Military Patrol</option>
+                <option value="exploration">Exploration</option>
+                <option value="smuggling">Smuggling</option>
+                <option value="fishing">Fishing</option>
+                <option value="passenger">Passenger</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cargo / Notes</label>
+              <input type="text" id="route-cargo" class="form-control" placeholder="e.g. Spices, textiles, weapons" oninput="Editor.previewRoad()">
+            </div>
+            <div class="form-group">
+              <label>Risk Level</label>
+              <select id="route-risk" class="form-control" onchange="Editor.previewRoad()">
+                <option value="">— Select risk —</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="deadly">Deadly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Name (\\n for newline)</label>
+            <input type="text" id="road-name" class="form-control" oninput="Editor.previewRoad()">
+          </div>
+
+          <div class="form-group">
+            <label><input type="checkbox" id="road-curved" checked onchange="Editor.previewRoad()"> Curved Lines</label>
+          </div>
+
+          <details class="editor-details">
+            <summary>Advanced Road Styling
+            </summary>
+            <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="form-group"><label>Color Override</label><input type="text" id="road-color"
+                  class="form-control" placeholder="#ffffff or rgba(...)" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Width Multiplier</label><input type="number" id="road-width"
+                  class="form-control" step="0.1" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Dashed Style ("true", "false", or dasharray)</label><input type="text"
+                  id="road-dashed" class="form-control" placeholder="e.g. true, false, or 4,4"
+                  oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Dash Length Multiplier</label><input type="number" id="road-dashLength"
+                  class="form-control" step="0.1" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Gap Length Multiplier</label><input type="number" id="road-gapLength"
+                  class="form-control" step="0.1" oninput="Editor.previewRoad()"></div>
+            </div>
+          </details>
+
+          <details class="editor-details">
+            <summary>Road Label Typography
+            </summary>
+            <div style="padding-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="form-group"><label>Font Family</label><input type="text" id="road-fontFamily"
+                  class="form-control" placeholder="Simonetta" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Font Size</label><input type="number" id="road-fontSize"
+                  class="form-control" step="1" placeholder="12" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Font Weight</label><input type="text" id="road-fontWeight"
+                  class="form-control" placeholder="400" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Font Style</label><input type="text" id="road-fontStyle"
+                  class="form-control" placeholder="Italic" oninput="Editor.previewRoad()"></div>
+              <div class="form-group"><label>Label Opacity</label><input type="number" id="road-labelOpacity"
+                  class="form-control" step="0.1" min="0" max="1" placeholder="0.7" oninput="Editor.previewRoad()">
+              </div>
+              <div class="form-group"><label>Label Position (% along road, 0-100)</label><input type="number"
+                  id="road-labelOffset" class="form-control" step="1" min="0" max="100" placeholder="50"
+                  oninput="Editor.previewRoad()"></div>
+              <div class="form-group">
+                <label>Label Side</label>
+                <select id="road-labelSide" class="form-control" onchange="Editor.previewRoad()">
+                  <option value="top">Top (above road)</option>
+                  <option value="bottom">Bottom (below road)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><input type="checkbox" id="road-labelReverse" onchange="Editor.previewRoad()"> Reverse Label
+                  Direction</label>
+              </div>
+            </div>
+          </details>
+
+          <div class="form-group">
+            <label>Start Location <span style="color:#0a0;">(Required)</span></label>
+            <select id="road-start-location" class="form-control" onchange="Editor.setRoadStartLocation(this.value)">
+              <option value="">-- Select Start Location --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>End Location <span style="color:#a00;">(Required)</span></label>
+            <select id="road-end-location" class="form-control" onchange="Editor.setRoadEndLocation(this.value)">
+              <option value="">-- Select End Location --</option>
+            </select>
+          </div>
+
+          <p style="font-size: 0.8rem; margin: 0.5rem 0; color: #888;">Road Path (<span style="color:#0a0;">START</span>
+            → Waypoints → <span style="color:#a00;">END</span>):</p>
+          <div id="road-points-list"
+            style="background:#000; padding:0.5rem; border:1px solid #333; font-size:0.75rem; max-height:150px; overflow-y:auto; margin-bottom: 0.5rem;">
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <button class="btn btn-secondary" onclick="Editor.clearRoadPoints()"
+              style="flex: 1; font-size: 0.75rem; padding: 0.4rem;">
+              <i class="fa-solid fa-trash"></i> Clear Waypoints
+            </button>
+          </div>
+          <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 0.25rem;">
+            <i class="fa-solid fa-circle-info"></i> Roads must start and end at locations. Use dropdowns above or click location markers on the map.
+          </p>
+          <p id="waypoint-map-hint" style="display:none; font-size:0.78rem; color:#4da6ff; font-style:italic; margin-top:0.25rem; padding:0.4rem 0.6rem; background:rgba(30,144,255,0.08); border:1px solid rgba(30,144,255,0.2); border-radius:4px;">
+            <i class="fa-solid fa-map-location-dot"></i> Start &amp; end are set — click anywhere on the map to add intermediate waypoints. Click the <i class="fa-solid fa-pencil" style="font-size:0.7rem;"></i> icon to edit a waypoint's coordinates.
+          </p>
+
+          <div class="editor-action-wrap" style="margin-top: 1rem;">
+            <button id="btn-save-road" class="btn btn-primary" onclick="Editor.saveRoad()" style="flex: 1;">
+              <i class="fa-solid fa-floppy-disk"></i> Save Road
+            </button>
+            <button class="btn btn-secondary" onclick="Editor.cancelRoad()" style="flex: 1;">
+              Cancel
+            </button>
+            <button class="btn btn-danger" onclick="Editor.deleteRoad()"
+              style="flex: 1;" id="btn-del-road">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </div>
+          <p style="font-size: 0.7rem; color: #888; margin-top: 0.5rem; font-style: italic;">
+            <i class="fa-solid fa-circle-info"></i> Points are auto-saved when added/removed. Click "Save Road" to
+            finalize changes.
+          </p>
+          <div id="road-form-message" style="min-height:1.1rem; margin-top:0.55rem; font-size:0.76rem; color:#8f8576; font-style:italic;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-map-area">
+      <div class="map-container" id="map-container">
+        <div class="map-controls">
+          <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
+            <i class="fa-solid fa-compass"></i>
+          </button>
+          <button class="map-btn" id="tooltips-toggle" onclick="toggleTooltips()" title="Hide Tooltips"
+            style="opacity: 1;">
+            <i class="fa-solid fa-scroll"></i>
+          </button>
+          <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Show Territories"
+            style="opacity: 0.5;">
+            <i class="fa-solid fa-flag"></i>
+          </button>
+          <button class="map-btn" id="coords-toggle" onclick="toggleCoords()" title="Toggle Coordinate Tracker"
+            style="opacity: 1;">
+            <i class="fa-solid fa-crosshairs"></i>
+          </button>
+        </div>
+        <div class="map-coords" id="map-coords">X: — Y: —</div>
+        <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+        <img src="images/Myrdae (v.4.2.c - Territory Layer).png" alt="Territories of Myrdae" id="territories-layer"
+          draggable="false"
+          style="display:none; position:absolute; top:0; left:0; width:100%; height:auto; z-index:2; pointer-events:none;">
+        <svg id="city-pins-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:200; overflow:visible;"></svg>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/city-maps.js"></script>
+  <script src="js/locations-db.js"></script>
+  <script src="js/campaign-data.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/map-overlay.js"></script>
+  <script src="js/coord-grid.js"></script>
+  <script src="js/boat-animations.js"></script>
+  <script src="js/editor.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Force loading from defaults for the editor to avoid localStorage confusing things
+      // We will manipulate the WORLD_LOCATIONS object directly in memory or a copy of it.
+      await Editor.init();
+
+      MapController.init('map-container', 'map-image', {
+        onTransform: (transformStr, scale, tx, ty) => {
+          const overlay = document.getElementById('map-container-overlay');
+          const territories = document.getElementById('territories-layer');
+          if (overlay) {
+            overlay.style.transform = transformStr;
+            overlay.style.transformOrigin = '0 0';
+          }
+          if (territories) {
+            territories.style.transform = transformStr;
+            territories.style.transformOrigin = '0 0';
+          }
+        }
+      });
+
+      // Crucial: init the map overlay AFTER Editor.init overrides CampaignData
+      MapOverlay.init('map-container', 'map-image');
+      CoordGrid.init('map-container', 'map-image');
+
+      // Wire map clicks to Editor
+      const container = document.getElementById('map-container');
+      const mapImg = document.getElementById('map-image');
+
+      // Track drag state globally so releasing after a pan does not place a location.
+      let mapPointerDown = false;
+      let draggingLocation = false;
+      let suppressNextMapClick = false;
+      let startX = 0;
+      let startY = 0;
+
+      function getMapPercentFromPointer(clientX, clientY) {
+        const rect = container.getBoundingClientRect();
+        const mouseX = clientX - rect.left;
+        const mouseY = clientY - rect.top;
+
+        const state = MapController.getInstanceState('map-container');
+        if (!state) return null;
+
+        const cw = container.offsetWidth;
+        const imgDisplayWidth = cw * state.scale;
+        const imgDisplayHeight = (mapImg.naturalHeight / mapImg.naturalWidth) * cw * state.scale;
+
+        return {
+          x: Math.max(0, Math.min(100, (mouseX - state.pointX) / imgDisplayWidth * 100)),
+          y: Math.max(0, Math.min(100, (mouseY - state.pointY) / imgDisplayHeight * 100))
+        };
+      }
+
+      container.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+
+        const clickedMarker = e.target.closest('.marker-group');
+        const locId = clickedMarker?.getAttribute('data-location-id');
+        if (
+          Editor.state &&
+          Editor.state.tab === 'locations' &&
+          Editor.state.moveLocationMode &&
+          locId &&
+          Editor.beginLocationMove(locId)
+        ) {
+          draggingLocation = true;
+          suppressNextMapClick = true;
+          e.stopPropagation();
+          e.preventDefault();
+          const point = getMapPercentFromPointer(e.clientX, e.clientY);
+          if (point) {
+            Editor.moveSelectedLocationPreview(point.x, point.y);
+          }
+          return;
+        }
+
+        mapPointerDown = true;
+        suppressNextMapClick = false;
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (draggingLocation) {
+          const point = getMapPercentFromPointer(e.clientX, e.clientY);
+          if (point) {
+            Editor.moveSelectedLocationPreview(point.x, point.y);
+          }
+          suppressNextMapClick = true;
+          return;
+        }
+
+        if (!mapPointerDown || suppressNextMapClick) return;
+        if (Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3) {
+          suppressNextMapClick = true;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (draggingLocation) {
+          draggingLocation = false;
+          Editor.finishLocationMove();
+        }
+        mapPointerDown = false;
+      });
+
+      container.addEventListener('click', (e) => {
+        if (suppressNextMapClick) {
+          suppressNextMapClick = false;
+          return;
+        }
+
+        // Don't add a new pin if the user was dragging or clicking an existing city pin
+        if (CityEditor.isActive() && e.target.closest('.city-pin')) return;
+
+        // Check if click was on a location marker (for roads tab)
+        if (Editor.state && Editor.state.tab === 'roads') {
+          const clickedMarker = e.target.closest('.marker-group');
+          if (clickedMarker) {
+            const locId = clickedMarker.getAttribute('data-location-id');
+            if (locId) {
+              e.stopPropagation();
+              e.preventDefault();
+              Editor.handleLocationClick(locId);
+              return;
+            }
+          }
+        }
+
+        const point = getMapPercentFromPointer(e.clientX, e.clientY);
+        if (!point) return;
+
+        if (CityEditor.isActive()) {
+          CityEditor.addPin(point.x, point.y);
+        } else {
+          Editor.handleMapClick(point.x, point.y);
+        }
+
+        suppressNextMapClick = false;
+      });
+    });
+
+    // Simple coordinate tracker inside editor
+    function toggleCoords() {
+      if (CityEditor.isActive()) return;
+      const display = document.getElementById('map-coords');
+      const btn = document.getElementById('coords-toggle');
+      if (display.style.display === 'none') {
+        display.style.display = 'block';
+        btn.style.opacity = '1';
+      } else {
+        display.style.display = 'none';
+        btn.style.opacity = '0.5';
+      }
+    }
+
+    function toggleTooltips() {
+      const btn = document.getElementById('tooltips-toggle');
+      const enabled = MapOverlay.setTooltipsEnabled(!MapOverlay.areTooltipsEnabled());
+      if (btn) {
+        btn.style.opacity = enabled ? '1' : '0.5';
+        btn.title = enabled ? 'Hide Tooltips' : 'Show Tooltips';
+      }
+    }
+
+    function toggleTerritories() {
+      const layer = document.getElementById('territories-layer');
+      const btn = document.getElementById('territories-toggle');
+      if (!layer || !btn) return;
+
+      const visible = layer.style.display === 'block';
+      layer.style.display = visible ? 'none' : 'block';
+      btn.style.opacity = visible ? '0.5' : '1';
+      btn.title = visible ? 'Show Territories' : 'Hide Territories';
+    }
+
+    function setCoordinateTrackerEnabled(enabled) {
+      const display = document.getElementById('map-coords');
+      const btn = document.getElementById('coords-toggle');
+      if (!display || !btn) return;
+
+      display.style.display = enabled ? 'block' : 'none';
+      display.textContent = 'X: — Y: —';
+      btn.style.display = enabled ? 'inline-flex' : 'none';
+    }
+
+    document.getElementById('map-container').addEventListener('mousemove', (e) => {
+      const display = document.getElementById('map-coords');
+      if (CityEditor.isActive()) {
+        display.textContent = 'X: — Y: —';
+        return;
+      }
+      if (display.style.display === 'none') return;
+      const rect = document.getElementById('map-container').getBoundingClientRect();
+      const mapImg = document.getElementById('map-image');
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      const state = MapController.getInstanceState('map-container');
+      if (!state) return;
+      const imgDisplayWidth = rect.width * state.scale;
+      const imgDisplayHeight = (mapImg.naturalHeight / mapImg.naturalWidth) * rect.width * state.scale;
+      let imgX = (mouseX - state.pointX) / imgDisplayWidth * 100;
+      let imgY = (mouseY - state.pointY) / imgDisplayHeight * 100;
+      if (imgX < 0) imgX = 0; if (imgX > 100) imgX = 100;
+      if (imgY < 0) imgY = 0; if (imgY > 100) imgY = 100;
+      const hex = typeof CoordGrid !== 'undefined' ? CoordGrid.describePoint(imgX, imgY, 'map-container') : null;
+      display.textContent = `${hex ? `Hex: ${hex.code}  ` : ''}X: ${imgX.toFixed(2)}  Y: ${imgY.toFixed(2)}`;
+    });
+
+    document.getElementById('map-container').addEventListener('mouseleave', () => {
+      const display = document.getElementById('map-coords');
+      if (display.style.display !== 'none') {
+        display.textContent = 'X: —  Y: —';
+      }
+    });
+  </script>
+
+<script>
+function getCityMapWorldLocations() {
+  if (typeof Editor !== 'undefined' && Editor.state && Array.isArray(Editor.state.locations) && Editor.state.locations.length) {
+    return Editor.state.locations;
+  }
+  if (typeof WORLD_LOCATIONS !== 'undefined' && Array.isArray(WORLD_LOCATIONS.locations)) {
+    return WORLD_LOCATIONS.locations;
+  }
+  return [];
+}
+
+function getCityMapRegion(cityId) {
+  const targetUrl = 'city-viewer.html?city=' + cityId;
+  const locs = getCityMapWorldLocations();
+  const linkedLoc = locs.find(loc => (loc.cityMap || '') === targetUrl);
+  if (linkedLoc && linkedLoc.region) return linkedLoc.region;
+
+  const idMatch = locs.find(loc => (loc.id || '') === cityId);
+  if (idMatch && idMatch.region) return idMatch.region;
+
+  return 'Unassigned Region';
+}
+
+function renderCityMapOptions(selectEl, entries, options = {}) {
+  if (!selectEl) return;
+
+  const {
+    placeholder = '',
+    selectedValue = '',
+    getValue = (entry) => entry.id,
+    getLabel = (entry) => entry.name || entry.id,
+  } = options;
+
+  selectEl.innerHTML = '';
+  if (placeholder) {
+    const placeholderOpt = document.createElement('option');
+    placeholderOpt.value = '';
+    placeholderOpt.textContent = placeholder;
+    selectEl.appendChild(placeholderOpt);
+  }
+
+  const grouped = new Map();
+  entries.forEach(entry => {
+    const region = getCityMapRegion(entry.id);
+    if (!grouped.has(region)) grouped.set(region, []);
+    grouped.get(region).push(entry);
+  });
+
+  Array.from(grouped.keys())
+    .sort((a, b) => {
+      if (a === 'Unassigned Region') return 1;
+      if (b === 'Unassigned Region') return -1;
+      return a.localeCompare(b);
+    })
+    .forEach(region => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = region;
+      grouped.get(region)
+        .sort((a, b) => getLabel(a).localeCompare(getLabel(b)))
+        .forEach(entry => {
+          const opt = document.createElement('option');
+          opt.value = getValue(entry);
+          opt.textContent = getLabel(entry);
+          if (entry.image) opt.dataset.image = entry.image;
+          if (entry.locationsImage) opt.dataset.locImage = entry.locationsImage;
+          if (opt.value === selectedValue) opt.selected = true;
+          optgroup.appendChild(opt);
+        });
+      selectEl.appendChild(optgroup);
+    });
+
+  if (selectedValue) selectEl.value = selectedValue;
+}
+
+// Populate the City Map dropdown in the location form
+(function populateCityMapSelect() {
+  const sel = document.getElementById('loc-cityMap');
+  if (!sel || typeof CITY_MAPS === 'undefined') return;
+  renderCityMapOptions(sel, CITY_MAPS, {
+    placeholder: '— None —',
+    getValue: (entry) => 'city-viewer.html?city=' + entry.id,
+    getLabel: (entry) => entry.name
+  });
+  if (sel.options.length) sel.options[0].textContent = '-- None --';
+})();
+</script>
+
+<script>
+function formatCityDisplayName(rawId) {
+  return String(rawId || '')
+    .split('-')
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function slugifyCityId(rawValue) {
+  return String(rawValue || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function buildCityImagePath(cityId) {
+  return `images/cities/${cityId}/${cityId}.png`;
+}
+
+function imageAssetExists(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src + (src.includes('?') ? '&' : '?') + 'v=' + Date.now();
+  });
+}
+
+function serializeCityFileForDisk(city) {
+  const pins = (city.pins || []).map(loc => {
+    let line = `    { n: ${String(loc.n).padStart(2)}, x: ${Number(loc.x).toFixed(1)}, y: ${Number(loc.y).toFixed(1)}, name: ${JSON.stringify(loc.name)}, type: ${JSON.stringify(loc.type)}, desc: ${JSON.stringify(loc.desc)}`;
+    if (loc.size && Number(loc.size) !== 1.0) line += `, size: ${Number(loc.size).toFixed(1)}`;
+    return line + ' },';
+  }).join('\n');
+
+  const namedLabels = (city.namedLabels || []).map(loc => {
+    let line = `    { id: ${JSON.stringify(loc.id)}, name: ${JSON.stringify(loc.name)}, x: ${Number(loc.x).toFixed(1)}, y: ${Number(loc.y).toFixed(1)}, type: ${JSON.stringify(loc.type)}, desc: ${JSON.stringify(loc.desc)}`;
+    if (loc.size && Number(loc.size) !== 1.0) line += `, size: ${Number(loc.size).toFixed(1)}`;
+    return line + ' },';
+  }).join('\n');
+
+  return `window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};\nwindow.CITY_MAPS_REGISTRY[${JSON.stringify(city.id)}] = {\n  id: ${JSON.stringify(city.id)},\n  name: ${JSON.stringify(city.name)},\n  image: ${JSON.stringify(city.image)},\n  previewImage: ${JSON.stringify(city.previewImage)},\n  pins: [\n${pins}\n  ],\n  namedLabels: [\n${namedLabels}\n  ],\n};\n`;
+}
+
+function serializeCityIndexForDisk(maps) {
+  const pad = 26;
+  const entries = maps.map(city => {
+    const idStr = JSON.stringify(city.id).padEnd(pad);
+    const nameStr = JSON.stringify(city.name).padEnd(pad);
+    const imageStr = JSON.stringify(city.image);
+    const previewStr = JSON.stringify(city.previewImage);
+    return `  { id: ${idStr}, name: ${nameStr}, image: ${imageStr}, previewImage: ${previewStr} },`;
+  }).join('\n');
+
+  return `/**\n * City Maps Index — World of Myrdae\n * Thin registry: id, name, image paths only. No pins or labels here.\n * Pin/label data lives in js/cities/<id>.js, loaded on demand.\n */\nconst CITY_MAPS = [\n${entries}\n];\n`;
+}
+
+function upsertCityMapEntry(city) {
+  const entry = {
+    id: city.id,
+    name: city.name,
+    image: city.image,
+    previewImage: city.previewImage,
+  };
+  const idx = CITY_MAPS.findIndex(c => c.id === city.id);
+  if (idx === -1) {
+    CITY_MAPS.push(entry);
+  } else {
+    Object.assign(CITY_MAPS[idx], entry);
+  }
+}
+
+async function fetchLiveCityEntries() {
+  const discovered = await fetch('/api/city-images').then(r => r.json());
+  const registryById = new Map((CITY_MAPS || []).map(entry => [entry.id, entry]));
+
+  return discovered.map((entry) => {
+    const known = registryById.get(entry.id) || {};
+    return {
+      id: entry.id,
+      name: known.name || entry.name,
+      image: entry.image || known.image || buildCityImagePath(entry.id),
+      previewImage: entry.image || known.previewImage || known.image || buildCityImagePath(entry.id),
+      locationsImage: entry.locationsImage || known.locationsImage || '',
+      value: entry.id
+    };
+  });
+}
+
+async function ensureCityScaffold(cityId, cityName) {
+  const scaffoldResponse = await fetch('/api/cities/scaffold', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cityId, cityName })
+  });
+  const scaffoldText = await scaffoldResponse.text();
+  let scaffoldRes = null;
+
+  try {
+    scaffoldRes = scaffoldText ? JSON.parse(scaffoldText) : {};
+  } catch (parseErr) {
+    if (scaffoldText.includes('File Not Found')) {
+      throw new Error('City scaffold endpoint was not found. The server is likely running an older build and needs to be restarted.');
+    }
+    throw new Error(`City scaffold request returned non-JSON content (${scaffoldResponse.status || 'unknown status'}).`);
+  }
+
+  if (!scaffoldResponse.ok) {
+    throw new Error(scaffoldRes.error || `City scaffold request failed (${scaffoldResponse.status}).`);
+  }
+
+  if (!scaffoldRes.success) {
+    throw new Error(scaffoldRes.error || 'Failed to create city scaffold');
+  }
+
+  return scaffoldRes;
+}
+
+const CityEditor = (function () {
+  let cityData    = null;  // deep copy of the active city entry
+  let activeCityId = null;
+  let selectedKey  = null; // "pin:<internal-key>" or "id:north-gate"
+  let cityMapActive = false;
+  let nextPinKey = 1;
+
+  function appendCityOption(cityId, cityName, selected) {
+    const sel = document.getElementById('city-select');
+    if (!sel) return;
+    let opt = Array.from(sel.options).find(o => o.value === cityId);
+    if (!opt) {
+      opt = document.createElement('option');
+      opt.value = cityId;
+      sel.appendChild(opt);
+    }
+    opt.textContent = cityName;
+    if (selected) sel.value = cityId;
+  }
+
+  function getEligibleWorldLocations() {
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const existingCityIds = new Set(
+      Array.from(document.getElementById('city-select')?.options || [])
+        .map(option => option.value)
+        .filter(Boolean)
+    );
+    return locs
+      .filter(loc => ['city', 'small-city', 'town'].includes(String(loc.type || '').toLowerCase()))
+      .filter(loc => {
+        const combined = `${loc.id || ''} ${loc.name || ''} ${loc.description || ''} ${loc.region || ''}`.toLowerCase();
+        return !/(^|[\s-])(crossroads?|junction|crossroad|road|path|river|route|trail|bridge|pass|nature|forest|woods?|marsh|swamp|lake|sea|ocean|bay|coast|water|region|territory)([\s-]|$)/.test(combined);
+      })
+      .filter(loc => !existingCityIds.has(loc.id))
+      .filter(loc => !loc.cityMap)
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  }
+
+  function populateCreateCitySelect(preferredLocationId) {
+    const sel = document.getElementById('city-create-select');
+    const status = document.getElementById('city-create-status');
+    if (!sel) return;
+
+    const locations = getEligibleWorldLocations();
+    sel.innerHTML = '<option value="">-- Select a city or town --</option>';
+    locations.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.id;
+      opt.textContent = loc.name + (loc.region ? ' (' + loc.region + ')' : '');
+      sel.appendChild(opt);
+    });
+
+    const preferred = preferredLocationId && locations.find(loc => loc.id === preferredLocationId)
+      ? preferredLocationId
+      : (locations[0] ? locations[0].id : '');
+    sel.value = preferred;
+
+    if (status) {
+      status.textContent = locations.length
+        ? 'Pick a world location, then open the wizard to create and auto-link its city map.'
+        : 'All city and town locations already have city maps.';
+    }
+  }
+
+  async function createCity() {
+    const createSel = document.getElementById('city-create-select');
+    const createStatus = document.getElementById('city-create-status');
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const locationId = createSel ? createSel.value : '';
+    const sourceLoc = locs.find(loc => loc.id === locationId);
+
+    if (!sourceLoc) {
+      if (createStatus) createStatus.textContent = 'Choose a world location first.';
+      return;
+    }
+
+    const cityName = String(sourceLoc.name || '').replace(/\n/g, ' ').trim();
+    const cityId = slugifyCityId(sourceLoc.id);
+    if (!cityId) {
+      if (createStatus) createStatus.textContent = 'That location does not have a valid ID for a city map.';
+      return;
+    }
+
+    const existing = CITY_MAPS.find(c => c.id === cityId);
+    if (existing) {
+      CityEditor.appendCityOption(existing.id, existing.name, true);
+      await loadCity(existing.id);
+      if (createStatus) createStatus.textContent = 'That location already has a city map.';
+      return;
+    }
+
+    if (createStatus) createStatus.textContent = 'Opening wizard for ' + cityName + '...';
+    AIWizard.open({ locationId });
+  }
+
+  function ensurePinKeys() {
+    if (!cityData) return;
+    (cityData.pins || []).forEach(pin => {
+      if (!pin.__editorKey) pin.__editorKey = 'p' + (nextPinKey++);
+    });
+  }
+
+  // Load js/cities/<id>.js and register it in CITY_MAPS_REGISTRY
+  function _loadCityFile(id) {
+    return new Promise((resolve, reject) => {
+      if ((window.CITY_MAPS_REGISTRY || {})[id]) { resolve(); return; }
+      const s = document.createElement('script');
+      s.dataset.cityFile = id;
+      s.src = 'js/cities/' + id + '.js?v=' + Date.now();
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('City file not found: js/cities/' + id + '.js'));
+      document.head.appendChild(s);
+    });
+  }
+
+  // ── Open the tab (populate city selector) ──────────────────
+  async function open() {
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-citymap').style.display = 'block';
+    document.querySelectorAll('.editor-tab').forEach(btn => {
+      if (btn.textContent.trim() === 'City Map') btn.classList.add('active');
+    });
+
+    const sel = document.getElementById('city-select');
+    sel.innerHTML = '<option value="">— Select a city —</option>';
+    let cityEntries = CITY_MAPS.map(c => ({ ...c, value: c.id }));
+
+    // Prefer live directory discovery so deleted folders disappear from the picker.
+    try {
+      cityEntries = await fetchLiveCityEntries();
+    } catch (e) {
+      console.warn('City image discovery failed:', e);
+    }
+
+    renderCityMapOptions(sel, cityEntries, {
+      placeholder: 'â€” Select a city â€”',
+      selectedValue: activeCityId,
+      getValue: (entry) => entry.value,
+      getLabel: (entry) => entry.name
+    });
+    if (sel.options.length) sel.options[0].textContent = '-- Select a city --';
+
+    if (activeCityId && !cityEntries.find(entry => entry.id === activeCityId)) {
+      activeCityId = null;
+      cityMapActive = false;
+      document.getElementById('city-world-link').style.display = 'none';
+      document.getElementById('city-pin-controls').style.display = 'none';
+      document.getElementById('city-action-btns').style.display = 'none';
+      document.getElementById('city-pin-form').style.display = 'none';
+      const status = document.getElementById('city-save-status');
+      if (status) {
+        status.textContent = 'The previously selected city folder no longer exists on disk.';
+        status.style.color = '#e0a84b';
+      }
+    }
+
+    populateCreateCitySelect(Editor.state?.selectedLocId);
+
+    if (activeCityId) await loadCity(activeCityId);
+  }
+
+  // ── Load a city into the editor ────────────────────────────
+  async function loadCity(cityId) {
+    if (!cityId) return;
+
+    // Handle newly discovered city (not yet in CITY_MAPS)
+    if (cityId.startsWith('__new__:')) {
+      const rawId = cityId.slice(8);
+      const sel = document.getElementById('city-select');
+      const opt = Array.from(sel.options).find(o => o.value === cityId);
+      const img = opt ? opt.dataset.image : ('images/cities/' + rawId + '/' + rawId + '.png');
+      const capName = formatCityDisplayName(rawId);
+      const newEntry = { id: rawId, name: capName, image: img, previewImage: img };
+      CITY_MAPS.push(newEntry);
+      window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+      window.CITY_MAPS_REGISTRY[rawId] = { ...newEntry, pins: [], namedLabels: [] };
+      // Replace the option with a normal one
+      if (opt) { opt.value = rawId; opt.textContent = capName; }
+      return loadCity(rawId);
+    }
+
+    // Restore world overlay if switching cities
+    if (cityMapActive) _setOverlay(true);
+
+    activeCityId = cityId;
+
+    // Load city data file if not already in registry
+    try {
+      await _loadCityFile(cityId);
+    } catch (e) {
+      console.warn('Could not load city file:', e.message);
+    }
+
+    const src = (window.CITY_MAPS_REGISTRY || {})[cityId];
+    if (!src) {
+      alert('City data not found for: ' + cityId + '\nMake sure js/cities/' + cityId + '.js exists.');
+      return;
+    }
+
+    cityData = {
+      ...src,
+      pins: (src.pins || []).map(p => ({ ...p })),
+      namedLabels: (src.namedLabels || []).map(l => ({ ...l })),
+    };
+    ensurePinKeys();
+
+    const imageReady = cityData.image ? await imageAssetExists(cityData.image) : false;
+    if (!imageReady) {
+      cityMapActive = false;
+      document.getElementById('city-world-link').style.display   = 'none';
+      document.getElementById('city-pin-controls').style.display = 'none';
+      document.getElementById('city-action-btns').style.display  = 'none';
+      document.getElementById('city-pin-form').style.display     = 'none';
+      const status = document.getElementById('city-save-status');
+      if (status) {
+        status.textContent = `City scaffold exists, but the map image is missing: ${cityData.image}`;
+        status.style.color = '#e0a84b';
+      }
+      return;
+    }
+
+    // Swap map image, hide world overlay
+    const img = document.getElementById('map-image');
+    cityMapActive = true;
+    img.onload = () => { _setOverlay(false); _setTerritories(false); renderPins(); };
+    img.src = cityData.image;
+    if (img.complete && img.naturalWidth) { _setOverlay(false); _setTerritories(false); renderPins(); }
+
+    setCoordinateTrackerEnabled(false);
+    MapController.reset('map-container');
+
+    document.getElementById('city-world-link').style.display   = 'block';
+    document.getElementById('city-pin-controls').style.display = 'block';
+    document.getElementById('city-action-btns').style.display  = 'flex';
+    document.getElementById('city-pin-form').style.display     = 'none';
+    selectedKey = null;
+    populateList();
+    populateWorldLocSelect(cityId);
+
+    // Watch pan/zoom to re-render pins
+    _watchTransform();
+  }
+
+  // ── Hide/show the world map overlay SVG ────────────────────
+  function _setOverlay(visible) {
+    const ov = document.getElementById('map-container-overlay');
+    if (ov) ov.style.visibility = visible ? 'visible' : 'hidden';
+  }
+
+  function _setTerritories(visible) {
+    const layer = document.getElementById('territories-layer');
+    const btn = document.getElementById('territories-toggle');
+    if (layer) layer.style.display = visible ? 'block' : 'none';
+    if (btn) {
+      btn.style.opacity = visible ? '1' : '0.5';
+      btn.title = visible ? 'Hide Territories' : 'Show Territories';
+    }
+  }
+
+  function _restoreWorldOverlay() {
+    _setOverlay(true);
+    if (typeof MapOverlay !== 'undefined') {
+      MapOverlay.init('map-container', 'map-image');
+    }
+  }
+
+  // ── Exit city mode, restore world map ──────────────────────
+  function exitCityMode() {
+    cityMapActive = false;
+    document.querySelectorAll('.city-pin').forEach(el => el.remove());
+    const img = document.getElementById('map-image');
+    img.onload = () => { _restoreWorldOverlay(); };
+    img.src = 'images/Myrdae.jpg';
+    if (img.complete && img.naturalWidth) _restoreWorldOverlay();
+    _setTerritories(false);
+    setCoordinateTrackerEnabled(true);
+    document.getElementById('city-world-link').style.display   = 'none';
+    document.getElementById('city-pin-controls').style.display = 'none';
+    document.getElementById('city-action-btns').style.display  = 'none';
+    document.getElementById('city-pin-form').style.display     = 'none';
+    document.getElementById('city-select').value = '';
+    activeCityId = null;
+    // Switch back to locations tab
+    Editor.switchTab('locations');
+  }
+
+  // ── Pin list ────────────────────────────────────────────────
+  function populateList(filter) {
+    const sel = document.getElementById('city-pin-list');
+    sel.innerHTML = '<option value="">— Select a pin —</option>';
+    if (!cityData) return;
+    const q = (filter || '').toLowerCase();
+
+    cityData.pins.forEach(loc => {
+      if (q && !loc.name.toLowerCase().includes(q) && !String(loc.n).includes(q)) return;
+      const opt = document.createElement('option');
+      opt.value = 'pin:' + loc.__editorKey;
+      opt.textContent = loc.n + '. ' + loc.name;
+      sel.appendChild(opt);
+    });
+    (cityData.namedLabels || []).forEach(loc => {
+      if (q && !loc.name.toLowerCase().includes(q)) return;
+      const opt = document.createElement('option');
+      opt.value = 'id:' + loc.id;
+      opt.textContent = '★ ' + loc.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function filterList(q) { populateList(q); }
+
+  function getLoc(key) {
+    if (!cityData || !key) return null;
+    if (key.startsWith('pin:')) return cityData.pins.find(l => l.__editorKey === key.slice(4));
+    return (cityData.namedLabels || []).find(l => l.id === key.slice(3));
+  }
+
+  function selectPin(key) {
+    selectedKey = key;
+    const loc = getLoc(key);
+    const form = document.getElementById('city-pin-form');
+    if (!loc) { form.style.display = 'none'; highlightPin(null); return; }
+
+    const isLabel = key.startsWith('id:');
+    document.getElementById('city-pin-n-row').style.display    = isLabel ? 'none' : '';
+    document.getElementById('city-label-id-row').style.display = isLabel ? '' : 'none';
+    document.getElementById('city-form-hint').innerHTML = isLabel
+      ? '<i class="fa-solid fa-circle-info"></i> Drag the label on the map, or edit coordinates directly.'
+      : '<i class="fa-solid fa-circle-info"></i> Drag the pin on the map, or edit coordinates directly.';
+    document.getElementById('city-delete-btn').innerHTML = isLabel
+      ? '<i class="fa-solid fa-trash"></i> Delete This Label'
+      : '<i class="fa-solid fa-trash"></i> Delete This Pin';
+
+    form.style.display = 'block';
+    document.getElementById('city-pin-name').textContent = loc.name || (isLabel ? 'Label' : 'Pin ' + loc.n);
+    if (isLabel) {
+      document.getElementById('city-label-id').value = loc.id || '';
+    } else {
+      document.getElementById('city-pin-n').value = loc.n;
+    }
+    document.getElementById('city-pin-x').value = loc.x.toFixed(1);
+    document.getElementById('city-pin-y').value = loc.y.toFixed(1);
+    document.getElementById('city-pin-name-input').value = loc.name || '';
+    document.getElementById('city-pin-type').value = loc.type || '';
+    document.getElementById('city-pin-desc').value = loc.desc || '';
+    const sz = (loc.size || 1.0).toFixed(1);
+    document.getElementById('city-pin-size').value = sz;
+    document.getElementById('city-pin-size-val').textContent = sz;
+    renderPins();
+  }
+
+  function updateFromForm() {
+    const loc = getLoc(selectedKey);
+    if (!loc) return;
+    const isLabel = selectedKey.startsWith('id:');
+    if (isLabel) {
+      const newId = document.getElementById('city-label-id').value.trim();
+      if (newId && newId !== loc.id) {
+        loc.id = newId;
+        selectedKey = 'id:' + newId;
+        document.getElementById('city-pin-list').value = selectedKey;
+        populateList(document.getElementById('city-pin-search').value);
+        document.getElementById('city-pin-list').value = selectedKey;
+      }
+    } else {
+      const newN = parseInt(document.getElementById('city-pin-n').value);
+      if (newN > 0) loc.n = newN;
+    }
+    loc.x    = parseFloat(document.getElementById('city-pin-x').value) || loc.x;
+    loc.y    = parseFloat(document.getElementById('city-pin-y').value) || loc.y;
+    loc.name = document.getElementById('city-pin-name-input').value;
+    loc.type = document.getElementById('city-pin-type').value;
+    loc.desc = document.getElementById('city-pin-desc').value;
+    loc.size = parseFloat(document.getElementById('city-pin-size').value) || 1.0;
+    document.getElementById('city-pin-name').textContent = loc.name;
+    renderPins();
+  }
+
+  // ── Add new pin at coordinates ─────────────────────────────
+  function addPin(x, y) {
+    if (!cityData) return;
+    
+    // Find next available number (n)
+    const existingNums = cityData.pins.map(p => p.n);
+    const nextN = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+    
+    const newPin = {
+      __editorKey: 'p' + (nextPinKey++),
+      n: nextN,
+      x: parseFloat(x.toFixed(1)),
+      y: parseFloat(y.toFixed(1)),
+      name: 'New Pin ' + nextN,
+      type: 'poi',
+      desc: '',
+      size: 1.0
+    };
+    
+    cityData.pins.push(newPin);
+    populateList();
+    renderPins();
+    selectPin('pin:' + newPin.__editorKey);
+    document.getElementById('city-pin-list').value = 'pin:' + newPin.__editorKey;
+  }
+
+  // ── Add named label at map center ─────────────────────────
+  function addNamedLabel() {
+    if (!cityData) return;
+    const existing = cityData.namedLabels || (cityData.namedLabels = []);
+    let idx = 1;
+    while (existing.find(l => l.id === 'label-' + idx)) idx++;
+    const newLabel = {
+      id: 'label-' + idx,
+      name: 'New Label',
+      x: 50,
+      y: 50,
+      type: 'district',
+      desc: '',
+      size: 1.0,
+    };
+    existing.push(newLabel);
+    populateList();
+    renderPins();
+    selectPin('id:' + newLabel.id);
+    document.getElementById('city-pin-list').value = 'id:' + newLabel.id;
+  }
+
+  // ── Delete active pin ──────────────────────────────────────
+  function deletePin() {
+    if (!selectedKey || !cityData) return;
+    const loc = getLoc(selectedKey);
+    if (!loc) return;
+
+    if (!confirm(`Are you sure you want to delete "${loc.name || ('Pin ' + loc.n)}"?`)) return;
+
+    if (selectedKey.startsWith('pin:')) {
+      const idx = cityData.pins.findIndex(p => p.__editorKey === loc.__editorKey);
+      if (idx !== -1) cityData.pins.splice(idx, 1);
+    } else {
+      const idx = (cityData.namedLabels || []).findIndex(l => l.id === loc.id);
+      if (idx !== -1) cityData.namedLabels.splice(idx, 1);
+    }
+
+    selectedKey = null;
+    document.getElementById('city-pin-form').style.display = 'none';
+    populateList();
+    renderPins();
+  }
+
+  // ── Render pins (SVG-based, scales WITH map) ─────────────────────
+  function renderPins() {
+    if (!cityMapActive || !cityData) return;
+    const overlay = document.getElementById('city-pins-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = '';
+
+    const img   = document.getElementById('map-image');
+    const state = MapController.getInstanceState('map-container');
+    if (!state || !img.naturalWidth) return;
+
+    const cw      = document.getElementById('map-container').offsetWidth;
+    const total   = (cw / img.naturalWidth) * state.scale;
+
+    function svgEl(tag, attrs) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+      return el;
+    }
+
+    function makePin(loc, key, isNamed) {
+      const px = (loc.x / 100) * img.naturalWidth;
+      const py = (loc.y / 100) * img.naturalHeight;
+      const sz = loc.size || 1.0;
+      const r  = (isNamed ? 10 : 14) * sz;
+      
+      // Position the pin group in screen space, and let it scale with 'total'
+      const g = svgEl('g', {
+        class: 'city-pin',
+        style: 'cursor:grab; pointer-events:all;',
+        transform: `translate(${state.pointX + px * total},${state.pointY + py * total}) scale(${total})`
+      });
+      g.dataset.key = key;
+
+      const isSelected = selectedKey === key;
+      const fill   = isSelected ? '#d4af37' : (isNamed ? 'rgba(212,175,55,0.9)' : 'rgba(12,9,5,0.88)');
+      const stroke = 'rgba(212,175,55,0.85)';
+
+      const circle = svgEl('circle', {
+        cx: 0, cy: 0, r: r,
+        fill: fill, stroke: stroke, 'stroke-width': (2 / total).toFixed(2)
+      });
+      if (isSelected) {
+          circle.setAttribute('style', `filter: drop-shadow(0 0 ${8/total}px #d4af37);`);
+      }
+      g.appendChild(circle);
+
+      if (!isNamed) {
+        const t = svgEl('text', {
+          x: 0, y: 0, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: '#f0e8d0', 'font-family': 'Cinzel', 'font-size': Math.round(14 * sz) + 'px'
+        });
+        t.textContent = loc.n;
+        g.appendChild(t);
+      } else {
+        const t = svgEl('text', {
+          x: 0, y: r + 15, 'text-anchor': 'middle',
+          fill: '#d4af37', 'font-family': 'Cinzel', 'font-size': Math.round(12 * sz) + 'px',
+          stroke: 'rgba(0,0,0,0.8)', 'stroke-width': (3 / total).toFixed(2), 'paint-order': 'stroke'
+        });
+        t.textContent = loc.name;
+        g.appendChild(t);
+      }
+
+      attachDrag(g, loc, key);
+      g.addEventListener('click', e => { e.stopPropagation(); selectPin(key); });
+      overlay.appendChild(g);
+    }
+
+    cityData.pins.forEach(l => makePin(l, 'pin:' + l.__editorKey, false));
+    (cityData.namedLabels || []).forEach(l => {
+      if (l.type === 'sea' || l.type === 'direction') return;
+      makePin(l, 'id:' + l.id, true);
+    });
+  }
+
+  // ── Drag (Updated for SVG) ──────────────────────────────────
+  function attachDrag(el, loc, key) {
+    el.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      e.stopPropagation(); e.preventDefault();
+      el.style.cursor = 'grabbing';
+
+      const sx = e.clientX, sy = e.clientY;
+      const lx = loc.x,    ly = loc.y;
+      
+      const img   = document.getElementById('map-image');
+      const state = MapController.getInstanceState('map-container');
+      const cw    = document.getElementById('map-container').offsetWidth;
+      const dispW = cw * state.scale;
+      const dispH = (img.naturalHeight / img.naturalWidth) * cw * state.scale;
+
+      function onMove(ev) {
+        loc.x = Math.min(100, Math.max(0, lx + ((ev.clientX - sx) / dispW) * 100));
+        loc.y = Math.min(100, Math.max(0, ly + ((ev.clientY - sy) / dispH) * 100));
+        renderPins(); 
+        if (selectedKey === key) {
+          document.getElementById('city-pin-x').value = loc.x.toFixed(1);
+          document.getElementById('city-pin-y').value = loc.y.toFixed(1);
+        }
+      }
+      function onUp() {
+        el.style.cursor = 'grab';
+        selectPin(key);
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      }
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    });
+  }
+
+  // ── Watch map transform to re-render pins ───────────────────
+  let _transformWatching = false;
+  function _watchTransform() {
+    if (_transformWatching) return;
+    _transformWatching = true;
+    const img = document.getElementById('map-image');
+    new MutationObserver(() => { if (cityMapActive) renderPins(); })
+      .observe(img, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // ── Save active city to js/cities/<id>.js ──────────────────
+  function save() {
+    if (!cityData || !activeCityId) return;
+    const status = document.getElementById('city-save-status');
+    status.textContent = 'Saving…'; status.style.color = '#888';
+
+    upsertCityMapEntry(cityData);
+    const cityOutput  = serializeCityFileForDisk(cityData);
+    const indexOutput = serializeCityIndexForDisk(CITY_MAPS);
+
+    Promise.all([
+      fetch('/save-city/' + activeCityId, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: cityOutput }),
+      fetch('/save-city-map',             { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: indexOutput }),
+    ])
+      .then(([r1, r2]) => Promise.all([r1.json(), r2.json()]))
+      .then(([res1, res2]) => {
+        if (res1.success && res2.success) {
+          window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+          window.CITY_MAPS_REGISTRY[activeCityId] = cityData;
+          status.textContent = 'Saved ✓'; status.style.color = '#4caf50';
+        } else {
+          status.textContent = 'Error: ' + (res1.error || res2.error); status.style.color = '#e44';
+        }
+      })
+      .catch(err => { status.textContent = 'Save failed: ' + err.message; status.style.color = '#e44'; });
+  }
+
+  function resetView() { MapController.reset('map-container'); setTimeout(renderPins, 100); }
+
+  function isActive() { return cityMapActive; }
+
+  // ── Reload active city file from disk and re-render pins ───
+  async function reloadData() {
+    if (!activeCityId) return;
+    const btn = Array.from(document.querySelectorAll('button')).find(b =>
+      b.getAttribute('onclick') && b.getAttribute('onclick').includes('reloadPage')
+    );
+    const origHtml = btn ? btn.innerHTML : null;
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reloading…'; }
+
+    try {
+      // Remove cached registry entry and script tag so we get a fresh fetch
+      if (window.CITY_MAPS_REGISTRY) delete window.CITY_MAPS_REGISTRY[activeCityId];
+      const old = document.querySelector(`script[data-city-file="${activeCityId}"]`);
+      if (old) old.remove();
+
+      await _loadCityFile(activeCityId);
+
+      const src = (window.CITY_MAPS_REGISTRY || {})[activeCityId];
+      if (!src) throw new Error('City data not found after reload');
+
+      cityData = {
+        ...src,
+        pins: (src.pins || []).map(p => ({ ...p })),
+        namedLabels: (src.namedLabels || []).map(l => ({ ...l })),
+      };
+      ensurePinKeys();
+
+      populateList();
+      renderPins();
+      if (selectedKey) selectPin(selectedKey);
+
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Reloaded!';
+        btn.style.background = '#0a0';
+        setTimeout(() => { btn.innerHTML = origHtml; btn.style.background = ''; }, 2000);
+      }
+    } catch (err) {
+      console.error('City data reload failed:', err);
+      if (btn) { btn.innerHTML = origHtml; }
+      alert('Failed to reload city data: ' + err.message);
+    }
+  }
+
+  function getActiveCityId() { return activeCityId; }
+
+  // ── World location link ────────────────────────────────────
+  function populateWorldLocSelect(cityId) {
+    const sel = document.getElementById('city-loc-select');
+    const status = document.getElementById('city-link-status');
+    sel.innerHTML = '<option value="">— None —</option>';
+    status.textContent = '';
+
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const sorted = [...locs].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    const targetUrl = 'city-viewer.html?city=' + cityId;
+
+    sorted.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.id;
+      opt.textContent = loc.name + (loc.region ? ' (' + loc.region + ')' : '');
+      if (loc.cityMap === targetUrl) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    if (sel.value) status.textContent = 'Currently linked to ' + (sorted.find(l => l.id === sel.value) || {}).name;
+  }
+
+  async function linkWorldLocation() {
+    const locId   = document.getElementById('city-loc-select').value;
+    const status  = document.getElementById('city-link-status');
+    const locs    = (Editor.state && Editor.state.locations) || [];
+    const targetUrl = 'city-viewer.html?city=' + activeCityId;
+
+    // Clear any existing link for this city
+    locs.forEach(l => { if (l.cityMap === targetUrl) delete l.cityMap; });
+
+    if (locId) {
+      const loc = locs.find(l => l.id === locId);
+      if (!loc) { status.textContent = 'Location not found.'; return; }
+      loc.cityMap = targetUrl;
+    }
+
+    status.textContent = 'Saving…';
+    try {
+      await Editor.exportData();
+      status.textContent = locId
+        ? 'Linked to ' + (locs.find(l => l.id === locId) || {}).name + ' ✓'
+        : 'Link cleared ✓';
+    } catch (e) {
+      status.textContent = 'Save failed: ' + e.message;
+    }
+  }
+
+  return { open, loadCity, createCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId, appendCityOption };
+})();
+</script>
+  <!-- AI Wizard Modal -->
+  <div id="ai-wizard-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; padding:2rem; backdrop-filter:blur(4px);">
+    <div class="modal-content" style="background:#111; border:1px solid var(--color-gold); border-radius:8px; width:100%; max-width:800px; max-height:90vh; overflow-y:auto; display:flex; flex-direction:column; box-shadow:0 0 40px rgba(0,0,0,0.8);">
+      <div style="padding:1.5rem; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; color:var(--color-gold); font-family:'Cinzel',serif;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI City Creator</h2>
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <div id="ai-wizard-step-indicator" style="display:flex; gap:0.4rem; align-items:center;">
+            <span id="ai-pip-1" style="width:10px; height:10px; border-radius:50%; background:var(--color-gold); display:inline-block; transition:background 0.2s;"></span>
+            <span id="ai-pip-2" style="width:10px; height:10px; border-radius:50%; background:#444; display:inline-block; transition:background 0.2s;"></span>
+            <span id="ai-pip-3" style="width:10px; height:10px; border-radius:50%; background:#444; display:inline-block; transition:background 0.2s;"></span>
+            <span id="ai-pip-4" style="width:10px; height:10px; border-radius:50%; background:#444; display:inline-block; transition:background 0.2s;"></span>
+          </div>
+          <button onclick="AIWizard.close()" style="background:none; border:none; color:#888; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+      </div>
+
+      <div id="ai-wizard-steps" style="padding:1.5rem; flex-grow:1;">
+        <!-- Step 1: Identity -->
+        <div id="ai-step-1" class="wizard-step">
+          <h3 style="color:var(--color-gold); margin-top:0;">Step 1: City Identity</h3>
+          <div class="form-group">
+            <label>City Name</label>
+            <input type="text" id="ai-city-name" class="form-control" placeholder="e.g. Scarwatch Hold"
+              oninput="const id=document.getElementById('ai-city-id'); if(!id._manualEdit) id.value=this.value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');">
+          </div>
+          <div class="form-group">
+            <label>City ID <span style="color:#666; font-size:0.75rem; font-weight:normal;">(URL-friendly, auto-filled)</span></label>
+            <input type="text" id="ai-city-id" class="form-control" placeholder="e.g. scarwatch-hold"
+              oninput="this._manualEdit=this.value.length>0;"
+              onfocus="this._manualEdit=true;">
+          </div>
+          <div style="margin-top:1.5rem; display:flex; gap:1rem;">
+            <button class="btn btn-primary" onclick="AIWizard.nextStep(2)">Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Gazetteer Data -->
+        <div id="ai-step-2" class="wizard-step" style="display:none;">
+          <h3 style="color:var(--color-gold); margin-top:0;">Step 2: Gazetteer Data</h3>
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label>Google Doc URL</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="text" id="ai-google-doc-url" class="form-control" placeholder="https://docs.google.com/document/d/..." style="flex:1;">
+              <button class="btn btn-secondary" id="ai-btn-fetch" onclick="AIWizard.fetchGoogleDoc()" style="min-width:140px;">
+                <i class="fa-brands fa-google-drive"></i> Fetch from Drive
+              </button>
+            </div>
+          </div>
+
+          <div id="ai-section-previews" style="display:none; margin-bottom:1rem;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.6rem; margin-bottom:0.6rem;">
+              <div style="background:#0a0a0f; border:1px solid #333; border-radius:4px; padding:0.6rem; text-align:center;">
+                <p style="font-size:0.7rem; color:var(--color-gold); margin:0 0 0.4rem; font-family:'Cinzel',serif; letter-spacing:0.05em;">Crest</p>
+                <img id="ai-crest-img" src="" alt="crest" style="max-height:64px; max-width:100%; display:none; margin-bottom:0.3rem; border-radius:2px;">
+                <p id="ai-crest-status" style="font-size:0.7rem; color:#555; margin:0;">—</p>
+              </div>
+              <div style="background:#0a0a0f; border:1px solid #333; border-radius:4px; padding:0.6rem; text-align:center;">
+                <p style="font-size:0.7rem; color:var(--color-gold); margin:0 0 0.4rem; font-family:'Cinzel',serif; letter-spacing:0.05em;">Sketch</p>
+                <img id="ai-map-img" src="" alt="map" style="max-height:64px; max-width:100%; display:none; margin-bottom:0.3rem; border-radius:2px;">
+                <p id="ai-map-status" style="font-size:0.7rem; color:#555; margin:0;">—</p>
+              </div>
+              <div style="background:#0a0a0f; border:1px solid #333; border-radius:4px; padding:0.6rem; text-align:center;">
+                <p style="font-size:0.7rem; color:var(--color-gold); margin:0 0 0.4rem; font-family:'Cinzel',serif; letter-spacing:0.05em;">Ref</p>
+                <img id="ai-locoverlay-img" src="" alt="locations" style="max-height:64px; max-width:100%; display:none; margin-bottom:0.3rem; border-radius:2px;">
+                <p id="ai-locoverlay-status" style="font-size:0.7rem; color:#555; margin:0;">—</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Notable Locations <span style="color:#666; font-size:0.75rem; font-weight:normal;">(Extracted summaries)</span></label>
+            <textarea id="ai-gazetteer-text" class="form-control" rows="9" style="font-family:monospace; font-size:0.8rem;"></textarea>
+          </div>
+          <div style="margin-top:1.5rem; display:flex; gap:1rem;">
+            <button class="btn btn-secondary" onclick="AIWizard.nextStep(1)">&larr; Back</button>
+            <button class="btn btn-primary" onclick="AIWizard.parseData()">Parse & Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Review -->
+        <div id="ai-step-3" class="wizard-step" style="display:none;">
+          <h3 style="color:var(--color-gold); margin-top:0;">Step 3: Review &amp; Create</h3>
+          <div class="form-group">
+            <p style="font-size:0.8rem; color:#d8c690; margin:0 0 0.75rem;">
+              ComfyUI is temporarily disabled in this wizard. The city will be created using any local artwork already present in the city folder, such as <code>sketch.png</code>, <code>scetch.png</code>, or <code>{cityId}.png</code>.
+            </p>
+          </div>
+          <div class="form-group">
+            <label>Sketch Brief</label>
+            <textarea id="ai-gen-prompt" class="form-control" rows="7"></textarea>
+            <p style="font-size:0.75rem; color:#888; margin:0.4rem 0 0;">
+              This is now just a reusable planning brief for external image tools. The wizard will not send it to ComfyUI.
+            </p>
+          </div>
+
+          <div id="ai-pins-preview" style="margin-top:1rem; background:#000; border:1px solid #333; border-radius:4px; padding:0.5rem; max-height:200px; overflow-y:auto;">
+            <p style="font-size:0.75rem; color:var(--color-gold); margin-bottom:0.5rem;">Extracted Pins:</p>
+            <div id="ai-pins-list" style="font-size:0.7rem; color:#888;"></div>
+          </div>
+
+          <div style="margin-top:1.5rem; display:flex; gap:1rem;">
+            <button class="btn btn-secondary" onclick="AIWizard.nextStep(2)">&larr; Back</button>
+            <button class="btn btn-primary" id="ai-btn-generate" onclick="AIWizard.generate()">Create City</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Progress -->
+        <div id="ai-step-4" class="wizard-step" style="display:none;">
+          <h3 style="color:var(--color-gold); margin-top:0;">Step 4: Executing...</h3>
+          <div style="margin:2rem 0; text-align:center;">
+             <i id="ai-step4-spinner" class="fa-solid fa-spinner fa-spin fa-3x" style="color:var(--color-gold); margin-bottom:1rem;"></i>
+             <div id="ai-status-text">Processing...</div>
+          </div>
+          <div style="background:#000; border:1px solid #333; height:8px; border-radius:4px; overflow:hidden; margin-bottom:1rem;">
+            <div id="ai-progress-bar" style="width:0%; height:100%; background:var(--color-gold); transition:width 0.3s;"></div>
+          </div>
+          <div id="ai-step4-error-btns" style="display:none; gap:0.75rem; justify-content:center;">
+            <button class="btn btn-secondary" onclick="AIWizard.nextStep(3)">&larr; Back</button>
+            <button class="btn btn-secondary" onclick="AIWizard.close()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const AIWizard = (function() {
+      let pins = [];
+      let currentStep = 1;
+      let sourceLocationId = '';
+
+      function findWorldLocationForCity(cityId, allLocations) {
+        if (!cityId) return null;
+        return allLocations.find(l => l.cityMap && l.cityMap.includes('city=' + cityId))
+          || allLocations.find(l => l.id === cityId)
+          || null;
+      }
+
+      function buildSettlementContext(cityId, cityName, worldLocation) {
+        const normalizedId = (cityId || '').toLowerCase();
+        const normalizedName = (cityName || '').toLowerCase();
+        const combined = `${normalizedId} ${normalizedName}`;
+        const locationType = (worldLocation && worldLocation.type) || '';
+        const isTown = locationType === 'town' || /\btown\b/.test(combined);
+        const isLakeside = normalizedId === 'aerley';
+
+        const expectedBuildings = isTown
+          ? 'Include the expected buildings and spaces for a functional fantasy town: a modest market square with fish and produce stalls, one inn, one tavern, a blacksmith, stables, a general store, a shrine or small temple, storehouses, sheds, smokehouses, net-mending yards, a few workshops, town commons, and tightly clustered homes'
+          : 'Include the expected buildings and spaces for a functional fantasy settlement, with public buildings, service buildings, workshops, storage, and clustered homes';
+
+        const civicScale = normalizedId === 'aerley'
+          ? 'This settlement should feel small, practical, and close-knit, sized for roughly 300 residents'
+          : '';
+
+        const waterfrontContext = isLakeside
+          ? 'A\'erley is a small lakeside fishing town on the shore of a lake, so give it a working waterfront with short piers or jetties, beached rowboats or fishing boats, net racks, fish-cleaning tables, smokehouses, boathouses, lakeshore paths, and a compact shoreline market area'
+          : '';
+
+        return {
+          expectedBuildings,
+          civicScale,
+          waterfrontContext
+        };
+      }
+
+      function buildLayoutDirectives(cityId, cityName, worldLocation) {
+        const normalizedId = (cityId || '').toLowerCase();
+        const normalizedName = (cityName || '').toLowerCase();
+        const combined = `${normalizedId} ${normalizedName}`;
+        const locationType = (worldLocation && worldLocation.type) || '';
+        const isTown = locationType === 'town' || /\btown\b/.test(combined);
+        const isVillage = /village|hamlet|settlement|farm|homestead/.test(combined);
+
+        if (normalizedId === 'aerley') {
+          return 'Invent a unique layout for A\'erley instead of copying any existing fort, abbey, cloister, or walled compound. Give it a fresh lakeside fishing-town arrangement with one main shore road, a small market near the waterfront, a few side lanes, short piers, compact service yards, and loosely clustered homes around the commons.';
+        }
+
+        if (isTown) {
+          return 'Invent a unique town layout that fits the town brief. Avoid copying fortress, abbey, monastery, or citadel compounds unless the town description explicitly calls for them.';
+        }
+
+        if (isVillage) {
+          return 'Invent a unique village layout with a simple road pattern and small clusters of buildings. Avoid formal compounds or large urban blocks unless explicitly requested.';
+        }
+
+        return 'Invent a unique settlement layout that matches the provided brief rather than echoing unrelated reference compounds or site plans.';
+      }
+
+      function open(options = {}) {
+        console.log('[AI] Opening Wizard...');
+        document.getElementById('ai-wizard-modal').style.display = 'flex';
+
+        let foundLoc = null;
+        const allLocations = (typeof CampaignData !== 'undefined') ? CampaignData.getLocations() : [];
+        const requestedLocationId = typeof options === 'string' ? options : (options.locationId || '');
+
+        sourceLocationId = '';
+
+        if (requestedLocationId) {
+            foundLoc = allLocations.find(l => l.id === requestedLocationId) || null;
+        }
+
+        if (!foundLoc && typeof Editor !== 'undefined' && Editor.state && Editor.state.selectedLocId) {
+            foundLoc = allLocations.find(l => l.id === Editor.state.selectedLocId);
+        }
+
+        if (!foundLoc && typeof CityEditor !== 'undefined') {
+            const activeCityId = CityEditor.getActiveCityId();
+            if (activeCityId) {
+                foundLoc = findWorldLocationForCity(activeCityId, allLocations);
+            }
+        }
+
+        if (!foundLoc) {
+            const citySelect = document.getElementById('city-select');
+            const selectedCityId = citySelect && citySelect.value ? citySelect.value : '';
+            if (selectedCityId) {
+                foundLoc = findWorldLocationForCity(selectedCityId, allLocations);
+            }
+        }
+
+        if (!foundLoc) {
+            const createSelect = document.getElementById('city-create-select');
+            const selectedLocationId = createSelect && createSelect.value ? createSelect.value : '';
+            if (selectedLocationId) {
+                foundLoc = allLocations.find(l => l.id === selectedLocationId) || null;
+            }
+        }
+
+        if (foundLoc) {
+            const cleanName = foundLoc.name.replace(/\\n/g, ' ').replace(/\n/g, ' ');
+            document.getElementById('ai-city-name').value = cleanName;
+            document.getElementById('ai-city-id').value = foundLoc.id;
+            sourceLocationId = foundLoc.id;
+            if (foundLoc.link && foundLoc.link.includes('docs.google.com')) {
+                document.getElementById('ai-google-doc-url').value = foundLoc.link;
+                document.getElementById('ai-gazetteer-text').value = '';
+            }
+        } else {
+            document.getElementById('ai-city-name').value = '';
+            document.getElementById('ai-city-id').value = '';
+            document.getElementById('ai-google-doc-url').value = '';
+            document.getElementById('ai-gazetteer-text').value = '';
+        }
+
+        // Leave fields blank if no location was auto-detected — let user fill them in
+        nextStep(1);
+      }
+
+      function close() { document.getElementById('ai-wizard-modal').style.display = 'none'; }
+
+      function nextStep(n) {
+        document.querySelectorAll('.wizard-step').forEach(s => s.style.display = 'none');
+        document.getElementById('ai-step-' + n).style.display = 'block';
+        currentStep = n;
+        // Reset spinner/error btns state when leaving step 4
+        if (n !== 4) {
+          const spinner = document.getElementById('ai-step4-spinner');
+          const errBtns = document.getElementById('ai-step4-error-btns');
+          if (spinner) spinner.style.display = '';
+          if (errBtns) errBtns.style.display = 'none';
+          // Disable generate button until connection is confirmed
+          const genBtn = document.getElementById('ai-btn-generate');
+          if (genBtn) genBtn.disabled = true;
+          const bar = document.getElementById('ai-progress-bar');
+          if (bar) bar.style.width = '0%';
+          const statusEl = document.getElementById('ai-status-text');
+          if (statusEl) statusEl.textContent = 'Processing...';
+        }
+        // Update step pips
+        for (let i = 1; i <= 4; i++) {
+          const pip = document.getElementById('ai-pip-' + i);
+          if (pip) pip.style.background = i <= n ? 'var(--color-gold)' : '#444';
+        }
+
+        if (n === 2) {
+          const urlField = document.getElementById('ai-google-doc-url');
+          const textArea = document.getElementById('ai-gazetteer-text');
+          if (urlField.value && urlField.value.includes('docs.google.com') && !textArea.value.trim()) {
+            fetchGoogleDoc();
+          }
+        }
+        if (n === 3) {
+          const genBtn = document.getElementById('ai-btn-generate');
+          if (genBtn) genBtn.disabled = false;
+        }
+      }
+
+      async function resolvePreferredCityImage(cityId) {
+        const candidates = [
+          `images/cities/${cityId}/${cityId}.png`,
+          `images/cities/${cityId}/${cityId}.PNG`,
+          `images/cities/${cityId}/${cityId}.jpg`,
+          `images/cities/${cityId}/${cityId}.JPG`,
+          `images/cities/${cityId}/${cityId}.jpeg`,
+          `images/cities/${cityId}/${cityId}.JPEG`,
+          `images/cities/${cityId}/sketch.png`,
+          `images/cities/${cityId}/sketch.PNG`,
+          `images/cities/${cityId}/scetch.png`,
+          `images/cities/${cityId}/scetch.PNG`
+        ];
+        for (const src of candidates) {
+          if (await imageAssetExists(src)) return src;
+        }
+        return buildCityImagePath(cityId);
+      }
+
+      async function fetchGoogleDoc() {
+        const urlInput = document.getElementById('ai-google-doc-url');
+        const btn = document.getElementById('ai-btn-fetch');
+        const textArea = document.getElementById('ai-gazetteer-text');
+        if (!urlInput.value) return;
+        const match = urlInput.value.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (!match) return alert('Invalid Google Doc URL');
+
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching...';
+
+        try {
+          const res = await fetch(`/api/ai/parse-gazetteer?url=${encodeURIComponent(`https://docs.google.com/document/d/${match[1]}/export?format=txt`)}&cityId=${document.getElementById('ai-city-id').value||'temp'}`);
+          const data = await res.json();
+          
+          document.getElementById('ai-section-previews').style.display = 'block';
+          if (data.crest.localPath) { document.getElementById('ai-crest-img').src = data.crest.localPath + '?v=' + Date.now(); document.getElementById('ai-crest-img').style.display = 'block'; document.getElementById('ai-crest-status').textContent = 'Saved ✓'; }
+          if (data.map.found) { document.getElementById('ai-map-img').src = data.map.localPath + '?v=' + Date.now(); document.getElementById('ai-map-img').style.display = 'block'; document.getElementById('ai-map-status').textContent = 'Sketch ✓'; }
+          if (data.locationsOverlay.found) { document.getElementById('ai-locoverlay-img').src = data.locationsOverlay.localPath + '?v=' + Date.now(); document.getElementById('ai-locoverlay-img').style.display = 'block'; document.getElementById('ai-locoverlay-status').textContent = 'Ref ✓'; }
+
+          const fallbackTextParts = [];
+          if (data.mapSection && data.mapSection.text) {
+            fallbackTextParts.push(`Map\n${data.mapSection.text}`);
+          }
+          if (data.locations && data.locations.text) {
+            fallbackTextParts.push(`${data.locations.heading || 'Locations'}\n${data.locations.text}`);
+          }
+          if (data.fullText) {
+            fallbackTextParts.push(data.fullText);
+          }
+          const fallbackText = fallbackTextParts.filter(Boolean).join('\n\n').trim();
+
+          btn.innerHTML = '<i class="fa-solid fa-scroll fa-spin"></i> Preparing text...';
+          textArea.value = fallbackText;
+
+          try {
+            btn.innerHTML = '<i class="fa-solid fa-brain fa-spin"></i> AI Summarizing...';
+            const aiRes = await fetch('/api/ai/summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: data.fullText })
+            });
+            const aiData = await aiRes.json();
+
+            if (aiData.summary) {
+              textArea.value = aiData.summary;
+              btn.innerHTML = '<i class="fa-solid fa-check"></i> Summarized';
+            } else {
+              btn.innerHTML = '<i class="fa-solid fa-check"></i> Loaded (Fallback)';
+            }
+          } catch (e) {
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Loaded (Fallback)';
+          }
+        } catch (e) {
+          alert("Fetch failed: " + e.message);
+        } finally {
+          btn.disabled = false;
+          setTimeout(() => { btn.innerHTML = origHtml; }, 2000);
+        }
+      }
+
+      function parseData() {
+        const text = document.getElementById('ai-gazetteer-text').value;
+        pins = [];
+        const seen = new Set();
+
+        // Strategy 1: try to extract the Map section (number on own line, name on next line)
+        const mapMatch = text.match(/\bMap\b[\s\S]*?(?=\nNotable Locations|\nNotable|\nHistory|$)/i);
+        const mapSection = mapMatch ? mapMatch[0] : text;
+        const lines = mapSection.split('\n').map(l => l.trim()).filter(Boolean);
+        for (let i = 0; i < lines.length - 1; i++) {
+          const numMatch = lines[i].match(/^(\d{1,2})$/);
+          if (numMatch) {
+            const n = parseInt(numMatch[1]);
+            const name = lines[i + 1];
+            // Reject price/table noise: names containing currency symbols or slashes
+            if (n > 0 && n < 100 && name.length > 2 && !/[\/\\]/.test(name) && !/^\d/.test(name) && !seen.has(n)) {
+              seen.add(n);
+              pins.push({ n, name, desc: '', x: 50, y: 50, type: 'poi' });
+            }
+          }
+        }
+
+        // Strategy 2: inline format "1. Name" or "1 Name" (fallback if Map section yielded nothing)
+        if (pins.length === 0) {
+          lines.forEach(line => {
+            const match = line.match(/^(\d{1,2})[\s.]+(.+?)(?::\s*(.*))?$/);
+            if (match) {
+              const n = parseInt(match[1]);
+              const name = match[2].trim();
+              if (n > 0 && n < 100 && name.length > 2 && !/[\/\\]/.test(name) && !seen.has(n)) {
+                seen.add(n);
+                pins.push({ n, name, desc: (match[3] || '').trim(), x: 50, y: 50, type: 'poi' });
+              }
+            }
+          });
+        }
+
+        // Sort by pin number
+        pins.sort((a, b) => a.n - b.n);
+
+        document.getElementById('ai-pins-list').innerHTML = pins.length
+          ? pins.map(p => `<div>${p.n}. ${p.name}</div>`).join('')
+          : '<div style="color:#888;">No pins found — check gazetteer format.</div>';
+        const cityName = document.getElementById('ai-city-name').value || '';
+        const cityId = document.getElementById('ai-city-id').value || '';
+        const allLocations = (window.CampaignData && typeof CampaignData.getAllLocations === 'function')
+          ? CampaignData.getAllLocations()
+          : ((window.WORLD_LOCATIONS && WORLD_LOCATIONS.locations) || []);
+        const worldLocation = findWorldLocationForCity(cityId, allLocations);
+        const settlementContext = buildSettlementContext(cityId, cityName, worldLocation);
+        const layoutDirectives = buildLayoutDirectives(cityId, cityName, worldLocation);
+        const isTown = (worldLocation && worldLocation.type === 'town') || /\btown\b/.test((cityName + ' ' + cityId).toLowerCase());
+        const isFortress = /hold|fort|keep|castle|citadel|bastion|garrison|stronghold|outpost|watch/i.test(cityName + ' ' + cityId);
+        const isVillage = /village|hamlet|settlement|farm|homestead/i.test(cityName + ' ' + cityId);
+        const isUnderground = /underdark|undercity|underground|cavern|grotto|underhive|drow enclave|subterranean|duergar|beneath the|below the/i.test(cityName + ' ' + cityId);
+        const pinNames = pins.slice(0, 8).map(p => p.name).join(', ');
+        const pinDetails = pins
+          .slice(0, 6)
+          .map(p => {
+            const desc = (p.desc || '').replace(/\s+/g, ' ').trim();
+            return desc ? `${p.name} - ${desc.slice(0, 160)}` : p.name;
+          })
+          .join('; ');
+        let styleHint;
+        if (isFortress) {
+          styleHint = `hand-drawn fantasy site plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, fortress compound drawn as simple wall lines and rectangular building blocks, gatehouses, towers, keep, barracks, armory, stables, shrine, market yard, training grounds, storehouses, sparse ground detail, readable plan layout`;
+        } else if (isUnderground) {
+          styleHint = `hand-drawn fantasy site plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, underground settlement drawn as simple chamber outlines, tunnels, bridges, halls, shrines, alcoves, workshops, clustered blocky structures, sparse shading, readable plan layout`;
+        } else if (isTown) {
+          styleHint = `hand-drawn fantasy town plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, simple building rectangles and wall footprints, roads and footpaths drawn as clean lines, market square, clustered homes, inn, tavern, blacksmith, stableyard, shrine, workshops, storehouses, sparse trees only as minimal symbols, no rendered roofs, no painted landscape`;
+        } else if (isVillage) {
+          styleHint = `hand-drawn fantasy village plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, cottages and outbuildings drawn as simple rectangular footprints, dirt paths as narrow sketch lines, central green or square, shrine, blacksmith, storehouse, sparse terrain marks, no rendered roofs, no painted landscape`;
+        } else {
+          styleHint = `hand-drawn fantasy city plan on aged parchment, strict orthographic top-down view, graphite and dark ink outlines, faint drafting grid, districts and major buildings drawn as simple block footprints, walls and gates as linework, plazas, streets, warehouses, temples, inns, barracks, market blocks, sparse terrain marks, readable plan layout, no rendered roofs, no painted landscape`;
+        }
+        const genPrompt = `Create a fantasy DnD settlement planning sketch from a strict orthographic top-down view. ${styleHint}. The result must look like a hand-drawn planning map or site sketch on parchment, similar to a tabletop DM draft, not a finished painted illustration and not a realistic aerial photo. Focus on wall lines, building footprints, gates, roads, paths, plazas, shoreline edges, docks, courtyards, and overall settlement structure. ${settlementContext.expectedBuildings}. ${settlementContext.civicScale}. ${settlementContext.waterfrontContext}. ${layoutDirectives}. Draw buildings mostly as simple rectangles, courtyards, enclosed compounds, and block footprints rather than textured roof forms. Keep the ground mostly open parchment with only faint grid, light shading, and minimal terrain marks. No people, no text, no labels, no numbers, no compass, no UI, no perspective, no isometric angle, no oblique angle, no street-level camera. If a reference map is provided, preserve only the broad arrangement of that same city while converting it into a cleaner hand-drawn plan. Never copy the layout of an unrelated location. Key locations: ${pinNames}. Gazetteer details: ${pinDetails}.`;
+        document.getElementById('ai-gen-prompt').value = genPrompt;
+        nextStep(3);
+      }
+
+      async function generate() {
+        const cityId = document.getElementById('ai-city-id').value;
+        const cityName = document.getElementById('ai-city-name').value;
+        const locs = (Editor.state && Editor.state.locations) || [];
+        const linkedLocationId = sourceLocationId || cityId;
+        const sourceLoc = locs.find(loc => loc.id === linkedLocationId) || null;
+
+        nextStep(4);
+        const status = document.getElementById('ai-status-text');
+        const progress = document.getElementById('ai-progress-bar');
+
+        try {
+          if (!cityId || !/^[a-z0-9-]+$/i.test(cityId)) {
+            throw new Error('Enter a valid City ID using letters, numbers, and hyphens only.');
+          }
+          if (!cityName.trim()) {
+            throw new Error('Enter a City Name before generating.');
+          }
+          status.textContent = "Creating city scaffold...";
+          progress.style.width = "12%";
+          await ensureCityScaffold(cityId, cityName.trim());
+
+          status.textContent = "Checking for local city artwork...";
+          progress.style.width = "20%";
+          const resolvedImage = await resolvePreferredCityImage(cityId);
+
+          const newCity = {
+            id: cityId,
+            name: cityName.trim(),
+            image: resolvedImage,
+            previewImage: resolvedImage,
+            pins: pins.map(pin => ({ ...pin })),
+            namedLabels: [],
+          };
+
+          upsertCityMapEntry(newCity);
+          window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
+          window.CITY_MAPS_REGISTRY[cityId] = {
+            ...newCity,
+            pins: newCity.pins.map(pin => ({ ...pin })),
+            namedLabels: [],
+          };
+
+          status.textContent = "Saving city files...";
+          progress.style.width = "92%";
+
+          const [citySaveRes, indexSaveRes] = await Promise.all([
+            fetch('/save-city/' + cityId, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain' },
+              body: serializeCityFileForDisk(newCity)
+            }).then(r => r.json()),
+            fetch('/save-city-map', {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain' },
+              body: serializeCityIndexForDisk(CITY_MAPS)
+            }).then(r => r.json())
+          ]);
+
+          if (!citySaveRes.success || !indexSaveRes.success) {
+            throw new Error(citySaveRes.error || indexSaveRes.error || 'Failed to save generated city');
+          }
+
+          if (sourceLoc) {
+            const targetUrl = 'city-viewer.html?city=' + cityId;
+            locs.forEach(loc => {
+              if (loc.cityMap === targetUrl && loc.id !== sourceLoc.id) delete loc.cityMap;
+            });
+            sourceLoc.cityMap = targetUrl;
+            status.textContent = "Linking world location...";
+            progress.style.width = "97%";
+            await Editor.exportData();
+          }
+
+          CityEditor.appendCityOption(cityId, cityName.trim(), true);
+          if (typeof CityEditor !== 'undefined' && typeof CityEditor.reloadData === 'function') {
+            await CityEditor.reloadData();
+          }
+
+          const createStatus = document.getElementById('city-create-status');
+          const saveStatus = document.getElementById('city-save-status');
+          const hasImage = await imageAssetExists(newCity.image);
+          if (createStatus) {
+            createStatus.textContent = sourceLoc
+              ? (hasImage
+                ? 'Created from ' + cityName.trim() + ' and linked automatically.'
+                : 'Created from ' + cityName.trim() + ' and linked automatically. Add artwork when ready.')
+              : (hasImage
+                ? 'Created city files. Link it to a world location if needed.'
+                : 'Created city files. Add artwork and link it to a world location when ready.');
+          }
+          if (saveStatus) {
+            saveStatus.textContent = hasImage
+              ? 'City created successfully.'
+              : 'City scaffold created successfully. Add the city image when ready.';
+            saveStatus.style.color = '#4caf50';
+          }
+
+          status.textContent = "Done!";
+          progress.style.width = "100%";
+          setTimeout(async () => {
+            close();
+            await CityEditor.open();
+            if (hasImage) {
+              await CityEditor.loadCity(cityId);
+            }
+            const citySelect = document.getElementById('city-select');
+            if (citySelect) citySelect.value = cityId;
+          }, 1500);
+
+        } catch (err) {
+          status.innerHTML = `<span style="color:#e44"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}</span>`;
+          document.getElementById('ai-step4-spinner').style.display = 'none';
+          document.getElementById('ai-step4-error-btns').style.display = 'flex';
+        }
+      }
+
+      return { open, close, nextStep, fetchGoogleDoc, parseData, generate };
+    })();
+  </script>
+</body>
+
+</html>

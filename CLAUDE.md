@@ -135,20 +135,24 @@ Per-city files in `js/cities/` usually define:
 
 Important write/API routes in `server.js`:
 
-- `POST /save`
-- `POST /save-city/:cityId`
-- `POST /save-city-map`
-- `POST /api/cities/scaffold`
-- `POST /api/cities/upload-image`
-- `GET /api/city-images`
-- `GET /api/world-clock/campaigns`
-- `POST /api/world-clock/sync`
-- `GET/POST /api/ai/comfy-proxy`
-- `POST /api/ai/upload-to-comfy`
-- `POST /api/ai/save-image`
-- `GET /api/ai/fetch-google-doc`
-- `GET /api/ai/parse-gazetteer`
-- `POST /api/ai/summarize`
+| Route | Purpose |
+|-------|---------|
+| `POST /save` | Write `js/locations-db.js` |
+| `POST /save-city/:cityId` | Write `js/cities/<id>.js` |
+| `POST /save-city-map` | Write `js/city-maps.js` |
+| `POST /delete-city/:cityId` | Delete `js/cities/<id>.js` + `images/cities/<id>/` dir |
+| `POST /api/cities/scaffold` | Create `images/cities/<id>/` + `js/cities/` dirs |
+| `POST /api/cities/upload-image` | Save uploaded image → `images/cities/<id>/<id>.<ext>` |
+| `GET /api/city-images` | Scan `images/cities/` — returns id, name, image paths |
+| `GET /api/world-clock/campaigns` | Read campaign clock registry (add `?sync=1` to trigger sync) |
+| `POST /api/world-clock/sync` | Force-sync campaign anchors from all Google Docs |
+| `GET /api/ai/comfy-proxy` | Proxy GET to local ComfyUI (e.g. history polling) |
+| `POST /api/ai/comfy-proxy` | Proxy POST to local ComfyUI (e.g. queue prompt) |
+| `POST /api/ai/upload-to-comfy` | Upload local image to ComfyUI `/upload/image` |
+| `POST /api/ai/save-image` | Download ComfyUI-generated image → `images/cities/<id>/<id>.png` |
+| `GET /api/ai/fetch-google-doc` | Proxy-fetch raw Google Doc text |
+| `GET /api/ai/parse-gazetteer` | Fetch Google Doc as HTML; extract crest/map/location images and text |
+| `POST /api/ai/summarize` | Summarize gazetteer locations via Gemini 2.0 Flash |
 
 Mutable files in packaged mode are restricted to:
 
@@ -158,6 +162,64 @@ Mutable files in packaged mode are restricted to:
 - `images/cities/**`
 
 That matters whenever changing persistence logic.
+
+## Campaign Clock System
+
+`data/campaign-clock-links.json` stores one entry per active campaign. At startup the server syncs all campaigns whose `lastSyncedAt` is older than 5 minutes by fetching their Google Doc (exported as plain text), finding the latest session header (`NN – Name`) and a world-date line (`Nth of <Harmon>`), then writing the parsed anchor back to the file.
+
+Each campaign entry has:
+```json
+{
+  "id": "heroes-of-emberstran",
+  "name": "Heroes of Emberstran",
+  "docUrl": "https://docs.google.com/document/d/...",
+  "anchor": { "year": 1246, "harmon": "Talil", "day": 34, "hour": 10, "minute": 0 },
+  "sourceSession": 21,
+  "syncStatus": "ok"
+}
+```
+
+Active campaigns (as of 2026-04-23): **Souls of Destiny**, **Heroes of Emberstran**, **A New Adventure**, **Bloody Endeaver**.
+
+The world clock widget on `map.html` / `embed-map.html` reads these anchors via `GET /api/world-clock/campaigns`.
+
+## AI Features
+
+Two independent AI integrations live in `server.js`:
+
+**ComfyUI** (local, optional) — auto-started on server boot if `MYRDAE_ENABLE_COMFY=1` and a ComfyUI venv is found next to the project dir. Used to generate city map images. Proxied via `/api/ai/comfy-proxy`.
+
+**Gemini 2.0 Flash** — `POST /api/ai/summarize` calls the Gemini API (requires `GEMINI_API_KEY` in `.env`) to turn raw gazetteer text into numbered location summaries for the city editor.
+
+**Gazetteer parser** — `GET /api/ai/parse-gazetteer?url=<docUrl>&cityId=<id>` fetches a Google Doc as HTML, splits it by headings, extracts the crest (page-1 image), city map sketch, and locations-overlay image, saves them all to `images/cities/<id>/`, and returns structured JSON with location text.
+
+## Water Repaint (`js/water-repaint.js`)
+
+`WaterRepaintRenderer` is an IIFE module that overlays an animated water effect on the map image without modifying it. It uses four stacked canvases inserted after the `<img>` element:
+
+| Canvas | Purpose |
+|--------|---------|
+| `water-repaint-canvas` | Static depth-tinted water color (computed once) |
+| `water-motion-canvas` | Slowly drifting gradient texture, clipped by water mask |
+| `water-foam-canvas` | Shore foam, clipped by shallow-water shore mask |
+| `water-solar-canvas` | Sun-glow swept across water based on `MyrdaeWorldClock` time |
+
+Water pixels are detected by blue-channel dominance on the map image. The depth field is blurred to create smooth shallow→deep gradients.
+
+Public API:
+- `WaterRepaintRenderer.init(imgId)` — attach to an `<img>` by DOM id; call once on page load
+- `WaterRepaintRenderer.setSolarLighting(bool)` — toggle the solar canvas
+- `WaterRepaintRenderer.isSolarLightingEnabled()` — returns current state
+
+## Cities
+
+27 cities are registered in `js/city-maps.js` (as of 2026-04-23):
+Tratta, Emberstran, Nauldeaus, Adsuren, Onaren, Scarwatch Hold, Basctdelm, Shademoor, Abbey of Mont Rest, Farview, Glaspero, Climbor, Everlight, Aerley, Ole'stack, Sandgrave, Kallilos, Sari Lenora, Clador, Ulgrey, Trailpoint, Farnsby Port, Dunduar, Nuwharf, Tal'besar Ruins, Scarbrook, Nebisill.
+
+Each city has:
+- `js/city-maps.js` entry (id, name, image paths)
+- `js/cities/<id>.js` — registers into `window.CITY_MAPS_REGISTRY["id"]` with `pins` and `namedLabels` arrays
+- `images/cities/<id>/` — map image (`<id>.png`), optionally `crest.png`, `sketch.png`, `locations-reference.png`
 
 ## Editor Internals (`js/editor.js`)
 

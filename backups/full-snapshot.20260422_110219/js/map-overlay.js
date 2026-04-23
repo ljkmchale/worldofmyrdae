@@ -1,0 +1,1599 @@
+/**
+ * World of Myrdae - Map Overlay
+ * Renders interactive SVG markers, labels, and tooltips over the world map
+ */
+
+const MapOverlay = (function () {
+    let data = null;
+    let tooltip = null;
+    let hideTimer = null;
+    let overlayVisible = true;
+    let tooltipsEnabled = false;
+    let locMap = new Map(); // Shared location map
+    let natW = 0;
+    let natH = 0;
+    let roadGroup = null;
+    let roadLinksByLocation = new Map();
+    let initializedContainers = []; // Track which containers have been explicitly initialized
+    let tooltipHeaderImageCache = new Map();
+    const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
+        mountains: 'images/tooltips/biomes/mountains.png',
+        forest: 'images/tooltips/biomes/forest.png',
+        swamp: 'images/tooltips/biomes/swamp.png',
+        desert: 'images/tooltips/biomes/desert.png',
+        highlands: 'images/tooltips/biomes/highlands.png',
+        meadow: 'images/tooltips/biomes/meadow.png'
+    });
+    const TOOLTIP_WATER_IMAGE_PATHS = Object.freeze({
+        ocean: 'images/tooltips/water/ocean.png',
+        coast: 'images/tooltips/water/coast.png',
+        lake: 'images/tooltips/water/lake.png',
+        river: 'images/tooltips/water/river.png'
+    });
+
+    const MAP_MILES_PER_PERCENT = 25;
+    const TRAVEL_MILES_PER_DAY = {
+        major: 24,
+        minor: 18,
+        default: 20
+    };
+
+    function isEditorMode() {
+        return typeof document !== 'undefined' && document.body && document.body.classList.contains('editor-mode');
+    }
+
+    function getData() { return data; }
+
+    function hideTooltipImmediately() {
+        if (!tooltip) return;
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+        tooltip.style.display = 'none';
+        tooltip.style.pointerEvents = 'none';
+    }
+
+    function setTooltipsEnabled(enabled) {
+        tooltipsEnabled = enabled !== false;
+        if (!tooltipsEnabled) hideTooltipImmediately();
+        return tooltipsEnabled;
+    }
+
+    function areTooltipsEnabled() {
+        return tooltipsEnabled;
+    }
+
+    function getRoadTravelSpeed(roadType) {
+        return TRAVEL_MILES_PER_DAY[roadType] || TRAVEL_MILES_PER_DAY.default;
+    }
+
+    function getRoadDisplayName(road, fromLoc, toLoc) {
+        if (road.name && road.name.trim()) return road.name.trim().replace(/[\r\n]+/g, ' ');
+        if (fromLoc && toLoc) return `${fromLoc.name} to ${toLoc.name}`;
+        if (road.id) {
+            return road.id
+                .replace(/[-_]+/g, ' ')
+                .replace(/\broad\b/gi, '')
+                .replace(/\bcrossroad\b/gi, 'Crossroad')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+        return 'Road Connection';
+    }
+
+    function getRoadPointPercent(pt) {
+        if (typeof pt === 'string') {
+            const loc = locMap.get(pt);
+            return loc ? { x: loc.x, y: loc.y, locationId: loc.id } : null;
+        }
+        if (Array.isArray(pt) && pt.length === 2) {
+            return { x: pt[0], y: pt[1], locationId: null };
+        }
+        if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+            return { x: pt.x, y: pt.y, locationId: pt.locationId || null };
+        }
+        return null;
+    }
+
+    function getRoadPointSource(road) {
+        if (Array.isArray(road.points) && road.points.length > 0) return road.points;
+        if (Array.isArray(road.waypoints) && road.waypoints.length > 0) return road.waypoints;
+        return [];
+    }
+
+    function measurePercentPath(points) {
+        let total = 0;
+        for (let i = 1; i < points.length; i++) {
+            const dx = points[i].x - points[i - 1].x;
+            const dy = points[i].y - points[i - 1].y;
+            total += Math.sqrt(dx * dx + dy * dy);
+        }
+        return total;
+    }
+
+    function measurePercentDistance(fromPoint, toPoint) {
+        if (!fromPoint || !toPoint) return 0;
+        return measurePercentPath([fromPoint, toPoint]);
+    }
+
+    function percentToMiles(percentDistance) {
+        return percentDistance * MAP_MILES_PER_PERCENT;
+    }
+
+    function milesToDays(miles, milesPerDay) {
+        if (!milesPerDay || milesPerDay <= 0) return 0;
+        return miles / milesPerDay;
+    }
+
+    function getLocationById(locationId) {
+        return locationId ? locMap.get(locationId) || null : null;
+    }
+
+    function findNearestLocation(x, y, maxPercentDistance = 1.5) {
+        if (typeof x !== 'number' || typeof y !== 'number' || !locMap.size) return null;
+
+        let nearest = null;
+        let nearestDistance = Infinity;
+
+        locMap.forEach((loc) => {
+            if (typeof loc.x !== 'number' || typeof loc.y !== 'number') return;
+            const distance = measurePercentDistance({ x, y }, loc);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = loc;
+            }
+        });
+
+        if (!nearest || nearestDistance > maxPercentDistance) return null;
+        return nearest;
+    }
+
+    function findRouteBetweenLocations(fromId, toId) {
+        if (!fromId || !toId || fromId === toId) return null;
+        if (!roadLinksByLocation.has(fromId) || !roadLinksByLocation.has(toId)) return null;
+
+        const distances = new Map([[fromId, 0]]);
+        const travelDays = new Map([[fromId, 0]]);
+        const previous = new Map();
+        const visited = new Set();
+
+        while (true) {
+            let currentId = null;
+            let currentDistance = Infinity;
+
+            distances.forEach((distance, locationId) => {
+                if (!visited.has(locationId) && distance < currentDistance) {
+                    currentDistance = distance;
+                    currentId = locationId;
+                }
+            });
+
+            if (!currentId) break;
+            if (currentId === toId) break;
+
+            visited.add(currentId);
+
+            const links = roadLinksByLocation.get(currentId) || [];
+            links.forEach((link) => {
+                const nextDistance = currentDistance + link.miles;
+                const knownDistance = distances.has(link.destinationId) ? distances.get(link.destinationId) : Infinity;
+                if (nextDistance < knownDistance) {
+                    distances.set(link.destinationId, nextDistance);
+                    travelDays.set(link.destinationId, (travelDays.get(currentId) || 0) + link.days);
+                    previous.set(link.destinationId, {
+                        fromId: currentId,
+                        link
+                    });
+                }
+            });
+        }
+
+        if (!distances.has(toId)) return null;
+
+        const path = [];
+        let cursor = toId;
+        while (cursor) {
+            path.unshift(cursor);
+            const previousEntry = previous.get(cursor);
+            if (!previousEntry) break;
+            cursor = previousEntry.fromId;
+        }
+
+        if (!path.length || path[0] !== fromId) return null;
+
+        const segments = [];
+        for (let i = 1; i < path.length; i++) {
+            const current = path[i];
+            const entry = previous.get(current);
+            if (entry) segments.push(entry.link);
+        }
+
+        return {
+            path,
+            miles: distances.get(toId) || 0,
+            days: travelDays.get(toId) || 0,
+            segments
+        };
+    }
+
+    function addRoadLink(fromId, toId, road, percentDistance) {
+        if (!fromId || !toId || fromId === toId) return;
+        const fromLoc = locMap.get(fromId);
+        const toLoc = locMap.get(toId);
+        if (!fromLoc || !toLoc) return;
+
+        const miles = percentDistance * MAP_MILES_PER_PERCENT;
+        const speed = getRoadTravelSpeed(road.type);
+        const days = miles / speed;
+        const entries = roadLinksByLocation.get(fromId) || [];
+
+        entries.push({
+            destinationId: toId,
+            destinationName: toLoc.name,
+            roadId: road.id || '',
+            roadName: getRoadDisplayName(road, fromLoc, toLoc),
+            roadType: road.type || 'road',
+            miles,
+            days
+        });
+
+        entries.sort((a, b) => a.miles - b.miles);
+        roadLinksByLocation.set(fromId, entries);
+    }
+
+    function buildRoadLinks() {
+        roadLinksByLocation = new Map();
+        if (!data || !Array.isArray(data.roads)) return;
+
+        data.roads.forEach((road) => {
+            const roadPoints = getRoadPointSource(road);
+            if (roadPoints.length < 2) return;
+            if (road.type === 'water-route') return;
+
+            let lastNamedPoint = null;
+            let segmentPoints = [];
+
+            roadPoints.forEach((rawPoint) => {
+                const point = getRoadPointPercent(rawPoint);
+                if (!point) return;
+
+                if (!segmentPoints.length) {
+                    segmentPoints.push(point);
+                } else {
+                    const prev = segmentPoints[segmentPoints.length - 1];
+                    if (prev.x !== point.x || prev.y !== point.y) {
+                        segmentPoints.push(point);
+                    }
+                }
+
+                if (!point.locationId) return;
+
+                if (!lastNamedPoint) {
+                    lastNamedPoint = point;
+                    segmentPoints = [point];
+                    return;
+                }
+
+                const percentDistance = measurePercentPath(segmentPoints);
+                if (percentDistance > 0) {
+                    addRoadLink(lastNamedPoint.locationId, point.locationId, road, percentDistance);
+                    addRoadLink(point.locationId, lastNamedPoint.locationId, road, percentDistance);
+                }
+
+                lastNamedPoint = point;
+                segmentPoints = [point];
+            });
+        });
+    }
+
+    /**
+     * Initialize the overlay on a map container
+     */
+    async function init(containerId, imageId, dataOverride) {
+        const container = document.getElementById(containerId);
+        const mapImg = document.getElementById(imageId);
+        if (!container || !mapImg) return;
+
+        // Track this container so we can re-init it on data updates (avoid duplicates)
+        if (!initializedContainers.some(e => e.containerId === containerId)) {
+            initializedContainers.push({ containerId, imageId });
+        }
+
+        if (dataOverride) {
+            data = dataOverride;
+        } else {
+            // Load location data from CampaignData
+            if (typeof CampaignData !== 'undefined') {
+                data = CampaignData.getData();
+                if (!data || !data.locations || data.locations.length === 0) {
+                    data = await CampaignData.init();
+                }
+            } else if (typeof window.CampaignData !== 'undefined') {
+                data = window.CampaignData.getData();
+                if (!data || !data.locations || data.locations.length === 0) {
+                    data = await window.CampaignData.init();
+                }
+            } else {
+                console.error('CampaignData module not found!');
+                return;
+            }
+        }
+
+        // Create tooltip element (shared, attached to body)
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.className = 'map-tooltip';
+            tooltip.style.display = 'none';
+            document.body.appendChild(tooltip);
+
+            // Allow the user to move the mouse into the tooltip without it closing
+            tooltip.addEventListener('mouseenter', () => {
+                tooltip.style.display = 'block';
+                tooltip.style.pointerEvents = 'auto';
+            });
+            tooltip.addEventListener('mouseleave', (e) => {
+                hideTooltip(e);
+            });
+        }
+
+        // Wait for image to load to get natural dimensions
+        const setupOverlay = () => {
+            // Safety measure to ensure we clean up immediately before drawing
+            // in case multiple updates were fired while waiting for the image to load
+            let existing = document.getElementById(containerId + '-overlay');
+            if (existing) existing.remove();
+
+            const strayOverlays = container.querySelectorAll('svg.map-overlay');
+            strayOverlays.forEach(o => o.remove());
+
+            natW = mapImg.naturalWidth;
+            natH = mapImg.naturalHeight;
+            if (!natW || !natH) return;
+
+            // Create SVG overlay
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'map-overlay');
+            svg.setAttribute('id', containerId + '-overlay');
+            svg.setAttribute('viewBox', `0 0 ${natW} ${natH}`);
+            svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
+            svg.style.width = '100%';
+            svg.style.height = 'auto';
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.pointerEvents = 'none';
+            svg.style.willChange = 'transform';
+
+            // Add filter definitions for special label styles
+            const filterDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const waterFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+            waterFilter.setAttribute('id', 'water-label-shadow');
+            waterFilter.setAttribute('x', '-20%');
+            waterFilter.setAttribute('y', '-20%');
+            waterFilter.setAttribute('width', '140%');
+            waterFilter.setAttribute('height', '140%');
+            const feShadow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
+            feShadow.setAttribute('dx', '1');
+            feShadow.setAttribute('dy', '1');
+            feShadow.setAttribute('stdDeviation', '1.5');
+            feShadow.setAttribute('flood-color', '#555555');
+            feShadow.setAttribute('flood-opacity', '0.7');
+            waterFilter.appendChild(feShadow);
+            filterDefs.appendChild(waterFilter);
+
+            // River glow: centered grey glow (no directional offset)
+            const riverFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+            riverFilter.setAttribute('id', 'river-label-glow');
+            riverFilter.setAttribute('x', '-30%');
+            riverFilter.setAttribute('y', '-30%');
+            riverFilter.setAttribute('width', '160%');
+            riverFilter.setAttribute('height', '160%');
+            const riverGlow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
+            riverGlow.setAttribute('dx', '0');
+            riverGlow.setAttribute('dy', '0');
+            riverGlow.setAttribute('stdDeviation', '3');
+            riverGlow.setAttribute('flood-color', '#666666');
+            riverGlow.setAttribute('flood-opacity', '0.8');
+            riverFilter.appendChild(riverGlow);
+            filterDefs.appendChild(riverFilter);
+
+            svg.appendChild(filterDefs);
+
+            // Create ID lookup map for road routing
+            locMap.clear();
+            const locationsForMap = data.locations && data.locations.length > 0 ? data.locations : (WORLD_LOCATIONS ? WORLD_LOCATIONS.locations : []);
+            if (locationsForMap.length > 0) {
+                locationsForMap.forEach(loc => {
+                    if (loc.id) locMap.set(loc.id, loc);
+                });
+                console.log(`Location map built: ${locMap.size} locations`);
+            } else {
+                console.warn('No locations data available for road routing');
+            }
+
+            buildRoadLinks();
+
+            // Render region labels
+            if (data.regions) {
+                const regionGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                regionGroup.setAttribute('class', 'overlay-regions');
+                data.regions.forEach(r => {
+                    const px = (r.x / 100) * natW;
+                    const py = (r.y / 100) * natH;
+                    addRegionLabel(regionGroup, r, px, py, natW);
+                });
+                svg.appendChild(regionGroup);
+            }
+
+            // Render roads/paths (draw these before locations so they are underneath)
+            if (data.roads && data.roads.length > 0) {
+                roadGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                roadGroup.setAttribute('class', 'overlay-roads');
+                let roadsRendered = 0;
+                data.roads.forEach(road => {
+                    const roadPoints = getRoadPointSource(road);
+                    if (roadPoints.length >= 2) {
+                        addRoad(roadGroup, road, locMap, natW, natH);
+                        roadsRendered++;
+                    } else {
+                        console.warn('Road skipped (needs at least 2 points):', road.id, 'points:', roadPoints.length);
+                    }
+                });
+                svg.appendChild(roadGroup);
+                console.log(`Rendered ${roadsRendered} of ${data.roads.length} roads`);
+
+                // Remove any lingering water-route path elements only outside the editor
+                if (!isEditorMode()) {
+                    removeWaterRoutePaths();
+                }
+
+                // Initialize boat animations for water routes on all maps
+                if (typeof initializeBoatAnimations === 'function') {
+                    initializeBoatAnimations(svg, data, locMap, natW, natH);
+                }
+            }
+
+            // Render location markers
+            const locationsToRender = data.locations && data.locations.length > 0 ? data.locations : (WORLD_LOCATIONS ? WORLD_LOCATIONS.locations : []);
+            if (locationsToRender.length > 0) {
+                const locGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                locGroup.setAttribute('class', 'overlay-locations');
+                locationsToRender.forEach(loc => {
+                    const px = (loc.x / 100) * natW;
+                    const py = (loc.y / 100) * natH;
+                    addMarker(locGroup, loc, px, py, natW);
+                });
+                svg.appendChild(locGroup);
+            }
+
+            // Insert SVG right after the image
+            mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
+
+            // Sync overlay transform with the map image (for restored zoom state)
+            if (mapImg.style.transform) {
+                svg.style.transform = mapImg.style.transform;
+                svg.style.transformOrigin = mapImg.style.transformOrigin;
+            }
+        };
+
+        if (mapImg.complete && mapImg.naturalWidth) {
+            setupOverlay();
+        } else {
+            // Remove old listeners so we don't stack setups
+            mapImg.onload = setupOverlay;
+        }
+    }
+
+    // Listen to data updates from outside to trigger a redraw (only bind once)
+    let isListenerBound = false;
+    if (typeof document !== 'undefined' && !isListenerBound) {
+        document.addEventListener('campaign-data-updated', async (e) => {
+            data = e.detail;
+            console.log('Map overlay: Data updated. Roads:', data.roads?.length || 0, 'Locations:', data.locations?.length || 0);
+
+            if (data.roads && data.roads.length > 0) {
+                console.log('Roads to render:', data.roads.map(r => ({ id: r.id, points: r.points?.length || 0 })));
+            }
+
+            // Only re-init containers that were explicitly initialized
+            for (const entry of initializedContainers) {
+                console.log(`Re-initializing overlay for container: ${entry.containerId}, image: ${entry.imageId}`);
+                await init(entry.containerId, entry.imageId, data);
+            }
+        });
+        isListenerBound = true;
+    }
+
+    /**
+     * Add a region label (italic text, no marker)
+     */
+    function addRegionLabel(group, region, px, py, natW) {
+        // Skip label rendering if hideLabel is set
+        if (region.hideLabel) return;
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', px);
+        text.setAttribute('y', py);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('class', 'region-label region-type-' + region.type);
+        text.setAttribute('font-size', region.fontSize || Math.max(natW * 0.008, 12));
+
+        if (region.fontFamily) {
+            text.style.fontFamily = resolveFontStack(region.fontFamily);
+        }
+        if (region.fontWeight) {
+            text.style.fontWeight = region.fontWeight;
+        }
+        if (region.fontStyle) {
+            text.style.fontStyle = region.fontStyle;
+        }
+
+        // Split on real newlines OR literal "\n" strings
+        const lines = region.name.split(/\r?\n|\\n/);
+
+        if (region.textCurve !== undefined) {
+            // Apply curved text
+            const curveValue = parseFloat(region.textCurve) * 5; // scaled up to be visible
+            const pathId = `curve-region-${region.id || Math.random().toString(36).substr(2, 9)}`;
+
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('id', pathId);
+
+            // Generate a tighter bezier curve centered at px, py
+            const hRadius = natW * 0.05; // ~400px on an 8k map, keeping the bend contained
+            path.setAttribute('d', `M ${px - hRadius} ${py} Q ${px} ${py + curveValue} ${px + hRadius} ${py}`);
+
+            defs.appendChild(path);
+            group.appendChild(defs);
+
+            const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+            textPath.setAttribute('href', `#${pathId}`);
+            textPath.setAttribute('startOffset', '50%');
+            textPath.textContent = lines.join('  ');
+            text.appendChild(textPath);
+
+            text.removeAttribute('x');
+            text.removeAttribute('y');
+        } else if (lines.length > 1) {
+            // Multi-line support
+            lines.forEach((line, index) => {
+                const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                tspan.textContent = line;
+                tspan.setAttribute('x', px);
+                // First line stays at y, others shift down
+                tspan.setAttribute('dy', index === 0 ? 0 : '1.2em');
+                text.appendChild(tspan);
+            });
+        } else {
+            text.textContent = region.name;
+        }
+
+        // Make region labels interactive too
+        text.style.pointerEvents = 'auto';
+        text.style.cursor = 'pointer';
+
+        text.addEventListener('mouseenter', (e) => showTooltip(e, region));
+        text.addEventListener('mousemove', (e) => moveTooltip(e));
+        text.addEventListener('mouseleave', (e) => hideTooltip(e));
+
+        if (region.opacity !== undefined) {
+            text.setAttribute('opacity', region.opacity);
+        }
+
+        group.appendChild(text);
+    }
+
+    /**
+     * Add a location marker with label
+     */
+    function addMarker(group, loc, px, py, natW) {
+        const markerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        markerGroup.setAttribute('class', 'marker-group marker-type-' + loc.type);
+        markerGroup.setAttribute('data-location-id', loc.id || '');
+        markerGroup.style.pointerEvents = 'auto';
+        markerGroup.style.cursor = 'pointer';
+
+        if (loc.opacity !== undefined) {
+            markerGroup.setAttribute('opacity', loc.opacity);
+        }
+
+        const sizeMultiplier = loc.markerSize !== undefined ? loc.markerSize : 1.0;
+        const baseRadius = natW * 0.003 * (sizeMultiplier || 1.0);
+        const brown = '#3e2723'; // Dark Brown
+        const darkBrown = '#1b1612'; // Almost Black
+
+        // Region/water/river type or zero markerSize: label only, no marker shape
+        // Pass radius=0 so collision detection never overrides user-specified label offsets
+        if (loc.type === 'region' || loc.type === 'river' || sizeMultiplier === 0) {
+            addLabel(markerGroup, loc, px, py, 0, natW);
+            if (isTooltipSuppressedLocation(loc)) {
+                markerGroup.style.pointerEvents = 'none';
+            } else {
+                markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
+                markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
+                markerGroup.addEventListener('mouseleave', hideTooltip);
+            }
+            group.appendChild(markerGroup);
+            return;
+        }
+
+        // Compute per-type radius
+        let r;
+        switch (loc.type) {
+            case 'capital': r = baseRadius * 2.2; break;
+            case 'city': r = baseRadius * 1.8; break;
+            case 'small-city': r = baseRadius * 1.2; break;
+            case 'town': r = baseRadius * 0.9; break;
+            case 'village': r = baseRadius * 0.6; break;
+            case 'port': r = baseRadius * 1.4; break;
+            case 'ruins': r = baseRadius * 1.2; break;
+            case 'landmark': r = baseRadius * 1.3; break;
+            case 'pass': r = baseRadius * 1.0; break;
+            default: r = baseRadius;
+        }
+        // Apply user-specified marker offset (default 0 = centered on coordinate)
+        px += (loc.markerOffsetX || 0);
+        py += (loc.markerOffsetY || 0);
+
+        switch (loc.type) {
+            case 'capital': {
+                // White ring (glow) behind
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 1.0)', 4);
+                markerGroup.appendChild(glow);
+
+                // White filled circle, brown outline, star in center
+                const outer = makeCircle(px, py, r, brown, brown, 2.5);
+                markerGroup.appendChild(outer);
+                // 8-pointed star
+                const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const starR = r * 1.15;
+                const innerR = starR * 0.4;
+                let points = '';
+                for (let i = 0; i < 8; i++) {
+                    const outerAngle = (Math.PI / 2 * -1) + (i * 2 * Math.PI / 8);
+                    const innerAngle = outerAngle + Math.PI / 8;
+                    points += `${px + starR * Math.cos(outerAngle)},${py + starR * Math.sin(outerAngle)} `;
+                    points += `${px + innerR * Math.cos(innerAngle)},${py + innerR * Math.sin(innerAngle)} `;
+                }
+                star.setAttribute('points', points.trim());
+                star.setAttribute('fill', '#FFFFFF');
+                star.setAttribute('stroke', darkBrown);
+                star.setAttribute('stroke-width', '0.5');
+                markerGroup.appendChild(star);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'city': {
+                // White ring (glow) behind
+                const glow = makeCircle(px, py, r, 'none', 'rgba(255, 255, 255, 0.95)', 3);
+                markerGroup.appendChild(glow);
+
+                // Original city marker: White filled circle, brown outline...
+                const outer = makeCircle(px, py, r, '#FFFFFF', brown, 2);
+                markerGroup.appendChild(outer);
+
+                // ...brown dot in center
+                const dot = makeCircle(px, py, r * 0.35, brown, darkBrown, 0.5);
+                markerGroup.appendChild(dot);
+
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'small-city': {
+                // Brown filled circle with white outline ring, white circle in center
+                const outer = makeCircle(px, py, r, brown, 'rgba(255, 255, 255, 0.95)', 1);
+                markerGroup.appendChild(outer);
+
+                const inner = makeCircle(px, py, r * 0.55, '#FFFFFF', brown, 1);
+                markerGroup.appendChild(inner);
+
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'town': {
+                // Smaller brown filled circle with solid white ring
+                const dot = makeCircle(px, py, r, brown, 'rgba(255, 255, 255, 0.95)', 1);
+                markerGroup.appendChild(dot);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'village': {
+                // Even smaller brown circle
+                const dot = makeCircle(px, py, r, '#A0522D', darkBrown, 0.8);
+                markerGroup.appendChild(dot);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'port': {
+                // Blue-white circle with brown outline
+                const outer = makeCircle(px, py, r, '#E8F4FD', brown, 1.5);
+                markerGroup.appendChild(outer);
+                // Anchor-like dot
+                const dot = makeCircle(px, py, r * 0.35, '#4682B4', '#2C5F8A', 0.5);
+                markerGroup.appendChild(dot);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'ruins': {
+                // Hollow circle with dashed stroke
+                const ring = makeCircle(px, py, r, 'none', '#888', 1.5);
+                ring.setAttribute('stroke-dasharray', `${r * 0.8} ${r * 0.5}`);
+                markerGroup.appendChild(ring);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'landmark': {
+                // Diamond shape
+                const diamond = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const pts = `${px},${py - r} ${px + r * 0.7},${py} ${px},${py + r} ${px - r * 0.7},${py}`;
+                diamond.setAttribute('points', pts);
+                diamond.setAttribute('fill', brown);
+                diamond.setAttribute('stroke', 'rgba(255, 255, 255, 0.95)');
+                diamond.setAttribute('stroke-width', '1');
+                markerGroup.appendChild(diamond);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'pass': {
+                // Small triangle
+                const tri = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const pts = `${px},${py - r} ${px + r * 0.87},${py + r * 0.5} ${px - r * 0.87},${py + r * 0.5}`;
+                tri.setAttribute('points', pts);
+                tri.setAttribute('fill', '#AAA');
+                tri.setAttribute('stroke', '#666');
+                tri.setAttribute('stroke-width', '1');
+                markerGroup.appendChild(tri);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            case 'poi': {
+                // Square shape (same colors as town)
+                const square = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                const side = r * 1.8; // Adjust size to match visual weight
+                square.setAttribute('x', px - side / 2);
+                square.setAttribute('y', py - side / 2);
+                square.setAttribute('width', side);
+                square.setAttribute('height', side);
+                square.setAttribute('fill', brown);
+                square.setAttribute('stroke', 'rgba(255, 255, 255, 0.95)');
+                square.setAttribute('stroke-width', '1');
+                markerGroup.appendChild(square);
+                addLabel(markerGroup, loc, px, py, r, natW);
+                break;
+            }
+            default: {
+                // Fallback: simple dot
+                const dot = makeCircle(px, py, r, '#d4af37', 'rgba(0,0,0,0.6)', 1.5);
+                markerGroup.appendChild(dot);
+                addLabel(markerGroup, loc, px, py, r, natW);
+            }
+        }
+
+        // Hover events
+        if (isTooltipSuppressedLocation(loc)) {
+            markerGroup.style.pointerEvents = 'none';
+        } else {
+            markerGroup.addEventListener('mouseenter', (e) => showTooltip(e, loc));
+            markerGroup.addEventListener('mousemove', (e) => moveTooltip(e));
+            markerGroup.addEventListener('mouseleave', (e) => hideTooltip(e));
+        }
+
+        group.appendChild(markerGroup);
+    }
+
+    /** Helper: create an SVG circle */
+    function makeCircle(cx, cy, r, fill, stroke, strokeWidth) {
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', cx);
+        c.setAttribute('cy', cy);
+        c.setAttribute('r', r);
+        c.setAttribute('fill', fill);
+        c.setAttribute('stroke', stroke);
+        c.setAttribute('stroke-width', strokeWidth);
+        return c;
+    }
+
+    /** Helper: add a text label next to a marker */
+    // Fonts that lack standard punctuation glyphs — always pair with a fallback
+    const FONT_FALLBACKS = {
+        'Sell Your Soul':    'Sell Your Soul, Cormorant Garamond, serif',
+        'Penumbra Sans Std': 'Penumbra Sans Std, Cormorant Garamond, serif',
+        'Quintessential':    'Quintessential, Cormorant Garamond, serif',
+        'Simonetta':         'Simonetta, Cormorant Garamond, serif',
+    };
+    function resolveFontStack(family) {
+        if (!family) return family;
+        const base = family.split(',')[0].trim();
+        return FONT_FALLBACKS[base] || family;
+    }
+
+    function addLabel(markerGroup, loc, px, py, radius, natW) {
+        // Skip label rendering if hideLabel is set
+        if (loc.hideLabel) return;
+
+        const defaultX = radius * 2.5;
+        const defaultY = radius * 0.4;
+        let offsetX = loc.labelOffsetX !== undefined ? loc.labelOffsetX : defaultX;
+        let offsetY = loc.labelOffsetY !== undefined ? loc.labelOffsetY : defaultY;
+
+        // If the label would land on/near the marker, shift it above instead
+        const collisionZone = radius * 1.5;
+        const wouldCollide = Math.abs(offsetX) < collisionZone && Math.abs(offsetY) < collisionZone;
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        let labelX, labelY;
+        if (wouldCollide) {
+            labelX = px;
+            labelY = py - radius * 1.4;
+            label.setAttribute('text-anchor', 'middle');
+        } else {
+            labelX = px + offsetX;
+            labelY = py + offsetY;
+            label.setAttribute('text-anchor', loc.labelAlign || 'start');
+        }
+        label.setAttribute('x', labelX);
+        label.setAttribute('y', labelY);
+
+        if (loc.rotation) {
+            label.setAttribute('transform', `rotate(${loc.rotation}, ${labelX}, ${labelY})`);
+        }
+        label.setAttribute('class', 'marker-label');
+        label.setAttribute('font-size', loc.fontSize || Math.max(natW * 0.005, 9));
+
+        // Type-based default fonts; loc.fontFamily overrides if explicitly set
+        const _settlementTypes = ['city', 'capital', 'small-city', 'town'];
+        const _poiTypes        = ['poi', 'landmark', 'ruins'];
+        const _nameDesc        = ((loc.name || '') + ' ' + (loc.description || '')).toLowerCase();
+        if (_settlementTypes.includes(loc.type)) {
+            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Simonetta');
+            if (!loc.fontStyle) label.style.fontStyle = 'normal';
+        } else if (_poiTypes.includes(loc.type)) {
+            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Simonetta');
+            label.style.fontStyle  = loc.fontStyle  || 'italic';
+        } else if (loc.type === 'water') {
+            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Quintessential');
+            if (!loc.fontStyle) label.style.fontStyle = 'normal';
+        } else if (loc.type === 'river') {
+            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Simonetta');
+            label.style.fontStyle  = loc.fontStyle  || 'italic';
+        } else if (loc.type === 'nature') {
+            label.style.fontFamily = resolveFontStack(loc.fontFamily || 'Sell Your Soul');
+            if (!loc.fontStyle) label.style.fontStyle = 'normal';
+        } else if (loc.type === 'region') {
+            const _isMountain = _nameDesc.includes('mountain');
+            label.style.fontFamily = resolveFontStack(loc.fontFamily || (_isMountain ? 'Penumbra Sans Std' : 'Sell Your Soul'));
+            if (!loc.fontStyle) label.style.fontStyle = 'normal';
+        } else if (loc.fontFamily) {
+            label.style.fontFamily = resolveFontStack(loc.fontFamily);
+        }
+        if (loc.fontWeight) {
+            label.style.fontWeight = loc.fontWeight;
+        }
+        if (loc.fontStyle) {
+            label.style.fontStyle = loc.fontStyle;
+        }
+
+        // Water type: light blue text with grey shadow
+        if (loc.type === 'water') {
+            label.setAttribute('fill', '#7EC8E3');
+            label.setAttribute('filter', 'url(#water-label-shadow)');
+        }
+
+        // River type: light blue text with centered grey glow
+        if (loc.type === 'river') {
+            label.setAttribute('fill', '#8A9EA8');
+            label.setAttribute('filter', 'url(#river-label-glow)');
+        }
+
+        // Split on real newlines OR literal "\n" strings
+        const lines = loc.name.split(/\r?\n|\\n/);
+        if (loc.textCurve !== undefined) {
+            const curveValue = parseFloat(loc.textCurve) * 5;
+            const pathId = `curve-label-${loc.id || Math.random().toString(36).substr(2, 9)}`;
+
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('id', pathId);
+            const hRadius = natW * 0.05;
+
+            const xPos = wouldCollide ? px : (px + offsetX);
+            path.setAttribute('d', `M ${xPos - hRadius} ${labelY} Q ${xPos} ${labelY + curveValue} ${xPos + hRadius} ${labelY}`);
+
+            defs.appendChild(path);
+            markerGroup.appendChild(defs);
+
+            const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+            textPath.setAttribute('href', `#${pathId}`);
+            textPath.setAttribute('startOffset', '50%');
+            textPath.textContent = lines.join('  ');
+            label.appendChild(textPath);
+
+            label.removeAttribute('x');
+            label.removeAttribute('y');
+        } else if (lines.length > 1) {
+            lines.forEach((line, index) => {
+                const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                tspan.textContent = line;
+                // If we calculated an X, apply it to each tspan
+                // If it was centered (wouldCollide case), x is px
+                // If offset, x is px + offsetX
+                const xPos = wouldCollide ? px : (px + offsetX);
+                tspan.setAttribute('x', xPos);
+
+                // Align dy. First line at 0, others shifted down
+                tspan.setAttribute('dy', index === 0 ? 0 : '1.2em');
+                label.appendChild(tspan);
+            });
+        } else {
+            label.textContent = loc.name;
+        }
+        markerGroup.appendChild(label);
+    }
+
+    function getCityPreviewImage(loc) {
+        if (!loc.cityMap) return null;
+        const match = loc.cityMap.match(/[?&]city=([^&]+)/);
+        if (!match) return null;
+        const cityId = match[1];
+        const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
+        const entry = cityMaps.find(c => c.id === cityId);
+        return entry ? (entry.previewImage || entry.image || null) : null;
+    }
+
+    function getCustomTooltipHeaderImage(loc) {
+        if (!loc || !loc.tooltipImage) return null;
+        return loc.tooltipImage;
+    }
+
+    function getTooltipMapImage() {
+        for (const entry of initializedContainers) {
+            const mapImg = document.getElementById(entry.imageId);
+            if (mapImg && mapImg.complete && mapImg.naturalWidth && mapImg.naturalHeight) {
+                return mapImg;
+            }
+        }
+        return document.getElementById('map-image');
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function isWaterTooltipType(type) {
+        return type === 'water' || type === 'river';
+    }
+
+    function normalizeTooltipMatchText(value) {
+        return (value || '')
+            .toLowerCase()
+            .replace(/['’]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function textIncludesAny(text, keywords) {
+        return keywords.some((keyword) => text.includes(keyword));
+    }
+
+    function getBiomeTooltipHeaderImage(loc) {
+        if (!loc || (loc.type !== 'nature' && loc.type !== 'region')) return null;
+
+        const text = normalizeTooltipMatchText([
+            loc.name,
+            loc.description,
+            loc.region
+        ].filter(Boolean).join(' '));
+
+        let biome = null;
+
+        if (textIncludesAny(text, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) {
+            biome = 'desert';
+        } else if (textIncludesAny(text, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) {
+            biome = 'swamp';
+        } else if (textIncludesAny(text, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) {
+            biome = 'forest';
+        } else if (textIncludesAny(text, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) {
+            biome = 'mountains';
+        } else if (textIncludesAny(text, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) {
+            biome = 'highlands';
+        } else if (textIncludesAny(text, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) {
+            biome = 'meadow';
+        } else if (loc.type === 'region') {
+            biome = 'mountains';
+        }
+
+        return biome ? TOOLTIP_BIOME_IMAGE_PATHS[biome] : null;
+    }
+
+    function getWaterTooltipHeaderImage(loc) {
+        if (!loc || !isWaterTooltipType(loc.type)) return null;
+
+        const text = normalizeTooltipMatchText([
+            loc.name,
+            loc.description,
+            loc.region
+        ].filter(Boolean).join(' '));
+
+        if (loc.type === 'river' || textIncludesAny(text, ['river', 'run', 'flow', 'brook'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.river;
+        }
+
+        if (textIncludesAny(text, ['lake', 'loch', 'basin', 'mere'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.lake;
+        }
+
+        if (textIncludesAny(text, ['bay', 'cove', 'inlet', 'strait', 'harbor', 'harbour', 'span', 'plunge'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.coast;
+        }
+
+        if (textIncludesAny(text, ['sea', 'ocean', 'deep'])) {
+            return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+        }
+
+        return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+    }
+
+    function generateTooltipHeaderImage(loc) {
+        if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
+
+        const mapImg = getTooltipMapImage();
+        if (!mapImg || !mapImg.complete || !mapImg.naturalWidth || !mapImg.naturalHeight) return null;
+
+        const cacheKey = [
+            loc.id || loc.name || 'location',
+            loc.x,
+            loc.y,
+            loc.tooltipImageOffsetX || 0,
+            loc.tooltipImageOffsetY || 0,
+            mapImg.currentSrc || mapImg.src || 'map'
+        ].join('|');
+
+        if (tooltipHeaderImageCache.has(cacheKey)) {
+            return tooltipHeaderImageCache.get(cacheKey);
+        }
+
+        const canvas = document.createElement('canvas');
+        const width = 560;
+        const height = 300;
+        const cropAspect = width / height;
+        const cropWidth = mapImg.naturalWidth * 0.18;
+        const cropHeight = cropWidth / cropAspect;
+        const offsetX = (typeof loc.tooltipImageOffsetX === 'number' ? loc.tooltipImageOffsetX : 0) / 100 * mapImg.naturalWidth;
+        const offsetY = (typeof loc.tooltipImageOffsetY === 'number' ? loc.tooltipImageOffsetY : 0) / 100 * mapImg.naturalHeight;
+        const centerX = (loc.x / 100) * mapImg.naturalWidth + offsetX;
+        const centerY = (loc.y / 100) * mapImg.naturalHeight + offsetY;
+
+        let sx = centerX - cropWidth / 2;
+        let sy = centerY - cropHeight * 0.58;
+        sx = clamp(sx, 0, Math.max(0, mapImg.naturalWidth - cropWidth));
+        sy = clamp(sy, 0, Math.max(0, mapImg.naturalHeight - cropHeight));
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return null;
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(mapImg, sx, sy, cropWidth, cropHeight, 0, 0, width, height);
+
+        const vignette = ctx.createLinearGradient(0, 0, 0, height);
+        vignette.addColorStop(0, 'rgba(12, 10, 8, 0.08)');
+        vignette.addColorStop(0.55, 'rgba(10, 8, 8, 0.14)');
+        vignette.addColorStop(1, 'rgba(5, 5, 8, 0.72)');
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, width, height);
+
+        if (isWaterTooltipType(loc.type)) {
+            const waterTint = ctx.createLinearGradient(0, 0, width, height);
+            waterTint.addColorStop(0, 'rgba(72, 140, 196, 0.18)');
+            waterTint.addColorStop(0.55, 'rgba(28, 88, 144, 0.12)');
+            waterTint.addColorStop(1, 'rgba(6, 29, 56, 0.26)');
+            ctx.fillStyle = waterTint;
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        const shade = ctx.createRadialGradient(width * 0.5, height * 0.45, width * 0.08, width * 0.5, height * 0.45, width * 0.7);
+        shade.addColorStop(0, 'rgba(255, 220, 150, 0.06)');
+        shade.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
+        ctx.fillStyle = shade;
+        ctx.fillRect(0, 0, width, height);
+
+        const imageUrl = canvas.toDataURL('image/jpeg', 0.88);
+        tooltipHeaderImageCache.set(cacheKey, imageUrl);
+        return imageUrl;
+    }
+
+    function getTooltipDescription(loc) {
+        if (!loc || !loc.description) return '';
+
+        const raw = String(loc.description).trim();
+        if (!raw) return '';
+
+        const typeName = loc.type ? loc.type.replace(/-/g, ' ').trim() : '';
+        if (!typeName) return raw;
+
+        const escapedType = typeName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const duplicatePrefixPattern = new RegExp(`^${escapedType}(?:\\s*(?:[-:.,]|\\u2022)\\s*|\\s+)`, 'i');
+        return raw.replace(duplicatePrefixPattern, '').trim();
+    }
+
+    function isTooltipSuppressedLocation(loc) {
+        return !!(loc && typeof loc.id === 'string' && /-header$/i.test(loc.id));
+    }
+
+    /**
+     * Show tooltip with location details
+     */
+    function showTooltip(e, loc) {
+        if (!tooltip || !tooltipsEnabled || isTooltipSuppressedLocation(loc)) return;
+
+        // Cancel any pending hide — prevents flicker when moving between marker dot and label
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+
+        const typeIcons = {
+            city: '🏰', 'small-city': '🏘️', town: '🏠', village: '🏡', port: '⚓',
+            ruins: '🏚️', landmark: '⭐', mountain: '⛰️', pass: '🏔️',
+            forest: '🌲', region: '🗺️', river: '🌊', water: '💧'
+        };
+
+        const icon = typeIcons[loc.type] || '📍';
+        const typeName = loc.type.charAt(0).toUpperCase() + loc.type.slice(1);
+        const waterTooltip = isWaterTooltipType(loc.type);
+        const roadLinks = loc.id ? (roadLinksByLocation.get(loc.id) || []) : [];
+        const tooltipRoadLinks = roadLinks.slice(0, 6).map((link) => {
+            const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
+            return `
+                <div style="display:flex;justify-content:space-between;gap:0.75rem;font-family:'Cormorant Garamond', serif;font-size:0.9rem;color:#d7cfbb;">
+                    <span><strong style="color:#efe4bd;">${link.roadName}</strong></span>
+                    <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${daysText}</span>
+                </div>
+            `;
+        }).join('');
+        const roadSection = tooltipRoadLinks ? `
+            <div class="tooltip-roads" style="margin-top:0.55rem;padding-top:0.45rem;border-top:1px solid rgba(212,175,55,0.2);">
+                <div style="font-family:'Inter', sans-serif;font-size:0.68rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.35rem;">Connected By Road</div>
+                <div style="display:flex;flex-direction:column;gap:0.2rem;">${tooltipRoadLinks}</div>
+                <div style="font-family:'Cormorant Garamond', serif;font-size:0.78rem;color:#8f8770;font-style:italic;margin-top:0.35rem;">Approximate miles and horse-cart travel days.</div>
+            </div>
+        ` : '';
+        const linksSection = (loc.link || loc.cityMap) ? `
+            <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                ${loc.cityMap ? `<a href="${loc.cityMap}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
+                ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
+            </div>` : '';
+
+        const customPreviewImage = getCustomTooltipHeaderImage(loc);
+        const cityPreviewImage = getCityPreviewImage(loc);
+        const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
+        const waterPreviewImage = getWaterTooltipHeaderImage(loc);
+        const previewImage = customPreviewImage || cityPreviewImage || biomePreviewImage || waterPreviewImage || generateTooltipHeaderImage(loc);
+        const truncate = (str, max) => str && str.length > max ? str.slice(0, max).trimEnd() + '…' : str;
+        const desc = truncate(getTooltipDescription(loc), 160);
+        const details = truncate(loc.details, 100);
+        const metaSection = `
+            <div class="tt-meta">
+                <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
+                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${loc.region}</span></div>` : ''}
+            </div>
+        `;
+
+        if (previewImage) {
+            tooltip.innerHTML = `
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${customPreviewImage ? ' tt-generated-preview-wrap' : cityPreviewImage ? ' tt-city-preview-wrap' : (biomePreviewImage || waterPreviewImage) ? ' tt-biome-preview-wrap' : ' tt-generated-preview-wrap'}">
+                    <img src="${previewImage}" alt="${loc.name}">
+                    ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
+                    <div class="tt-name-overlay">${loc.name}</div>
+                </div>
+                <div class="tt-body">
+                    ${metaSection}
+                    ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                    ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                    ${roadSection}
+                    ${linksSection}
+                </div>
+            `;
+        } else {
+            tooltip.innerHTML = `
+                <div class="tt-no-img-header">
+                    <span style="font-size:1.1rem;">${icon}</span>
+                    <span class="tt-no-img-name">${loc.name}</span>
+                </div>
+                <div class="tt-body">
+                    ${metaSection}
+                    ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                    ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                    ${roadSection}
+                    ${linksSection}
+                </div>
+            `;
+        }
+
+        tooltip.style.display = 'block';
+        tooltip.style.pointerEvents = 'auto';
+
+        // Initial positioning
+        positionTooltip(e);
+    }
+
+    function positionTooltip(e) {
+        if (!tooltip) return;
+
+        const padding = 15;
+        let x = e.clientX + padding;
+        let y = e.clientY + padding;
+
+        const rect = tooltip.getBoundingClientRect();
+
+        // Flip if hitting right edge
+        if (x + rect.width > window.innerWidth) {
+            x = e.clientX - rect.width - padding;
+        }
+
+        // Flip if hitting bottom edge
+        if (y + rect.height > window.innerHeight) {
+            y = e.clientY - rect.height - padding;
+        }
+
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    }
+
+    function moveTooltip(e) {
+        // Tooltip is locked in place after initial show — don't follow the mouse.
+        // This makes it much easier to move the cursor into the tooltip to click links.
+    }
+
+    function hideTooltip(e) {
+        if (!tooltip) return;
+        if (!tooltipsEnabled) {
+            hideTooltipImmediately();
+            return;
+        }
+
+        // Cancel any previous pending hide
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+
+        // Generous delay to allow moving mouse between marker parts or into the tooltip
+        hideTimer = setTimeout(() => {
+            const currentHover = document.querySelectorAll(':hover');
+            const isHoveringTooltip = Array.from(currentHover).some(el => el === tooltip || tooltip.contains(el));
+            const isHoveringTrigger = Array.from(currentHover).some(el => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
+
+            if (!isHoveringTooltip && !isHoveringTrigger) {
+                // Second check after another delay — gives extra time if user is mid-move
+                hideTimer = setTimeout(() => {
+                    const hover2 = document.querySelectorAll(':hover');
+                    const stillOnTooltip = Array.from(hover2).some(el => el === tooltip || tooltip.contains(el));
+                    const stillOnTrigger = Array.from(hover2).some(el => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
+
+                    if (!stillOnTooltip && !stillOnTrigger) {
+                        tooltip.style.display = 'none';
+                        tooltip.style.pointerEvents = 'none';
+                    }
+                    hideTimer = null;
+                }, 300);
+            } else {
+                hideTimer = null;
+            }
+        }, 500);
+    }
+
+    /**
+     * Add a road/path to the map
+     */
+    function addRoad(group, road, ignoredLocMap, ignoredNatW, ignoredNatH) {
+        // Draw water-route lines only in editor mode or if toggle is enabled; hide them in viewers.
+        if (road.type === 'water-route' && !isEditorMode() && !window.waterRoutesVisible) {
+            return;
+        }
+
+        // Calculate path using the helper (uses module-scoped locMap, natW, natH)
+        const d = calculatePathD(road);
+        if (!d) return;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        if (road.id) path.setAttribute('id', 'road-path-' + road.id);
+
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('stroke-linejoin', 'round');
+
+        // Style based on type
+        let strokeColor = '#3a271d'; // Base ink brown
+        let strokeWidth = Math.max(natW * 0.0001, 1);
+        let strokeOpacity = '0.9';
+        let dashArray = '';
+        let haloColor = 'rgba(235, 225, 205, 0.8)'; // Sharp cream outline
+
+        switch (road.type) {
+            case 'major':
+                strokeColor = '#9c8c78ff'; // Light brown inner
+                strokeWidth = Math.max(natW * 0.00018, 1.5);
+                strokeOpacity = '0.95';
+                haloColor = 'rgba(88, 68, 51, 0.9)'; // Dark brown glow
+                break;
+            case 'minor':
+                strokeColor = '#9c8c78ff'; // Light brown inner
+                strokeWidth = Math.max(natW * 0.00012, 1);
+                strokeOpacity = '0.9';
+                dashArray = `${natW * 0.00025}, ${natW * 0.00025}`; // Tight dots/short dashes
+                haloColor = 'rgba(88, 68, 51, 0.9)'; // Dark brown glow
+                break;
+            case 'river':
+                strokeColor = '#4682B4'; // SteelBlue
+                strokeWidth = Math.max(natW * 0.0003, 2);
+                strokeOpacity = '0.85';
+                haloColor = 'rgba(200, 220, 240, 0.6)';
+                break;
+            case 'water-route':
+                strokeColor = '#3b8fd6'; // Muted sea blue to match the road family better
+                strokeWidth = Math.max(natW * 0.00012, 1);
+                strokeOpacity = '0.82';
+                dashArray = `${natW * 0.00028}, ${natW * 0.00024}`; // Tight short dashes like minor roads
+                haloColor = 'rgba(33, 73, 115, 0.85)'; // Dark blue edge instead of a glowing route
+                break;
+            case 'border':
+                strokeColor = '#5c4a4a'; // Muted brownish red
+                strokeWidth = Math.max(natW * 0.00015, 1);
+                strokeOpacity = '0.7';
+                dashArray = `${natW * 0.001}, ${natW * 0.0008}`;
+                haloColor = 'none';
+                break;
+        }
+
+        // Apply overrides from JSON
+        if (road.color) strokeColor = road.color;
+        if (road.width) strokeWidth = Math.max(natW * 0.0001 * road.width, 1); // Width as multiplier of base unit
+
+        let dashLen = road.dashLength || 1.0; // Multiplier for dash only
+        let gapLen = road.gapLength || dashLen; // Multiplier for gap only (defaults to dashLen if not set)
+
+        if (road.dashed !== undefined) {
+            // If true, use default dash scaled by length multipliers.
+            if (road.dashed === true) {
+                dashArray = `${natW * 0.00025 * dashLen}, ${natW * 0.00025 * gapLen}`;
+            } else if (typeof road.dashed === 'string') {
+                dashArray = road.dashed;
+            } else if (road.dashed === false) {
+                dashArray = '';
+            }
+        } else if (dashArray && (road.dashLength || road.gapLength)) {
+            // If type has default dash (like border/minor) and length props are set
+            // Split dasharray into [dash, gap, dash, gap...]
+            const parts = dashArray.split(',').map(s => parseFloat(s.trim()));
+            // Apply multipliers: even indices are dashes, odd are gaps
+            dashArray = parts.map((val, i) => {
+                return val * (i % 2 === 0 ? dashLen : gapLen);
+            }).join(',');
+        }
+
+        // --- Create Highlight / Drop Shadow Stroke underneath main line ---
+        if (haloColor !== 'none') {
+            const halo = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            halo.setAttribute('d', d);
+            halo.setAttribute('fill', 'none');
+            halo.setAttribute('stroke', haloColor);
+            halo.setAttribute('stroke-width', strokeWidth * 2.2); // Tighter halo, looks like a sharp outline
+            halo.setAttribute('stroke-linecap', 'round');
+            halo.setAttribute('stroke-linejoin', 'round');
+
+            // Shift slightly to act like a drop-shadow edge
+            const offset = Math.max(natW * 0.00005, 0.5);
+            halo.setAttribute('transform', `translate(${offset}, ${offset})`);
+
+            if (dashArray) halo.setAttribute('stroke-dasharray', dashArray);
+            group.appendChild(halo);
+        }
+        // -------------------------------------------------------------
+
+        path.setAttribute('stroke', strokeColor);
+        path.setAttribute('stroke-width', strokeWidth);
+        path.setAttribute('stroke-opacity', strokeOpacity);
+        if (dashArray) path.setAttribute('stroke-dasharray', dashArray);
+
+        group.appendChild(path);
+
+        // --- Render road name label along the path ---
+        if (road.name) {
+            // Need a unique ID for the textPath reference
+            let labelPathId = 'road-path-' + (road.id || Math.random().toString(36).substr(2, 9));
+            path.setAttribute('id', labelPathId);
+
+            // If labelReverse is set, create a reversed copy of the path for text
+            if (road.labelReverse) {
+                const reversedPathId = labelPathId + '-reversed';
+                const reversedPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                reversedPath.setAttribute('id', reversedPathId);
+                reversedPath.setAttribute('fill', 'none');
+                reversedPath.setAttribute('stroke', 'none');
+
+                // Reverse the path: re-calculate from road points in reverse order
+                const reversedRoad = { ...road, points: [...getRoadPointSource(road)].reverse() };
+                const reversedD = calculatePathD(reversedRoad);
+                if (reversedD) {
+                    reversedPath.setAttribute('d', reversedD);
+                    group.appendChild(reversedPath);
+                    labelPathId = reversedPathId;
+                }
+            }
+
+            // Split on real newlines OR literal "\n" strings
+            const lines = road.name.split(/\r?\n|\\n/);
+            const fontSize = road.fontSize || Math.max(natW * 0.004, 10);
+            const startOffset = (road.labelOffset !== undefined ? road.labelOffset : 50) + '%';
+            const opacity = road.labelOpacity !== undefined ? road.labelOpacity : '0.7';
+
+            lines.forEach((line, lineIndex) => {
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'road-label');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', fontSize);
+
+                // Default road font: Simonetta italic; road.fontFamily overrides if set
+                text.style.fontFamily = resolveFontStack(road.fontFamily || 'Simonetta');
+                text.style.fontStyle  = road.fontStyle  || 'italic';
+                if (road.fontWeight) text.style.fontWeight = road.fontWeight;
+
+                // Default road label styling (matches POI text)
+                text.setAttribute('fill', '#faf3e0');
+                text.setAttribute('stroke', '#3e2723');
+                text.setAttribute('stroke-width', '2px');
+                text.setAttribute('paint-order', 'stroke fill');
+                text.setAttribute('stroke-linejoin', 'round');
+
+                // Stack lines vertically: position above or below the path based on labelSide
+                const isBottom = road.labelSide === 'bottom';
+                const baseDy = isBottom ? 1.2 : -0.35; // em offset: positive = below, negative = above
+                const lineDy = baseDy + (lineIndex * 1.2); // 1.2em per line
+                text.setAttribute('dy', lineDy + 'em');
+
+                text.setAttribute('opacity', opacity);
+
+                const textPath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+                textPath.setAttribute('href', '#' + labelPathId);
+                textPath.setAttribute('startOffset', startOffset);
+                textPath.textContent = line;
+
+                text.appendChild(textPath);
+                group.appendChild(text);
+            });
+        }
+    }
+
+    /**
+     * Toggle overlay visibility
+     */
+    function toggle(containerId) {
+        const svg = document.getElementById(containerId + '-overlay');
+        if (!svg) return overlayVisible;
+        overlayVisible = !overlayVisible;
+        svg.style.display = overlayVisible ? '' : 'none';
+        return overlayVisible;
+    }
+
+    /**
+     * Calculate path string for a road (internal helper)
+     */
+    function calculatePathD(road) {
+        const roadPoints = getRoadPointSource(road);
+        if (roadPoints.length < 2) {
+            console.warn('Road has insufficient points:', road.id, 'points:', roadPoints.length);
+            return '';
+        }
+
+        // Resolve points
+        const points = [];
+        roadPoints.forEach((pt, idx) => {
+            if (typeof pt === 'string') {
+                const loc = locMap.get(pt);
+                if (loc) {
+                    const px = (loc.x / 100) * natW + (loc.markerOffsetX || 0);
+                    const py = (loc.y / 100) * natH + (loc.markerOffsetY || 0);
+                    points.push({ x: px, y: py });
+                } else {
+                    console.warn(`Road ${road.id}: Location ID "${pt}" not found in locMap (point ${idx})`);
+                }
+            } else if (Array.isArray(pt) && pt.length === 2) {
+                points.push({ x: (pt[0] / 100) * natW, y: (pt[1] / 100) * natH });
+            } else if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+                points.push({ x: (pt.x / 100) * natW, y: (pt.y / 100) * natH });
+            }
+        });
+
+        if (points.length < 2) {
+            console.warn(`Road ${road.id}: Could not resolve enough points (got ${points.length}, need 2)`);
+            return '';
+        }
+
+        let d = '';
+        if (road.curved) {
+            // Smooth Midpoint Quadratic Bezier curves for gradual sweeps
+            d = `M ${points[0].x} ${points[0].y}`;
+            if (points.length === 2) {
+                d += ` L ${points[1].x} ${points[1].y}`;
+            } else if (points.length === 3) {
+                d += ` Q ${points[1].x} ${points[1].y}, ${points[2].x} ${points[2].y}`;
+            } else {
+                for (let i = 1; i < points.length - 2; i++) {
+                    const xc = (points[i].x + points[i + 1].x) / 2;
+                    const yc = (points[i].y + points[i + 1].y) / 2;
+                    d += ` Q ${points[i].x} ${points[i].y}, ${xc} ${yc}`;
+                }
+                const lastControl = points[points.length - 2];
+                const lastPoint = points[points.length - 1];
+                d += ` Q ${lastControl.x} ${lastControl.y}, ${lastPoint.x} ${lastPoint.y}`;
+            }
+        } else {
+            // Straight lines
+            d = `M ${points[0].x} ${points[0].y}`;
+            for (let i = 1; i < points.length; i++) {
+                d += ` L ${points[i].x} ${points[i].y}`;
+            }
+        }
+        return d;
+    }
+
+    /**
+     * Refresh a specific road's path string after data updates
+     */
+    function refreshRoad(roadId) {
+        const road = data.roads.find(r => r.id === roadId);
+        if (!road) return;
+        const path = document.getElementById('road-path-' + roadId);
+        if (!path) return;
+        const d = calculatePathD(road);
+        if (d) path.setAttribute('d', d);
+    }
+
+    /**
+     * Add a new road dynamically
+     */
+    function addRoadToMap(road) {
+        if (!data) return;
+        if (!data.roads) data.roads = [];
+        data.roads.push(road);
+        if (roadGroup) {
+            addRoad(roadGroup, road, locMap, natW, natH);
+        }
+    }
+
+    function removeWaterRoutePaths() {
+        if (!data || !Array.isArray(data.roads)) return;
+        data.roads.forEach(road => {
+            if (road.type === 'water-route' && road.id) {
+                const existing = document.getElementById('road-path-' + road.id);
+                if (existing && existing.parentNode) {
+                    existing.parentNode.removeChild(existing);
+                }
+            }
+        });
+    }
+
+    return {
+        init: init,
+        toggle: toggle,
+        setTooltipsEnabled: setTooltipsEnabled,
+        areTooltipsEnabled: areTooltipsEnabled,
+        getData: getData,
+        getLocationById: getLocationById,
+        findNearestLocation: findNearestLocation,
+        measurePercentDistance: measurePercentDistance,
+        percentToMiles: percentToMiles,
+        milesToDays: milesToDays,
+        findRouteBetweenLocations: findRouteBetweenLocations,
+        refreshRoad: refreshRoad,
+        addRoadToMap: addRoadToMap
+    };
+})();

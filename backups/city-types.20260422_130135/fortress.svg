@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#111217"/>
+      <stop offset="55%" stop-color="#2e3444"/>
+      <stop offset="100%" stop-color="#78634d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="640" fill="url(#bg)"/>
+  <circle cx="917" cy="123" r="69" fill="#f7d89d" fill-opacity="0.84"/>
+  <path d="M0 488 C153 438 286 436 432 469 C571 501 724 496 885 449 C995 417 1096 414 1200 442 L1200 640 L0 640 Z" fill="#111218"/>
+  <rect x="214" y="278" width="188" height="246" fill="#1b1d24"/>
+  <rect x="798" y="278" width="188" height="246" fill="#1b1d24"/>
+  <rect x="370" y="320" width="460" height="204" fill="#232731"/>
+  <rect x="476" y="226" width="248" height="114" fill="#1a1d24"/>
+  <path d="M214 278 H402 M798 278 H986 M476 226 H724" stroke="#f2d59c" stroke-width="18" stroke-dasharray="24 18"/>
+  <path d="M370 320 H830" stroke="#f2d59c" stroke-width="18" stroke-dasharray="24 18"/>
+  <path d="M536 524 V410 C536 360 572 324 618 324 H582 C628 324 664 360 664 410 V524 Z" fill="#15171d"/>
+  <rect x="280" y="214" width="54" height="64" fill="#1b1d24"/>
+  <rect x="866" y="214" width="54" height="64" fill="#1b1d24"/>
+  <polygon points="600,146 642,226 558,226" fill="#1a1d24"/>
+</svg>

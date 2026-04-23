@@ -1,0 +1,128 @@
+/* D&D Experience Enhancements for World of Myrdae */
+
+/* 1. Dragon Hero Graphic */
+.hero-dragon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 25rem;
+    color: var(--color-gold);
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
+    animation: dragonBreath 8s ease-in-out infinite;
+}
+
+@keyframes dragonBreath {
+    0%, 100% {
+        opacity: 0.1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
+    }
+    50% {
+        opacity: 0.15;
+        transform: translate(-50%, -50%) scale(1.05);
+        filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.6));
+    }
+}
+
+/* 2. Dungeon Texture Overlay */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='brick-wall' fill='%23000000' fill-opacity='0.4'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 22h20v20H0V22zm22 0h20v20H22V22z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+}
+
+/* 3. Thematic Dividers */
+hr {
+    border: 0;
+    height: 2px;
+    background-image: linear-gradient(to right, transparent, var(--color-gold), transparent);
+    margin: var(--space-xl) 0;
+    position: relative;
+    overflow: visible;
+}
+
+hr::after {
+    content: "\f6cf"; /* fa-dice-d20 */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--color-bg-dark);
+    padding: 0 10px;
+    color: var(--color-gold);
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* 4. Dungeon Section Headers */
+.section-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.5rem;
+    color: var(--color-gold-bright);
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-md);
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, transparent, var(--color-gold), transparent) 1;
+    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+}
+
+/* Ambient Floating Embers */
+.ambient-embers {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ember {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #ff6600 0%, #ff3300 50%, transparent 100%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: emberRise linear infinite;
+  box-shadow: 0 0 6px #ff4500, 0 0 12px #ff6600;
+}
+
+@keyframes emberRise {
+  0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-20vh) translateX(50px) scale(0.3); opacity: 0; }
+}
+
+.ember:nth-child(1) { left: 5%; animation-duration: 12s; animation-delay: 0s; }
+.ember:nth-child(2) { left: 15%; animation-duration: 14s; animation-delay: 2s; width: 3px; height: 3px; }
+.ember:nth-child(3) { left: 25%; animation-duration: 11s; animation-delay: 4s; }
+.ember:nth-child(4) { left: 35%; animation-duration: 15s; animation-delay: 1s; width: 5px; height: 5px; }
+.ember:nth-child(5) { left: 45%; animation-duration: 13s; animation-delay: 3s; }
+.ember:nth-child(6) { left: 55%; animation-duration: 12s; animation-delay: 5s; width: 3px; height: 3px; }
+.ember:nth-child(7) { left: 65%; animation-duration: 14s; animation-delay: 2s; }
+.ember:nth-child(8) { left: 75%; animation-duration: 11s; animation-delay: 4s; width: 4px; height: 4px; }
+.ember:nth-child(9) { left: 85%; animation-duration: 13s; animation-delay: 1s; }
+.ember:nth-child(10) { left: 95%; animation-duration: 15s; animation-delay: 3s; width: 3px; height: 3px; }
