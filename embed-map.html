@@ -1126,7 +1126,7 @@
             <button class="map-btn" id="overlay-toggle" onclick="toggleOverlay()" title="Toggle Locations">
                 <i class="fa-solid fa-map-location-dot"></i>
             </button>
-            <button class="map-btn" id="tooltips-toggle" onclick="toggleTooltips()" title="Show Tooltips" style="opacity:0.5;">
+            <button class="map-btn" id="tooltips-toggle" onclick="toggleTooltips()" title="Hide Tooltips" style="opacity:1;">
                 <i class="fa-solid fa-scroll"></i>
             </button>
             <button class="map-btn" id="territories-toggle" onclick="toggleTerritories()" title="Show Territories" style="opacity:0.5;">
@@ -1294,7 +1294,13 @@
     <script src="js/city-maps.js"></script>
     <script src="js/campaign-data.js"></script>
     <script src="js/map.js"></script>
-    <script src="js/map-overlay.js"></script>
+  <script src="js/overlay/render-context.js"></script>
+  <script src="js/overlay/location-types.js"></script>
+  <script src="js/overlay/route-graph.js"></script>
+  <script src="js/overlay/marker-renderer.js"></script>
+  <script src="js/overlay/road-renderer.js"></script>
+  <script src="js/overlay/tooltip.js"></script>
+  <script src="js/map-overlay.js"></script>
     <script src="js/dragon-overlay.js"></script>
     <script src="js/world-clock.js"></script>
     <script src="js/boat-animations.js"></script>

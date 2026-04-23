@@ -1,0 +1,403 @@
+/**
+ * Tooltip state, image resolution, and HTML rendering.
+ */
+const MapOverlayTooltip = (function () {
+    const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
+        mountains: 'images/tooltips/biomes/mountains.png',
+        forest: 'images/tooltips/biomes/forest.png',
+        swamp: 'images/tooltips/biomes/swamp.png',
+        desert: 'images/tooltips/biomes/desert.png',
+        highlands: 'images/tooltips/biomes/highlands.png',
+        meadow: 'images/tooltips/biomes/meadow.png'
+    });
+    const TOOLTIP_WATER_IMAGE_PATHS = Object.freeze({
+        ocean: 'images/tooltips/water/ocean.png',
+        coast: 'images/tooltips/water/coast.png',
+        lake: 'images/tooltips/water/lake.png',
+        river: 'images/tooltips/water/river.png'
+    });
+
+    function ensureTooltipElement(ctx) {
+        if (ctx.tooltip) return ctx.tooltip;
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'map-tooltip';
+        tooltip.style.display = 'none';
+        document.body.appendChild(tooltip);
+
+        tooltip.addEventListener('mouseenter', () => {
+            tooltip.style.display = 'block';
+            tooltip.style.pointerEvents = 'auto';
+        });
+        tooltip.addEventListener('mouseleave', (event) => hideTooltip(event, ctx));
+
+        ctx.tooltip = tooltip;
+        return tooltip;
+    }
+
+    function hideTooltipImmediately(ctx) {
+        if (!ctx.tooltip) return;
+        if (ctx.hideTimer) {
+            clearTimeout(ctx.hideTimer);
+            ctx.hideTimer = null;
+        }
+        ctx.tooltip.style.display = 'none';
+        ctx.tooltip.style.pointerEvents = 'none';
+    }
+
+    function setTooltipsEnabled(ctx, enabled) {
+        ctx.tooltipsEnabled = enabled !== false;
+        if (!ctx.tooltipsEnabled) hideTooltipImmediately(ctx);
+        return ctx.tooltipsEnabled;
+    }
+
+    function areTooltipsEnabled(ctx) {
+        return ctx.tooltipsEnabled;
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function isWaterTooltipType(type) {
+        return type === 'water' || type === 'river';
+    }
+
+    function isTooltipSuppressedLocation(loc) {
+        return !!(loc && typeof loc.id === 'string' && /-header$/i.test(loc.id));
+    }
+
+    function normalizeTooltipMatchText(value) {
+        return (value || '')
+            .toLowerCase()
+            .replace(/['â€™]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function textIncludesAny(text, keywords) {
+        return keywords.some((keyword) => text.includes(keyword));
+    }
+
+    function getCityPreviewImage(loc) {
+        if (!loc.cityMap) return null;
+        const match = loc.cityMap.match(/[?&]city=([^&]+)/);
+        if (!match) return null;
+        const cityId = match[1];
+        const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
+        const entry = cityMaps.find((city) => city.id === cityId);
+        return entry ? (entry.previewImage || entry.image || null) : null;
+    }
+
+    function getCustomTooltipHeaderImage(loc) {
+        return loc && loc.tooltipImage ? loc.tooltipImage : null;
+    }
+
+    function getTooltipMapImage(ctx) {
+        for (const entry of ctx.initializedContainers) {
+            const mapImg = document.getElementById(entry.imageId);
+            if (mapImg && mapImg.complete && mapImg.naturalWidth && mapImg.naturalHeight) return mapImg;
+        }
+        return document.getElementById('map-image');
+    }
+
+    function getBiomeTooltipHeaderImage(loc) {
+        if (!loc || (loc.type !== 'nature' && loc.type !== 'region')) return null;
+
+        const text = normalizeTooltipMatchText([loc.name, loc.description, loc.region].filter(Boolean).join(' '));
+        let biome = null;
+
+        if (textIncludesAny(text, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) biome = 'desert';
+        else if (textIncludesAny(text, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) biome = 'swamp';
+        else if (textIncludesAny(text, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) biome = 'forest';
+        else if (textIncludesAny(text, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) biome = 'mountains';
+        else if (textIncludesAny(text, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) biome = 'highlands';
+        else if (textIncludesAny(text, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) biome = 'meadow';
+        else if (loc.type === 'region') biome = 'mountains';
+
+        return biome ? TOOLTIP_BIOME_IMAGE_PATHS[biome] : null;
+    }
+
+    function getWaterTooltipHeaderImage(loc) {
+        if (!loc || !isWaterTooltipType(loc.type)) return null;
+
+        const text = normalizeTooltipMatchText([loc.name, loc.description, loc.region].filter(Boolean).join(' '));
+        if (loc.type === 'river' || textIncludesAny(text, ['river', 'run', 'flow', 'brook'])) return TOOLTIP_WATER_IMAGE_PATHS.river;
+        if (textIncludesAny(text, ['lake', 'loch', 'basin', 'mere'])) return TOOLTIP_WATER_IMAGE_PATHS.lake;
+        if (textIncludesAny(text, ['bay', 'cove', 'inlet', 'strait', 'harbor', 'harbour', 'span', 'plunge'])) return TOOLTIP_WATER_IMAGE_PATHS.coast;
+        if (textIncludesAny(text, ['sea', 'ocean', 'deep'])) return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+        return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+    }
+
+    function generateTooltipHeaderImage(loc, ctx) {
+        if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
+
+        const mapImg = getTooltipMapImage(ctx);
+        if (!mapImg || !mapImg.complete || !mapImg.naturalWidth || !mapImg.naturalHeight) return null;
+
+        const cacheKey = [
+            loc.id || loc.name || 'location',
+            loc.x,
+            loc.y,
+            loc.tooltipImageOffsetX || 0,
+            loc.tooltipImageOffsetY || 0,
+            mapImg.currentSrc || mapImg.src || 'map'
+        ].join('|');
+
+        if (ctx.tooltipHeaderImageCache.has(cacheKey)) {
+            return ctx.tooltipHeaderImageCache.get(cacheKey);
+        }
+
+        const canvas = document.createElement('canvas');
+        const width = 560;
+        const height = 300;
+        const cropAspect = width / height;
+        const cropWidth = mapImg.naturalWidth * 0.18;
+        const cropHeight = cropWidth / cropAspect;
+        const offsetX = (typeof loc.tooltipImageOffsetX === 'number' ? loc.tooltipImageOffsetX : 0) / 100 * mapImg.naturalWidth;
+        const offsetY = (typeof loc.tooltipImageOffsetY === 'number' ? loc.tooltipImageOffsetY : 0) / 100 * mapImg.naturalHeight;
+        const centerX = (loc.x / 100) * mapImg.naturalWidth + offsetX;
+        const centerY = (loc.y / 100) * mapImg.naturalHeight + offsetY;
+
+        let sx = centerX - cropWidth / 2;
+        let sy = centerY - cropHeight * 0.58;
+        sx = clamp(sx, 0, Math.max(0, mapImg.naturalWidth - cropWidth));
+        sy = clamp(sy, 0, Math.max(0, mapImg.naturalHeight - cropHeight));
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const canvasCtx = canvas.getContext('2d');
+        if (!canvasCtx) return null;
+
+        canvasCtx.imageSmoothingEnabled = true;
+        canvasCtx.imageSmoothingQuality = 'high';
+        canvasCtx.drawImage(mapImg, sx, sy, cropWidth, cropHeight, 0, 0, width, height);
+
+        const vignette = canvasCtx.createLinearGradient(0, 0, 0, height);
+        vignette.addColorStop(0, 'rgba(12, 10, 8, 0.08)');
+        vignette.addColorStop(0.55, 'rgba(10, 8, 8, 0.14)');
+        vignette.addColorStop(1, 'rgba(5, 5, 8, 0.72)');
+        canvasCtx.fillStyle = vignette;
+        canvasCtx.fillRect(0, 0, width, height);
+
+        if (isWaterTooltipType(loc.type)) {
+            const waterTint = canvasCtx.createLinearGradient(0, 0, width, height);
+            waterTint.addColorStop(0, 'rgba(72, 140, 196, 0.18)');
+            waterTint.addColorStop(0.55, 'rgba(28, 88, 144, 0.12)');
+            waterTint.addColorStop(1, 'rgba(6, 29, 56, 0.26)');
+            canvasCtx.fillStyle = waterTint;
+            canvasCtx.fillRect(0, 0, width, height);
+        }
+
+        const shade = canvasCtx.createRadialGradient(width * 0.5, height * 0.45, width * 0.08, width * 0.5, height * 0.45, width * 0.7);
+        shade.addColorStop(0, 'rgba(255, 220, 150, 0.06)');
+        shade.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
+        canvasCtx.fillStyle = shade;
+        canvasCtx.fillRect(0, 0, width, height);
+
+        const imageUrl = canvas.toDataURL('image/jpeg', 0.88);
+        ctx.tooltipHeaderImageCache.set(cacheKey, imageUrl);
+        return imageUrl;
+    }
+
+    function getTooltipDescription(loc) {
+        if (!loc || !loc.description) return '';
+
+        const raw = String(loc.description).trim();
+        if (!raw) return '';
+
+        const typeName = loc.type ? loc.type.replace(/-/g, ' ').trim() : '';
+        if (!typeName) return raw;
+
+        const escapedType = typeName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const duplicatePrefixPattern = new RegExp(`^${escapedType}(?:\\s*(?:[-:.,]|\\u2022)\\s*|\\s+)`, 'i');
+        return raw.replace(duplicatePrefixPattern, '').trim();
+    }
+
+    function truncate(str, max) {
+        return str && str.length > max ? `${str.slice(0, max).trimEnd()}…` : str;
+    }
+
+    function resolveTooltipPreviewImage(loc, ctx) {
+        const customPreviewImage = getCustomTooltipHeaderImage(loc);
+        const cityPreviewImage = getCityPreviewImage(loc);
+        const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
+        const waterPreviewImage = getWaterTooltipHeaderImage(loc);
+
+        return {
+            previewImage: customPreviewImage
+                || cityPreviewImage
+                || biomePreviewImage
+                || waterPreviewImage
+                || generateTooltipHeaderImage(loc, ctx),
+            customPreviewImage,
+            cityPreviewImage,
+            biomePreviewImage,
+            waterPreviewImage
+        };
+    }
+
+    function buildRoadLinksHTML(roadLinks) {
+        const tooltipRoadLinks = (roadLinks || []).slice(0, 6).map((link) => {
+            const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
+            return `
+                <div style="display:flex;justify-content:space-between;gap:0.75rem;font-family:'Cormorant Garamond', serif;font-size:0.9rem;color:#d7cfbb;">
+                    <span><strong style="color:#efe4bd;">${link.roadName}</strong></span>
+                    <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${daysText}</span>
+                </div>
+            `;
+        }).join('');
+
+        if (!tooltipRoadLinks) return '';
+
+        return `
+            <div class="tooltip-roads" style="margin-top:0.55rem;padding-top:0.45rem;border-top:1px solid rgba(212,175,55,0.2);">
+                <div style="font-family:'Inter', sans-serif;font-size:0.68rem;color:#a0a0a0;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.35rem;">Connected By Road</div>
+                <div style="display:flex;flex-direction:column;gap:0.2rem;">${tooltipRoadLinks}</div>
+                <div style="font-family:'Cormorant Garamond', serif;font-size:0.78rem;color:#8f8770;font-style:italic;margin-top:0.35rem;">Approximate miles and horse-cart travel days.</div>
+            </div>
+        `;
+    }
+
+    function buildTooltipHTML(loc, state) {
+        const typeConfig = MapOverlayLocationTypes.getTypeConfig(loc.type);
+        const icon = typeConfig.icon || '&#128205;';
+        const typeName = loc.type ? loc.type.charAt(0).toUpperCase() + loc.type.slice(1) : 'Location';
+        const waterTooltip = isWaterTooltipType(loc.type);
+        const roadSection = buildRoadLinksHTML(state.roadLinks);
+        const linksSection = (loc.link || loc.cityMap) ? `
+            <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                ${loc.cityMap ? `<a href="${loc.cityMap}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
+                ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
+            </div>` : '';
+        const desc = truncate(getTooltipDescription(loc), 160);
+        const details = truncate(loc.details, 100);
+        const metaSection = `
+            <div class="tt-meta">
+                <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
+                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${loc.region}</span></div>` : ''}
+            </div>
+        `;
+
+        if (state.previewImage) {
+            const wrapClass = state.customPreviewImage
+                ? ' tt-generated-preview-wrap'
+                : state.cityPreviewImage
+                    ? ' tt-city-preview-wrap'
+                    : (state.biomePreviewImage || state.waterPreviewImage)
+                        ? ' tt-biome-preview-wrap'
+                        : ' tt-generated-preview-wrap';
+
+            return `
+                <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${wrapClass}">
+                    <img src="${state.previewImage}" alt="${loc.name}">
+                    ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
+                    <div class="tt-name-overlay">${loc.name}</div>
+                </div>
+                <div class="tt-body">
+                    ${metaSection}
+                    ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                    ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                    ${roadSection}
+                    ${linksSection}
+                </div>
+            `;
+        }
+
+        return `
+            <div class="tt-no-img-header">
+                <span style="font-size:1.1rem;">${icon}</span>
+                <span class="tt-no-img-name">${loc.name}</span>
+            </div>
+            <div class="tt-body">
+                ${metaSection}
+                ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                ${roadSection}
+                ${linksSection}
+            </div>
+        `;
+    }
+
+    function positionTooltip(event, ctx) {
+        if (!ctx.tooltip) return;
+        const padding = 15;
+        let x = event.clientX + padding;
+        let y = event.clientY + padding;
+        const rect = ctx.tooltip.getBoundingClientRect();
+        if (x + rect.width > window.innerWidth) x = event.clientX - rect.width - padding;
+        if (y + rect.height > window.innerHeight) y = event.clientY - rect.height - padding;
+        ctx.tooltip.style.left = `${x}px`;
+        ctx.tooltip.style.top = `${y}px`;
+    }
+
+    function showTooltip(event, loc, ctx) {
+        if (!ensureTooltipElement(ctx) || !ctx.tooltipsEnabled || isTooltipSuppressedLocation(loc)) return;
+
+        if (ctx.hideTimer) {
+            clearTimeout(ctx.hideTimer);
+            ctx.hideTimer = null;
+        }
+
+        const previewState = resolveTooltipPreviewImage(loc, ctx);
+        ctx.tooltip.innerHTML = buildTooltipHTML(loc, {
+            ...previewState,
+            roadLinks: loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : []
+        });
+
+        ctx.tooltip.style.display = 'block';
+        ctx.tooltip.style.pointerEvents = 'auto';
+        positionTooltip(event, ctx);
+    }
+
+    function moveTooltip() {
+        // Intentionally static after opening so links remain easy to click.
+    }
+
+    function hideTooltip(event, ctx) {
+        if (!ctx.tooltip) return;
+        if (!ctx.tooltipsEnabled) {
+            hideTooltipImmediately(ctx);
+            return;
+        }
+
+        if (ctx.hideTimer) {
+            clearTimeout(ctx.hideTimer);
+            ctx.hideTimer = null;
+        }
+
+        ctx.hideTimer = setTimeout(() => {
+            const currentHover = document.querySelectorAll(':hover');
+            const isHoveringTooltip = Array.from(currentHover).some((el) => el === ctx.tooltip || ctx.tooltip.contains(el));
+            const isHoveringTrigger = Array.from(currentHover).some((el) => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
+
+            if (!isHoveringTooltip && !isHoveringTrigger) {
+                ctx.hideTimer = setTimeout(() => {
+                    const hover2 = document.querySelectorAll(':hover');
+                    const stillOnTooltip = Array.from(hover2).some((el) => el === ctx.tooltip || ctx.tooltip.contains(el));
+                    const stillOnTrigger = Array.from(hover2).some((el) => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
+
+                    if (!stillOnTooltip && !stillOnTrigger) {
+                        ctx.tooltip.style.display = 'none';
+                        ctx.tooltip.style.pointerEvents = 'none';
+                    }
+                    ctx.hideTimer = null;
+                }, 300);
+            } else {
+                ctx.hideTimer = null;
+            }
+        }, 500);
+    }
+
+    return {
+        ensureTooltipElement,
+        setTooltipsEnabled,
+        areTooltipsEnabled,
+        hideTooltipImmediately,
+        isTooltipSuppressedLocation,
+        showTooltip,
+        moveTooltip,
+        hideTooltip
+    };
+})();
