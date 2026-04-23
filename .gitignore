@@ -11,5 +11,8 @@ node_modules/
 dist/
 out/
 
+# Local safety snapshots
+backups/
+
 # macOS
 .DS_Store
