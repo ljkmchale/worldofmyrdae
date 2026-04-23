@@ -2075,6 +2075,16 @@ const CityEditor = (function () {
             </p>
           </div>
           <div class="form-group">
+            <label>Watabou Map Import</label>
+            <div id="ai-city-image-dropzone" style="border:1px dashed #6d5520; border-radius:6px; padding:1rem; background:#0a0a0f; text-align:center; transition:border-color 0.2s, background 0.2s;">
+              <input type="file" id="ai-city-image-input" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,.png,.jpg,.jpeg,.webp,.gif,.svg" style="display:none;">
+              <p style="margin:0; color:#d8c690;">Drop a Watabou export here or <button type="button" id="ai-city-image-browse" style="background:none; border:none; color:var(--color-gold); cursor:pointer; font:inherit; text-decoration:underline;">browse</button></p>
+              <p style="margin:0.35rem 0 0; font-size:0.75rem; color:#777;">The image will be copied into <code>images/cities/&lt;city-id&gt;/</code> and renamed automatically.</p>
+            </div>
+            <div id="ai-city-image-status" style="font-size:0.75rem; color:#888; margin-top:0.5rem; min-height:1.1rem; font-style:italic;">No uploaded image yet.</div>
+            <img id="ai-city-image-preview" alt="City map preview" style="display:none; width:100%; max-height:220px; object-fit:contain; margin-top:0.75rem; border:1px solid #333; border-radius:4px; background:#050508;">
+          </div>
+          <div class="form-group">
             <label>Sketch Brief</label>
             <textarea id="ai-gen-prompt" class="form-control" rows="7"></textarea>
             <p style="font-size:0.75rem; color:#888; margin:0.4rem 0 0;">
@@ -2116,6 +2126,128 @@ const CityEditor = (function () {
       let pins = [];
       let currentStep = 1;
       let sourceLocationId = '';
+      let uploadedImagePath = '';
+      let uploadedImageObjectUrl = '';
+
+      function cleanupUploadedPreview() {
+        if (uploadedImageObjectUrl) {
+          URL.revokeObjectURL(uploadedImageObjectUrl);
+          uploadedImageObjectUrl = '';
+        }
+      }
+
+      function setImageImportStatus(message, color) {
+        const status = document.getElementById('ai-city-image-status');
+        if (!status) return;
+        status.textContent = message;
+        status.style.color = color || '#888';
+      }
+
+      function showUploadedPreview(src) {
+        const preview = document.getElementById('ai-city-image-preview');
+        if (!preview) return;
+        preview.src = src;
+        preview.style.display = 'block';
+      }
+
+      function clearUploadedImageState(options = {}) {
+        uploadedImagePath = '';
+        cleanupUploadedPreview();
+        const input = document.getElementById('ai-city-image-input');
+        const preview = document.getElementById('ai-city-image-preview');
+        if (input) input.value = '';
+        if (preview) {
+          preview.removeAttribute('src');
+          preview.style.display = 'none';
+        }
+        if (!options.preserveStatus) {
+          setImageImportStatus('No uploaded image yet.', '#888');
+        }
+      }
+
+      function setDropzoneActive(active) {
+        const dropzone = document.getElementById('ai-city-image-dropzone');
+        if (!dropzone) return;
+        dropzone.style.borderColor = active ? 'var(--color-gold)' : '#6d5520';
+        dropzone.style.background = active ? 'rgba(212,175,55,0.08)' : '#0a0a0f';
+      }
+
+      async function uploadCityImage(file) {
+        if (!file) return;
+
+        const cityId = (document.getElementById('ai-city-id').value || '').trim();
+        if (!cityId || !/^[a-z0-9-]+$/i.test(cityId)) {
+          throw new Error('Enter a valid City ID before importing an image.');
+        }
+
+        if (!file.type.startsWith('image/') && !/\.(png|jpe?g|webp|gif|svg)$/i.test(file.name || '')) {
+          throw new Error('Unsupported file type. Use PNG, JPG, WEBP, GIF, or SVG.');
+        }
+
+        setImageImportStatus('Preparing city folder...', '#888');
+        await ensureCityScaffold(cityId, (document.getElementById('ai-city-name').value || cityId).trim());
+
+        setImageImportStatus('Uploading ' + file.name + '...', '#888');
+        const response = await fetch(`/api/cities/upload-image?cityId=${encodeURIComponent(cityId)}&filename=${encodeURIComponent(file.name || 'map.png')}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream'
+          },
+          body: file
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error || 'Upload failed');
+        }
+
+        uploadedImagePath = payload.localPath;
+        cleanupUploadedPreview();
+        uploadedImageObjectUrl = URL.createObjectURL(file);
+        showUploadedPreview(uploadedImageObjectUrl);
+        setImageImportStatus(`Imported ${file.name} to ${payload.localPath}`, '#4caf50');
+      }
+
+      async function handleDroppedImage(file) {
+        try {
+          await uploadCityImage(file);
+        } catch (err) {
+          setImageImportStatus('Import failed: ' + err.message, '#e0824b');
+        }
+      }
+
+      function initImageDropzone() {
+        const dropzone = document.getElementById('ai-city-image-dropzone');
+        const input = document.getElementById('ai-city-image-input');
+        const browse = document.getElementById('ai-city-image-browse');
+        if (!dropzone || !input || dropzone.dataset.bound === 'true') return;
+
+        dropzone.dataset.bound = 'true';
+
+        ['dragenter', 'dragover'].forEach(evtName => {
+          dropzone.addEventListener(evtName, (event) => {
+            event.preventDefault();
+            setDropzoneActive(true);
+          });
+        });
+
+        ['dragleave', 'dragend', 'drop'].forEach(evtName => {
+          dropzone.addEventListener(evtName, (event) => {
+            event.preventDefault();
+            setDropzoneActive(false);
+          });
+        });
+
+        dropzone.addEventListener('drop', (event) => {
+          const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+          if (file) handleDroppedImage(file);
+        });
+
+        browse.addEventListener('click', () => input.click());
+        input.addEventListener('change', () => {
+          const file = input.files && input.files[0];
+          if (file) handleDroppedImage(file);
+        });
+      }
 
       function findWorldLocationForCity(cityId, allLocations) {
         if (!cityId) return null;
@@ -2177,6 +2309,8 @@ const CityEditor = (function () {
       function open(options = {}) {
         console.log('[AI] Opening Wizard...');
         document.getElementById('ai-wizard-modal').style.display = 'flex';
+        initImageDropzone();
+        clearUploadedImageState();
 
         let foundLoc = null;
         const allLocations = (typeof CampaignData !== 'undefined') ? CampaignData.getLocations() : [];
@@ -2235,7 +2369,10 @@ const CityEditor = (function () {
         nextStep(1);
       }
 
-      function close() { document.getElementById('ai-wizard-modal').style.display = 'none'; }
+      function close() {
+        clearUploadedImageState({ preserveStatus: true });
+        document.getElementById('ai-wizard-modal').style.display = 'none';
+      }
 
       function nextStep(n) {
         document.querySelectorAll('.wizard-step').forEach(s => s.style.display = 'none');
@@ -2271,6 +2408,20 @@ const CityEditor = (function () {
         if (n === 3) {
           const genBtn = document.getElementById('ai-btn-generate');
           if (genBtn) genBtn.disabled = false;
+
+          const cityId = (document.getElementById('ai-city-id').value || '').trim();
+          if (!uploadedImagePath && cityId) {
+            resolvePreferredCityImage(cityId).then(async (src) => {
+              const exists = src ? await imageAssetExists(src) : false;
+              if (!uploadedImagePath && exists) {
+                showUploadedPreview(src + '?v=' + Date.now());
+                setImageImportStatus('Using existing artwork at ' + src, '#4caf50');
+              } else if (!uploadedImagePath) {
+                clearUploadedImageState({ preserveStatus: true });
+                setImageImportStatus('No uploaded image yet.', '#888');
+              }
+            });
+          }
         }
       }
 
@@ -2282,10 +2433,32 @@ const CityEditor = (function () {
           `images/cities/${cityId}/${cityId}.JPG`,
           `images/cities/${cityId}/${cityId}.jpeg`,
           `images/cities/${cityId}/${cityId}.JPEG`,
+          `images/cities/${cityId}/${cityId}.webp`,
+          `images/cities/${cityId}/${cityId}.WEBP`,
+          `images/cities/${cityId}/${cityId}.gif`,
+          `images/cities/${cityId}/${cityId}.GIF`,
+          `images/cities/${cityId}/${cityId}.svg`,
+          `images/cities/${cityId}/${cityId}.SVG`,
           `images/cities/${cityId}/sketch.png`,
           `images/cities/${cityId}/sketch.PNG`,
+          `images/cities/${cityId}/sketch.jpg`,
+          `images/cities/${cityId}/sketch.JPG`,
+          `images/cities/${cityId}/sketch.jpeg`,
+          `images/cities/${cityId}/sketch.JPEG`,
+          `images/cities/${cityId}/sketch.webp`,
+          `images/cities/${cityId}/sketch.WEBP`,
+          `images/cities/${cityId}/sketch.svg`,
+          `images/cities/${cityId}/sketch.SVG`,
           `images/cities/${cityId}/scetch.png`,
-          `images/cities/${cityId}/scetch.PNG`
+          `images/cities/${cityId}/scetch.PNG`,
+          `images/cities/${cityId}/scetch.jpg`,
+          `images/cities/${cityId}/scetch.JPG`,
+          `images/cities/${cityId}/scetch.jpeg`,
+          `images/cities/${cityId}/scetch.JPEG`,
+          `images/cities/${cityId}/scetch.webp`,
+          `images/cities/${cityId}/scetch.WEBP`,
+          `images/cities/${cityId}/scetch.svg`,
+          `images/cities/${cityId}/scetch.SVG`
         ];
         for (const src of candidates) {
           if (await imageAssetExists(src)) return src;
@@ -2459,7 +2632,7 @@ const CityEditor = (function () {
 
           status.textContent = "Checking for local city artwork...";
           progress.style.width = "20%";
-          const resolvedImage = await resolvePreferredCityImage(cityId);
+          const resolvedImage = uploadedImagePath || await resolvePreferredCityImage(cityId);
 
           const newCity = {
             id: cityId,

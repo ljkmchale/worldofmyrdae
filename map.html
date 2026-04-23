@@ -900,6 +900,9 @@
             <button class="map-btn" id="water-routes-toggle" onclick="toggleWaterRoutes()" title="Toggle Water Routes" style="opacity:0.5;">
               <i class="fa-solid fa-water"></i>
             </button>
+            <button class="map-btn" id="solar-toggle" onclick="toggleSolarLighting()" title="Show Solar Water Sweep" style="opacity:0.5;">
+              <i class="fa-solid fa-sun"></i>
+            </button>
             <button class="map-btn" id="time-toggle" title="Adjust World Time" style="opacity:0.6;">
               <i class="fa-solid fa-clock"></i>
             </button>
@@ -1236,6 +1239,7 @@
 
     // ── Water Routes Toggle ──────────────────────────────────────
     window.waterRoutesVisible = false;
+    window.solarLightingVisible = false;
 
     function toggleWaterRoutes() {
       window.waterRoutesVisible = !window.waterRoutesVisible;
@@ -1249,6 +1253,16 @@
       // Redraw the overlay to show/hide water routes
       MapOverlay.init('map-container', 'map-image');
       DragonFlyover.init('map-container', 'map-image');
+    }
+
+    function toggleSolarLighting() {
+      window.solarLightingVisible = !window.solarLightingVisible;
+      WaterRepaintRenderer.setSolarLighting(window.solarLightingVisible);
+      const btn = document.getElementById('solar-toggle');
+      if (btn) {
+        btn.style.opacity = window.solarLightingVisible ? '1' : '0.5';
+        btn.title = window.solarLightingVisible ? 'Hide Solar Water Sweep' : 'Show Solar Water Sweep';
+      }
     }
 
     // ── Great Awakening Animation ──────────────────────────────────────

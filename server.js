@@ -531,6 +531,73 @@ function handleRequest(req, res) {
         return;
     }
 
+    // Save an uploaded city map image directly into images/cities/<id>/<id>.<ext>
+    if (req.method === 'POST' && url === '/api/cities/upload-image') {
+        const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+        const cityId = String(parsedUrl.searchParams.get('cityId') || '');
+        const originalName = String(parsedUrl.searchParams.get('filename') || '');
+
+        if (!/^[a-z0-9-]+$/i.test(cityId) || cityId.length > 80) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: 'Invalid city ID' }));
+            return;
+        }
+
+        const extFromName = path.extname(originalName || '').toLowerCase();
+        const contentType = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+        const extFromType = {
+            'image/png': '.png',
+            'image/jpeg': '.jpg',
+            'image/jpg': '.jpg',
+            'image/webp': '.webp',
+            'image/gif': '.gif',
+            'image/svg+xml': '.svg'
+        }[contentType] || '';
+        const finalExt = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(extFromName)
+            ? extFromName
+            : extFromType;
+
+        if (!finalExt) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: 'Unsupported image type. Use PNG, JPG, WEBP, GIF, or SVG.' }));
+            return;
+        }
+
+        const chunks = [];
+        req.on('data', chunk => { chunks.push(chunk); });
+        req.on('end', () => {
+            try {
+                const imageDir = resolveWritablePath(path.join('images', 'cities', cityId));
+                fs.mkdirSync(imageDir, { recursive: true });
+
+                const destPath = path.join(imageDir, cityId + finalExt);
+                const relative = path.relative(imageDir, destPath);
+                if (relative.startsWith('..') || path.isAbsolute(relative)) {
+                    throw new Error('Invalid destination path');
+                }
+
+                const payload = Buffer.concat(chunks);
+                if (!payload.length) {
+                    throw new Error('Uploaded file is empty');
+                }
+
+                fs.writeFileSync(destPath, payload);
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({
+                    success: true,
+                    localPath: `images/cities/${cityId}/${cityId}${finalExt}`,
+                    bytes: payload.length
+                }));
+            } catch (err) {
+                console.error('City image upload error:', err);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+        return;
+    }
+
     if (req.method === 'GET' && url === '/api/world-clock/campaigns') {
         (async () => {
             try {
@@ -787,7 +854,7 @@ function handleRequest(req, res) {
     // GET /api/city-images — scan images/cities/ for available city map folders
     if (req.method === 'GET' && url === '/api/city-images') {
         try {
-            const imgExts = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'];
+            const imgExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.PNG', '.JPG', '.JPEG', '.WEBP', '.GIF', '.SVG'];
             const results = [];
 
             const scannedDirs = [

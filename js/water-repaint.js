@@ -9,9 +9,11 @@ const WaterRepaintRenderer = (function () {
   let baseCanvas = null;
   let motionCanvas = null;
   let foamCanvas = null;
+  let solarCanvas = null;
   let resizeTimer = null;
   let animationFrameId = null;
   let animationState = null;
+  let solarEnabled = false;
 
   const MAX_RENDER_WIDTH = 2560;
   const BLUR_PASSES = 8;
@@ -148,6 +150,13 @@ const WaterRepaintRenderer = (function () {
       foamCanvas.style.cssText = baseStyle;
       motionCanvas.insertAdjacentElement('afterend', foamCanvas);
     }
+
+    if (!solarCanvas) {
+      solarCanvas = document.createElement('canvas');
+      solarCanvas.id = 'water-solar-canvas';
+      solarCanvas.style.cssText = baseStyle;
+      foamCanvas.insertAdjacentElement('afterend', solarCanvas);
+    }
   }
 
   function createMotionTexture(width, height) {
@@ -239,7 +248,8 @@ const WaterRepaintRenderer = (function () {
       waterMaskCanvas,
       shoreMaskCanvas,
       motionCtx,
-      foamCtx
+      foamCtx,
+      solarCtx
     } = animationState;
 
     const time = timestamp * 0.001;
@@ -267,6 +277,55 @@ const WaterRepaintRenderer = (function () {
     foamCtx.globalCompositeOperation = 'destination-in';
     foamCtx.drawImage(shoreMaskCanvas, 0, 0);
     foamCtx.globalCompositeOperation = 'source-over';
+
+    solarCtx.clearRect(0, 0, width, height);
+    if (solarEnabled) {
+      const worldClock = window.MyrdaeWorldClock;
+      const worldState = worldClock && typeof worldClock.getState === 'function'
+        ? worldClock.getState(performance.now())
+        : null;
+
+      const hour = worldState ? worldState.hour : 12;
+      const minute = worldState ? worldState.minute : 0;
+      const dayOfYear = worldState ? worldState.dayOfYear : 1;
+      const minutes = (hour * 60) + minute;
+      const dayProgress = minutes / 1440;
+      const seasonStrength = Math.cos(((dayOfYear - 172) / 384) * Math.PI * 2);
+      const daylightT = clamp((dayProgress - 0.25) / 0.5, 0, 1);
+      const daylight = Math.sin(daylightT * Math.PI);
+
+      if (daylight > 0.001) {
+        const sunX = lerp(-width * 0.18, width * 1.18, daylightT);
+        const sunY = height * (0.74 - seasonStrength * 0.06 - daylight * 0.12);
+        const glowRadius = Math.max(width, height) * (0.34 + daylight * 0.08);
+        const glow = solarCtx.createRadialGradient(
+          sunX, sunY, 0,
+          sunX, sunY, glowRadius
+        );
+        glow.addColorStop(0.00, `rgba(255, 234, 170, ${0.14 * daylight})`);
+        glow.addColorStop(0.18, `rgba(255, 221, 150, ${0.08 * daylight})`);
+        glow.addColorStop(0.42, `rgba(255, 240, 215, ${0.035 * daylight})`);
+        glow.addColorStop(1.00, 'rgba(255,255,255,0)');
+        solarCtx.fillStyle = glow;
+        solarCtx.fillRect(0, 0, width, height);
+
+        const sweep = solarCtx.createLinearGradient(
+          sunX - width * 0.18, sunY - height * 0.06,
+          sunX + width * 0.22, sunY + height * 0.12
+        );
+        sweep.addColorStop(0.00, 'rgba(255,255,255,0)');
+        sweep.addColorStop(0.35, `rgba(255, 248, 225, ${0.018 * daylight})`);
+        sweep.addColorStop(0.50, `rgba(255, 236, 180, ${0.055 * daylight})`);
+        sweep.addColorStop(0.68, `rgba(255, 248, 230, ${0.018 * daylight})`);
+        sweep.addColorStop(1.00, 'rgba(255,255,255,0)');
+        solarCtx.fillStyle = sweep;
+        solarCtx.fillRect(0, 0, width, height);
+
+        solarCtx.globalCompositeOperation = 'destination-in';
+        solarCtx.drawImage(waterMaskCanvas, 0, 0);
+        solarCtx.globalCompositeOperation = 'source-over';
+      }
+    }
 
     animationFrameId = requestAnimationFrame(renderMotionFrame);
   }
@@ -376,8 +435,8 @@ const WaterRepaintRenderer = (function () {
       }
     }
 
-    baseCanvas.width = motionCanvas.width = foamCanvas.width = renderWidth;
-    baseCanvas.height = motionCanvas.height = foamCanvas.height = renderHeight;
+    baseCanvas.width = motionCanvas.width = foamCanvas.width = solarCanvas.width = renderWidth;
+    baseCanvas.height = motionCanvas.height = foamCanvas.height = solarCanvas.height = renderHeight;
 
     const baseCtx = baseCanvas.getContext('2d');
     baseCtx.clearRect(0, 0, renderWidth, renderHeight);
@@ -394,7 +453,8 @@ const WaterRepaintRenderer = (function () {
       waterMaskCanvas,
       shoreMaskCanvas,
       motionCtx: motionCanvas.getContext('2d'),
-      foamCtx: foamCanvas.getContext('2d')
+      foamCtx: foamCanvas.getContext('2d'),
+      solarCtx: solarCanvas.getContext('2d')
     };
 
     animationFrameId = requestAnimationFrame(renderMotionFrame);
@@ -419,5 +479,20 @@ const WaterRepaintRenderer = (function () {
     });
   }
 
-  return { init };
+  function setSolarLighting(enabled) {
+    solarEnabled = !!enabled;
+    if (solarCanvas) {
+      solarCanvas.style.display = solarEnabled ? 'block' : 'none';
+      if (!solarEnabled) {
+        const ctx = solarCanvas.getContext('2d');
+        ctx.clearRect(0, 0, solarCanvas.width, solarCanvas.height);
+      }
+    }
+  }
+
+  function isSolarLightingEnabled() {
+    return solarEnabled;
+  }
+
+  return { init, setSolarLighting, isSolarLightingEnabled };
 })();

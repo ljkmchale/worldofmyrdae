@@ -30,4 +30,5 @@ const CITY_MAPS = [
   { id: "nuwharf"                 , name: "Nuwharf"                 , image: "images/cities/nuwharf/nuwharf.png", previewImage: "images/cities/nuwharf/nuwharf.png" },
   { id: "talbesar"                , name: "Tal'besar Ruins"         , image: "images/cities/talbesar/talbesar.png", previewImage: "images/cities/talbesar/talbesar.png" },
   { id: "scarbrook"               , name: "Scarbrook"               , image: "images/cities/scarbrook/scarbrook.png", previewImage: "images/cities/scarbrook/scarbrook.png" },
+  { id: "nebisill"                , name: "Nebisill"                , image: "images/cities/nebisill/nebisill.png", previewImage: "images/cities/nebisill/nebisill.png" },
 ];

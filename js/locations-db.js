@@ -4796,6 +4796,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 7,
             "labelOffsetY": 7,
+            "tooltipImage": "images/tooltips/landmarks/gliddering-falls.png",
             "opacity": 1
         },
         {
@@ -6681,7 +6682,6 @@ const WORLD_LOCATIONS = {
             "y": 72.7,
             "region": "Arbescar",
             "description": "Port Town",
-            "cityMap": "city-viewer.html?city=nebisill",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -6690,7 +6690,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -50,
             "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=nebisill"
         },
         {
             "id": "siltbay",
