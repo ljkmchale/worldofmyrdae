@@ -1065,6 +1065,7 @@
   <script src="js/location-search.js"></script>
   <script src="js/coord-grid.js"></script>
   <script src="js/map-measure.js"></script>
+  <script src="js/water-repaint.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1075,6 +1076,7 @@
         layerGroup: 'map-layer-group'
       });
 
+      WaterRepaint.init('map-container', 'map-image');
       MapOverlay.init('map-container', 'map-image');
       DragonFlyover.init('map-container', 'map-image');
       LocationSearch.init('map-container');
