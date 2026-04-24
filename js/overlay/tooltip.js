@@ -79,23 +79,62 @@ const MapOverlayTooltip = (function () {
         return keywords.some((keyword) => text.includes(keyword));
     }
 
-    function getCityMapEntry(loc) {
-        if (!loc.cityMap) return null;
+    function slugifyCityFolderId(value) {
+        return String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/['’]/g, '')
+            .replace(/[^a-zA-Z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .toLowerCase();
+    }
+
+    function getTooltipCityMapId(loc) {
+        if (!loc || !loc.cityMap) return null;
         const match = loc.cityMap.match(/[?&]city=([^&]+)/);
-        if (!match) return null;
-        const cityId = match[1];
+        return match ? match[1] : null;
+    }
+
+    function getTooltipCityFolderId(loc) {
+        const cityMapId = getTooltipCityMapId(loc);
+        if (cityMapId) return cityMapId;
+
+        const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
+        const lookupKeys = [
+            slugifyCityFolderId(loc && loc.id),
+            slugifyCityFolderId(loc && loc.name)
+        ].filter(Boolean);
+
+        for (const key of lookupKeys) {
+            const match = cityMaps.find((city) => {
+                return slugifyCityFolderId(city && city.id) === key
+                    || slugifyCityFolderId(city && city.name) === key;
+            });
+            if (match && match.id) return match.id;
+        }
+
+        return lookupKeys[0] || null;
+    }
+
+    function getCityMapEntry(loc) {
+        const cityId = getTooltipCityFolderId(loc);
+        if (!cityId) return null;
         const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
         return cityMaps.find((city) => city.id === cityId) || null;
     }
 
     function getCityCrestImage(loc) {
-        const entry = getCityMapEntry(loc);
-        return entry ? `images/cities/${entry.id}/crest.png` : null;
+        const cityId = getTooltipCityFolderId(loc);
+        return cityId ? `images/cities/${cityId}/crest.png` : null;
     }
 
     function getCityPreviewImage(loc) {
+        const cityId = getTooltipCityFolderId(loc);
         const entry = getCityMapEntry(loc);
-        return entry ? (entry.previewImage || entry.image || null) : null;
+        if (entry && (entry.previewImage || entry.image)) {
+            return entry.previewImage || entry.image || null;
+        }
+        return cityId ? `images/cities/${cityId}/scetch.png` : null;
     }
 
     function getCustomTooltipHeaderImage(loc) {
