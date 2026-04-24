@@ -389,6 +389,7 @@ const MapOverlayTooltip = (function () {
             <div class="tt-meta">
                 <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
                 ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${loc.region}</span></div>` : ''}
+                ${loc.biome ? `<div class="tt-type"><span class="tt-meta-label">Biome</span><span class="tt-meta-value">${loc.biome}</span></div>` : ''}
             </div>
         `;
 

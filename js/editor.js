@@ -500,6 +500,7 @@ const Editor = (function () {
         document.getElementById('loc-y').value = loc.y || 0;
         document.getElementById('loc-type').value = loc.type || 'town';
         document.getElementById('loc-region').value = loc.region || '';
+        document.getElementById('loc-biome').value = loc.biome || '';
         document.getElementById('loc-desc').value = loc.description || '';
         document.getElementById('loc-details').value = loc.details || '';
         document.getElementById('loc-link').value = loc.link || '';
@@ -550,6 +551,7 @@ const Editor = (function () {
         document.getElementById('loc-y').value = y !== undefined ? y.toFixed(1) : 50;
         document.getElementById('loc-type').value = 'town';
         document.getElementById('loc-region').value = '';
+        document.getElementById('loc-biome').value = '';
         document.getElementById('loc-desc').value = '';
         document.getElementById('loc-details').value = '';
         document.getElementById('loc-link').value = '';
@@ -648,6 +650,10 @@ const Editor = (function () {
             region: document.getElementById('loc-region').value,
             description: document.getElementById('loc-desc').value || defaultDesc
         };
+
+        const biome = document.getElementById('loc-biome').value;
+        if (biome) locData.biome = biome;
+        else delete locData.biome;
 
         const details = document.getElementById('loc-details').value;
         if (details) locData.details = details;

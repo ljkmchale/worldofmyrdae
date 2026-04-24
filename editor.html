@@ -255,6 +255,27 @@
           </div>
 
           <div class="form-group">
+            <label>Biome</label>
+            <select id="loc-biome" class="form-control" onchange="Editor.previewLocation()">
+              <option value="">— None —</option>
+              <option value="Forest">Forest</option>
+              <option value="Dense Forest">Dense Forest</option>
+              <option value="Mountains">Mountains</option>
+              <option value="Desert">Desert</option>
+              <option value="Plains">Plains</option>
+              <option value="Coastal">Coastal</option>
+              <option value="Wetlands">Wetlands</option>
+              <option value="Tundra">Tundra</option>
+              <option value="Arctic">Arctic</option>
+              <option value="Jungle">Jungle</option>
+              <option value="Volcanic">Volcanic</option>
+              <option value="Underground">Underground</option>
+              <option value="Ocean">Ocean</option>
+              <option value="River / Waterway">River / Waterway</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label>Description (Tooltip)</label>
             <textarea id="loc-desc" class="form-control" rows="2" oninput="Editor.previewLocation()"></textarea>
           </div>

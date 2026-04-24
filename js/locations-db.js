@@ -1,6 +1,6 @@
 /**
  * World of Myrdae - Default Location Database
- * 
+ *
  * This file contains the default data for locations, roads, and regions.
  * It is loaded as a script to bypass CORS restrictions when running locally via file:// protocol.
  */
@@ -24,7 +24,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "destons-outpost",
@@ -98,7 +99,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "tynevale",
@@ -117,7 +119,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -64,
             "labelOffsetY": 7,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "willow-lodge",
@@ -155,7 +158,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Coastal"
         },
         {
             "id": "Old-gates",
@@ -308,7 +312,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "kahlbits-veil",
@@ -328,7 +333,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "the-glimmering-sea",
@@ -348,7 +354,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "silverhill",
@@ -367,7 +374,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -26,
             "labelOffsetY": 19,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "crulfeld",
@@ -385,7 +393,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -58,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Dense Forest"
         },
         {
             "id": "wrynn",
@@ -403,7 +412,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -13,
-            "labelOffsetY": -13
+            "labelOffsetY": -13,
+            "biome": "Dense Forest"
         },
         {
             "id": "ghogam",
@@ -421,7 +431,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Dense Forest"
         },
         {
             "id": "ofwood",
@@ -439,7 +450,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Dense Forest"
         },
         {
             "id": "crimson-pins",
@@ -458,7 +470,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "mirstone",
@@ -476,7 +489,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 5
+            "labelOffsetY": 5,
+            "biome": "Forest"
         },
         {
             "id": "stouhg",
@@ -530,7 +544,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -37,
-            "labelOffsetY": 5
+            "labelOffsetY": 5,
+            "biome": "Dense Forest"
         },
         {
             "id": "stonewood",
@@ -549,7 +564,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "witherwood-river",
@@ -569,7 +585,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": 44,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "tossing-run-river",
@@ -588,7 +605,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "far-valley-flow",
@@ -607,7 +625,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "stillbluff",
@@ -626,7 +645,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "emberstran",
@@ -686,7 +706,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -35,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "baltwood",
@@ -706,7 +727,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "ahndashere",
@@ -744,7 +766,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -54,
-            "labelOffsetY": 15
+            "labelOffsetY": 15,
+            "biome": "Plains"
         },
         {
             "id": "glofdale",
@@ -762,7 +785,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -55,
-            "labelOffsetY": -6
+            "labelOffsetY": -6,
+            "biome": "Plains"
         },
         {
             "id": "crosswind",
@@ -781,7 +805,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -40,
             "labelOffsetY": 17,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "flatgarde",
@@ -799,7 +824,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -53,
-            "labelOffsetY": -12
+            "labelOffsetY": -12,
+            "biome": "Plains"
         },
         {
             "id": "husing-wolds",
@@ -819,7 +845,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Plains"
         },
         {
             "id": "northern-stoneflow",
@@ -839,7 +866,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": -49,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "dalerun",
@@ -859,7 +887,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": -53,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "mistforge",
@@ -877,7 +906,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "castle-montavein",
@@ -896,7 +926,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -54,
             "labelOffsetY": 3,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "severdale",
@@ -914,7 +945,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -62,
-            "labelOffsetY": 14
+            "labelOffsetY": 14,
+            "biome": "Plains"
         },
         {
             "id": "the-wispy-vale",
@@ -934,7 +966,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "slagerum",
@@ -952,7 +985,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -3
+            "labelOffsetY": -3,
+            "biome": "Mountains"
         },
         {
             "id": "meadowgarde",
@@ -973,7 +1007,8 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": -39,
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "shademeadow",
@@ -993,7 +1028,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "the-argent-hells",
@@ -1085,7 +1121,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": 15,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "weald-of-whispers",
@@ -1105,7 +1142,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "passaria",
@@ -1163,7 +1201,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -55,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "kaltera-mountains",
@@ -1185,7 +1224,8 @@ const WORLD_LOCATIONS = {
             "rotation": 72,
             "textCurve": -130,
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "nurador",
@@ -1394,7 +1434,8 @@ const WORLD_LOCATIONS = {
             "rotation": 65,
             "textCurve": 60,
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "climbor",
@@ -1452,7 +1493,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -53,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "harbok-river",
@@ -1473,7 +1515,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -60,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "crossroads-1",
@@ -1510,7 +1553,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -22,
-            "labelOffsetY": -10
+            "labelOffsetY": -10,
+            "biome": "Plains"
         },
         {
             "id": "stoneflow",
@@ -1530,7 +1574,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.7
+            "opacity": 0.7,
+            "biome": "River / Waterway"
         },
         {
             "id": "corebb-keep",
@@ -1821,7 +1866,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "greywater-bay",
@@ -1841,7 +1887,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "distancion-mountains",
@@ -1863,7 +1910,8 @@ const WORLD_LOCATIONS = {
             "rotation": 35,
             "textCurve": -21,
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "thelkholdur",
@@ -1881,7 +1929,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5
+            "labelOffsetY": 5,
+            "biome": "Mountains"
         },
         {
             "id": "inshire",
@@ -1899,7 +1948,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Mountains"
         },
         {
             "id": "yunberr",
@@ -1936,7 +1986,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -48,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Coastal"
         },
         {
             "id": "graeton",
@@ -1973,7 +2024,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 11,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "olduktali",
@@ -1991,7 +2043,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
-            "labelOffsetY": -14
+            "labelOffsetY": -14,
+            "biome": "Wetlands"
         },
         {
             "id": "new-brimhaven",
@@ -2009,7 +2062,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -13,
-            "labelOffsetY": 21
+            "labelOffsetY": 21,
+            "biome": "Dense Forest"
         },
         {
             "id": "ferndale",
@@ -2027,7 +2081,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5
+            "labelOffsetY": 5,
+            "biome": "Wetlands"
         },
         {
             "id": "basctdelm",
@@ -2047,7 +2102,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -72,
             "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Wetlands"
         },
         {
             "id": "covered-bastion",
@@ -2066,7 +2122,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 9,
             "labelOffsetY": -14,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Dense Forest"
         },
         {
             "id": "cultists-cave",
@@ -2085,7 +2142,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -41,
             "labelOffsetY": -13,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "halesworth-wetlands",
@@ -2104,7 +2162,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "seaglow",
@@ -2124,7 +2183,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": -40,
-            "opacity": 0.7
+            "opacity": 0.7,
+            "biome": "River / Waterway"
         },
         {
             "id": "shademoor",
@@ -2144,7 +2204,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -74,
-            "labelOffsetY": 11
+            "labelOffsetY": 11,
+            "biome": "Wetlands"
         },
         {
             "id": "murfield",
@@ -2162,7 +2223,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Wetlands"
         },
         {
             "id": "nasmere-keep",
@@ -2181,7 +2243,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -40,
             "labelOffsetY": -13,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "padstow",
@@ -2199,7 +2262,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Wetlands"
         },
         {
             "id": "dibsley",
@@ -2217,7 +2281,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 4,
-            "labelOffsetY": 15
+            "labelOffsetY": 15,
+            "biome": "Wetlands"
         },
         {
             "id": "southern-arch",
@@ -2257,7 +2322,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "hemmil",
@@ -2294,7 +2360,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 4,
             "labelOffsetY": 22,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Wetlands"
         },
         {
             "id": "baryn",
@@ -2312,7 +2379,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -46,
-            "labelOffsetY": -3
+            "labelOffsetY": -3,
+            "biome": "Plains"
         },
         {
             "id": "omelle",
@@ -2330,7 +2398,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -51,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "sharsley",
@@ -2348,7 +2417,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -59,
-            "labelOffsetY": 12
+            "labelOffsetY": 12,
+            "biome": "Plains"
         },
         {
             "id": "haern",
@@ -2459,7 +2529,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "lullin",
@@ -2517,7 +2588,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Wetlands"
         },
         {
             "id": "caldwynn",
@@ -2555,7 +2627,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "tirncall",
@@ -2593,7 +2666,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "lake-miremantle",
@@ -2613,7 +2687,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "lake-glenmantle",
@@ -2633,7 +2708,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "celemere",
@@ -2653,7 +2729,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "unstead",
@@ -2784,7 +2861,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "evyndar",
@@ -2932,7 +3010,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -64,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "daerswell-inlet",
@@ -2952,7 +3031,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "dreghye",
@@ -2990,7 +3070,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "olmorrey",
@@ -3154,7 +3235,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
-            "labelOffsetY": -13
+            "labelOffsetY": -13,
+            "biome": "Plains"
         },
         {
             "id": "falthalor",
@@ -3232,7 +3314,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -25,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "evostihl",
@@ -3250,7 +3333,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 6,
-            "labelOffsetY": 12
+            "labelOffsetY": 12,
+            "biome": "Mountains"
         },
         {
             "id": "nulvara",
@@ -3268,7 +3352,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -12
+            "labelOffsetY": -12,
+            "biome": "Mountains"
         },
         {
             "id": "grandpeaks",
@@ -3288,7 +3373,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "skrettel",
@@ -3306,7 +3392,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5
+            "labelOffsetY": 5,
+            "biome": "Mountains"
         },
         {
             "id": "snowcreepriver",
@@ -3326,7 +3413,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": -10,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "amberleen",
@@ -3344,7 +3432,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -57,
-            "labelOffsetY": 15
+            "labelOffsetY": 15,
+            "biome": "Mountains"
         },
         {
             "id": "trasobahn",
@@ -3364,7 +3453,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Ocean"
         },
         {
             "id": "endorei",
@@ -3419,7 +3509,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -67,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Mountains"
         },
         {
             "id": "sunfelpost",
@@ -3438,7 +3529,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 9,
             "labelOffsetY": -19,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "deterahn",
@@ -3474,7 +3566,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -33,
-            "labelOffsetY": 17
+            "labelOffsetY": 17,
+            "biome": "Mountains"
         },
         {
             "id": "everlownlodge",
@@ -3493,7 +3586,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "scarden",
@@ -3511,7 +3605,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Mountains"
         },
         {
             "id": "waywardcrest",
@@ -3532,7 +3627,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": 10,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "kelaad",
@@ -3550,7 +3646,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -15,
-            "labelOffsetY": 20
+            "labelOffsetY": 20,
+            "biome": "Mountains"
         },
         {
             "id": "caelora",
@@ -3604,7 +3701,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -65,
             "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "varenwood",
@@ -3624,7 +3722,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "qaldynn",
@@ -3660,7 +3759,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -2,
             "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Tundra"
         },
         {
             "id": "abbeyofmontrest",
@@ -3815,7 +3915,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 5
+            "labelOffsetY": 5,
+            "biome": "Plains"
         },
         {
             "id": "wellen",
@@ -3833,7 +3934,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 13
+            "labelOffsetY": 13,
+            "biome": "Plains"
         },
         {
             "id": "murcomb",
@@ -3851,7 +3953,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -3
+            "labelOffsetY": -3,
+            "biome": "Plains"
         },
         {
             "id": "howlerscove",
@@ -3870,7 +3973,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 9,
             "labelOffsetY": -13,
-            "opacity": 0.7
+            "opacity": 0.7,
+            "biome": "Wetlands"
         },
         {
             "id": "dibarynriver",
@@ -3890,7 +3994,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": -53,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "seameetmarsh",
@@ -3910,7 +4015,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "lendahlee",
@@ -3928,7 +4034,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "vurnun",
@@ -3983,7 +4090,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -28,
-            "labelOffsetY": -11
+            "labelOffsetY": -11,
+            "biome": "Plains"
         },
         {
             "id": "frystarianhighlands",
@@ -4004,7 +4112,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": 43,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "baronsloch",
@@ -4024,7 +4133,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "blustaririver",
@@ -4045,7 +4155,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -20,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "River / Waterway"
         },
         {
             "id": "lenshur",
@@ -4118,7 +4229,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Dense Forest"
         },
         {
             "id": "ringere",
@@ -4399,7 +4511,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 11,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "srenesari",
@@ -4473,7 +4586,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "tidelessspan",
@@ -4493,7 +4607,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "oldport",
@@ -4511,7 +4626,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -25,
             "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "ingress",
@@ -4585,7 +4701,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "stinson",
@@ -4677,7 +4794,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "sarbaugh",
@@ -4738,7 +4856,8 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": -10,
             "textCurve": -44,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "thebrokendeep",
@@ -4758,7 +4877,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "everlight",
@@ -4778,7 +4898,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 14,
-            "cityMap": "city-viewer.html?city=everlight"
+            "cityMap": "city-viewer.html?city=everlight",
+            "biome": "Plains"
         },
         {
             "id": "glidderingfalls",
@@ -4799,7 +4920,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 7,
             "labelOffsetY": 7,
             "tooltipImage": "images/tooltips/landmarks/gliddering-falls.png",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "nesbit",
@@ -4855,7 +4977,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Ocean"
         },
         {
             "id": "dalasorstrait",
@@ -4875,7 +4998,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "theseaofmarilia",
@@ -4895,7 +5019,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "theseaofsondera",
@@ -4915,7 +5040,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "thedelisnorocean",
@@ -4935,7 +5061,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Ocean"
         },
         {
             "id": "midrambay",
@@ -4955,7 +5082,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "bindwatch",
@@ -4993,7 +5121,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "wynspanhills",
@@ -5013,7 +5142,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "layden-proth-kilnock-crossroad",
@@ -5052,7 +5182,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "caldwellriver",
@@ -5073,7 +5204,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -53,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "gilburoughtimers",
@@ -5093,7 +5225,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "gilburoughriver",
@@ -5113,7 +5246,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.81
+            "opacity": 0.81,
+            "biome": "River / Waterway"
         },
         {
             "id": "wehgynriver",
@@ -5134,7 +5268,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -71,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "frostwellport",
@@ -5153,7 +5288,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -39,
             "labelOffsetY": -18,
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "mountethea",
@@ -5396,7 +5532,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Arctic"
         },
         {
             "id": "solwindglaes",
@@ -5452,7 +5589,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Forest"
         },
         {
             "id": "thaelshore",
@@ -5603,7 +5741,8 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": 13,
             "textCurve": -21,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "bonlightpass",
@@ -5699,7 +5838,8 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": 36,
             "textCurve": -48,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "nebendie",
@@ -5772,7 +5912,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "mahralkal",
@@ -5810,7 +5951,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -12,
             "labelOffsetY": -12,
             "labelAlign": "end",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Arctic"
         },
         {
             "id": "icespring",
@@ -5828,7 +5970,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "fjordnahl",
@@ -5846,7 +5989,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "manuspeninsula",
@@ -5886,7 +6030,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -2,
             "labelOffsetY": -10,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "ashindel",
@@ -5924,7 +6069,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "glenleahwoods",
@@ -5944,7 +6090,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "eastmare-greymill-stinson-crossroad",
@@ -6023,7 +6170,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -11,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "bluffsofdunmoore",
@@ -6043,7 +6191,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Wetlands"
         },
         {
             "id": "circleoftrevecs",
@@ -6080,7 +6229,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 8,
             "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "blackfield",
@@ -6191,7 +6341,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "spareway",
@@ -6248,7 +6399,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "kithriver",
@@ -6269,7 +6421,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "rotation": -27,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         },
         {
             "id": "denskelber",
@@ -6327,7 +6480,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "theshatteredtites",
@@ -6347,7 +6501,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Ocean"
         },
         {
             "id": "celimann",
@@ -6385,7 +6540,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "River / Waterway"
         },
         {
             "id": "theseepingmorass",
@@ -6405,7 +6561,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "Mountwick",
@@ -6466,7 +6623,8 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": 39,
             "textCurve": 35,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "waypoint",
@@ -6541,7 +6699,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "talbesar",
@@ -6561,7 +6720,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -65,
             "labelOffsetY": -5,
-            "cityMap": "city-viewer.html?city=talbesar"
+            "cityMap": "city-viewer.html?city=talbesar",
+            "biome": "Plains"
         },
         {
             "id": "scarbrook",
@@ -6580,7 +6740,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -65,
             "labelOffsetY": -5,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=scarbrook"
+            "cityMap": "city-viewer.html?city=scarbrook",
+            "biome": "Plains"
         },
         {
             "id": "eye-of-arbescar",
@@ -6600,7 +6761,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "glaspero",
@@ -6619,7 +6781,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -40,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "marrowdale",
@@ -6637,7 +6800,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "farview",
@@ -6656,7 +6820,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "dire-of-arbescar",
@@ -6674,7 +6839,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "nebisill",
@@ -6693,7 +6859,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -50,
             "labelOffsetY": -5,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=nebisill"
+            "cityMap": "city-viewer.html?city=nebisill",
+            "biome": "Plains"
         },
         {
             "id": "siltbay",
@@ -6712,7 +6879,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Ocean"
         },
         {
             "id": "longwood",
@@ -6731,7 +6899,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "nebisill-grove",
@@ -6750,7 +6919,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "tomb-of-amberblade",
@@ -6769,7 +6939,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 8,
             "labelOffsetY": -4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "edgewind",
@@ -6787,7 +6958,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -25,
             "labelOffsetY": -15,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "boldshire",
@@ -6806,7 +6978,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -25,
             "labelOffsetY": -15,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=boldshire"
+            "cityMap": "city-viewer.html?city=boldshire",
+            "biome": "Forest"
         },
         {
             "id": "caristone-forest",
@@ -6826,7 +6999,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "fakul",
@@ -6844,7 +7018,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -27,
             "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "igborne",
@@ -6862,7 +7037,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -41,
-            "labelOffsetY": 17
+            "labelOffsetY": 17,
+            "biome": "Forest"
         },
         {
             "id": "simmerhorn",
@@ -6880,7 +7056,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -36,
             "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "ulkef",
@@ -6898,7 +7075,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -48,
             "labelOffsetY": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "rosevale",
@@ -6916,7 +7094,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -7,
             "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "olestack",
@@ -6935,7 +7114,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -1,
             "labelOffsetY": -11,
-            "cityMap": "city-viewer.html?city=olestack"
+            "cityMap": "city-viewer.html?city=olestack",
+            "biome": "Forest"
         },
         {
             "id": "mulshear",
@@ -6953,7 +7133,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Wetlands"
         },
         {
             "id": "mulbrook",
@@ -6973,7 +7154,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "River / Waterway"
         },
         {
             "id": "multear-swamps",
@@ -6992,7 +7174,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Wetlands"
         },
         {
             "id": "bickerfeld",
@@ -7010,7 +7193,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Wetlands"
         },
         {
             "id": "OtesurrMountains",
@@ -7029,7 +7213,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "lurdoba",
@@ -7047,7 +7232,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -2,
             "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "kallilos",
@@ -7066,7 +7252,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 12,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "sari-lenora",
@@ -7085,7 +7272,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "clador",
@@ -7104,7 +7292,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "buvero",
@@ -7122,7 +7311,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -20,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "sulura",
@@ -7140,7 +7330,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "nuwharf",
@@ -7159,7 +7350,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 10,
             "labelOffsetY": 5,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=nuwharf"
+            "cityMap": "city-viewer.html?city=nuwharf",
+            "biome": "Coastal"
         },
         {
             "id": "trailpoint",
@@ -7179,7 +7371,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 5,
             "labelOffsetY": 16,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=trailpoint"
+            "cityMap": "city-viewer.html?city=trailpoint",
+            "biome": "Coastal"
         },
         {
             "id": "farnsby-port",
@@ -7198,7 +7391,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -30,
             "labelOffsetY": 15,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=farnsby-port"
+            "cityMap": "city-viewer.html?city=farnsby-port",
+            "biome": "Coastal"
         },
         {
             "id": "bistron",
@@ -7216,7 +7410,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "sunbay",
@@ -7234,7 +7429,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "sands-of-the-dead",
@@ -7254,7 +7450,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 3,
             "labelAlign": "middle",
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "boneforge",
@@ -7272,7 +7469,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -5,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "deadfield",
@@ -7290,7 +7488,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "torpoint",
@@ -7308,7 +7507,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -47,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "gunikk",
@@ -7326,7 +7526,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "thrargael",
@@ -7344,7 +7545,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "ancientarena",
@@ -7362,7 +7564,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -45,
-            "labelOffsetY": -16
+            "labelOffsetY": -16,
+            "biome": "Desert"
         },
         {
             "id": "blistered-highland",
@@ -7381,7 +7584,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Desert"
         },
         {
             "id": "nalt",
@@ -7399,7 +7603,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -35,
             "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "the-withered-spire",
@@ -7417,7 +7622,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Desert"
         },
         {
             "id": "runest",
@@ -7435,7 +7641,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -45,
             "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "cragflight",
@@ -7453,7 +7660,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -25,
-            "labelOffsetY": 18
+            "labelOffsetY": 18,
+            "biome": "Desert"
         },
         {
             "id": "severyll",
@@ -7471,7 +7679,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -55,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "irebend",
@@ -7489,7 +7698,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 12,
             "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "bareford",
@@ -7507,7 +7717,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -65,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "porthbay",
@@ -7525,7 +7736,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -15,
             "labelOffsetY": -15,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "dragonstone",
@@ -7543,7 +7755,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -35,
-            "labelOffsetY": 15
+            "labelOffsetY": 15,
+            "biome": "Desert"
         },
         {
             "id": "dragonspine-mountains",
@@ -7563,7 +7776,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "rotation": 11,
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "deepspring",
@@ -7581,7 +7795,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -5,
             "labelOffsetY": 20,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "ngundeer",
@@ -7599,7 +7814,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "kylnn",
@@ -7617,7 +7833,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -41,
             "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "searing-flats",
@@ -7637,7 +7854,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 0.5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Desert"
         },
         {
             "id": "jagged-waste-crags",
@@ -7658,7 +7876,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "rotation": -95,
             "textCurve": -50,
-            "opacity": 0.4
+            "opacity": 0.4,
+            "biome": "Desert"
         },
         {
             "id": "sandgrave",
@@ -7677,7 +7896,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -6,
             "labelOffsetY": -14,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=sandgrave"
+            "cityMap": "city-viewer.html?city=sandgrave",
+            "biome": "Desert"
         },
         {
             "id": "silvermead-knolls",
@@ -7697,7 +7917,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.7
+            "opacity": 0.7,
+            "biome": "Forest"
         },
         {
             "id": "hillside-woods",
@@ -7716,7 +7937,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "silvermead",
@@ -7734,7 +7956,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "eldeff",
@@ -7752,7 +7975,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "adamont",
@@ -7770,7 +7994,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -62,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "ahnassa",
@@ -7788,7 +8013,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 15
+            "labelOffsetY": 15,
+            "biome": "Forest"
         },
         {
             "id": "hesfal",
@@ -7806,7 +8032,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -48,
-            "labelOffsetY": 9
+            "labelOffsetY": 9,
+            "biome": "Forest"
         },
         {
             "id": "sulport",
@@ -7824,7 +8051,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": -10
+            "labelOffsetY": -10,
+            "biome": "Forest"
         },
         {
             "id": "ripshod-bay",
@@ -7844,7 +8072,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Ocean"
         },
         {
             "id": "tratta",
@@ -7864,7 +8093,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 11,
             "markerOffsetY": 0,
             "labelOffsetX": -20,
-            "labelOffsetY": -13
+            "labelOffsetY": -13,
+            "biome": "Forest"
         },
         {
             "id": "del-bris",
@@ -7882,7 +8112,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 5,
-            "labelOffsetY": 16
+            "labelOffsetY": 16,
+            "biome": "Forest"
         },
         {
             "id": "yearning-slough",
@@ -7902,7 +8133,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Forest"
         },
         {
             "id": "greenvale",
@@ -7920,7 +8152,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": 1,
-            "labelOffsetY": 16
+            "labelOffsetY": 16,
+            "biome": "Forest"
         },
         {
             "id": "lehnthruakk",
@@ -7939,7 +8172,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 16,
             "markerOffsetY": 0,
             "labelOffsetX": -82,
-            "labelOffsetY": 9
+            "labelOffsetY": 9,
+            "biome": "Forest"
         },
         {
             "id": "zovraesdrias-hollow",
@@ -7958,7 +8192,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": -16,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "scarwatch-hold",
@@ -7979,7 +8214,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -67,
             "labelOffsetY": 4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "edgerest-forest",
@@ -7998,7 +8234,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "wuldrif",
@@ -8016,7 +8253,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -5,
-            "labelOffsetY": 18
+            "labelOffsetY": 18,
+            "biome": "Forest"
         },
         {
             "id": "alburest",
@@ -8035,7 +8273,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 8,
             "labelOffsetY": 10,
-            "cityMap": "city-viewer.html?city=alburest"
+            "cityMap": "city-viewer.html?city=alburest",
+            "biome": "Forest"
         },
         {
             "id": "brokenflow",
@@ -8055,7 +8294,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "rotation": -35,
-            "opacity": 0.8
+            "opacity": 0.8,
+            "biome": "River / Waterway"
         }
     ],
     "roads": [
