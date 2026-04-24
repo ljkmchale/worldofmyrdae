@@ -725,7 +725,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -53,
             "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=ahndashere"
         },
         {
             "id": "lasdale",
@@ -8033,7 +8034,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 8,
-            "labelOffsetY": 10
+            "labelOffsetY": 10,
+            "cityMap": "city-viewer.html?city=alburest"
         },
         {
             "id": "brokenflow",

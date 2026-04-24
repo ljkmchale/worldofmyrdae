@@ -1283,6 +1283,46 @@ p {
   transform: scale(1.18);
 }
 
+.tt-crest-header {
+  width: calc(100% + 2rem);
+  margin: -0.75rem -1rem 0;
+  padding: 0.85rem 0.9rem 0.55rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  background:
+    radial-gradient(circle at center, rgba(255, 248, 230, 0.24) 0%, rgba(212, 175, 55, 0.1) 34%, rgba(12, 14, 20, 0.96) 100%);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+.tt-crest-image-frame {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tt-crest-image-frame img {
+  width: auto;
+  height: auto;
+  max-width: 120px;
+  max-height: 120px;
+  display: block;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+}
+
+.tt-crest-nameplate {
+  width: 100%;
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  color: #d4af37;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
+
 .tt-biome-preview-wrap img {
   object-position: center center;
   transform: scale(1.04);

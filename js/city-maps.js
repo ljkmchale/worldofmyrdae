@@ -33,4 +33,6 @@ const CITY_MAPS = [
   { id: "nebisill"                , name: "Nebisill"                , image: "images/cities/nebisill/nebisill.png", previewImage: "images/cities/nebisill/nebisill.png" },
   { id: "boldshire"               , name: "Boldshire"               , image: "images/cities/boldshire/boldshire.png", previewImage: "images/cities/boldshire/boldshire.png" },
   { id: "dryrock"                 , name: "Dryrock"                 , image: "images/cities/dryrock/dryrock.png", previewImage: "images/cities/dryrock/dryrock.png" },
+  { id: "ahndashere"              , name: "Ahndashere"              , image: "images/cities/ahndashere/sketch.png", previewImage: "images/cities/ahndashere/sketch.png" },
+  { id: "alburest"                , name: "Alburest"                , image: "images/cities/alburest/alburest.png", previewImage: "images/cities/alburest/alburest.png" },
 ];

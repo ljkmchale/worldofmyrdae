@@ -79,13 +79,22 @@ const MapOverlayTooltip = (function () {
         return keywords.some((keyword) => text.includes(keyword));
     }
 
-    function getCityPreviewImage(loc) {
+    function getCityMapEntry(loc) {
         if (!loc.cityMap) return null;
         const match = loc.cityMap.match(/[?&]city=([^&]+)/);
         if (!match) return null;
         const cityId = match[1];
         const cityMaps = (typeof CITY_MAPS !== 'undefined' ? CITY_MAPS : null) || [];
-        const entry = cityMaps.find((city) => city.id === cityId);
+        return cityMaps.find((city) => city.id === cityId) || null;
+    }
+
+    function getCityCrestImage(loc) {
+        const entry = getCityMapEntry(loc);
+        return entry ? `images/cities/${entry.id}/crest.png` : null;
+    }
+
+    function getCityPreviewImage(loc) {
+        const entry = getCityMapEntry(loc);
         return entry ? (entry.previewImage || entry.image || null) : null;
     }
 
@@ -219,22 +228,54 @@ const MapOverlayTooltip = (function () {
         return str && str.length > max ? `${str.slice(0, max).trimEnd()}…` : str;
     }
 
-    function resolveTooltipPreviewImage(loc, ctx) {
-        const customPreviewImage = getCustomTooltipHeaderImage(loc);
+    function buildPreviewImageCandidates(loc, ctx) {
+        const crestPreviewImage = getCityCrestImage(loc);
         const cityPreviewImage = getCityPreviewImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
+        const generatedPreviewImage = generateTooltipHeaderImage(loc, ctx);
 
-        return {
-            previewImage: customPreviewImage
-                || cityPreviewImage
-                || biomePreviewImage
-                || waterPreviewImage
-                || generateTooltipHeaderImage(loc, ctx),
-            customPreviewImage,
+        const ordered = [
+            crestPreviewImage,
             cityPreviewImage,
             biomePreviewImage,
-            waterPreviewImage
+            waterPreviewImage,
+            generatedPreviewImage
+        ].filter(Boolean);
+
+        return {
+            previewImage: ordered[0] || null,
+            fallbackPreviewImages: ordered.slice(1),
+            crestPreviewImage,
+            cityPreviewImage,
+            biomePreviewImage,
+            waterPreviewImage,
+            generatedPreviewImage
+        };
+    }
+
+    function resolveTooltipPreviewImage(loc, ctx) {
+        const customPreviewImage = getCustomTooltipHeaderImage(loc);
+        const previewImages = customPreviewImage
+            ? {
+                previewImage: customPreviewImage,
+                fallbackPreviewImages: [],
+                crestPreviewImage: null,
+                cityPreviewImage: null,
+                biomePreviewImage: null,
+                waterPreviewImage: null,
+                generatedPreviewImage: null
+            }
+            : buildPreviewImageCandidates(loc, ctx);
+
+        return {
+            previewImage: previewImages.previewImage,
+            fallbackPreviewImages: previewImages.fallbackPreviewImages,
+            customPreviewImage,
+            crestPreviewImage: previewImages.crestPreviewImage,
+            cityPreviewImage: previewImages.cityPreviewImage,
+            biomePreviewImage: previewImages.biomePreviewImage,
+            waterPreviewImage: previewImages.waterPreviewImage
         };
     }
 
@@ -265,6 +306,7 @@ const MapOverlayTooltip = (function () {
         const icon = typeConfig.icon || '&#128205;';
         const typeName = loc.type ? loc.type.charAt(0).toUpperCase() + loc.type.slice(1) : 'Location';
         const waterTooltip = isWaterTooltipType(loc.type);
+        const fallbackPreviewImagesAttr = JSON.stringify(state.fallbackPreviewImages || []).replace(/"/g, '&quot;');
         const roadSection = buildRoadLinksHTML(state.roadLinks);
         const linksSection = (loc.link || loc.cityMap) ? `
             <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
@@ -281,6 +323,24 @@ const MapOverlayTooltip = (function () {
         `;
 
         if (state.previewImage) {
+            if (state.crestPreviewImage) {
+                return `
+                    <div class="tt-crest-header">
+                        <div class="tt-crest-image-frame">
+                            <img src="${state.previewImage}" alt="${loc.name}" data-fallback-images="${fallbackPreviewImagesAttr}">
+                        </div>
+                        <div class="tt-crest-nameplate">${loc.name}</div>
+                    </div>
+                    <div class="tt-body">
+                        ${metaSection}
+                        ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
+                        ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
+                        ${roadSection}
+                        ${linksSection}
+                    </div>
+                `;
+            }
+
             const wrapClass = state.customPreviewImage
                 ? ' tt-generated-preview-wrap'
                 : state.cityPreviewImage
@@ -291,7 +351,7 @@ const MapOverlayTooltip = (function () {
 
             return `
                 <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${wrapClass}">
-                    <img src="${state.previewImage}" alt="${loc.name}">
+                    <img src="${state.previewImage}" alt="${loc.name}" data-fallback-images="${fallbackPreviewImagesAttr}">
                     ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
                     <div class="tt-name-overlay">${loc.name}</div>
                 </div>
@@ -320,6 +380,36 @@ const MapOverlayTooltip = (function () {
         `;
     }
 
+    function bindTooltipPreviewFallbacks(ctx) {
+        if (!ctx.tooltip) return;
+
+        const previewImage = ctx.tooltip.querySelector('.tt-img-wrap img[data-fallback-images]');
+        if (!previewImage) return;
+
+        let fallbacks = [];
+        try {
+            fallbacks = JSON.parse(previewImage.dataset.fallbackImages || '[]');
+        } catch (error) {
+            fallbacks = [];
+        }
+
+        if (!fallbacks.length) {
+            delete previewImage.dataset.fallbackImages;
+            return;
+        }
+
+        previewImage.addEventListener('error', () => {
+            const nextImage = fallbacks.shift();
+            if (nextImage) {
+                previewImage.dataset.fallbackImages = JSON.stringify(fallbacks);
+                previewImage.src = nextImage;
+                return;
+            }
+
+            previewImage.remove();
+        });
+    }
+
     function positionTooltip(event, ctx) {
         if (!ctx.tooltip) return;
         const padding = 15;
@@ -345,6 +435,7 @@ const MapOverlayTooltip = (function () {
             ...previewState,
             roadLinks: loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : []
         });
+        bindTooltipPreviewFallbacks(ctx);
 
         ctx.tooltip.style.display = 'block';
         ctx.tooltip.style.pointerEvents = 'auto';
