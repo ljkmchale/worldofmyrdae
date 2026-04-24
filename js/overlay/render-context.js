@@ -15,7 +15,9 @@ const MapOverlayRenderContext = (function () {
             roadGroup: null,
             roadLinksByLocation: new Map(),
             initializedContainers: [],
-            tooltipHeaderImageCache: new Map()
+            tooltipHeaderImageCache: new Map(),
+            tooltipImageAvailabilityCache: new Map(),
+            activeTooltipLocationId: null
         };
     }
 

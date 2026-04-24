@@ -102,6 +102,36 @@ const MapOverlayTooltip = (function () {
         return loc && loc.tooltipImage ? loc.tooltipImage : null;
     }
 
+    function getCachedImageAvailability(ctx, imageUrl) {
+        if (!ctx || !imageUrl || !ctx.tooltipImageAvailabilityCache) return null;
+        return ctx.tooltipImageAvailabilityCache.has(imageUrl)
+            ? ctx.tooltipImageAvailabilityCache.get(imageUrl)
+            : null;
+    }
+
+    function probeImageAvailability(ctx, imageUrl, onResolved) {
+        if (!ctx || !imageUrl || !ctx.tooltipImageAvailabilityCache) return;
+
+        const cached = getCachedImageAvailability(ctx, imageUrl);
+        if (cached !== null) {
+            if (typeof onResolved === 'function') onResolved(cached);
+            return;
+        }
+
+        ctx.tooltipImageAvailabilityCache.set(imageUrl, 'pending');
+
+        const img = new Image();
+        img.onload = () => {
+            ctx.tooltipImageAvailabilityCache.set(imageUrl, true);
+            if (typeof onResolved === 'function') onResolved(true);
+        };
+        img.onerror = () => {
+            ctx.tooltipImageAvailabilityCache.set(imageUrl, false);
+            if (typeof onResolved === 'function') onResolved(false);
+        };
+        img.src = imageUrl;
+    }
+
     function getTooltipMapImage(ctx) {
         for (const entry of ctx.initializedContainers) {
             const mapImg = document.getElementById(entry.imageId);
@@ -230,13 +260,14 @@ const MapOverlayTooltip = (function () {
 
     function buildPreviewImageCandidates(loc, ctx) {
         const crestPreviewImage = getCityCrestImage(loc);
+        const crestAvailable = getCachedImageAvailability(ctx, crestPreviewImage) === true;
         const cityPreviewImage = getCityPreviewImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
         const generatedPreviewImage = generateTooltipHeaderImage(loc, ctx);
 
         const ordered = [
-            crestPreviewImage,
+            crestAvailable ? crestPreviewImage : null,
             cityPreviewImage,
             biomePreviewImage,
             waterPreviewImage,
@@ -246,7 +277,7 @@ const MapOverlayTooltip = (function () {
         return {
             previewImage: ordered[0] || null,
             fallbackPreviewImages: ordered.slice(1),
-            crestPreviewImage,
+            crestPreviewImage: crestAvailable ? crestPreviewImage : null,
             cityPreviewImage,
             biomePreviewImage,
             waterPreviewImage,
@@ -383,7 +414,7 @@ const MapOverlayTooltip = (function () {
     function bindTooltipPreviewFallbacks(ctx) {
         if (!ctx.tooltip) return;
 
-        const previewImage = ctx.tooltip.querySelector('.tt-img-wrap img[data-fallback-images]');
+        const previewImage = ctx.tooltip.querySelector('img[data-fallback-images]');
         if (!previewImage) return;
 
         let fallbacks = [];
@@ -410,6 +441,15 @@ const MapOverlayTooltip = (function () {
         });
     }
 
+    function renderTooltipContent(loc, ctx) {
+        const previewState = resolveTooltipPreviewImage(loc, ctx);
+        ctx.tooltip.innerHTML = buildTooltipHTML(loc, {
+            ...previewState,
+            roadLinks: loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : []
+        });
+        bindTooltipPreviewFallbacks(ctx);
+    }
+
     function positionTooltip(event, ctx) {
         if (!ctx.tooltip) return;
         const padding = 15;
@@ -430,12 +470,18 @@ const MapOverlayTooltip = (function () {
             ctx.hideTimer = null;
         }
 
-        const previewState = resolveTooltipPreviewImage(loc, ctx);
-        ctx.tooltip.innerHTML = buildTooltipHTML(loc, {
-            ...previewState,
-            roadLinks: loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : []
-        });
-        bindTooltipPreviewFallbacks(ctx);
+        ctx.activeTooltipLocationId = loc.id || null;
+        renderTooltipContent(loc, ctx);
+
+        const crestPreviewImage = getCityCrestImage(loc);
+        if (crestPreviewImage && getCachedImageAvailability(ctx, crestPreviewImage) === null) {
+            probeImageAvailability(ctx, crestPreviewImage, (available) => {
+                if (!available) return;
+                if (!ctx.tooltip || ctx.activeTooltipLocationId !== (loc.id || null)) return;
+                renderTooltipContent(loc, ctx);
+                positionTooltip(event, ctx);
+            });
+        }
 
         ctx.tooltip.style.display = 'block';
         ctx.tooltip.style.pointerEvents = 'auto';
@@ -470,6 +516,7 @@ const MapOverlayTooltip = (function () {
                     const stillOnTrigger = Array.from(hover2).some((el) => el.closest && (el.closest('.marker-group') || el.closest('.region-label')));
 
                     if (!stillOnTooltip && !stillOnTrigger) {
+                        ctx.activeTooltipLocationId = null;
                         ctx.tooltip.style.display = 'none';
                         ctx.tooltip.style.pointerEvents = 'none';
                     }
