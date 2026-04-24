@@ -2401,7 +2401,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": 13,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=dryrock"
         },
         {
             "id": "abereth",
@@ -6803,7 +6804,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -25,
             "labelOffsetY": -15,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "cityMap": "city-viewer.html?city=boldshire"
         },
         {
             "id": "caristone-forest",

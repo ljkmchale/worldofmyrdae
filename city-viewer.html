@@ -485,6 +485,11 @@ function _initCity(_city) {
   const NAMED_LOCATIONS    = _city.namedLabels || [];
   const NUMBERED_LOCATIONS = _city.pins        || [];
   const CITY_TOOLTIP_TYPE_IMAGES = {
+    keep: 'images/tooltips/city-types/keep.png',
+    tower: 'images/tooltips/city-types/tower.png',
+    manor: 'images/tooltips/city-types/manor.png',
+    church: 'images/tooltips/city-types/church.png',
+    cemetery: 'images/tooltips/city-types/cemetery.png',
     poi: 'images/tooltips/city-types/poi.png',
     tavern: 'images/tooltips/city-types/tavern.png',
     shop: 'images/tooltips/city-types/shop.png',
@@ -505,36 +510,66 @@ function _initCity(_city) {
     return String(value || '').trim().toLowerCase();
   }
 
+  function normalizeCityTooltipMatchText(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  function textIncludesAny(text, keywords) {
+    return keywords.some((keyword) => text.includes(keyword));
+  }
+
   function getCityTypeTooltipImage(loc) {
     if (!loc) return CITY_DEFAULT_TOOLTIP_IMAGE;
     if (loc.tooltipImage) return loc.tooltipImage;
-
     const type = normalizeCityTooltipType(loc.type);
-    if (!type) return CITY_DEFAULT_TOOLTIP_IMAGE;
+    const matchText = normalizeCityTooltipMatchText([
+      loc.type,
+      loc.name,
+      loc.desc,
+      loc.description
+    ].filter(Boolean).join(' '));
 
-    if (type.includes('ruin')) return CITY_TOOLTIP_TYPE_IMAGES.ruins;
-    if (type.includes('tavern') || type.includes('inn') || type.includes('lodge') || type.includes('pub') || type.includes('brothel')) {
+    if (textIncludesAny(matchText, ['ruin', 'ruins', 'shattered', 'collapsed', 'derelict'])) return CITY_TOOLTIP_TYPE_IMAGES.ruins;
+    if (textIncludesAny(matchText, ['keep', 'citadel', 'stronghold', 'castle'])) {
+      return CITY_TOOLTIP_TYPE_IMAGES.keep;
+    }
+    if (textIncludesAny(matchText, ['tower', 'spire', 'watchtower', 'wizard tower', 'mage tower'])) {
+      return CITY_TOOLTIP_TYPE_IMAGES.tower;
+    }
+    if (textIncludesAny(matchText, ['manor', 'estate', 'villa', 'hall', 'palace', 'lord s house', 'lords keep'])) {
+      return CITY_TOOLTIP_TYPE_IMAGES.manor;
+    }
+    if (textIncludesAny(matchText, ['church', 'cathedral', 'chapel', 'abbey'])) {
+      return CITY_TOOLTIP_TYPE_IMAGES.church;
+    }
+    if (textIncludesAny(matchText, ['cemetery', 'graveyard', 'crypt', 'mausoleum', 'tomb'])) {
+      return CITY_TOOLTIP_TYPE_IMAGES.cemetery;
+    }
+    if (textIncludesAny(matchText, ['tavern', 'inn', 'lodge', 'pub', 'brothel'])) {
       return CITY_TOOLTIP_TYPE_IMAGES.tavern;
     }
-    if (type.includes('shop') || type.includes('store') || type.includes('tailor') || type.includes('food') || type.includes('medical')) {
+    if (textIncludesAny(matchText, ['shop', 'store', 'tailor', 'food', 'medical', 'merchant', 'jeweller', 'apothecary', 'curiosity'])) {
       return CITY_TOOLTIP_TYPE_IMAGES.shop;
     }
-    if (type.includes('smith') || type.includes('forge') || type.includes('tannery') || type.includes('fletch') || type.includes('carpentry') || type.includes('lumber')) {
+    if (textIncludesAny(matchText, ['smith', 'forge', 'tannery', 'fletch', 'carpentry', 'lumber', 'armour', 'armor', 'weapon'])) {
       return CITY_TOOLTIP_TYPE_IMAGES.forge;
     }
-    if (type.includes('temple') || type.includes('shrine') || type.includes('oratory') || type.includes('seer')) {
+    if (textIncludesAny(matchText, ['temple', 'shrine', 'oratory', 'seer', 'sanctum'])) {
       return CITY_TOOLTIP_TYPE_IMAGES.temple;
     }
-    if (type.includes('market') || type.includes('bathhouse')) return CITY_TOOLTIP_TYPE_IMAGES.market;
-    if (type.includes('harbor') || type === 'sea' || type === 'water' || type === 'river') return CITY_TOOLTIP_TYPE_IMAGES.harbor;
-    if (type.includes('gate')) return CITY_TOOLTIP_TYPE_IMAGES.gate;
-    if (type.includes('stable')) return CITY_TOOLTIP_TYPE_IMAGES.stables;
-    if (type.includes('garrison') || type.includes('keep') || type.includes('tower') || type.includes('stronghold') || type.includes('palace') || type.includes('hall') || type.includes('arena')) {
+    if (textIncludesAny(matchText, ['market', 'bathhouse', 'bazaar', 'square'])) return CITY_TOOLTIP_TYPE_IMAGES.market;
+    if (textIncludesAny(matchText, ['harbor', 'harbour', 'dock', 'docks', 'quay', 'pier', 'sea', 'water', 'river'])) return CITY_TOOLTIP_TYPE_IMAGES.harbor;
+    if (textIncludesAny(matchText, ['gate', 'gatehouse', 'portcullis'])) return CITY_TOOLTIP_TYPE_IMAGES.gate;
+    if (textIncludesAny(matchText, ['stable', 'stables', 'barn', 'carriage'])) return CITY_TOOLTIP_TYPE_IMAGES.stables;
+    if (textIncludesAny(matchText, ['garrison', 'fortress', 'barracks', 'arena'])) {
       return CITY_TOOLTIP_TYPE_IMAGES.fortress;
     }
-    if (type.includes('library') || type.includes('college') || type.includes('university')) return CITY_TOOLTIP_TYPE_IMAGES.archive;
-    if (type.includes('cemetery') || type.includes('tomb')) return CITY_TOOLTIP_TYPE_IMAGES.tomb;
-    if (type.includes('bank') || type.includes('vault') || type.includes('warehouse')) return CITY_TOOLTIP_TYPE_IMAGES.vault;
+    if (textIncludesAny(matchText, ['library', 'college', 'university', 'archive', 'records', 'scriptorium'])) return CITY_TOOLTIP_TYPE_IMAGES.archive;
+    if (textIncludesAny(matchText, ['bank', 'vault', 'warehouse', 'granary', 'storehouse'])) return CITY_TOOLTIP_TYPE_IMAGES.vault;
+    if (type === 'sea' || type === 'water' || type === 'river') return CITY_TOOLTIP_TYPE_IMAGES.harbor;
     return CITY_TOOLTIP_TYPE_IMAGES.poi;
   }
 

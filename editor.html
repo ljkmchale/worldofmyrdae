@@ -2078,7 +2078,7 @@ const CityEditor = (function () {
           <h3 style="color:var(--color-gold); margin-top:0;">Step 3: Review &amp; Create</h3>
           <div class="form-group">
             <p style="font-size:0.8rem; color:#d8c690; margin:0 0 0.75rem;">
-              ComfyUI is temporarily disabled in this wizard. The city will be created using any local artwork already present in the city folder, such as <code>sketch.png</code>, <code>scetch.png</code>, or <code>{cityId}.png</code>.
+              This wizard now builds a render prompt for a three-image workflow: your town layout, <code>template.png</code> as the master style reference, and a biome-specific reference map such as a coastal or desert example.
             </p>
           </div>
           <div class="form-group">
@@ -2092,10 +2092,25 @@ const CityEditor = (function () {
             <img id="ai-city-image-preview" alt="City map preview" style="display:none; width:100%; max-height:220px; object-fit:contain; margin-top:0.75rem; border:1px solid #333; border-radius:4px; background:#050508;">
           </div>
           <div class="form-group">
-            <label>Sketch Brief</label>
-            <textarea id="ai-gen-prompt" class="form-control" rows="7"></textarea>
+            <label>Biome Style</label>
+            <select id="ai-biome-profile" class="form-control" onchange="AIWizard.updatePrompt()">
+              <option value="auto">Auto Detect</option>
+              <option value="plains">Plains / Farmland</option>
+              <option value="coastal">Coastal / Lakeside</option>
+              <option value="desert">Desert / Arid</option>
+              <option value="forest">Forest / Woodland</option>
+              <option value="mountain">Mountain / Highland</option>
+              <option value="swamp">Swamp / Marsh</option>
+              <option value="frozen">Frozen / Tundra</option>
+              <option value="underground">Underground</option>
+            </select>
+            <div id="ai-biome-reference-summary" style="margin-top:0.5rem; padding:0.65rem 0.8rem; background:#0a0a0f; border:1px solid #333; border-radius:4px; font-size:0.75rem; color:#aaa; line-height:1.5;"></div>
+          </div>
+          <div class="form-group">
+            <label>Render Prompt</label>
+            <textarea id="ai-gen-prompt" class="form-control" rows="12"></textarea>
             <p style="font-size:0.75rem; color:#888; margin:0.4rem 0 0;">
-              This is now just a reusable planning brief for external image tools. The wizard will not send it to ComfyUI.
+              Paste this into your image model with the layout map first, <code>images/cities/template.png</code> second, and the listed biome reference third.
             </p>
           </div>
 
@@ -2135,6 +2150,49 @@ const CityEditor = (function () {
       let sourceLocationId = '';
       let uploadedImagePath = '';
       let uploadedImageObjectUrl = '';
+      const STYLE_TEMPLATE_PATH = 'images/cities/template.png';
+      const BIOME_REFERENCE_MAP = {
+        plains: {
+          label: 'Plains / Farmland',
+          image: STYLE_TEMPLATE_PATH,
+          directives: 'Use parchment-toned farmland, tilled fields, orchards, hedgerows, winding dirt roads, scattered tree clusters, and a compact cobbled core while preserving the exact original footprint.'
+        },
+        coastal: {
+          label: 'Coastal / Lakeside',
+          image: 'images/cities/kallilos/kallilos.png',
+          directives: 'Treat the outer terrain as shoreline or harbor-adjacent where appropriate: dark blue water, wet sand or lake edge, piers only if already implied by the layout, fishing clutter, reeds, and a few small boats near the water.'
+        },
+        desert: {
+          label: 'Desert / Arid',
+          image: 'images/cities/clador/clador.png',
+          directives: 'Use pale sand, sun-bleached stone, dusty roads, sparse shrubs, dry fields, small shade awnings, and a hotter, drier environment while preserving the exact town structure.'
+        },
+        forest: {
+          label: 'Forest / Woodland',
+          image: STYLE_TEMPLATE_PATH,
+          directives: 'Use richer greens, dense treelines at the edges, mossier ground, woodland clearings, muddy or worn roads, and thicker vegetation around the settlement without changing the layout.'
+        },
+        mountain: {
+          label: 'Mountain / Highland',
+          image: STYLE_TEMPLATE_PATH,
+          directives: 'Use rocky shelves, highland grass, sparse hardy trees, rough stonework, cliff or scree edges where applicable, and rugged terrain treatment while keeping roads and building footprints exact.'
+        },
+        swamp: {
+          label: 'Swamp / Marsh',
+          image: STYLE_TEMPLATE_PATH,
+          directives: 'Use marshy greens and browns, wet ground, reeds, shallow waterlogged edges, muddy paths, and sparse stilt or boardwalk flavor only where the original layout clearly supports it.'
+        },
+        frozen: {
+          label: 'Frozen / Tundra',
+          image: STYLE_TEMPLATE_PATH,
+          directives: 'Use pale frosted ground, sparse cold-weather vegetation, icy tracks, snow-dusted roofs, and subdued winter lighting while preserving the exact orthographic structure.'
+        },
+        underground: {
+          label: 'Underground',
+          image: STYLE_TEMPLATE_PATH,
+          directives: 'Treat the environment as subterranean stone and cavern terrain, with dim earthy tones, chiseled paths, cave walls, and carved rock spaces while preserving the exact footprint.'
+        }
+      };
 
       function cleanupUploadedPreview() {
         if (uploadedImageObjectUrl) {
@@ -2313,6 +2371,118 @@ const CityEditor = (function () {
         return 'Invent a unique settlement layout that matches the provided brief rather than echoing unrelated reference compounds or site plans.';
       }
 
+      function getWorldLocationContext(cityId, cityName) {
+        const allLocations = (window.CampaignData && typeof CampaignData.getAllLocations === 'function')
+          ? CampaignData.getAllLocations()
+          : ((window.WORLD_LOCATIONS && WORLD_LOCATIONS.locations) || []);
+        return findWorldLocationForCity(cityId, allLocations)
+          || findWorldLocationForCity(sourceLocationId, allLocations)
+          || allLocations.find(l => l.id === sourceLocationId)
+          || allLocations.find(l => (l.name || '').replace(/\n/g, ' ').trim() === (cityName || '').trim())
+          || null;
+      }
+
+      function detectBiomeProfile(cityId, cityName, worldLocation) {
+        const text = [
+          cityId || '',
+          cityName || '',
+          worldLocation && worldLocation.name || '',
+          worldLocation && worldLocation.type || '',
+          worldLocation && worldLocation.region || '',
+          worldLocation && worldLocation.description || ''
+        ].join(' ').toLowerCase();
+
+        if (/(underdark|underground|underhive|subterranean|cavern|grotto|duergar|drow|beneath|below)/.test(text)) return 'underground';
+        if (/(desert|dune|sands?|arid|waste|badlands?|mesa|sunscorch)/.test(text)) return 'desert';
+        if (/(coast|coastal|harbor|harbour|port|bay|lake|loch|shore|sea|ocean|isle|island|delta|ferry|dock|marina|river mouth)/.test(text)) return 'coastal';
+        if (/(swamp|marsh|bog|fen|mire|wetland)/.test(text)) return 'swamp';
+        if (/(mount|mountain|peak|ridge|cliff|highland|highlands|crag|pass)/.test(text)) return 'mountain';
+        if (/(frost|frozen|tundra|ice|icy|snow|glacier|winter)/.test(text)) return 'frozen';
+        if (/(forest|wood|woods|grove|thicket|wildwood|timber)/.test(text)) return 'forest';
+        return 'plains';
+      }
+
+      function getSelectedBiomeProfile(cityId, cityName, worldLocation) {
+        const select = document.getElementById('ai-biome-profile');
+        const selected = select ? select.value : 'auto';
+        const biomeKey = selected && selected !== 'auto'
+          ? selected
+          : detectBiomeProfile(cityId, cityName, worldLocation);
+        return {
+          key: biomeKey,
+          ...(BIOME_REFERENCE_MAP[biomeKey] || BIOME_REFERENCE_MAP.plains)
+        };
+      }
+
+      function updateBiomeSummary(cityId, worldLocation, biomeProfile) {
+        const summary = document.getElementById('ai-biome-reference-summary');
+        if (!summary) return;
+        const locationBits = [];
+        if (worldLocation && worldLocation.type) locationBits.push(`type: ${worldLocation.type}`);
+        if (worldLocation && worldLocation.region) locationBits.push(`region: ${worldLocation.region}`);
+        summary.innerHTML = [
+          `<strong>Active biome:</strong> ${biomeProfile.label}`,
+          `<strong>Style reference:</strong> <code>${STYLE_TEMPLATE_PATH}</code>`,
+          `<strong>Biome reference:</strong> <code>${biomeProfile.image}</code>`,
+          locationBits.length ? `<strong>World context:</strong> ${locationBits.join(' | ')}` : ''
+        ].filter(Boolean).join('<br>');
+      }
+
+      function buildRenderPrompt() {
+        const cityName = (document.getElementById('ai-city-name').value || '').trim();
+        const cityId = (document.getElementById('ai-city-id').value || '').trim();
+        const gazetteerText = (document.getElementById('ai-gazetteer-text').value || '').trim();
+        const worldLocation = getWorldLocationContext(cityId, cityName);
+        const settlementContext = buildSettlementContext(cityId, cityName, worldLocation);
+        const biomeProfile = getSelectedBiomeProfile(cityId, cityName, worldLocation);
+        const pinNames = pins.slice(0, 10).map(p => p.name).join(', ');
+        const pinDetails = pins
+          .slice(0, 8)
+          .map(p => {
+            const desc = (p.desc || '').replace(/\s+/g, ' ').trim();
+            return desc ? `${p.name}: ${desc.slice(0, 140)}` : p.name;
+          })
+          .join('; ');
+        const contextBits = [
+          worldLocation && worldLocation.type ? `Settlement type: ${worldLocation.type}.` : '',
+          worldLocation && worldLocation.region ? `Region: ${worldLocation.region}.` : '',
+          settlementContext.civicScale || '',
+          settlementContext.waterfrontContext || '',
+          settlementContext.expectedBuildings || '',
+          biomeProfile.directives || '',
+          pinNames ? `Important marked locations: ${pinNames}.` : '',
+          pinDetails ? `Gazetteer notes: ${pinDetails}.` : '',
+          gazetteerText && !pinDetails ? `Settlement notes: ${gazetteerText.replace(/\s+/g, ' ').slice(0, 800)}.` : ''
+        ].filter(Boolean).join(' ');
+
+        updateBiomeSummary(cityId, worldLocation, biomeProfile);
+
+        return [
+          'Use image 1 as the exact layout reference for the town.',
+          `Use image 2 (${STYLE_TEMPLATE_PATH}) as the master visual style reference.`,
+          `Use image 3 (${biomeProfile.image}) as the biome and environment reference.`,
+          '',
+          `Create a top-down, perfectly orthographic fantasy medieval town map for ${cityName || cityId || 'this settlement'} in the same polished parchment-map style as image 2.`,
+          'Preserve the exact structure, footprint, building placement, road placement, open spaces, shoreline placement, and overall proportions from image 1.',
+          'Do not add, remove, reinterpret, or redesign structures. Only render what already exists in the reference layout.',
+          'Match the painted map language from the style reference: parchment-toned ground, soft painterly shading, muted medieval roofs, crisp overhead roofs, cobblestone centers where applicable, believable trees and fields, and gentle neutral daylight.',
+          contextBits,
+          '',
+          'Strict rules:',
+          '- no perspective, strictly 90-degree overhead',
+          '- no labels, text, numbers, icons, or compass',
+          '- no extra buildings, walls, towers, docks, or props unless the original layout already clearly supports them',
+          '- keep all roads, plazas, paths, and empty spaces in the same place',
+          '- preserve the original aspect ratio and structural fidelity exactly',
+          '- any biome flavor should affect texture, palette, vegetation, and minor environmental dressing only',
+          '- if this is a coastal or lakeside settlement, add a few small boats only where water is already present in the layout'
+        ].join('\n');
+      }
+
+      function updatePrompt() {
+        document.getElementById('ai-gen-prompt').value = buildRenderPrompt();
+      }
+
       function open(options = {}) {
         console.log('[AI] Opening Wizard...');
         document.getElementById('ai-wizard-modal').style.display = 'flex';
@@ -2373,6 +2543,8 @@ const CityEditor = (function () {
         }
 
         // Leave fields blank if no location was auto-detected — let user fill them in
+        const biomeSelect = document.getElementById('ai-biome-profile');
+        if (biomeSelect) biomeSelect.value = 'auto';
         nextStep(1);
       }
 
@@ -2415,6 +2587,7 @@ const CityEditor = (function () {
         if (n === 3) {
           const genBtn = document.getElementById('ai-btn-generate');
           if (genBtn) genBtn.disabled = false;
+          updatePrompt();
 
           const cityId = (document.getElementById('ai-city-id').value || '').trim();
           if (!uploadedImagePath && cityId) {
@@ -2732,7 +2905,7 @@ const CityEditor = (function () {
         }
       }
 
-      return { open, close, nextStep, fetchGoogleDoc, parseData, generate };
+      return { open, close, nextStep, fetchGoogleDoc, parseData, generate, updatePrompt };
     })();
   </script>
 </body>

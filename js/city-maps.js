@@ -31,4 +31,6 @@ const CITY_MAPS = [
   { id: "talbesar"                , name: "Tal'besar Ruins"         , image: "images/cities/talbesar/talbesar.png", previewImage: "images/cities/talbesar/talbesar.png" },
   { id: "scarbrook"               , name: "Scarbrook"               , image: "images/cities/scarbrook/scarbrook.png", previewImage: "images/cities/scarbrook/scarbrook.png" },
   { id: "nebisill"                , name: "Nebisill"                , image: "images/cities/nebisill/nebisill.png", previewImage: "images/cities/nebisill/nebisill.png" },
+  { id: "boldshire"               , name: "Boldshire"               , image: "images/cities/boldshire/boldshire.png", previewImage: "images/cities/boldshire/boldshire.png" },
+  { id: "dryrock"                 , name: "Dryrock"                 , image: "images/cities/dryrock/dryrock.png", previewImage: "images/cities/dryrock/dryrock.png" },
 ];
