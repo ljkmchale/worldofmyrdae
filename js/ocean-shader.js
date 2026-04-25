@@ -24,8 +24,8 @@ const OceanShader = (function () {
         // Mask threshold — pixels with score below this aren't treated as water.
         maskThreshold: 0.18,
         // Component classification thresholds, in pixels at the shader render size.
-        minLakePixels: 900,
-        minLakeSpan: 12
+        minLakePixels: 120,
+        minLakeSpan: 5
     };
 
     const VERTEX_SHADER = `#version 300 es
@@ -90,6 +90,7 @@ const OceanShader = (function () {
             float oceanType = waterType.r;
             float lakeType = waterType.g;
             float riverType = waterType.b;
+            float lakeEffect = lakeType * 0.0;
 
             // Two scrolling, warped noise layers for layered ocean swell.
             float t = uTime;
@@ -106,9 +107,11 @@ const OceanShader = (function () {
             vec2 lakeUv = uv + (fbm(uv * 9.0 + vec2(t * 0.018, -t * 0.011)) - 0.5) * 0.006;
             float lakeWave = fbm(lakeUv * vec2(34.0, 28.0) + vec2(t * 0.012, -t * 0.009));
 
-            // Rivers/thin water get a narrow directional shimmer instead of broad waves.
+            // Thin/small water is detected, but kept visually quiet; painted river
+            // strokes create artifacts when animated from color alone.
             float riverFlow = fbm(uv * vec2(62.0, 18.0) + vec2(t * 0.055, t * 0.012));
-            float wave = oceanWave * oceanType + lakeWave * lakeType + riverFlow * riverType;
+            float riverEffect = riverType * 0.0;
+            float wave = oceanWave * oceanType + lakeWave * lakeEffect + riverFlow * riverEffect;
 
             // Long, non-uniform swell lines. Kept soft so the map remains painterly.
             float swellA = sin((wuv.x * 22.0 + wuv.y * 10.0) + t * 0.46 + fbm(wuv * 6.0) * 5.4);
@@ -122,7 +125,7 @@ const OceanShader = (function () {
             float oceanCaustic = pow(max(0.0, fbm(q1 * 1.4 + oceanWave * 0.6) - 0.55), 2.2) * 2.2;
             float lakeGlint = pow(max(0.0, lakeWave - 0.58), 2.6) * 0.9;
             float riverGlint = pow(max(0.0, riverFlow - 0.62), 2.4) * 0.55;
-            float caustic = oceanCaustic * oceanType + lakeGlint * lakeType + riverGlint * riverType;
+            float caustic = oceanCaustic * oceanType + lakeGlint * lakeEffect + riverGlint * riverEffect;
 
             // Depth tint based on wave height + a slow large-scale tone variation.
             float depth = fbm(uv * 2.4 + vec2(t * 0.005));
@@ -130,11 +133,11 @@ const OceanShader = (function () {
             vec3 lakeDeep = mix(uDeep, uShallow, 0.42);
             vec3 lakeColor = mix(lakeDeep, uShallow, lakeWave * 0.28 + depth * 0.12);
             vec3 riverColor = mix(uDeep, uShallow, 0.52 + riverFlow * 0.12);
-            vec3 water = oceanColor * oceanType + lakeColor * lakeType + riverColor * riverType;
-
             // Preserve a touch of the base map's own color so coasts/lighting still read.
             vec3 base = texture(uMap, uv).rgb;
-            water = mix(water, base, 0.055 + lakeType * 0.08 + riverType * 0.12);
+            float paintedInlandWater = lakeType;
+            vec3 water = oceanColor * oceanType + lakeColor * lakeEffect + riverColor * riverEffect + base * paintedInlandWater;
+            water = mix(water, base, 0.055 * oceanType);
 
             // Sun glints / caustics.
             water += uFoam * (caustic * 0.24 + ridges);
@@ -150,7 +153,7 @@ const OceanShader = (function () {
             // Keep shoreline foam soft and broken, like surf catching light.
             float foamNoise = smoothstep(0.38, 0.88, fbm(uv * 34.0 + vec2(t * 0.06, -t * 0.025)));
             float foamDrift = 0.72 + 0.16 * fbm(uv * 18.0 + vec2(-t * 0.045, t * 0.03));
-            float shoreEnergy = oceanType * 0.48 + lakeType * 0.16 + riverType * 0.04;
+            float shoreEnergy = oceanType * 0.48 + lakeEffect * 0.16 + riverEffect * 0.04;
             float foam = smoothstep(0.055, 0.48, edge) * foamDrift * (0.32 + 0.42 * foamNoise);
             water += uFoam * foam * shoreEnergy;
 
@@ -221,7 +224,7 @@ const OceanShader = (function () {
             op[i] = type === 1 ? 255 : 0;
             op[i + 1] = type === 2 ? 255 : 0;
             op[i + 2] = type === 3 ? 255 : 0;
-            op[i + 3] = alphaMask[px];
+            op[i + 3] = type === 3 ? 0 : alphaMask[px];
         }
         octx.putImageData(odata, 0, 0);
         return out;
@@ -288,7 +291,7 @@ const OceanShader = (function () {
             const fillRatio = area / Math.max(1, spanX * spanY);
             const type = touchesEdge
                 ? 1
-                : (area >= minLakePixels && minSpan >= minLakeSpan && fillRatio >= 0.035 ? 2 : 3);
+                : (area >= minLakePixels && minSpan >= minLakeSpan && fillRatio >= 0.08 ? 2 : 3);
 
             for (let i = 0; i < tail; i++) {
                 waterType[queue[i]] = type;
