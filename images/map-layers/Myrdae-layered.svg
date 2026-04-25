@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="6400" height="3600" viewBox="0 0 6400 3600">
+  <title>Myrdae layered map source</title>
+  <desc>Layered static reconstruction package. Toggle display/opacity of groups to edit broad map features while preserving the 6400x3600 coordinate space.</desc>
+  <g id="ocean-base" inkscape:groupmode="layer" inkscape:label="ocean-base">
+    <image href="01-ocean-base.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="land-base" inkscape:groupmode="layer" inkscape:label="land-base">
+    <image href="02-land-base.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="lowlands-green" inkscape:groupmode="layer" inkscape:label="lowlands-green">
+    <image href="03-lowlands-green.png" x="0" y="0" width="6400" height="3600" opacity="0.55"/>
+  </g>
+  <g id="desert" inkscape:groupmode="layer" inkscape:label="desert">
+    <image href="04-desert.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="mountains-relief" inkscape:groupmode="layer" inkscape:label="mountains-relief">
+    <image href="05-mountains-relief.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="snow-and-ice" inkscape:groupmode="layer" inkscape:label="snow-and-ice">
+    <image href="06-snow-and-ice.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="dark-line-detail" inkscape:groupmode="layer" inkscape:label="dark-line-detail">
+    <image href="07-dark-line-detail.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="coastline-mask" inkscape:groupmode="layer" inkscape:label="coastline-mask">
+    <image href="08-coastline-mask.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+  <g id="original-reference-toggle" inkscape:groupmode="layer" inkscape:label="original-reference-toggle" display="none">
+    <image href="99-original-reference-30pct.png" x="0" y="0" width="6400" height="3600"/>
+  </g>
+</svg>

@@ -1,0 +1,59 @@
+{
+  "canvas": {
+    "width": 6400,
+    "height": 3600
+  },
+  "source": "images/Myrdae.jpg",
+  "notes": "Static layered raster extraction from the current map. Runtime uses compact display-* layers; source layers remain editable.",
+  "runtimeLayers": [
+    "display-ocean-base.jpg",
+    "display-land-composite.png"
+  ],
+  "layers": [
+    {
+      "id": "ocean-base",
+      "file": "01-ocean-base.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "land-base",
+      "file": "02-land-base.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "lowlands-green",
+      "file": "03-lowlands-green.png",
+      "defaultOpacity": 0.55
+    },
+    {
+      "id": "desert",
+      "file": "04-desert.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "mountains-relief",
+      "file": "05-mountains-relief.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "snow-and-ice",
+      "file": "06-snow-and-ice.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "dark-line-detail",
+      "file": "07-dark-line-detail.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "coastline-mask",
+      "file": "08-coastline-mask.png",
+      "defaultOpacity": 1
+    },
+    {
+      "id": "original-reference-toggle",
+      "file": "99-original-reference-30pct.png",
+      "defaultOpacity": 0
+    }
+  ]
+}
