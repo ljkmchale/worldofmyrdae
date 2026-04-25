@@ -25,7 +25,10 @@ const Editor = (function () {
         isNewPreview: false
     };
 
+    const _structuredCloneFn = (typeof structuredClone === 'function') ? structuredClone : null;
     function cloneData(value) {
+        if (value === null || typeof value !== 'object') return value;
+        if (_structuredCloneFn) return _structuredCloneFn(value);
         return JSON.parse(JSON.stringify(value));
     }
 
@@ -1701,7 +1704,7 @@ const Editor = (function () {
         const loc = state.locations.find(l => l.id === state.selectedLocId);
         if (!loc) return;
 
-        const copy = JSON.parse(JSON.stringify(loc));
+        const copy = cloneData(loc);
         copy.x = Math.min(99, parseFloat((copy.x + 1).toFixed(1)));
         copy.y = Math.min(99, parseFloat((copy.y + 1).toFixed(1)));
 

@@ -44,7 +44,7 @@ npm run desktop:dev
    - `js/world-clock.js`
    - `js/location-search.js`
    - `js/map-measure.js`
-   - `js/water-repaint.js`
+   - `js/ocean-shader.js`
    - `js/coord-grid.js`
 5. `js/editor.js` manages the editor state, previews unsaved changes, and persists through `server.js`.
 
@@ -71,7 +71,7 @@ npm run desktop:dev
 | `js/map-overlay.js` | overlay rendering, roads, tooltips, route graph helpers |
 | `js/editor.js` | editor state, drafts, placement mode, save flows |
 | `js/world-clock.js` | Myrdae calendar model and wheel UI |
-| `js/water-repaint.js` | animated water tinting and motion overlay |
+| `js/ocean-shader.js` | WebGL2 ocean rendering, wave motion, and shoreline foam |
 | `js/map-measure.js` | viewer distance measurement UI |
 | `js/location-search.js` | search/filter interactions in the viewer |
 | `server.js` | static serving plus save, city, world clock, and AI endpoints |

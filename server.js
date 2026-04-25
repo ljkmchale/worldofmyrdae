@@ -89,6 +89,63 @@ function resolveWritablePath(requestPath) {
     return resolveWithinRoot(runtimeConfig.dataRootReal, requestPath);
 }
 
+function joinWithinDir(parentDir, childPath) {
+    const joined = path.join(parentDir, childPath);
+    const relative = path.relative(parentDir, joined);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        throw new Error('Path escapes parent directory');
+    }
+    return joined;
+}
+
+const MAX_TEXT_BODY_BYTES = 10 * 1024 * 1024; // 10MB cap for text payloads (locations-db.js can be ~600KB)
+const MAX_BINARY_BODY_BYTES = 25 * 1024 * 1024; // 25MB cap for image uploads
+
+function readRequestBody(req, { maxBytes = MAX_TEXT_BODY_BYTES, asBuffer = false } = {}) {
+    return new Promise((resolve, reject) => {
+        const declaredLength = Number(req.headers['content-length']);
+        if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+            reject(Object.assign(new Error('Request body too large'), { statusCode: 413 }));
+            req.resume();
+            return;
+        }
+
+        const chunks = [];
+        let received = 0;
+        let aborted = false;
+
+        req.on('data', (chunk) => {
+            if (aborted) return;
+            received += chunk.length;
+            if (received > maxBytes) {
+                aborted = true;
+                reject(Object.assign(new Error('Request body too large'), { statusCode: 413 }));
+                req.destroy();
+                return;
+            }
+            chunks.push(chunk);
+        });
+        req.on('end', () => {
+            if (aborted) return;
+            const buffer = Buffer.concat(chunks);
+            resolve(asBuffer ? buffer : buffer.toString('utf8'));
+        });
+        req.on('error', (err) => {
+            if (!aborted) reject(err);
+        });
+    });
+}
+
+function sendJson(res, statusCode, payload) {
+    res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(payload));
+}
+
+function sendError(res, err, fallbackStatus = 500) {
+    const status = err && err.statusCode ? err.statusCode : fallbackStatus;
+    sendJson(res, status, { success: false, error: err && err.message ? err.message : 'Server error' });
+}
+
 function mergeUnique(entries) {
     const seen = new Set();
     return entries.filter((entry) => {
@@ -415,42 +472,38 @@ function handleRequest(req, res) {
             res.end(JSON.stringify({ success: false, error: 'Invalid city ID' }));
             return;
         }
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
+        readRequestBody(req).then((body) => {
             try {
                 const citiesDir = resolveWritablePath('js/cities');
                 fs.mkdirSync(citiesDir, { recursive: true });
-                const filePath = path.join(citiesDir, cityId + '.js');
-                const relative = path.relative(citiesDir, filePath);
-                if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('Invalid path');
+                const filePath = joinWithinDir(citiesDir, cityId + '.js');
                 fs.writeFileSync(filePath, body);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true, message: 'City saved: ' + cityId }));
+                sendJson(res, 200, { success: true, message: 'City saved: ' + cityId });
             } catch (err) {
                 console.error('Save City Error:', err);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: false, error: err.message }));
+                sendError(res, err);
             }
+        }).catch((err) => {
+            console.error('Save City Error:', err);
+            sendError(res, err);
         });
         return;
     }
 
     // Handle POST request to save city-maps.js (thin index)
     if (req.method === 'POST' && url === '/save-city-map') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
+        readRequestBody(req).then((body) => {
             try {
                 const filePath = resolveWritablePath('js/city-maps.js');
                 fs.writeFileSync(filePath, body);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true, message: 'City maps saved' }));
+                sendJson(res, 200, { success: true, message: 'City maps saved' });
             } catch (err) {
-                console.error("Save Error:", err);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: false, error: err.message }));
+                console.error('Save Error:', err);
+                sendError(res, err);
             }
+        }).catch((err) => {
+            console.error('Save Error:', err);
+            sendError(res, err);
         });
         return;
     }
@@ -498,16 +551,13 @@ function handleRequest(req, res) {
 
     // Create the on-disk scaffold for a new city so the editor does not depend on a pre-made folder.
     if (req.method === 'POST' && url === '/api/cities/scaffold') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
+        readRequestBody(req, { maxBytes: 64 * 1024 }).then((body) => {
             try {
                 const data = body ? JSON.parse(body) : {};
                 const cityId = String(data.cityId || '');
 
                 if (!/^[a-z0-9-]+$/i.test(cityId) || cityId.length > 80) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, error: 'Invalid city ID' }));
+                    sendJson(res, 400, { success: false, error: 'Invalid city ID' });
                     return;
                 }
 
@@ -516,17 +566,18 @@ function handleRequest(req, res) {
                 fs.mkdirSync(imageDir, { recursive: true });
                 fs.mkdirSync(cityFileDir, { recursive: true });
 
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({
+                sendJson(res, 200, {
                     success: true,
                     imageDir: `images/cities/${cityId}`,
                     cityFile: `js/cities/${cityId}.js`
-                }));
+                });
             } catch (err) {
                 console.error('City scaffold error:', err);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: false, error: err.message }));
+                sendError(res, err);
             }
+        }).catch((err) => {
+            console.error('City scaffold error:', err);
+            sendError(res, err);
         });
         return;
     }
@@ -563,37 +614,31 @@ function handleRequest(req, res) {
             return;
         }
 
-        const chunks = [];
-        req.on('data', chunk => { chunks.push(chunk); });
-        req.on('end', () => {
+        readRequestBody(req, { maxBytes: MAX_BINARY_BODY_BYTES, asBuffer: true }).then((payload) => {
             try {
                 const imageDir = resolveWritablePath(path.join('images', 'cities', cityId));
                 fs.mkdirSync(imageDir, { recursive: true });
 
-                const destPath = path.join(imageDir, cityId + finalExt);
-                const relative = path.relative(imageDir, destPath);
-                if (relative.startsWith('..') || path.isAbsolute(relative)) {
-                    throw new Error('Invalid destination path');
-                }
+                const destPath = joinWithinDir(imageDir, cityId + finalExt);
 
-                const payload = Buffer.concat(chunks);
                 if (!payload.length) {
                     throw new Error('Uploaded file is empty');
                 }
 
                 fs.writeFileSync(destPath, payload);
 
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({
+                sendJson(res, 200, {
                     success: true,
                     localPath: `images/cities/${cityId}/${cityId}${finalExt}`,
                     bytes: payload.length
-                }));
+                });
             } catch (err) {
                 console.error('City image upload error:', err);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: false, error: err.message }));
+                sendError(res, err);
             }
+        }).catch((err) => {
+            console.error('City image upload error:', err);
+            sendError(res, err);
         });
         return;
     }
@@ -658,9 +703,7 @@ function handleRequest(req, res) {
 
     // AI Proxy to local ComfyUI instance
     if (req.method === 'POST' && url === '/api/ai/comfy-proxy') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
+        readRequestBody(req).then((body) => {
             try {
                 const data = JSON.parse(body);
                 const host = parseComfyHost(data.host);
@@ -690,18 +733,15 @@ function handleRequest(req, res) {
                 proxyReq.write(JSON.stringify(data.payload));
                 proxyReq.end();
             } catch (err) {
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
+                sendJson(res, 400, { error: err.message });
             }
-        });
+        }).catch((err) => sendError(res, err, 400));
         return;
     }
 
     // Upload a local image to ComfyUI's input directory
     if (req.method === 'POST' && url === '/api/ai/upload-to-comfy') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
+        readRequestBody(req, { maxBytes: 64 * 1024 }).then((body) => {
             try {
                 const { host, localPath } = JSON.parse(body);
                 if (!localPath) {
@@ -729,18 +769,15 @@ function handleRequest(req, res) {
                 proxyReq.write(multipart);
                 proxyReq.end();
             } catch (err) {
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
+                sendJson(res, 400, { error: err.message });
             }
-        });
+        }).catch((err) => sendError(res, err, 400));
         return;
     }
 
     // AI Image Save Route — download generated image from ComfyUI and store locally
     if (req.method === 'POST' && url === '/api/ai/save-image') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', async () => {
+        readRequestBody(req, { maxBytes: 64 * 1024 }).then(async (body) => {
             try {
                 const { cityId, comfyUrl, alsoSaveSketch } = JSON.parse(body);
                 if (!cityId || !comfyUrl) throw new Error('Missing cityId or comfyUrl');
@@ -782,10 +819,9 @@ function handleRequest(req, res) {
                 res.end(JSON.stringify({ success: true, localPath: `images/cities/${safeId}/${safeId}.png` }));
             } catch (err) {
                 console.error('[AI] save-image error:', err);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
+                sendJson(res, 500, { error: err.message });
             }
-        });
+        }).catch((err) => sendError(res, err));
         return;
     }
 
@@ -1221,9 +1257,7 @@ function handleRequest(req, res) {
 
     // Proxy to AI Summarize (Gemini)
     if (req.method === 'POST' && url === '/api/ai/summarize') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', async () => {
+        readRequestBody(req).then(async (body) => {
             try {
                 if (!GEMINI_API_KEY) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -1284,31 +1318,25 @@ ${text}`;
                 aiReq.end();
 
             } catch (err) {
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
+                sendJson(res, 400, { error: err.message });
             }
-        });
+        }).catch((err) => sendError(res, err, 400));
         return;
     }
 
     if (req.method === 'POST' && url === '/save') {
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        req.on('end', () => {
+        readRequestBody(req).then((body) => {
             try {
-                // Ensure the path is correct
                 const filePath = resolveWritablePath('js/locations-db.js');
                 fs.writeFileSync(filePath, body);
-
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true, message: 'Saved successfully to disk' }));
+                sendJson(res, 200, { success: true, message: 'Saved successfully to disk' });
             } catch (err) {
-                console.error("Save Error:", err);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: false, error: err.message }));
+                console.error('Save Error:', err);
+                sendError(res, err);
             }
+        }).catch((err) => {
+            console.error('Save Error:', err);
+            sendError(res, err);
         });
         return;
     }

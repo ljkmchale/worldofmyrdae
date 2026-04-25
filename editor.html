@@ -750,10 +750,10 @@
           </button>
         </div>
         <div class="map-coords" id="map-coords">X: — Y: —</div>
-        <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+        <img src="images/map-layers/Myrdae-layered-preview.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
         <img src="images/Myrdae (v.4.2.c - Territory Layer).png" alt="Territories of Myrdae" id="territories-layer"
           draggable="false"
-          style="display:none; position:absolute; top:0; left:0; width:100%; height:auto; z-index:2; pointer-events:none;">
+          style="display:none; position:absolute; top:0; left:0; width:100%; height:auto; z-index:8; pointer-events:none;">
         <svg id="city-pins-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:200; overflow:visible;"></svg>
       </div>
     </div>
@@ -772,6 +772,8 @@
   <script src="js/map-overlay.js"></script>
   <script src="js/coord-grid.js"></script>
   <script src="js/boat-animations.js"></script>
+  <script src="js/map-layer-stack.js"></script>
+  <script src="js/ocean-shader.js"></script>
   <script src="js/editor.js"></script>
 
   <script>
@@ -779,6 +781,7 @@
       // Force loading from defaults for the editor to avoid localStorage confusing things
       // We will manipulate the WORLD_LOCATIONS object directly in memory or a copy of it.
       await Editor.init();
+      MapLayerStack.init('map-container', 'map-image');
 
       MapController.init('map-container', 'map-image', {
         onTransform: (transformStr, scale, tx, ty) => {
@@ -792,8 +795,12 @@
             territories.style.transform = transformStr;
             territories.style.transformOrigin = '0 0';
           }
+          MapLayerStack.setTransform('map-container', transformStr, '0 0');
+          OceanShader.setTransform('map-container', transformStr, '0 0');
         }
       });
+
+      OceanShader.init('map-container', 'map-image');
 
       // Crucial: init the map overlay AFTER Editor.init overrides CampaignData
       MapOverlay.init('map-container', 'map-image');
@@ -1426,7 +1433,8 @@ const CityEditor = (function () {
     const img = document.getElementById('map-image');
     cityMapActive = true;
     img.onload = () => { _setOverlay(false); _setTerritories(false); renderPins(); };
-    img.src = cityData.image;
+    OceanShader.destroy('map-container');
+    MapLayerStack.showSingleImage('map-container', 'map-image', cityData.image);
     if (img.complete && img.naturalWidth) { _setOverlay(false); _setTerritories(false); renderPins(); }
 
     setCoordinateTrackerEnabled(false);
@@ -1461,6 +1469,9 @@ const CityEditor = (function () {
   }
 
   function _restoreWorldOverlay() {
+    if (typeof OceanShader !== 'undefined') {
+      OceanShader.init('map-container', 'map-image');
+    }
     _setOverlay(true);
     if (typeof MapOverlay !== 'undefined') {
       MapOverlay.init('map-container', 'map-image');
@@ -1473,7 +1484,7 @@ const CityEditor = (function () {
     document.querySelectorAll('.city-pin').forEach(el => el.remove());
     const img = document.getElementById('map-image');
     img.onload = () => { _restoreWorldOverlay(); };
-    img.src = 'images/Myrdae.jpg';
+    MapLayerStack.showWorld('map-container', 'map-image');
     if (img.complete && img.naturalWidth) _restoreWorldOverlay();
     _setTerritories(false);
     setCoordinateTrackerEnabled(true);

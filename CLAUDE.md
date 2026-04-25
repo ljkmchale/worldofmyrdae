@@ -44,7 +44,7 @@ npm run desktop:dev
    - `js/world-clock.js`
    - `js/location-search.js`
    - `js/map-measure.js`
-   - `js/water-repaint.js`
+   - `js/ocean-shader.js`
    - `js/coord-grid.js`
 5. `js/editor.js` keeps a cloned local editing state and previews unsaved changes through a temporary `CampaignData` bridge.
 
@@ -71,7 +71,7 @@ npm run desktop:dev
 | `js/map-overlay.js` | markers, labels, roads, tooltips, route graph logic |
 | `js/editor.js` | editor state, drafts, placement, undo/redo, save |
 | `js/world-clock.js` | Myrdae calendar logic and wheel UI |
-| `js/water-repaint.js` | layered water rendering and animation |
+| `js/ocean-shader.js` | WebGL2 ocean rendering, wave motion, and shoreline foam |
 | `js/map-measure.js` | world distance measurement UI |
 | `js/location-search.js` | viewer search |
 | `server.js` | static server, persistence API, world clock sync, AI routes |
@@ -193,23 +193,14 @@ Two independent AI integrations live in `server.js`:
 
 **Gazetteer parser** — `GET /api/ai/parse-gazetteer?url=<docUrl>&cityId=<id>` fetches a Google Doc as HTML, splits it by headings, extracts the crest (page-1 image), city map sketch, and locations-overlay image, saves them all to `images/cities/<id>/`, and returns structured JSON with location text.
 
-## Water Repaint (`js/water-repaint.js`)
+## Ocean Shader (`js/ocean-shader.js`)
 
-`WaterRepaintRenderer` is an IIFE module that overlays an animated water effect on the map image without modifying it. It uses four stacked canvases inserted after the `<img>` element:
-
-| Canvas | Purpose |
-|--------|---------|
-| `water-repaint-canvas` | Static depth-tinted water color (computed once) |
-| `water-motion-canvas` | Slowly drifting gradient texture, clipped by water mask |
-| `water-foam-canvas` | Shore foam, clipped by shallow-water shore mask |
-| `water-solar-canvas` | Sun-glow swept across water based on `MyrdaeWorldClock` time |
-
-Water pixels are detected by blue-channel dominance on the map image. The depth field is blurred to create smooth shallow→deep gradients.
+`OceanShader` overlays a WebGL2 ocean effect above the map's ocean layer and below land, roads, labels, and markers. It builds a water mask from the painted map pixels, then renders animated domain-warped wave color, caustic highlights, depth-tinted water, and shoreline foam. If WebGL2 is unavailable, it exits quietly and leaves the static map layers visible.
 
 Public API:
-- `WaterRepaintRenderer.init(imgId)` — attach to an `<img>` by DOM id; call once on page load
-- `WaterRepaintRenderer.setSolarLighting(bool)` — toggle the solar canvas
-- `WaterRepaintRenderer.isSolarLightingEnabled()` — returns current state
+- `OceanShader.init(containerId, imageId, options)` — attach to a map container and coordinate-anchor image
+- `OceanShader.setTransform(containerId, transformStr, transformOrigin)` — keep the shader aligned in editor views that transform individual layers
+- `OceanShader.destroy(containerId)` — remove the shader layer and stop its animation loop
 
 ## Cities
 
