@@ -5,7 +5,7 @@
 const MapLayerStack = (function () {
     const WORLD_ANCHOR_SRC = 'images/map-layers/Myrdae-layered-preview.jpg';
     const layers = [
-        { id: 'ocean-base', src: 'images/map-layers/display-ocean-base.jpg', zIndex: 0 },
+        { id: 'ocean-base', src: 'images/map-layers/display-ocean-base.jpg', zIndex: 0, opacity: 0.12 },
         { id: 'land-composite', src: 'images/map-layers/display-land-composite.png', zIndex: 2 }
     ];
 
@@ -26,6 +26,9 @@ const MapLayerStack = (function () {
         img.style.pointerEvents = 'none';
         img.style.userSelect = 'none';
         img.style.zIndex = String(layer.zIndex);
+        if (typeof layer.opacity === 'number') {
+            img.style.opacity = String(layer.opacity);
+        }
         return img;
     }
 

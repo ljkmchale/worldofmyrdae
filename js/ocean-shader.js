@@ -13,13 +13,13 @@ const OceanShader = (function () {
 
     const DEFAULTS = {
         layerIdSuffix: '-ocean-shader',
-        opacity: 0.95,
+        opacity: 1,
         // Internal render scale — 0.5 means render at half map resolution then upscale (cheaper, still smooth)
-        renderScale: 0.5,
+        renderScale: 0.6,
         // Visual tuning
-        deepColor: [0.04, 0.16, 0.32],
-        shallowColor: [0.32, 0.62, 0.78],
-        foamColor: [0.95, 0.98, 1.00],
+        deepColor: [0.025, 0.12, 0.24],
+        shallowColor: [0.10, 0.42, 0.58],
+        foamColor: [0.58, 0.78, 0.86],
         waveSpeed: 1.0,
         // Mask threshold — pixels with score below this aren't treated as water.
         maskThreshold: 0.18
@@ -81,14 +81,27 @@ const OceanShader = (function () {
             float mask = sampleMask(uv);
             if (mask < 0.02) discard;
 
-            // Two scrolling noise layers for layered swell.
+            // Two scrolling, warped noise layers for layered swell.
             float t = uTime;
-            vec2 q1 = uv * vec2(12.0, 8.0) + vec2(t * 0.020, t * 0.012);
-            vec2 q2 = uv * vec2(22.0, 16.0) + vec2(-t * 0.028, t * 0.018);
+            vec2 warp = vec2(
+                fbm(uv * 4.0 + vec2(t * 0.025, -t * 0.010)),
+                fbm(uv * 4.6 + vec2(-t * 0.012, t * 0.022))
+            ) - 0.5;
+            vec2 wuv = uv + warp * 0.026;
+            vec2 q1 = wuv * vec2(12.0, 8.0) + vec2(t * 0.026, t * 0.014);
+            vec2 q2 = wuv * vec2(24.0, 16.0) + vec2(-t * 0.038, t * 0.020);
             float wave = fbm(q1) * 0.6 + fbm(q2) * 0.4;
 
+            // Long, non-uniform swell lines. Kept soft so the map remains painterly.
+            float swellA = sin((wuv.x * 22.0 + wuv.y * 10.0) + t * 0.46 + fbm(wuv * 6.0) * 5.4);
+            float swellB = sin((wuv.x * -16.0 + wuv.y * 18.0) + t * 0.32 + fbm(wuv * 8.0) * 4.2);
+            float ridgeBreakup = smoothstep(0.34, 0.88, fbm(wuv * 18.0 + vec2(t * 0.04, -t * 0.03)));
+            float ridges = pow(max(0.0, swellA * 0.5 + 0.5), 9.0) * 0.035;
+            ridges += pow(max(0.0, swellB * 0.5 + 0.5), 11.0) * 0.022;
+            ridges *= ridgeBreakup * smoothstep(0.18, 0.92, mask);
+
             // Caustic-style bright streaks: sharpen high values.
-            float caustic = pow(max(0.0, fbm(q1 * 1.4 + wave * 0.6) - 0.55), 2.2) * 2.6;
+            float caustic = pow(max(0.0, fbm(q1 * 1.4 + wave * 0.6) - 0.55), 2.2) * 2.2;
 
             // Depth tint based on wave height + a slow large-scale tone variation.
             float depth = fbm(uv * 2.4 + vec2(t * 0.005));
@@ -96,26 +109,26 @@ const OceanShader = (function () {
 
             // Preserve a touch of the base map's own color so coasts/lighting still read.
             vec3 base = texture(uMap, uv).rgb;
-            water = mix(water, base, 0.18);
+            water = mix(water, base, 0.055);
 
             // Sun glints / caustics.
-            water += uFoam * caustic * 0.55;
+            water += uFoam * (caustic * 0.24 + ridges);
 
             // Shoreline foam — sample mask at a 4-tap dilation, look for falloff.
-            vec2 px = 2.5 / uResolution;
+            vec2 px = 4.0 / uResolution;
             float ml = sampleMask(uv + vec2(-px.x, 0.0));
             float mr = sampleMask(uv + vec2( px.x, 0.0));
             float mu = sampleMask(uv + vec2(0.0, -px.y));
             float md = sampleMask(uv + vec2(0.0,  px.y));
             float minN = min(min(ml, mr), min(mu, md));
             float edge = clamp(mask - minN, 0.0, 1.0);
-            // Wobble the foam in/out and break it up with noise.
-            float foamPulse = 0.55 + 0.45 * sin(t * 1.4 + wave * 8.0);
-            float foamNoise = smoothstep(0.35, 0.85, fbm(uv * 30.0 + t * 0.4));
-            float foam = smoothstep(0.05, 0.55, edge) * foamPulse * (0.5 + 0.6 * foamNoise);
-            water += uFoam * foam * 0.85;
+            // Keep shoreline foam soft and broken, like surf catching light.
+            float foamNoise = smoothstep(0.38, 0.88, fbm(uv * 34.0 + vec2(t * 0.06, -t * 0.025)));
+            float foamDrift = 0.72 + 0.16 * fbm(uv * 18.0 + vec2(-t * 0.045, t * 0.03));
+            float foam = smoothstep(0.055, 0.48, edge) * foamDrift * (0.32 + 0.42 * foamNoise);
+            water += uFoam * foam * 0.48;
 
-            outColor = vec4(water, mask);
+            outColor = vec4(water, smoothstep(0.04, 0.22, mask));
         }
     `;
 
@@ -226,7 +239,7 @@ const OceanShader = (function () {
             layer.style.pointerEvents = 'none';
             layer.style.zIndex = '1';
             layer.style.opacity = String(settings.opacity);
-            layer.style.mixBlendMode = 'screen';
+            layer.style.mixBlendMode = 'normal';
             layer.style.contain = 'layout paint style';
 
             const newCanvas = document.createElement('canvas');
