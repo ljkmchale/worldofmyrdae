@@ -22,7 +22,10 @@ const OceanShader = (function () {
         foamColor: [0.58, 0.78, 0.86],
         waveSpeed: 1.0,
         // Mask threshold — pixels with score below this aren't treated as water.
-        maskThreshold: 0.18
+        maskThreshold: 0.18,
+        // Component classification thresholds, in pixels at the shader render size.
+        minLakePixels: 900,
+        minLakeSpan: 12
     };
 
     const VERTEX_SHADER = `#version 300 es
@@ -71,17 +74,24 @@ const OceanShader = (function () {
             return v;
         }
 
-        // Sample mask with a small dilation so we can detect shoreline a few px inland.
+        // R=ocean, G=lake, B=river/thin water, A=water mask.
         float sampleMask(vec2 uv) {
             return texture(uMask, clamp(uv, vec2(0.0), vec2(1.0))).a;
+        }
+        vec3 sampleWaterType(vec2 uv) {
+            return texture(uMask, clamp(uv, vec2(0.0), vec2(1.0))).rgb;
         }
 
         void main() {
             vec2 uv = vUv;
             float mask = sampleMask(uv);
             if (mask < 0.02) discard;
+            vec3 waterType = sampleWaterType(uv);
+            float oceanType = waterType.r;
+            float lakeType = waterType.g;
+            float riverType = waterType.b;
 
-            // Two scrolling, warped noise layers for layered swell.
+            // Two scrolling, warped noise layers for layered ocean swell.
             float t = uTime;
             vec2 warp = vec2(
                 fbm(uv * 4.0 + vec2(t * 0.025, -t * 0.010)),
@@ -90,7 +100,15 @@ const OceanShader = (function () {
             vec2 wuv = uv + warp * 0.026;
             vec2 q1 = wuv * vec2(12.0, 8.0) + vec2(t * 0.026, t * 0.014);
             vec2 q2 = wuv * vec2(24.0, 16.0) + vec2(-t * 0.038, t * 0.020);
-            float wave = fbm(q1) * 0.6 + fbm(q2) * 0.4;
+            float oceanWave = fbm(q1) * 0.6 + fbm(q2) * 0.4;
+
+            // Lakes are calmer: smaller ripples, less directional swell.
+            vec2 lakeUv = uv + (fbm(uv * 9.0 + vec2(t * 0.018, -t * 0.011)) - 0.5) * 0.006;
+            float lakeWave = fbm(lakeUv * vec2(34.0, 28.0) + vec2(t * 0.012, -t * 0.009));
+
+            // Rivers/thin water get a narrow directional shimmer instead of broad waves.
+            float riverFlow = fbm(uv * vec2(62.0, 18.0) + vec2(t * 0.055, t * 0.012));
+            float wave = oceanWave * oceanType + lakeWave * lakeType + riverFlow * riverType;
 
             // Long, non-uniform swell lines. Kept soft so the map remains painterly.
             float swellA = sin((wuv.x * 22.0 + wuv.y * 10.0) + t * 0.46 + fbm(wuv * 6.0) * 5.4);
@@ -98,18 +116,25 @@ const OceanShader = (function () {
             float ridgeBreakup = smoothstep(0.34, 0.88, fbm(wuv * 18.0 + vec2(t * 0.04, -t * 0.03)));
             float ridges = pow(max(0.0, swellA * 0.5 + 0.5), 9.0) * 0.035;
             ridges += pow(max(0.0, swellB * 0.5 + 0.5), 11.0) * 0.022;
-            ridges *= ridgeBreakup * smoothstep(0.18, 0.92, mask);
+            ridges *= ridgeBreakup * smoothstep(0.18, 0.92, mask) * oceanType;
 
             // Caustic-style bright streaks: sharpen high values.
-            float caustic = pow(max(0.0, fbm(q1 * 1.4 + wave * 0.6) - 0.55), 2.2) * 2.2;
+            float oceanCaustic = pow(max(0.0, fbm(q1 * 1.4 + oceanWave * 0.6) - 0.55), 2.2) * 2.2;
+            float lakeGlint = pow(max(0.0, lakeWave - 0.58), 2.6) * 0.9;
+            float riverGlint = pow(max(0.0, riverFlow - 0.62), 2.4) * 0.55;
+            float caustic = oceanCaustic * oceanType + lakeGlint * lakeType + riverGlint * riverType;
 
             // Depth tint based on wave height + a slow large-scale tone variation.
             float depth = fbm(uv * 2.4 + vec2(t * 0.005));
-            vec3 water = mix(uDeep, uShallow, wave * 0.7 + depth * 0.3);
+            vec3 oceanColor = mix(uDeep, uShallow, oceanWave * 0.7 + depth * 0.3);
+            vec3 lakeDeep = mix(uDeep, uShallow, 0.42);
+            vec3 lakeColor = mix(lakeDeep, uShallow, lakeWave * 0.28 + depth * 0.12);
+            vec3 riverColor = mix(uDeep, uShallow, 0.52 + riverFlow * 0.12);
+            vec3 water = oceanColor * oceanType + lakeColor * lakeType + riverColor * riverType;
 
             // Preserve a touch of the base map's own color so coasts/lighting still read.
             vec3 base = texture(uMap, uv).rgb;
-            water = mix(water, base, 0.055);
+            water = mix(water, base, 0.055 + lakeType * 0.08 + riverType * 0.12);
 
             // Sun glints / caustics.
             water += uFoam * (caustic * 0.24 + ridges);
@@ -125,8 +150,9 @@ const OceanShader = (function () {
             // Keep shoreline foam soft and broken, like surf catching light.
             float foamNoise = smoothstep(0.38, 0.88, fbm(uv * 34.0 + vec2(t * 0.06, -t * 0.025)));
             float foamDrift = 0.72 + 0.16 * fbm(uv * 18.0 + vec2(-t * 0.045, t * 0.03));
+            float shoreEnergy = oceanType * 0.48 + lakeType * 0.16 + riverType * 0.04;
             float foam = smoothstep(0.055, 0.48, edge) * foamDrift * (0.32 + 0.42 * foamNoise);
-            water += uFoam * foam * 0.48;
+            water += uFoam * foam * shoreEnergy;
 
             outColor = vec4(water, smoothstep(0.04, 0.22, mask));
         }
@@ -144,23 +170,20 @@ const OceanShader = (function () {
         return c;
     }
 
-    // Score each pixel for "blue water-ness" and convert that into a shader mask.
-    // and return an alpha mask canvas matching the source image dimensions.
-    function buildWaterMaskCanvas(mapImg, width, height, threshold) {
+    // Score each pixel for "blue water-ness", then classify connected water into:
+    // ocean (edge-connected), lakes (enclosed bodies), and river-like thin/small water.
+    function buildWaterMaskCanvas(mapImg, width, height, settings) {
+        const threshold = settings.maskThreshold;
         const src = createOffscreenCanvas(width, height);
         const sctx = src.getContext('2d', { willReadFrequently: true });
         sctx.drawImage(mapImg, 0, 0, width, height);
         const sdata = sctx.getImageData(0, 0, width, height);
         const sp = sdata.data;
 
-        const out = document.createElement('canvas');
-        out.width = width;
-        out.height = height;
-        const octx = out.getContext('2d');
-        const odata = octx.createImageData(width, height);
-        const op = odata.data;
+        const waterMask = new Uint8Array(width * height);
+        const alphaMask = new Uint8Array(width * height);
 
-        for (let i = 0; i < sp.length; i += 4) {
+        for (let i = 0, px = 0; i < sp.length; i += 4, px++) {
             const r = sp[i], g = sp[i + 1], b = sp[i + 2];
             const max = Math.max(r, g, b);
             const min = Math.min(r, g, b);
@@ -176,13 +199,103 @@ const OceanShader = (function () {
             if (b > 92 && g > r && brightness > 0.2 && brightness < 0.92) score += 0.15;
 
             const water = score < threshold ? 0 : clamp((score - threshold) / (1 - threshold), 0, 1);
-            op[i] = 255;
-            op[i + 1] = 255;
-            op[i + 2] = 255;
-            op[i + 3] = Math.round(water * 255);
+            const alpha = Math.round(water * 255);
+            alphaMask[px] = alpha;
+            waterMask[px] = alpha > 24 ? 1 : 0;
+        }
+
+        const waterType = classifyWaterComponents(waterMask, width, height, {
+            minLakePixels: settings.minLakePixels,
+            minLakeSpan: settings.minLakeSpan
+        });
+
+        const out = document.createElement('canvas');
+        out.width = width;
+        out.height = height;
+        const octx = out.getContext('2d');
+        const odata = octx.createImageData(width, height);
+        const op = odata.data;
+
+        for (let px = 0, i = 0; px < alphaMask.length; px++, i += 4) {
+            const type = waterType[px];
+            op[i] = type === 1 ? 255 : 0;
+            op[i + 1] = type === 2 ? 255 : 0;
+            op[i + 2] = type === 3 ? 255 : 0;
+            op[i + 3] = alphaMask[px];
         }
         octx.putImageData(odata, 0, 0);
         return out;
+    }
+
+    function classifyWaterComponents(waterMask, width, height, options) {
+        const visited = new Uint8Array(waterMask.length);
+        const waterType = new Uint8Array(waterMask.length);
+        const queue = new Int32Array(waterMask.length);
+        const minLakePixels = options.minLakePixels;
+        const minLakeSpan = options.minLakeSpan;
+
+        for (let start = 0; start < waterMask.length; start++) {
+            if (!waterMask[start] || visited[start]) continue;
+
+            let head = 0;
+            let tail = 0;
+            let area = 0;
+            let minX = width;
+            let maxX = 0;
+            let minY = height;
+            let maxY = 0;
+            let touchesEdge = false;
+
+            visited[start] = 1;
+            queue[tail++] = start;
+
+            while (head < tail) {
+                const idx = queue[head++];
+                const x = idx % width;
+                const y = (idx - x) / width;
+                area++;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+                if (x === 0 || y === 0 || x === width - 1 || y === height - 1) touchesEdge = true;
+
+                const left = idx - 1;
+                const right = idx + 1;
+                const up = idx - width;
+                const down = idx + width;
+                if (x > 0 && waterMask[left] && !visited[left]) {
+                    visited[left] = 1;
+                    queue[tail++] = left;
+                }
+                if (x < width - 1 && waterMask[right] && !visited[right]) {
+                    visited[right] = 1;
+                    queue[tail++] = right;
+                }
+                if (y > 0 && waterMask[up] && !visited[up]) {
+                    visited[up] = 1;
+                    queue[tail++] = up;
+                }
+                if (y < height - 1 && waterMask[down] && !visited[down]) {
+                    visited[down] = 1;
+                    queue[tail++] = down;
+                }
+            }
+
+            const spanX = maxX - minX + 1;
+            const spanY = maxY - minY + 1;
+            const minSpan = Math.min(spanX, spanY);
+            const fillRatio = area / Math.max(1, spanX * spanY);
+            const type = touchesEdge
+                ? 1
+                : (area >= minLakePixels && minSpan >= minLakeSpan && fillRatio >= 0.035 ? 2 : 3);
+
+            for (let i = 0; i < tail; i++) {
+                waterType[queue[i]] = type;
+            }
+        }
+
+        return waterType;
     }
 
     function compileShader(gl, type, source) {
@@ -292,7 +405,7 @@ const OceanShader = (function () {
         const uFoam = gl.getUniformLocation(program, 'uFoam');
 
         // Build mask + base-map textures
-        const maskCanvas = buildWaterMaskCanvas(mapImg, renderW, renderH, settings.maskThreshold);
+        const maskCanvas = buildWaterMaskCanvas(mapImg, renderW, renderH, settings);
         const maskTexture = gl.createTexture();
         gl.activeTexture(gl.TEXTURE0);
         uploadCanvasToTexture(gl, maskTexture, maskCanvas);
