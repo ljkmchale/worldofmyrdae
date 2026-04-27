@@ -147,7 +147,7 @@ const MapOverlayTooltip = (function () {
         if (entry && (entry.previewImage || entry.image)) {
             return entry.previewImage || entry.image || null;
         }
-        return cityId ? `images/cities/${cityId}/scetch.png` : null;
+        return cityId ? `images/cities/${cityId}/sketch.png` : null;
     }
 
     function getCustomTooltipHeaderImage(loc) {

@@ -389,11 +389,17 @@
 
         <div class="form-group" style="margin-bottom: 0.75rem;">
           <label style="font-size:0.75rem; color:#888;">City</label>
+          <div style="display:flex; gap:0.5rem;">
             <select id="city-select" class="form-control"
               style="font-family:'Cinzel',serif; font-size:0.9rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.5rem; cursor:pointer; flex:1;"
               onchange="CityEditor.loadCity(this.value)">
               <option value="">— Select a city —</option>
             </select>
+            <button class="btn btn-secondary" onclick="CityEditor.openWizardForSelectedCity()" style="white-space:nowrap; font-size:0.8rem; padding:0.3rem 0.75rem;">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Run Wizard
+            </button>
+          </div>
+          <div id="city-wizard-status" style="font-size:0.72rem; color:#888; margin-top:0.25rem; min-height:1rem; font-style:italic;"></div>
         </div>
 
         <div id="city-world-link" style="display:none; margin-bottom:0.75rem;">
@@ -1274,9 +1280,8 @@ const CityEditor = (function () {
   async function createCity() {
     const createSel = document.getElementById('city-create-select');
     const createStatus = document.getElementById('city-create-status');
-    const locs = (Editor.state && Editor.state.locations) || [];
     const locationId = createSel ? createSel.value : '';
-    const sourceLoc = locs.find(loc => loc.id === locationId);
+    const sourceLoc = getWorldLocationById(locationId);
 
     if (!sourceLoc) {
       if (createStatus) createStatus.textContent = 'Choose a world location first.';
@@ -1293,13 +1298,48 @@ const CityEditor = (function () {
     const existing = CITY_MAPS.find(c => c.id === cityId);
     if (existing) {
       CityEditor.appendCityOption(existing.id, existing.name, true);
-      await loadCity(existing.id);
-      if (createStatus) createStatus.textContent = 'That location already has a city map.';
+    }
+
+    if (createStatus) {
+      createStatus.textContent = existing
+        ? 'Opening wizard for ' + cityName + ' so you can refresh or regenerate it...'
+        : 'Opening wizard for ' + cityName + '...';
+    }
+    AIWizard.open({ locationId: cityId });
+  }
+
+  function getWorldLocationById(locationId) {
+    const locs = (Editor.state && Editor.state.locations) || [];
+    return locs.find(loc => loc.id === locationId) || null;
+  }
+
+  function getWorldLocationForCityId(cityId) {
+    if (!cityId) return null;
+    const locs = (Editor.state && Editor.state.locations) || [];
+    const targetUrl = 'city-viewer.html?city=' + cityId;
+    return locs.find(loc => loc.id === cityId)
+      || locs.find(loc => loc.cityMap === targetUrl)
+      || null;
+  }
+
+  function openWizardForSelectedCity() {
+    const citySelect = document.getElementById('city-select');
+    const status = document.getElementById('city-wizard-status');
+    const cityId = citySelect ? citySelect.value : '';
+
+    if (!cityId) {
+      if (status) status.textContent = 'Select a city first, then run the wizard.';
       return;
     }
 
-    if (createStatus) createStatus.textContent = 'Opening wizard for ' + cityName + '...';
-    AIWizard.open({ locationId });
+    const worldLocation = getWorldLocationForCityId(cityId);
+    if (!worldLocation) {
+      if (status) status.textContent = 'Could not find a linked world location for ' + cityId + '.';
+      return;
+    }
+
+    if (status) status.textContent = 'Opening wizard for ' + (worldLocation.name || cityId) + '...';
+    AIWizard.open({ locationId: worldLocation.id });
   }
 
   function ensurePinKeys() {
@@ -1403,7 +1443,22 @@ const CityEditor = (function () {
 
     const src = (window.CITY_MAPS_REGISTRY || {})[cityId];
     if (!src) {
-      alert('City data not found for: ' + cityId + '\nMake sure js/cities/' + cityId + '.js exists.');
+      cityMapActive = false;
+      document.getElementById('city-world-link').style.display = 'none';
+      document.getElementById('city-pin-controls').style.display = 'none';
+      document.getElementById('city-action-btns').style.display = 'none';
+      document.getElementById('city-pin-form').style.display = 'none';
+      const saveStatus = document.getElementById('city-save-status');
+      const wizardStatus = document.getElementById('city-wizard-status');
+      const worldLocation = getWorldLocationForCityId(cityId);
+      const cityLabel = (worldLocation && worldLocation.name) || cityId;
+      const message = 'City data file is missing for ' + cityLabel + '. Opening the wizard so you can rebuild it.';
+      if (saveStatus) {
+        saveStatus.textContent = message;
+        saveStatus.style.color = '#e0a84b';
+      }
+      if (wizardStatus) wizardStatus.textContent = message;
+      AIWizard.open({ locationId: (worldLocation && worldLocation.id) || cityId });
       return;
     }
 
@@ -1744,12 +1799,11 @@ const CityEditor = (function () {
 
       const isSelected = selectedKey === key;
 
-      appendCityPinMarkerShape(svgEl, g, markerStyle, total);
-      if (isSelected) {
-          g.setAttribute('style', `cursor:grab; pointer-events:all; filter: drop-shadow(0 0 ${8/total}px #d4af37);`);
-      }
-
       if (!isNamed) {
+        appendCityPinMarkerShape(svgEl, g, markerStyle, total);
+        if (isSelected) {
+          g.setAttribute('style', `cursor:grab; pointer-events:all; filter: drop-shadow(0 0 ${8/total}px #d4af37);`);
+        }
         const t = svgEl('text', {
           x: 0, y: 0, 'text-anchor': 'middle', 'dominant-baseline': 'central',
           fill: markerStyle.textFill, stroke: markerStyle.textStroke, 'stroke-width': (1.1 / total).toFixed(2),
@@ -1759,13 +1813,71 @@ const CityEditor = (function () {
         t.textContent = loc.n;
         g.appendChild(t);
       } else {
-        const t = svgEl('text', {
-          x: 0, y: r + 15, 'text-anchor': 'middle',
-          fill: '#d4af37', 'font-family': 'Cinzel', 'font-size': Math.round(12 * markerStyle.size) + 'px',
-          stroke: 'rgba(0,0,0,0.8)', 'stroke-width': (3 / total).toFixed(2), 'paint-order': 'stroke'
-        });
-        t.textContent = loc.name;
-        g.appendChild(t);
+        const labelType = normalizeCityPinType(loc.type);
+        const labelSize = loc.size || 1.0;
+
+        // Add a transparent hit area so labels remain easy to drag/select.
+        g.appendChild(svgEl('circle', {
+          cx: 0, cy: 0, r: Math.max(18, 18 * labelSize),
+          fill: 'transparent'
+        }));
+
+        if (labelType === 'sea') {
+          String(loc.name || '').split(/\s+/).filter(Boolean).forEach((word, i) => {
+            const t = svgEl('text', {
+              x: 0,
+              y: i * (18 * labelSize),
+              'text-anchor': 'middle',
+              fill: 'rgba(110,175,230,0.88)',
+              stroke: 'rgba(0,8,25,0.9)',
+              'stroke-width': (3 / total).toFixed(2),
+              'paint-order': 'stroke',
+              'font-family': 'Cinzel',
+              'font-style': 'italic',
+              'font-size': Math.round(18 * labelSize) + 'px'
+            });
+            t.textContent = word;
+            g.appendChild(t);
+          });
+        } else if (labelType === 'gate') {
+          const gate = svgEl('polygon', {
+            points: `0,${-13.5 * labelSize} ${10.5 * labelSize},0 0,${13.5 * labelSize} ${-10.5 * labelSize},0`,
+            fill: 'rgba(212,175,55,0.88)',
+            stroke: 'rgba(0,0,0,0.75)',
+            'stroke-width': (1.2 / total).toFixed(2)
+          });
+          g.appendChild(gate);
+          const t = svgEl('text', {
+            x: 18 * labelSize,
+            y: 4.5 * labelSize,
+            fill: '#d4af37',
+            stroke: 'rgba(0,0,0,0.85)',
+            'stroke-width': (3 / total).toFixed(2),
+            'paint-order': 'stroke',
+            'font-family': 'Cinzel',
+            'font-size': Math.round(18 * labelSize) + 'px'
+          });
+          t.textContent = loc.name;
+          g.appendChild(t);
+        } else {
+          const t = svgEl('text', {
+            x: 0,
+            y: 0,
+            'text-anchor': 'middle',
+            fill: '#d4af37',
+            stroke: 'rgba(0,0,0,0.85)',
+            'stroke-width': (3 / total).toFixed(2),
+            'paint-order': 'stroke',
+            'font-family': 'Cinzel',
+            'font-size': Math.round(16 * labelSize) + 'px'
+          });
+          t.textContent = loc.name;
+          g.appendChild(t);
+        }
+
+        if (isSelected) {
+          g.setAttribute('style', `cursor:grab; pointer-events:all; filter: drop-shadow(0 0 ${10/total}px #d4af37);`);
+        }
       }
 
       attachDrag(g, loc, key);
@@ -1775,7 +1887,6 @@ const CityEditor = (function () {
 
     cityData.pins.forEach(l => makePin(l, 'pin:' + l.__editorKey, false));
     (cityData.namedLabels || []).forEach(l => {
-      if (l.type === 'sea' || l.type === 'direction') return;
       makePin(l, 'id:' + l.id, true);
     });
   }
@@ -2023,7 +2134,7 @@ const CityEditor = (function () {
     }
   }
 
-  return { open, loadCity, createCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, deleteCityMap, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId, appendCityOption };
+  return { open, loadCity, createCity, openWizardForSelectedCity, selectPin, filterList, updateFromForm, addPin, addNamedLabel, deletePin, linkWorldLocation, save, deleteCityMap, resetView, exitCityMode, renderPins, isActive, reloadData, getActiveCityId, appendCityOption };
 })();
 </script>
   <!-- AI Wizard Modal -->
