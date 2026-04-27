@@ -43,7 +43,7 @@ The usual runtime flow is:
    - `js/world-clock.js`
    - `js/location-search.js`
    - `js/map-measure.js`
-   - `js/water-repaint.js`
+   - `js/ocean-shader.js`
    - `js/coord-grid.js`
 5. `js/editor.js` clones the source data into editor state, previews unsaved changes, and persists edits through `server.js`.
 

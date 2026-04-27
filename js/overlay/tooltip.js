@@ -17,6 +17,19 @@ const MapOverlayTooltip = (function () {
         river: 'images/tooltips/water/river.png'
     });
 
+    const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    function escapeHTML(value) {
+        if (value === null || value === undefined) return '';
+        return String(value).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+    }
+
+    function safeHref(value) {
+        if (!value) return '';
+        const trimmed = String(value).trim();
+        if (/^\s*(javascript|data|vbscript):/i.test(trimmed)) return '';
+        return escapeHTML(trimmed);
+    }
+
     function ensureTooltipElement(ctx) {
         if (ctx.tooltip) return ctx.tooltip;
 
@@ -354,8 +367,8 @@ const MapOverlayTooltip = (function () {
             const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
             return `
                 <div style="display:flex;justify-content:space-between;gap:0.75rem;font-family:'Cormorant Garamond', serif;font-size:0.9rem;color:#d7cfbb;">
-                    <span><strong style="color:#efe4bd;">${link.roadName}</strong></span>
-                    <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${daysText}</span>
+                    <span><strong style="color:#efe4bd;">${escapeHTML(link.roadName)}</strong></span>
+                    <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${escapeHTML(daysText)}</span>
                 </div>
             `;
         }).join('');
@@ -374,22 +387,27 @@ const MapOverlayTooltip = (function () {
     function buildTooltipHTML(loc, state) {
         const typeConfig = MapOverlayLocationTypes.getTypeConfig(loc.type);
         const icon = typeConfig.icon || '&#128205;';
-        const typeName = loc.type ? loc.type.charAt(0).toUpperCase() + loc.type.slice(1) : 'Location';
+        const rawTypeName = loc.type ? loc.type.charAt(0).toUpperCase() + loc.type.slice(1) : 'Location';
+        const typeName = escapeHTML(rawTypeName);
         const waterTooltip = isWaterTooltipType(loc.type);
-        const fallbackPreviewImagesAttr = JSON.stringify(state.fallbackPreviewImages || []).replace(/"/g, '&quot;');
+        const fallbackPreviewImagesAttr = escapeHTML(JSON.stringify(state.fallbackPreviewImages || []));
         const roadSection = buildRoadLinksHTML(state.roadLinks);
-        const linksSection = (loc.link || loc.cityMap) ? `
+        const safeName = escapeHTML(loc.name);
+        const safePreview = state.previewImage ? escapeHTML(state.previewImage) : '';
+        const cityMapHref = safeHref(loc.cityMap);
+        const linkHref = safeHref(loc.link);
+        const linksSection = (cityMapHref || linkHref) ? `
             <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
-                ${loc.cityMap ? `<a href="${loc.cityMap}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
-                ${loc.link ? `<a href="${loc.link}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
+                ${cityMapHref ? `<a href="${cityMapHref}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
+                ${linkHref ? `<a href="${linkHref}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
             </div>` : '';
-        const desc = truncate(getTooltipDescription(loc), 160);
-        const details = truncate(loc.details, 100);
+        const desc = escapeHTML(truncate(getTooltipDescription(loc), 160));
+        const details = escapeHTML(truncate(loc.details, 100));
         const metaSection = `
             <div class="tt-meta">
                 <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
-                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${loc.region}</span></div>` : ''}
-                ${loc.biome ? `<div class="tt-type"><span class="tt-meta-label">Biome</span><span class="tt-meta-value">${loc.biome}</span></div>` : ''}
+                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${escapeHTML(loc.region)}</span></div>` : ''}
+                ${loc.biome ? `<div class="tt-type"><span class="tt-meta-label">Biome</span><span class="tt-meta-value">${escapeHTML(loc.biome)}</span></div>` : ''}
             </div>
         `;
 
@@ -398,9 +416,9 @@ const MapOverlayTooltip = (function () {
                 return `
                     <div class="tt-crest-header">
                         <div class="tt-crest-image-frame">
-                            <img src="${state.previewImage}" alt="${loc.name}" data-fallback-images="${fallbackPreviewImagesAttr}">
+                            <img src="${safePreview}" alt="${safeName}" data-fallback-images="${fallbackPreviewImagesAttr}">
                         </div>
-                        <div class="tt-crest-nameplate">${loc.name}</div>
+                        <div class="tt-crest-nameplate">${safeName}</div>
                     </div>
                     <div class="tt-body">
                         ${metaSection}
@@ -422,9 +440,9 @@ const MapOverlayTooltip = (function () {
 
             return `
                 <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${wrapClass}">
-                    <img src="${state.previewImage}" alt="${loc.name}" data-fallback-images="${fallbackPreviewImagesAttr}">
+                    <img src="${safePreview}" alt="${safeName}" data-fallback-images="${fallbackPreviewImagesAttr}">
                     ${waterTooltip ? `<div class="tt-water-badge">${icon} ${typeName}</div>` : ''}
-                    <div class="tt-name-overlay">${loc.name}</div>
+                    <div class="tt-name-overlay">${safeName}</div>
                 </div>
                 <div class="tt-body">
                     ${metaSection}
@@ -439,7 +457,7 @@ const MapOverlayTooltip = (function () {
         return `
             <div class="tt-no-img-header">
                 <span style="font-size:1.1rem;">${icon}</span>
-                <span class="tt-no-img-name">${loc.name}</span>
+                <span class="tt-no-img-name">${safeName}</span>
             </div>
             <div class="tt-body">
                 ${metaSection}

@@ -68,6 +68,7 @@ const MapController = (function () {
         }
 
         function updateTransform() {
+            state.scale = Math.min(state.scale, getMaxScale());
             const iw = state.baseWidth * state.scale;
             const ih = state.baseHeight * state.scale;
 
@@ -97,6 +98,7 @@ const MapController = (function () {
 
         const onReady = () => {
             updateDimensions();
+            state.scale = Math.min(state.scale, getMaxScale());
             requestUpdate(false); // Initial draw, don't re-save immediately
         };
 
@@ -112,6 +114,13 @@ const MapController = (function () {
         });
         resizeObserver.observe(container);
 
+        function getMaxScale() {
+            const configuredMax = typeof options.maxScale === 'number' ? options.maxScale : 15;
+            if (!mapImg.naturalWidth || !state.baseWidth) return configuredMax;
+            const nativePixelScale = mapImg.naturalWidth / state.baseWidth;
+            return Math.max(1, Math.min(configuredMax, nativePixelScale));
+        }
+
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             const rect = container.getBoundingClientRect();
@@ -123,7 +132,7 @@ const MapController = (function () {
             if (delta > 0) state.scale *= (1 + zoomSpeed);
             else state.scale /= (1 + zoomSpeed);
 
-            state.scale = Math.min(Math.max(1, state.scale), 15);
+            state.scale = Math.min(Math.max(1, state.scale), getMaxScale());
             state.pointX = (e.clientX - rect.left) - xs * state.scale;
             state.pointY = (e.clientY - rect.top) - ys * state.scale;
 
@@ -199,7 +208,7 @@ const MapController = (function () {
             getState: () => ({ ...state }),
             panToLocation: function (x, y, targetScale) {
                 updateDimensions();
-                const newScale = Math.min(Math.max(2, targetScale || 4), 15);
+                const newScale = Math.min(Math.max(2, targetScale || 4), getMaxScale());
                 const pixelX = (x / 100) * state.baseWidth;
                 const pixelY = (y / 100) * state.baseHeight;
                 const targetPointX = (state.cw / 2) - pixelX * newScale;

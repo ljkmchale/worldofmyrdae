@@ -13,6 +13,8 @@ const CampaignData = (function () {
     };
     let syncListenersBound = false;
     let pollingIntervalId = null;
+    let storageListener = null;
+    let unloadListener = null;
 
     // Configuration
     let USE_LOCAL_STORAGE = false; // Set to true to persist manual edits in browser
@@ -57,9 +59,9 @@ const CampaignData = (function () {
             console.log('Running in Static Mode (LocalStorage Disabled)');
         }
 
-        // Listen for changes from other windows/tabs
+        // Listen for changes from other windows/tabs (idempotent across re-init calls)
         if (!syncListenersBound) {
-            window.addEventListener('storage', (e) => {
+            storageListener = (e) => {
                 if (e.key === STORAGE_KEY && e.newValue) {
                     try {
                         const newData = JSON.parse(e.newValue);
@@ -72,23 +74,30 @@ const CampaignData = (function () {
                         console.error('Failed to sync cross-window data:', err);
                     }
                 }
-            });
+            };
+            window.addEventListener('storage', storageListener);
 
-            // Polling fallback for file:// protocol where events often fail
-            let lastKnownStorage = localStorage.getItem(STORAGE_KEY);
-            pollingIntervalId = setInterval(() => {
-                const currentStorage = localStorage.getItem(STORAGE_KEY);
-                if (currentStorage !== lastKnownStorage) {
-                    lastKnownStorage = currentStorage;
-                    try {
-                        data = JSON.parse(currentStorage);
-                        console.log('Campaign data synced from another window (polling).');
-                        triggerUpdate();
-                    } catch (err) {
-                        console.error('Failed to sync data via polling:', err);
+            // Only poll on file:// where storage events and BroadcastChannel are unreliable.
+            const needsPolling = !syncChannel || (typeof location !== 'undefined' && location.protocol === 'file:');
+            if (needsPolling) {
+                let lastKnownStorage = localStorage.getItem(STORAGE_KEY);
+                pollingIntervalId = setInterval(() => {
+                    const currentStorage = localStorage.getItem(STORAGE_KEY);
+                    if (currentStorage !== lastKnownStorage) {
+                        lastKnownStorage = currentStorage;
+                        try {
+                            data = JSON.parse(currentStorage);
+                            console.log('Campaign data synced from another window (polling).');
+                            triggerUpdate();
+                        } catch (err) {
+                            console.error('Failed to sync data via polling:', err);
+                        }
                     }
-                }
-            }, 2000);
+                }, 2000);
+            }
+
+            unloadListener = () => destroy();
+            window.addEventListener('beforeunload', unloadListener);
 
             syncListenersBound = true;
         }
@@ -96,14 +105,76 @@ const CampaignData = (function () {
         return data;
     }
 
+    function destroy() {
+        if (pollingIntervalId !== null) {
+            clearInterval(pollingIntervalId);
+            pollingIntervalId = null;
+        }
+        if (storageListener) {
+            window.removeEventListener('storage', storageListener);
+            storageListener = null;
+        }
+        if (unloadListener) {
+            window.removeEventListener('beforeunload', unloadListener);
+            unloadListener = null;
+        }
+        syncListenersBound = false;
+    }
+
     function triggerUpdate() {
         document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: data }));
         document.dispatchEvent(new CustomEvent('metric-changed', { detail: data }));
     }
 
+    function validateWorldLocations(world) {
+        const issues = [];
+        const locations = Array.isArray(world.locations) ? world.locations : [];
+        const roads = Array.isArray(world.roads) ? world.roads : [];
+        const seenIds = new Set();
+        const validIds = new Set();
+
+        locations.forEach((loc, index) => {
+            if (!loc || typeof loc !== 'object') {
+                issues.push(`locations[${index}] is not an object`);
+                return;
+            }
+            if (!loc.id) {
+                issues.push(`locations[${index}] (${loc.name || 'unnamed'}) is missing id`);
+            } else if (seenIds.has(loc.id)) {
+                issues.push(`Duplicate location id: ${loc.id}`);
+            } else {
+                seenIds.add(loc.id);
+                validIds.add(loc.id);
+            }
+            if (!loc.name) issues.push(`location ${loc.id || `[${index}]`} is missing name`);
+            if (typeof loc.x !== 'number' || typeof loc.y !== 'number') {
+                issues.push(`location ${loc.id || `[${index}]`} has non-numeric x/y`);
+            } else if (loc.x < 0 || loc.x > 100 || loc.y < 0 || loc.y > 100) {
+                issues.push(`location ${loc.id} has out-of-bounds coords (${loc.x}, ${loc.y})`);
+            }
+        });
+
+        roads.forEach((road, index) => {
+            if (!road || !Array.isArray(road.points)) return;
+            road.points.forEach((point, pIdx) => {
+                if (typeof point === 'string' && !validIds.has(point)) {
+                    issues.push(`road "${road.id || `[${index}]`}" references unknown location id "${point}" at points[${pIdx}]`);
+                }
+            });
+        });
+
+        return issues;
+    }
+
     async function loadDefaults() {
         // Use embedded data from locations-db.js
         if (typeof WORLD_LOCATIONS !== 'undefined') {
+            const issues = validateWorldLocations(WORLD_LOCATIONS);
+            if (issues.length) {
+                console.warn(`[CampaignData] WORLD_LOCATIONS has ${issues.length} validation issue(s):`);
+                issues.slice(0, 25).forEach((msg) => console.warn('  •', msg));
+                if (issues.length > 25) console.warn(`  ...and ${issues.length - 25} more`);
+            }
             const prep = (arr) => (arr || []).map(item => ({ ...item, fromDefault: true }));
             data = {
                 locations: prep(WORLD_LOCATIONS.locations),
@@ -190,6 +261,7 @@ const CampaignData = (function () {
     // --- Public API ---
     return {
         init,
+        destroy,
         save,
         reset,
         getData,

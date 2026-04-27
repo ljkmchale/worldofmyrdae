@@ -121,20 +121,34 @@ function _showBoatTooltip(e, boat) {
         extra += `</div>`;
     }
     const shipTooltipImage = _getShipTooltipImage(boat);
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     tt.innerHTML = `
         <div class="${shipTooltipImage ? 'tt-img-wrap tt-water-img-wrap tt-boat-header' : 'tt-water-static-header tt-boat-header'}">
             <div class="tt-water-badge">⚓ Sea Route</div>
-            ${shipTooltipImage ? `<img src="${shipTooltipImage}" alt="${boat.shipType}" onerror="this.closest('.tt-img-wrap')?.classList.remove('tt-img-wrap','tt-water-img-wrap');this.closest('div').className='tt-water-static-header tt-boat-header';this.remove();">` : ''}
-            <div class="tt-name-overlay">${boat.shipName}</div>
+            ${shipTooltipImage ? `<img data-ship-img src="${esc(shipTooltipImage)}" alt="${esc(boat.shipType)}">` : ''}
+            <div class="tt-name-overlay">${esc(boat.shipName)}</div>
         </div>
         <div class="tt-body">
-            <div class="tt-type">${boat.shipType}</div>
-            <div class="tt-desc">Captain: <em>${boat.captainName}</em></div>
-            <div class="tt-desc" style="margin-top:0.2rem;"><em>${boat.routeName}</em></div>
-            <div class="tt-desc" style="margin-top:0.2rem;">${Math.round(boat.routeMiles)} miles • ${sailingLabel}</div>
+            <div class="tt-type">${esc(boat.shipType)}</div>
+            <div class="tt-desc">Captain: <em>${esc(boat.captainName)}</em></div>
+            <div class="tt-desc" style="margin-top:0.2rem;"><em>${esc(boat.routeName)}</em></div>
+            <div class="tt-desc" style="margin-top:0.2rem;">${Math.round(boat.routeMiles)} miles • ${esc(sailingLabel)}</div>
             ${extra}
         </div>
     `;
+    if (shipTooltipImage) {
+        const shipImg = tt.querySelector('img[data-ship-img]');
+        if (shipImg) {
+            shipImg.addEventListener('error', () => {
+                const wrap = shipImg.closest('.tt-img-wrap');
+                if (wrap) {
+                    wrap.classList.remove('tt-img-wrap', 'tt-water-img-wrap');
+                    wrap.className = 'tt-water-static-header tt-boat-header';
+                }
+                shipImg.remove();
+            });
+        }
+    }
     tt.style.display = 'block';
     _positionBoatTooltip(e);
 }

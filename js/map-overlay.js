@@ -58,28 +58,26 @@ const MapOverlay = (function () {
             return renderCtx.data;
         }
 
-        if (typeof CampaignData !== 'undefined') {
-            const data = CampaignData.getData();
-            if (data && data.locations && data.locations.length > 0) {
-                MapOverlayRenderContext.setRenderData(renderCtx, data);
-                return renderCtx.data;
-            }
-            MapOverlayRenderContext.setRenderData(renderCtx, await CampaignData.init());
+        const campaign = (typeof CampaignData !== 'undefined') ? CampaignData
+            : (typeof window !== 'undefined' && window.CampaignData) ? window.CampaignData
+            : null;
+
+        if (!campaign) {
+            throw new Error('CampaignData module not found — js/campaign-data.js must load before map-overlay.');
+        }
+
+        const cached = campaign.getData();
+        if (cached && cached.locations && cached.locations.length > 0) {
+            MapOverlayRenderContext.setRenderData(renderCtx, cached);
             return renderCtx.data;
         }
 
-        if (typeof window.CampaignData !== 'undefined') {
-            const data = window.CampaignData.getData();
-            if (data && data.locations && data.locations.length > 0) {
-                MapOverlayRenderContext.setRenderData(renderCtx, data);
-                return renderCtx.data;
-            }
-            MapOverlayRenderContext.setRenderData(renderCtx, await window.CampaignData.init());
-            return renderCtx.data;
+        const initialized = await campaign.init();
+        if (!initialized || !Array.isArray(initialized.locations) || initialized.locations.length === 0) {
+            throw new Error('CampaignData.init() returned no locations — check that js/locations-db.js loaded successfully.');
         }
-
-        console.error('CampaignData module not found!');
-        return null;
+        MapOverlayRenderContext.setRenderData(renderCtx, initialized);
+        return renderCtx.data;
     }
 
     function createOverlayDefs() {

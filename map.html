@@ -78,7 +78,7 @@
       left: 0;
       width: 100%;
       height: auto;
-      z-index: 2;
+      z-index: 8;
       pointer-events: none;
       display: none;
     }
@@ -1031,12 +1031,12 @@
           <!-- Flash overlay -->
           <div id="awakening-flash" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center, #ffffff 0%, #fffff0 22%, #fde68a 52%, rgba(253,230,138,0) 100%);"></div>
           <div id="map-layer-group" style="position:absolute;top:0;left:0;width:100%;transform-origin:0 0;">
-            <!-- Water repaint layer is inserted here at runtime (z-index: 1) -->
+            <!-- WebGL ocean shader is inserted here at runtime (z-index: 1) -->
             <!-- Main map -->
-            <img src="images/Myrdae.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
+            <img src="images/map-layers/Myrdae-layered-preview.jpg" alt="Map of Myrdae" class="map-image" id="map-image" draggable="false">
             <!-- Pre-Awakening map: z-index 15 — covers current map + SVG overlay during Awakening animation -->
             <img src="images/Myrdae (v.3.6 - Pre-Awakening).jpg" id="preawakening-map" alt="Pre-Awakening Myrdae" draggable="false" style="position:absolute;top:0;left:0;width:100%;height:auto;z-index:15;opacity:0;pointer-events:none;">
-            <!-- Territories layer (z-index: 2, above map, below location markers) -->
+            <!-- Territories layer (z-index: 8, above map layers, below location markers) -->
             <img src="images/Myrdae (v.4.2.c - Territory Layer).png" alt="Territories of Myrdae" id="territories-layer" draggable="false" style="display:none;">
             <!-- Location/road overlay SVG is auto-inserted here by map-overlay.js (z-index: 10) -->
           </div>
@@ -1065,18 +1065,20 @@
   <script src="js/location-search.js"></script>
   <script src="js/coord-grid.js"></script>
   <script src="js/map-measure.js"></script>
-  <script src="js/water-repaint.js"></script>
+  <script src="js/map-layer-stack.js"></script>
+  <script src="js/ocean-shader.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       await CampaignData.init();
+      MapLayerStack.init('map-container', 'map-image');
 
       // Initialize primary map — overlay SVG lives inside map-layer-group, moves with it automatically
       MapController.init('map-container', 'map-image', {
         layerGroup: 'map-layer-group'
       });
 
-      WaterRepaint.init('map-container', 'map-image');
+      OceanShader.init('map-container', 'map-image');
       MapOverlay.init('map-container', 'map-image');
       DragonFlyover.init('map-container', 'map-image');
       LocationSearch.init('map-container');
