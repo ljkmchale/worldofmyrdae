@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Scene | World of Myrdae</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Simonetta:wght@400;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05070c;
+      --panel: rgba(8, 11, 18, 0.82);
+      --panel-strong: rgba(7, 10, 16, 0.94);
+      --text: #ddd2bd;
+      --text-soft: #a99575;
+      --gold: #d4af37;
+      --gold-soft: rgba(212, 175, 55, 0.2);
+      --border: rgba(212, 175, 55, 0.26);
+      --shadow: rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #182333 0%, #05070c 60%);
+      color: var(--text);
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #scene-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      object-fit: cover;
+      background: #05070c;
+    }
+
+    body.video-scene canvas {
+      display: none;
+    }
+
+    body.video-scene #scene-video {
+      display: block;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at center, transparent 48%, rgba(4, 6, 10, 0.18) 76%, rgba(3, 5, 9, 0.48) 100%);
+    }
+
+    body::after {
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.8'/%3E%3C/svg%3E");
+      background-size: 240px 240px;
+    }
+
+    .hud-panel {
+      position: fixed;
+      z-index: 12;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(180deg, rgba(12, 16, 25, 0.88), rgba(8, 11, 17, 0.76));
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 48px var(--shadow);
+    }
+
+    #title-panel {
+      top: 24px;
+      left: 24px;
+      width: min(420px, calc(100vw - 48px));
+      padding: 18px 20px 18px;
+      border-radius: 18px;
+    }
+
+    #title-panel::before,
+    #lore-panel::before,
+    #minimap-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 45%);
+      pointer-events: none;
+    }
+
+    #title-panel h1 {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    #title-panel h2 {
+      margin: 0.35rem 0 0;
+      font-family: "Simonetta", serif;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    #title-panel .subtitle {
+      margin-top: 0.25rem;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #title-panel p {
+      margin: 0.9rem 0 0;
+      color: #d8ccb7;
+      line-height: 1.55;
+      font-size: 1.02rem;
+    }
+
+    #controls-panel {
+      position: fixed;
+      right: 24px;
+      top: 24px;
+      z-index: 12;
+      display: flex;
+      gap: 10px;
+    }
+
+    .hud-button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(15, 20, 31, 0.95), rgba(8, 11, 17, 0.82));
+      color: var(--text);
+      font-family: "Cinzel", serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .hud-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212, 175, 55, 0.5);
+      color: #fff4cb;
+    }
+
+    #lore-panel {
+      left: 24px;
+      bottom: 24px;
+      width: min(360px, calc(100vw - 48px));
+      padding: 16px 18px 16px;
+      border-radius: 18px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    #lore-panel.collapsed,
+    #minimap-panel.collapsed {
+      transform: translateY(20px);
+      opacity: 0.25;
+    }
+
+    #lore-panel h3,
+    #minimap-panel h3 {
+      margin: 0 0 10px;
+      font-family: "Cinzel", serif;
+      font-size: 0.95rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #lore-panel p {
+      margin: 0 0 0.72rem;
+      line-height: 1.48;
+      color: #d8ccb8;
+      font-size: 0.99rem;
+    }
+
+    #lore-panel ul {
+      margin: 0.8rem 0 0;
+      padding-left: 1.2rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    #minimap-panel {
+      right: 24px;
+      bottom: 24px;
+      width: 270px;
+      padding: 14px;
+      border-radius: 18px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    #minimap-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    #scene-minimap {
+      display: block;
+      width: 100%;
+      height: auto;
+      filter: saturate(0.84) brightness(0.86);
+    }
+
+    #scene-focus {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      margin-left: -10px;
+      margin-top: -10px;
+      border-radius: 999px;
+      border: 2px solid #f4d982;
+      box-shadow: 0 0 0 8px rgba(212, 175, 55, 0.14), 0 0 18px rgba(212, 175, 55, 0.55);
+      opacity: 0;
+    }
+
+    #scene-focus::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 999px;
+      background: #ffd676;
+    }
+
+    #hotspot-tooltip {
+      position: fixed;
+      z-index: 15;
+      min-width: 240px;
+      max-width: 300px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.16s ease, transform 0.16s ease;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      background: linear-gradient(180deg, rgba(14, 18, 28, 0.95), rgba(9, 11, 18, 0.92));
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45);
+    }
+
+    #hotspot-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #hotspot-name {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      color: #f3df9a;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    #hotspot-type {
+      margin-top: 0.25rem;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+    }
+
+    #hotspot-desc {
+      margin: 0.6rem 0 0;
+      color: #ddd0bc;
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, rgba(70, 92, 128, 0.24), transparent 40%),
+        linear-gradient(180deg, rgba(8, 12, 22, 0.98), rgba(4, 6, 12, 1));
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-card {
+      width: min(440px, calc(100vw - 48px));
+      border-radius: 22px;
+      padding: 24px 24px 20px;
+      border: 1px solid rgba(212, 175, 55, 0.24);
+      background: linear-gradient(180deg, rgba(11, 15, 24, 0.94), rgba(7, 10, 17, 0.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,0.48);
+      text-align: center;
+    }
+
+    .loading-card h1 {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+    }
+
+    .loading-card p {
+      margin: 0.9rem 0 0;
+      color: #d7ccb8;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .loading-rule {
+      width: 100%;
+      height: 4px;
+      margin-top: 1.2rem;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      position: relative;
+    }
+
+    .loading-rule::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 45%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0), rgba(212, 175, 55, 0.95), rgba(255, 234, 184, 0.5));
+      animation: sweep 1.7s ease-in-out infinite;
+    }
+
+    @keyframes sweep {
+      from { transform: translateX(-120%); }
+      to { transform: translateX(250%); }
+    }
+
+    @media (max-width: 920px) {
+      #title-panel,
+      #lore-panel,
+      #minimap-panel {
+        width: calc(100vw - 32px);
+        left: 16px;
+        right: 16px;
+      }
+
+      #controls-panel {
+        top: auto;
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      #minimap-panel {
+        bottom: 146px;
+      }
+
+      #lore-panel {
+        bottom: 232px;
+      }
+
+      .hud-button {
+        flex: 1 1 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video id="scene-video" autoplay muted loop playsinline></video>
+  <canvas id="scene-canvas"></canvas>
+
+  <section id="title-panel" class="hud-panel">
+    <h1 id="scene-city-name">Bascdelm</h1>
+    <h2 id="scene-name">The Waiting Ship Inn</h2>
+    <div class="subtitle" id="scene-subtitle">Dockside Proof of Concept</div>
+    <p id="scene-tagline"></p>
+  </section>
+
+  <div id="controls-panel">
+    <button id="toggle-lore" class="hud-button">Lore</button>
+    <button id="toggle-minimap" class="hud-button">Map Focus</button>
+    <button id="reset-camera" class="hud-button">Reset View</button>
+  </div>
+
+  <section id="lore-panel" class="hud-panel">
+    <h3>Scene Notes</h3>
+    <div id="scene-lore"></div>
+    <h3>Walkthrough</h3>
+    <ul id="scene-controls"></ul>
+  </section>
+
+  <section id="minimap-panel" class="hud-panel">
+    <h3>City Slice</h3>
+    <div id="minimap-wrap">
+      <img id="scene-minimap" alt="Bascdelm map focus">
+      <div id="scene-focus"></div>
+    </div>
+  </section>
+
+  <aside id="hotspot-tooltip">
+    <h4 id="hotspot-name"></h4>
+    <div id="hotspot-type"></div>
+    <p id="hotspot-desc"></p>
+  </aside>
+
+  <div id="loading-screen">
+    <div class="loading-card">
+      <h1>Charting The Quay</h1>
+      <p>The Waiting Ship Inn and the northern docks are being assembled from timber, lanternlight, and river mist.</p>
+      <div class="loading-rule"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/city-scene-data.js"></script>
+  <script src="js/city-scene.js"></script>
+  <script>
+    window.addEventListener("load", function () {
+      CitySceneApp.boot();
+    });
+  </script>
+</body>
+</html>
