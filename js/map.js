@@ -118,7 +118,7 @@ const MapController = (function () {
             const configuredMax = typeof options.maxScale === 'number' ? options.maxScale : 15;
             if (!mapImg.naturalWidth || !state.baseWidth) return configuredMax;
             const nativePixelScale = mapImg.naturalWidth / state.baseWidth;
-            return Math.max(1, Math.min(configuredMax, nativePixelScale));
+            return Math.max(1, Math.min(configuredMax, nativePixelScale * 2));
         }
 
         container.addEventListener('wheel', (e) => {

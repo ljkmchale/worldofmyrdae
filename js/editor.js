@@ -508,6 +508,7 @@ const Editor = (function () {
         document.getElementById('loc-details').value = loc.details || '';
         document.getElementById('loc-link').value = loc.link || '';
         document.getElementById('loc-cityMap').value = loc.cityMap || '';
+        document.getElementById('loc-cityScene').value = loc.cityScene || '';
 
         // Advanced
         document.getElementById('loc-fontFamily').value = loc.fontFamily || '';
@@ -559,6 +560,7 @@ const Editor = (function () {
         document.getElementById('loc-details').value = '';
         document.getElementById('loc-link').value = '';
         document.getElementById('loc-cityMap').value = '';
+        document.getElementById('loc-cityScene').value = '';
 
         document.getElementById('loc-fontFamily').value = '';
         document.getElementById('loc-fontSize').value = '';
@@ -669,6 +671,10 @@ const Editor = (function () {
         const cityMap = document.getElementById('loc-cityMap').value;
         if (cityMap) locData.cityMap = cityMap;
         else delete locData.cityMap;
+
+        const cityScene = document.getElementById('loc-cityScene').value;
+        if (cityScene) locData.cityScene = cityScene;
+        else delete locData.cityScene;
 
         const setIf = (key, val, parseFn, defaultVal = undefined) => {
             if (val !== '') {
@@ -1732,6 +1738,7 @@ const Editor = (function () {
         document.getElementById('loc-details').value = copy.details || '';
         document.getElementById('loc-link').value = copy.link || '';
         document.getElementById('loc-cityMap').value = copy.cityMap || '';
+        document.getElementById('loc-cityScene').value = copy.cityScene || '';
         document.getElementById('loc-fontFamily').value = copy.fontFamily || '';
         document.getElementById('loc-fontSize').value = copy.fontSize || '';
         document.getElementById('loc-fontWeight').value = copy.fontWeight || '';

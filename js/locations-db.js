@@ -72,7 +72,6 @@ const WORLD_LOCATIONS = {
             "y": 53.5,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1FMOC144tn_b6XubbZyLXmE9zH415WFFoDGzXf_NurRM",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -168,7 +167,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 65.8,
             "y": 56.5,
-            "region": "",
+            "region": "Caristone",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -247,7 +246,6 @@ const WORLD_LOCATIONS = {
             "y": 63.2,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1xhJPvlBJ5FD9gdiFtGG5CwVVGn8p29nqTlm5BhSOeJE",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -323,7 +321,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 63.98,
             "y": 62.11,
-            "region": "",
+            "region": "Severed Bend",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 15,
@@ -900,7 +898,6 @@ const WORLD_LOCATIONS = {
             "y": 49.6,
             "region": "Hillock Torn",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1oTR5U1f7f1P6lmtWRw4PYJm5NTG4S1QsnHBH7XwxFMU",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1133,7 +1130,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 59.52,
             "y": 70.14,
-            "region": "",
+            "region": "Theamis",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 16,
@@ -1154,7 +1151,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 57.78,
             "y": 68.09,
-            "region": "",
+            "region": "Theamis",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1165,7 +1162,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "terandell",
@@ -1213,7 +1211,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 52.38,
             "y": 73.37,
-            "region": "",
+            "region": "Matahal Valley",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 24,
@@ -1236,9 +1234,8 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 55.21,
             "y": 67.71,
-            "region": "",
+            "region": "Matahal Valley",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1gd4aJP_DPjNu98vI5JvFCWzeQDmPYeZePkiRxesckQs",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1247,7 +1244,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -27,
             "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "driftbend",
@@ -1255,7 +1253,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 59.92,
             "y": 74.96,
-            "region": "",
+            "region": "Theamis",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1265,7 +1263,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -66,
             "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "brokenfall",
@@ -1273,7 +1272,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 56.53,
             "y": 73.93,
-            "region": "",
+            "region": "Matahal Valley",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1283,7 +1282,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -70,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "crossroad-boldshire-edgewind-bistron",
@@ -1449,7 +1449,6 @@ const WORLD_LOCATIONS = {
             "y": 69.97,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1BE2wwvBrfkFCBD60EWwL-freUByHv7EgwW3djne7DS4",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1469,7 +1468,6 @@ const WORLD_LOCATIONS = {
             "y": 67.2,
             "region": "",
             "description": "Small City",
-            "link": "https://docs.google.com/document/d/1nEhjK8vRHVzFz5AiEdOYg0Mw5ddtWQviJ5wL9AnDAaI",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1628,7 +1626,6 @@ const WORLD_LOCATIONS = {
             "y": 61.12,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1Krz-9jcD87_dAlPcjW2Wglyv2obMjvyt5iqZvZl9K7Q",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1665,7 +1662,6 @@ const WORLD_LOCATIONS = {
             "y": 64.68,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1PZceMNA0XQoT_dOqVyN-f82iLiibxulwijxuxq_j0cs",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1774,7 +1770,6 @@ const WORLD_LOCATIONS = {
             "y": 70.9,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/11P-7-I7QkaTmpCvM0qqkpN2-7CYrPadZGub565O7D8o",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1829,7 +1824,6 @@ const WORLD_LOCATIONS = {
             "y": 70.8,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1koau5X6jpocl28spf8DXbNHJw3ml-zrMzbmIpnlUXJ8",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -1868,7 +1862,6 @@ const WORLD_LOCATIONS = {
             "y": 68.2,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1jMqigW9edaI6ksFZx5gCmVZ_8VMoltCDuMkGtx2LBEc",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -2084,7 +2077,6 @@ const WORLD_LOCATIONS = {
             "y": 35.6,
             "region": "Halesworth",
             "description": "City",
-            "link": "https://docs.google.com/document/d/192oU58p1whha66amF0iTja93XU9DIp2ixKKz7_q97jo",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -2363,7 +2355,6 @@ const WORLD_LOCATIONS = {
             "y": 28.68,
             "region": "Halesworth",
             "description": "Nauldeaus started out simply as the port town “Wave’s Edge” before becoming the large city it is today.  As the gateway to Lake Tribathe, the large body of water that is known as the hub of the Bathaen Empire, almost all goods that arrive by sea into the three kingdoms come through Nauldeaus.",
-            "link": "https://docs.google.com/document/d/1_XxM72n6qRRSLPAAJPMNywy_L489vQic6gvFTGYP-A4",
             "cityMap": "city-viewer.html?city=nauldeaus",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2459,7 +2450,6 @@ const WORLD_LOCATIONS = {
             "y": 28.2,
             "region": "",
             "description": "",
-            "link": "https://docs.google.com/document/d/1KNei0mo4Zq-_AsEOWJo9N7Zb6AKMS-bfZORK-UxixZ4",
             "fontFamily": "Simonetta",
             "fontSize": 16,
             "fontWeight": "300",
@@ -2515,7 +2505,6 @@ const WORLD_LOCATIONS = {
             "y": 26.53,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1c-All1cPsge6wH1X06-6Sxv2sk6r97mg48d51yaAQso",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -2905,7 +2894,6 @@ const WORLD_LOCATIONS = {
             "y": 36.16,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1hpKHxS8Kz3fhi6HGb0bdZCnurx4-OM3RUDE6cPsBiAc",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3097,7 +3085,6 @@ const WORLD_LOCATIONS = {
             "y": 43.88,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1iW2YEMSoqAU0fbzv1sp74_gFYPICj-sFoYLCA6tP2DE",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3206,7 +3193,6 @@ const WORLD_LOCATIONS = {
             "y": 46.51,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1I1bIs4KJFUtpgOciBY24xrDtWG-U-HF-Zi1fkewx7tY",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3245,7 +3231,6 @@ const WORLD_LOCATIONS = {
             "y": 27.51,
             "region": "Wheldrake",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1FhmTiPpgM8g5aiCpXwfB8-vdbw7ZMGlHiiD3AS_8oP4",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3265,7 +3250,6 @@ const WORLD_LOCATIONS = {
             "y": 38.4,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1aQKMo8RG-aJv9jBCyjUbTEipla2pOyFuZ3eZp_cl1ME",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3658,7 +3642,6 @@ const WORLD_LOCATIONS = {
             "y": 35.52,
             "region": "Kholdur",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1QK_cl7Na8KiYsnh7kDrzGQMH_F4vNQvfyShrcOUgaDY",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3678,7 +3661,6 @@ const WORLD_LOCATIONS = {
             "y": 36.23,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1WkknXUtDdHVoCBVfqbhn1FnL8A3wtyfqXXtZGqP8TqA",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3715,7 +3697,6 @@ const WORLD_LOCATIONS = {
             "y": 30.1,
             "region": "",
             "description": "Town",
-            "link": "https://docs.google.com/document/d/1P5e-ekXM8o-J1wQ9cuJC6RKhb9H572UsLvjZWnDazvM",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -3756,7 +3737,6 @@ const WORLD_LOCATIONS = {
             "y": 33.2,
             "region": "",
             "description": "",
-            "link": "https://docs.google.com/document/d/1m9JFKZMYWV8Dw2IxHrQjDt5ninYLQ_9feDhiAmlOc7k",
             "fontFamily": "Simonetta",
             "fontSize": 16,
             "fontWeight": "300",
@@ -3836,7 +3816,6 @@ const WORLD_LOCATIONS = {
             "y": 32.6,
             "region": "",
             "description": "Nature",
-            "link": "https://docs.google.com/document/d/1Et_utO4UDP9ceCpy8xnVqHSv-1qX-M6N0M-X15cSY84",
             "fontFamily": "Simonetta",
             "fontSize": 12,
             "fontWeight": "300",
@@ -4227,7 +4206,6 @@ const WORLD_LOCATIONS = {
             "y": 22.1,
             "region": "",
             "description": "",
-            "link": "https://docs.google.com/document/d/1utRALomM9JEn48WX_shle1395BnSPj4bu_wdOHzAB70",
             "fontFamily": "Simonetta",
             "fontSize": 15,
             "fontWeight": "300",
@@ -4490,7 +4468,6 @@ const WORLD_LOCATIONS = {
             "y": 32.7,
             "region": "",
             "description": "Nature",
-            "link": "https://docs.google.com/document/d/1LjzafsrfqoB7hjgT8zwHQpQejeE0g2uhg1qEQQsFyDs",
             "fontFamily": "Simonetta",
             "fontSize": 12,
             "fontWeight": "300",
@@ -4645,7 +4622,6 @@ const WORLD_LOCATIONS = {
             "y": 35.51,
             "region": "",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1Z-DN4Ikhl6MRHgON--7xNvOrY8ARy-c3hO-AOwW-Blo",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -7095,7 +7071,6 @@ const WORLD_LOCATIONS = {
             "y": 48.7,
             "region": "Gaelscape",
             "description": "City",
-            "link": "https://docs.google.com/document/d/1KKG8JYeIkRQPQB_K5mejstFeX2Pq7eDKkdwhBNJ81vs",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -7584,7 +7559,7 @@ const WORLD_LOCATIONS = {
             "x": 76.7,
             "y": 43.8,
             "region": "The Mahruud",
-            "description": "Capital of the Kingdom of Myrdae",
+            "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontStyle": "Italic",
@@ -7594,7 +7569,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -45,
             "labelOffsetY": -16,
-            "biome": "Desert"
+            "biome": "Desert",
+            "opacity": 0.5
         },
         {
             "id": "blistered-highland",
@@ -14311,7 +14287,7 @@ const WORLD_LOCATIONS = {
             "type": "water-route",
             "curved": true,
             "shipName": "The Frostspine",
-            "shipType": "Longship",
+            "shipType": "Merchant Cog",
             "captainName": "Captain Runa Iceborn",
             "routePurpose": "exploration",
             "cargo": "Furs, ivory, northern trophies",
@@ -14331,7 +14307,8 @@ const WORLD_LOCATIONS = {
                     25.84
                 ],
                 "fardrift"
-            ]
+            ],
+            "boatColor": "#99ff33"
         },
         {
             "id": "tratta-nauldeaus-sea-route",
@@ -14705,6 +14682,61 @@ const WORLD_LOCATIONS = {
             "routePurpose": "merchant",
             "cargo": "Spices, Silks",
             "riskLevel": "medium"
+        },
+        {
+            "id": "tratta-nauldeaus-patrol-sea-road",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "tratta",
+                [
+                    70.7,
+                    33.87
+                ],
+                [
+                    70.42,
+                    30.04
+                ],
+                [
+                    70.32,
+                    26.86
+                ],
+                [
+                    70.24,
+                    23.9
+                ],
+                [
+                    69.59,
+                    22.68
+                ],
+                [
+                    68.17,
+                    22.1
+                ],
+                [
+                    66.35,
+                    22.05
+                ],
+                [
+                    64.42,
+                    24.82
+                ],
+                [
+                    63.52,
+                    26.61
+                ],
+                [
+                    62.58,
+                    28.29
+                ],
+                "nauldeaus"
+            ],
+            "shipName": "The Tempest",
+            "shipType": "Warship",
+            "captainName": "Captain Darkwater",
+            "boatColor": "#555555",
+            "routePurpose": "military",
+            "riskLevel": "low"
         }
     ],
     "regions": []

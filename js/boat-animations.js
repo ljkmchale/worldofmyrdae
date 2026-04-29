@@ -25,7 +25,9 @@ const SHIP_TOOLTIP_IMAGES = {
     'Galleon': 'images/tooltips/ships/galleon.png',
     'Frigate': 'images/tooltips/ships/frigate.png',
     'Merchant Cog': 'images/tooltips/ships/merchant-cog.png',
-    'Longship': 'images/tooltips/ships/longship.png'
+    'Longship': 'images/tooltips/ships/longship.png',
+    'Warship': 'images/tooltips/ships/warship.png',
+    'Fishing Vessel': 'images/tooltips/ships/fishing-vessel.png'
 };
 const SAILING_SPEEDS = {
     'Caravel': 72,
@@ -103,6 +105,10 @@ function _getShipTooltipImage(boat) {
     return boat.shipTooltipImage || SHIP_TOOLTIP_IMAGES[boat.shipType] || null;
 }
 
+function _singleLineTooltipText(value) {
+    return String(value || '').replace(/(?:\\n|[\r\n])+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+}
+
 function _showBoatTooltip(e, boat) {
     const tt = _getBoatTooltip();
     let extra = '';
@@ -131,7 +137,7 @@ function _showBoatTooltip(e, boat) {
         <div class="tt-body">
             <div class="tt-type">${esc(boat.shipType)}</div>
             <div class="tt-desc">Captain: <em>${esc(boat.captainName)}</em></div>
-            <div class="tt-desc" style="margin-top:0.2rem;"><em>${esc(boat.routeName)}</em></div>
+            <div class="tt-desc" style="margin-top:0.2rem;"><em>${esc(_singleLineTooltipText(boat.routeName))}</em></div>
             <div class="tt-desc" style="margin-top:0.2rem;">${Math.round(boat.routeMiles)} miles • ${esc(sailingLabel)}</div>
             ${extra}
         </div>

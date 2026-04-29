@@ -23,6 +23,10 @@ const MapOverlayTooltip = (function () {
         return String(value).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
     }
 
+    function singleLineText(value) {
+        return String(value || '').replace(/(?:\\n|[\r\n])+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    }
+
     function safeHref(value) {
         if (!value) return '';
         const trimmed = String(value).trim();
@@ -367,7 +371,7 @@ const MapOverlayTooltip = (function () {
             const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
             return `
                 <div style="display:flex;justify-content:space-between;gap:0.75rem;font-family:'Cormorant Garamond', serif;font-size:0.9rem;color:#d7cfbb;">
-                    <span><strong style="color:#efe4bd;">${escapeHTML(link.roadName)}</strong></span>
+                    <span><strong style="color:#efe4bd;">${escapeHTML(singleLineText(link.roadName))}</strong></span>
                     <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${escapeHTML(daysText)}</span>
                 </div>
             `;
@@ -395,10 +399,12 @@ const MapOverlayTooltip = (function () {
         const safeName = escapeHTML(loc.name);
         const safePreview = state.previewImage ? escapeHTML(state.previewImage) : '';
         const cityMapHref = safeHref(loc.cityMap);
+        const citySceneHref = safeHref(loc.cityScene);
         const linkHref = safeHref(loc.link);
-        const linksSection = (cityMapHref || linkHref) ? `
+        const linksSection = (cityMapHref || citySceneHref || linkHref) ? `
             <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
                 ${cityMapHref ? `<a href="${cityMapHref}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
+                ${citySceneHref ? `<a href="${citySceneHref}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#127916; City Scene</a>` : ''}
                 ${linkHref ? `<a href="${linkHref}" target="_blank" rel="noopener noreferrer" style="font-family:'Inter',sans-serif;font-size:0.8rem;color:#ffd700;text-decoration:none;" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#ffd700'">Learn More →</a>` : ''}
             </div>` : '';
         const desc = escapeHTML(truncate(getTooltipDescription(loc), 160));

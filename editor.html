@@ -300,6 +300,15 @@
             </select>
           </div>
 
+          <div class="form-group">
+            <label>City Scene Page <span style="color:#888;font-size:0.75rem;">(adds City Scene button to tooltip)</span></label>
+            <select id="loc-cityScene" class="form-control"
+              style="font-family:'Cinzel',serif;font-size:0.85rem;background:#1a1614;color:#d4af37;border:1px solid #584433;"
+              onchange="Editor.previewLocation()">
+              <option value="">— None —</option>
+            </select>
+          </div>
+
           <details class="editor-details">
             <summary>Advanced Typography / Markers
             </summary>
@@ -766,6 +775,7 @@
   </div>
 
   <script src="js/city-maps.js"></script>
+  <script src="js/city-scene-data.js"></script>
   <script src="js/locations-db.js"></script>
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
@@ -1087,6 +1097,24 @@ function renderCityMapOptions(selectEl, entries, options = {}) {
   renderCityMapOptions(sel, CITY_MAPS, {
     placeholder: '— None —',
     getValue: (entry) => 'city-viewer.html?city=' + entry.id,
+    getLabel: (entry) => entry.name
+  });
+  if (sel.options.length) sel.options[0].textContent = '-- None --';
+})();
+
+// Populate the City Scene dropdown in the location form
+(function populateCitySceneSelect() {
+  const sel = document.getElementById('loc-cityScene');
+  if (!sel || typeof CITY_SCENE_DATA === 'undefined') return;
+
+  const entries = Object.values(CITY_SCENE_DATA).map(scene => ({
+    id: scene.id,
+    name: scene.cityName || scene.sceneName || scene.id
+  }));
+
+  renderCityMapOptions(sel, entries, {
+    placeholder: 'â€” None â€”',
+    getValue: (entry) => 'city-scene.html?city=' + entry.id,
     getLabel: (entry) => entry.name
   });
   if (sel.options.length) sel.options[0].textContent = '-- None --';
