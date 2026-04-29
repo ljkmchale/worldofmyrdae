@@ -14,5 +14,8 @@ out/
 # Local safety snapshots
 backups/
 
+# GIMP source files (too large for GitHub)
+*.xcf
+
 # macOS
 .DS_Store
