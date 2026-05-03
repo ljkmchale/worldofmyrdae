@@ -33,6 +33,24 @@ const CoordGrid = (function () {
     return element;
   }
 
+  function applyCurrentMapTransform(container, mapImg, element) {
+    const transformedParent = mapImg.parentNode && mapImg.parentNode.id === 'map-layer-group';
+    if (transformedParent) return;
+
+    const controller = (typeof MapController !== 'undefined') ? MapController : null;
+    const mapState = controller && typeof controller.getInstanceState === 'function'
+      ? controller.getInstanceState(container.id)
+      : null;
+
+    if (mapState) {
+      element.style.transform = `translate3d(${mapState.pointX}px, ${mapState.pointY}px, 0) scale(${mapState.scale})`;
+      element.style.transformOrigin = '0 0';
+    } else if (mapImg.style.transform) {
+      element.style.transform = mapImg.style.transform;
+      element.style.transformOrigin = mapImg.style.transformOrigin || '0 0';
+    }
+  }
+
   function getHexPoints(cx, cy, size) {
     const points = [];
     for (let i = 0; i < 6; i++) {
@@ -178,6 +196,7 @@ const CoordGrid = (function () {
     svg.appendChild(cellGroup);
     svg.appendChild(frame);
     mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
+    applyCurrentMapTransform(container, mapImg, svg);
   }
 
   function init(containerId, imageId) {

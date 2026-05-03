@@ -802,10 +802,15 @@
       MapController.init('map-container', 'map-image', {
         onTransform: (transformStr, scale, tx, ty) => {
           const overlay = document.getElementById('map-container-overlay');
+          const coordGrid = document.getElementById('map-container-coord-grid');
           const territories = document.getElementById('territories-layer');
           if (overlay) {
             overlay.style.transform = transformStr;
             overlay.style.transformOrigin = '0 0';
+          }
+          if (coordGrid) {
+            coordGrid.style.transform = transformStr;
+            coordGrid.style.transformOrigin = '0 0';
           }
           if (territories) {
             territories.style.transform = transformStr;

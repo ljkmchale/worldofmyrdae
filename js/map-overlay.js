@@ -116,6 +116,24 @@ const MapOverlay = (function () {
         return defs;
     }
 
+    function applyCurrentMapTransform(container, mapImg, element) {
+        const transformedParent = mapImg.parentNode && mapImg.parentNode.id === 'map-layer-group';
+        if (transformedParent) return;
+
+        const controller = (typeof MapController !== 'undefined') ? MapController : null;
+        const mapState = controller && typeof controller.getInstanceState === 'function'
+            ? controller.getInstanceState(container.id)
+            : null;
+
+        if (mapState) {
+            element.style.transform = `translate3d(${mapState.pointX}px, ${mapState.pointY}px, 0) scale(${mapState.scale})`;
+            element.style.transformOrigin = '0 0';
+        } else if (mapImg.style.transform) {
+            element.style.transform = mapImg.style.transform;
+            element.style.transformOrigin = mapImg.style.transformOrigin || '0 0';
+        }
+    }
+
     function getRendererContext() {
         renderCtx.isEditorMode = isEditorMode;
         renderCtx.tooltipHandlers = {
@@ -148,6 +166,7 @@ const MapOverlay = (function () {
         svg.style.left = '0';
         svg.style.pointerEvents = 'none';
         svg.style.willChange = 'transform';
+        svg.style.display = renderCtx.overlayVisible ? '' : 'none';
         svg.appendChild(createOverlayDefs());
 
         const locations = getLocationsForRender();
@@ -199,11 +218,7 @@ const MapOverlay = (function () {
         }
 
         mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
-
-        if (mapImg.style.transform) {
-            svg.style.transform = mapImg.style.transform;
-            svg.style.transformOrigin = mapImg.style.transformOrigin;
-        }
+        applyCurrentMapTransform(container, mapImg, svg);
     }
 
     async function init(containerId, imageId, dataOverride) {
