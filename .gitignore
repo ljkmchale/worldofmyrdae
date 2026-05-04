@@ -17,5 +17,9 @@ backups/
 # GIMP source files (too large for GitHub)
 *.xcf
 
+# Large binary assets and Unreal projects
+assets/vendor/
+unreal/
+
 # macOS
 .DS_Store
