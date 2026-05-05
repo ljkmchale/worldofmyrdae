@@ -1075,7 +1075,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 58.81,
             "y": 65.39,
-            "region": "",
+            "region": "Theamis",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1085,7 +1085,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "glimmerstone",
@@ -1093,7 +1094,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 56.77,
             "y": 64.1,
-            "region": "",
+            "region": "Theasmis",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1103,7 +1104,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -49,
             "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "derly-river",
@@ -1173,7 +1175,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 58.6,
             "y": 73.2,
-            "region": "",
+            "region": "Theamis",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1183,7 +1185,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -2,
             "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "everdrift",
@@ -6572,7 +6575,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 27.37,
             "y": 73.31,
-            "region": "",
+            "region": "Corse of Veinspear",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6582,7 +6585,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -37,
-            "labelOffsetY": 21
+            "labelOffsetY": 21,
+            "biome": "Coastal"
         },
         {
             "id": "scalerunhills",
@@ -6652,7 +6656,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 42.85,
             "y": 87.88,
-            "region": "",
+            "region": "Nandahere",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6663,7 +6667,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -96,
             "labelOffsetY": 10,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "nanthisahraridge",
