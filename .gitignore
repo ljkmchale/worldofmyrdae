@@ -23,3 +23,14 @@ unreal/
 
 # macOS
 .DS_Store
+
+# Local tools and UE5 work
+tools/
+ue5-exports/
+session-notes/
+
+# Duplicate/copy images
+images/Myrdae_copy.jpg
+images/Myrdae - Copy.jpg
+*.tmp-*.json
+.tmp-*.json
