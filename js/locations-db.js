@@ -1037,7 +1037,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 54.75,
             "y": 62.84,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1047,7 +1047,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -39,
             "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "paendley",
@@ -1055,7 +1056,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 53.85,
             "y": 63.28,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1065,7 +1066,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "culburn",
@@ -1447,7 +1449,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 51.6,
             "y": 69.97,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1458,7 +1460,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -1,
             "labelOffsetY": 19,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=climbor"
+            "cityMap": "city-viewer.html?city=climbor",
+            "biome": "Plains"
         },
         {
             "id": "felden",
@@ -1466,7 +1469,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 50.5,
             "y": 67.2,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Small City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1476,7 +1479,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -40,
             "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "greyrun",
@@ -1587,7 +1591,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 51.8,
             "y": 62.5,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -1598,7 +1602,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -36,
             "labelOffsetY": -13,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "hasfen",
@@ -1606,7 +1611,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 51.85,
             "y": 59.74,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1616,7 +1621,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -48,
             "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "stoneshore",
@@ -1624,7 +1630,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 48.62,
             "y": 61.12,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1634,7 +1640,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -73,
             "labelOffsetY": 11,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "steenlodge",
@@ -1642,7 +1649,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 48.8,
             "y": 64.1,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1652,7 +1659,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "gevakaln",
@@ -1660,7 +1668,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 46.88,
             "y": 64.68,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1670,7 +1678,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -69,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "duskwaren",
@@ -1678,7 +1687,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 52.66,
             "y": 65.29,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1688,7 +1697,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "heildward",
@@ -1696,7 +1706,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 51.7,
             "y": 66.1,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1706,7 +1716,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -36,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "basinpass",
@@ -1714,7 +1725,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 49.06,
             "y": 66.26,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1724,7 +1735,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -67,
             "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "morimyr",
@@ -1732,7 +1744,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 52.44,
             "y": 67.67,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1742,7 +1754,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "tarrarin",
@@ -1750,7 +1763,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 48.37,
             "y": 74.34,
-            "region": "",
+            "region": "Dalasor Coast",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1760,7 +1773,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -62,
             "labelOffsetY": 2,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "witguard",
@@ -1768,7 +1782,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 49.9,
             "y": 70.9,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1778,7 +1792,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -59,
             "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "pelveron",
@@ -1786,7 +1801,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 49.26,
             "y": 72.3,
-            "region": "",
+            "region": "Dalasor Coast",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1795,8 +1810,9 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -59,
-            "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5,
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "silviora",
@@ -1804,7 +1820,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 50.5,
             "y": 73.4,
-            "region": "",
+            "region": "Dalasor Coast",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1814,7 +1830,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "tyrynader",
@@ -1822,7 +1839,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 47.73,
             "y": 70.8,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1832,7 +1849,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "unknown-12",
@@ -1961,7 +1979,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 50.9,
             "y": 55.6,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -1971,7 +1989,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "seaway-harbor",
@@ -1979,7 +1998,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 47.74,
             "y": 56.3,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -1999,7 +2018,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 48.8,
             "y": 54.93,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2009,7 +2028,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -6,
             "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "uktali-monastery",
@@ -3288,7 +3308,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 49.41,
             "y": 56.74,
-            "region": "",
+            "region": "Rostiena Foothills",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 15,
@@ -3300,7 +3320,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Plains"
         },
         {
             "id": "kholdurriver",
@@ -3429,7 +3450,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 45.77,
             "y": 47.93,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3440,7 +3461,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -57,
             "labelOffsetY": 15,
-            "biome": "Mountains"
+            "biome": "Coastal"
         },
         {
             "id": "trasobahn",
@@ -3508,7 +3529,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 42.59,
             "y": 50.85,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3519,7 +3540,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -67,
             "labelOffsetY": 3,
-            "biome": "Mountains"
+            "biome": "Coastal"
         },
         {
             "id": "sunfelpost",
@@ -3527,7 +3548,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 43.49,
             "y": 46.2,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3539,7 +3560,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 9,
             "labelOffsetY": -19,
             "opacity": 1,
-            "biome": "Mountains"
+            "biome": "Plains"
         },
         {
             "id": "deterahn",
@@ -3547,7 +3568,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 42.77,
             "y": 44.2,
-            "region": "",
+            "region": "Okadia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3557,7 +3578,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "bonegate",
@@ -3565,7 +3587,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 40.57,
             "y": 43.76,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3576,7 +3598,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -33,
             "labelOffsetY": 17,
-            "biome": "Mountains"
+            "biome": "Coastal"
         },
         {
             "id": "everlownlodge",
@@ -3584,7 +3606,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 40.8,
             "y": 41.86,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3604,7 +3626,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 41.9,
             "y": 38.6,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3623,7 +3645,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 45.04,
             "y": 39.03,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 21,
@@ -3645,7 +3667,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 41.85,
             "y": 35.52,
-            "region": "Kholdur",
+            "region": "Okadia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4062,7 +4084,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 55.6,
             "y": 23.36,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4072,7 +4094,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "tibbers",
@@ -4183,7 +4206,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 52.55,
             "y": 18.8,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4193,7 +4216,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "gristavel",
@@ -4201,7 +4225,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 50.83,
             "y": 20.2,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4211,7 +4235,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 5,
             "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "palason",
@@ -4219,8 +4244,8 @@ const WORLD_LOCATIONS = {
             "type": "capital",
             "x": 54.22,
             "y": 22.1,
-            "region": "",
-            "description": "",
+            "region": "Frystarian Strand",
+            "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 15,
             "fontWeight": "300",
@@ -4228,7 +4253,9 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "labelOffsetX": 10,
+            "biome": "Mountains"
         },
         {
             "id": "kolgrafellthicket",
@@ -4236,7 +4263,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 52.6,
             "y": 23.58,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 18,
@@ -4257,7 +4284,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 51.78,
             "y": 26.43,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4267,7 +4294,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -2,
             "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "eruvic",
@@ -4275,7 +4303,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 46.3,
             "y": 20.87,
-            "region": "",
+            "region": "Tegenwald",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4285,7 +4313,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -49,
             "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "sahvall",
@@ -4293,7 +4322,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 45.15,
             "y": 24.54,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4303,7 +4332,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "jordarr",
@@ -4311,7 +4341,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 50.99,
             "y": 28.07,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4321,7 +4351,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -56,
             "labelOffsetY": -2,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "northernarch",
@@ -4329,7 +4360,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 50.13,
             "y": 28.56,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4341,7 +4372,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -9,
             "labelOffsetY": 2,
             "labelAlign": "end",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "ruinsoftegeonwaldkeep",
@@ -4349,7 +4381,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 48.13,
             "y": 24.97,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4360,7 +4392,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -62,
             "labelOffsetY": 4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "brekka",
@@ -4368,7 +4401,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 48.79,
             "y": 18.02,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4378,7 +4411,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "aerley",
@@ -4386,7 +4420,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 48.85,
             "y": 23.72,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4397,7 +4431,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -48,
             "labelOffsetY": -11,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=aerley"
+            "cityMap": "city-viewer.html?city=aerley",
+            "biome": "Coastal"
         },
         {
             "id": "staghand",
@@ -4423,7 +4458,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 53.14,
             "y": 25.29,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4434,7 +4469,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": 4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "everbloom",
@@ -4442,7 +4478,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 47.41,
             "y": 28.3,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 19,
@@ -4454,7 +4490,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "crossroads-lenshur",
@@ -4481,7 +4518,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 43.91,
             "y": 32.7,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -4492,7 +4529,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -8,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "raselle",
@@ -4500,7 +4538,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 43.36,
             "y": 31.02,
-            "region": "",
+            "region": "Tegenwald",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4510,7 +4548,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -25,
             "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "holderscove",
@@ -4558,7 +4597,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 50.7,
             "y": 24.91,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4568,7 +4607,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 5,
             "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "syori",
@@ -4673,7 +4713,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 44.8,
             "y": 28.4,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4683,7 +4723,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "lasborin",
@@ -4691,7 +4732,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 46.18,
             "y": 22.9,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4701,7 +4742,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "tegenwaldwilds",
@@ -4709,7 +4751,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 49.29,
             "y": 26.4,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 18,
@@ -4722,7 +4764,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "biome": "Forest"
+            "biome": "Dense Forest"
         },
         {
             "id": "stinson",
