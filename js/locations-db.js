@@ -479,7 +479,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 63.45,
             "y": 43.64,
-            "region": "Yearning Vale",
+            "region": "Crimson March",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2294,7 +2294,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 54.9,
             "y": 36.01,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2306,7 +2306,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 38,
             "labelOffsetY": -12,
             "labelAlign": "end",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "lake-tribathe",
@@ -2335,7 +2336,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 54.88,
             "y": 31.9,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2345,7 +2346,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -55,
             "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "nauldeaus",
@@ -3248,7 +3250,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 53.49,
             "y": 38.4,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3258,7 +3260,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -66,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "dolkholdur",
@@ -3466,7 +3469,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 52,
             "y": 40.22,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3476,7 +3479,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -56,
             "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "bastionoforder",
@@ -3484,7 +3488,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 48.3,
             "y": 37.4,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3495,7 +3499,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -42,
             "labelOffsetY": -15,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "gulward",
@@ -3659,7 +3664,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 53.13,
             "y": 36.23,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3669,7 +3674,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -57,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "darafee",
@@ -3677,7 +3683,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 52.65,
             "y": 34.5,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3687,7 +3693,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -2,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "tarnsport",
@@ -3695,7 +3702,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 55.2,
             "y": 30.1,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3714,7 +3721,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 52.4,
             "y": 30.57,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 20,
@@ -3735,15 +3742,18 @@ const WORLD_LOCATIONS = {
             "type": "capital",
             "x": 50.94,
             "y": 33.2,
-            "region": "",
-            "description": "",
+            "region": "Borealian Sway",
+            "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 16,
             "fontWeight": "300",
             "markerSize": 0.2,
             "markerOffsetX": 0,
             "markerOffsetY": 0,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "labelOffsetX": 10,
+            "labelOffsetY": 5,
+            "biome": "Mountains"
         },
         {
             "id": "onaren",
@@ -3772,7 +3782,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 49.1,
             "y": 36.3,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "The Abbey of Mont Rest, now commonly referred to as the Abbey of Light, is a sanctuary located south of O’naren, sitting at the summit of a tall foothill descending from the Distancion Mountains into the Borealian Sway. Originally dedicated to the old god Neera, the abbey has since expanded its purpose, becoming a place of study and reverence for all the gods of Myrdae. Built from the region’s natural stone, the abbey has stood for approximately 150 years, housing both devoted scholars of divine lore and an orphanage that provides care for abandoned or displaced children.",
             "link": "https://docs.google.com/document/d/14hX4cryRE61O6wLcZ26qFtsAXACJzqU60rwIgFkQYjQ/edit?tab=t.0",
             "cityMap": "city-viewer.html?city=abbey-of-mont-rest",
@@ -3785,7 +3795,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 13,
             "labelOffsetY": -5,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "cradlecrestrise",
@@ -3814,7 +3825,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 48.09,
             "y": 32.6,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3825,7 +3836,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -46,
             "labelOffsetY": -15,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "brokencitadel",
@@ -3833,7 +3845,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 47.82,
             "y": 33.04,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3844,7 +3856,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -50,
             "labelOffsetY": 4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "tomboftsanvoeg",
@@ -3852,7 +3865,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 46.04,
             "y": 35.53,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3863,7 +3876,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 9,
             "labelOffsetY": 4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "yallona",
@@ -3871,7 +3885,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 46.72,
             "y": 34.42,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 14,
@@ -3883,7 +3897,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Forest"
         },
         {
             "id": "fardrift",
@@ -3891,7 +3906,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 64.85,
             "y": 26.76,
-            "region": "",
+            "region": "Flarebane Isles",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4065,9 +4080,8 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 56.07,
             "y": 25.7,
-            "region": "",
+            "region": "Wheldrake",
             "description": "Town",
-            "details": "Wheldrake",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -4076,7 +4090,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -53,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Plains"
         },
         {
             "id": "wheldrake",
@@ -4524,7 +4539,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 49.93,
             "y": 29.9,
-            "region": "",
+            "region": "Borealian Sway",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4534,7 +4549,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "ormsdal",
