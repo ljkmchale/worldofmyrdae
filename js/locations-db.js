@@ -33,7 +33,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 70.4,
             "y": 51.1,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -44,7 +44,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 11,
             "labelOffsetY": -7,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "annagos",
@@ -52,7 +53,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 69.55,
             "y": 51.05,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -62,7 +63,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -57,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "staghaven",
@@ -70,7 +72,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 69.3,
             "y": 53.5,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -80,7 +82,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 8,
             "labelOffsetY": 11,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "witherwood",
@@ -88,7 +91,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 69.83,
             "y": 52.88,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 14,
@@ -108,7 +111,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 67.35,
             "y": 54.7,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Town",
             "link": "https://docs.google.com/document/d/1J553Gt1bLDE58Cfx2Lt2zUh4pT6XlRj__qlzz2GMyXg/edit?tab=t.0",
             "fontFamily": "Simonetta",
@@ -128,7 +131,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 67.93,
             "y": 53.1,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Outpost",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -139,7 +142,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -3,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "mid-dock",
@@ -147,7 +151,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 67.7,
             "y": 51.3,
-            "region": "",
+            "region": "Gaelscape",
             "description": "Outpost",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -159,7 +163,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "opacity": 1,
-            "biome": "Coastal"
+            "biome": "River / Waterway"
         },
         {
             "id": "Old-gates",
@@ -178,7 +182,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "dunduar",
@@ -186,7 +191,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 65.47,
             "y": 57.3,
-            "region": "",
+            "region": "Baltwood",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -197,7 +202,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -57,
             "labelOffsetY": -6,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=dunduar"
+            "cityMap": "city-viewer.html?city=dunduar",
+            "biome": "Mountains"
         },
         {
             "id": "mount-emberstran",
@@ -205,7 +211,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 63.09,
             "y": 55.5,
-            "region": "",
+            "region": "Baltwood",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 24,
@@ -217,7 +223,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "semmerest-keep",
@@ -262,7 +269,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 62.87,
             "y": 60.8,
-            "region": "",
+            "region": "Baltwood",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -271,9 +278,10 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -56,
-            "labelOffsetY": 0,
+            "labelOffsetY": 3,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=ulgrey"
+            "cityMap": "city-viewer.html?city=ulgrey",
+            "biome": "River / Waterway"
         },
         {
             "id": "tower-of-zibeus",
@@ -281,7 +289,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 62.6,
             "y": 61.7,
-            "region": "",
+            "region": "Baltwood",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -292,7 +300,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -19,
             "labelOffsetY": 17,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "kahlbits-veil-forest-header",
@@ -654,7 +663,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 60.75,
             "y": 58.23,
-            "region": "",
+            "region": "Baltwood",
             "description": "City",
             "link": "https://docs.google.com/document/d/1oECFiNos1Qqa1CfGo-2DJWbyet9SOF_gMKd3ZR2kY6c/edit?tab=t.0",
             "cityMap": "city-viewer.html?city=emberstran",
@@ -666,7 +675,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -53,
             "labelOffsetY": 22,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "stonetrace",
@@ -674,7 +684,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 59.56,
             "y": 56.08,
-            "region": "",
+            "region": "Baltwood",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -685,7 +695,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 4,
             "labelOffsetY": -10,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "Wortstone",
@@ -715,7 +726,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 61.1,
             "y": 55.06,
-            "region": "",
+            "region": "Baltwood",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 17,
@@ -736,7 +747,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 57.85,
             "y": 57.49,
-            "region": "",
+            "region": "Baltwood",
             "description": "Town",
             "link": "https://docs.google.com/document/d/1tfgzGJK9ZZcaoiva1lfVAgR0xmbe_2Mn0uFoVj9bFLQ/edit?tab=t.0",
             "fontFamily": "Simonetta",
@@ -748,7 +759,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -53,
             "labelOffsetY": 18,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=ahndashere"
+            "cityMap": "city-viewer.html?city=ahndashere",
+            "biome": "Coastal"
         },
         {
             "id": "lasdale",
@@ -1094,7 +1106,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 56.77,
             "y": 64.1,
-            "region": "Theasmis",
+            "region": "Theamis",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2473,8 +2485,8 @@ const WORLD_LOCATIONS = {
             "type": "capital",
             "x": 28.4,
             "y": 28.2,
-            "region": "",
-            "description": "",
+            "region": "Glenleah",
+            "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 16,
             "fontWeight": "300",
@@ -2483,7 +2495,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 1,
             "labelOffsetY": 24,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "dryrock",
@@ -2491,7 +2504,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 27.8,
             "y": 29,
-            "region": "",
+            "region": "Glenleah",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2502,7 +2515,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -52,
             "labelOffsetY": 13,
             "fontStyle": "Normal",
-            "cityMap": "city-viewer.html?city=dryrock"
+            "cityMap": "city-viewer.html?city=dryrock",
+            "biome": "River / Waterway"
         },
         {
             "id": "abereth",
@@ -2510,7 +2524,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 28.3,
             "y": 26.01,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2520,7 +2534,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -14,
             "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "strolsworth",
@@ -2528,7 +2543,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 29.42,
             "y": 26.53,
-            "region": "",
+            "region": "Glenleah",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2538,7 +2553,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -14,
             "labelOffsetY": 18,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "loch-cerule",
@@ -2567,7 +2583,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 26.03,
             "y": 25.6,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2577,7 +2593,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -22,
             "labelOffsetY": 24,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "fruthuder-keep",
@@ -2585,7 +2602,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 24.7,
             "y": 25.6,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -2597,7 +2614,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 34,
             "labelOffsetY": -12,
             "labelAlign": "end",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "adsuren",
@@ -2626,7 +2644,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 25.14,
             "y": 32.15,
-            "region": "",
+            "region": "Glenleah",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2636,7 +2654,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 1,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "hathlao-swamp",
@@ -2644,7 +2663,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 25.38,
             "y": 27.61,
-            "region": "",
+            "region": "Glenleah",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 15,
@@ -2665,7 +2684,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 24.55,
             "y": 30.8,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2675,7 +2694,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 15,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "celedon-forest",
@@ -2683,7 +2703,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 25.91,
             "y": 30.42,
-            "region": "",
+            "region": "Glenleah",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 15,
@@ -2767,7 +2787,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 24.54,
             "y": 34.43,
-            "region": "",
+            "region": "Sutherford",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2777,7 +2797,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "kilnock",
@@ -2823,7 +2844,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 26.2,
             "y": 35.3,
-            "region": "",
+            "region": "Glenleah",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2834,7 +2855,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 11,
             "labelOffsetY": -11,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "River / Waterway"
         },
         {
             "id": "celemere-pass-location",
@@ -3079,7 +3101,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 18.75,
             "y": 23.2,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3089,7 +3111,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -56,
             "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "eletold-wood",
@@ -3470,7 +3493,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 45.77,
             "y": 47.93,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3549,7 +3572,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 42.59,
             "y": 50.85,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3568,7 +3591,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 43.49,
             "y": 46.2,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3588,7 +3611,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 42.77,
             "y": 44.2,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3607,7 +3630,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 40.57,
             "y": 43.76,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3626,7 +3649,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 40.8,
             "y": 41.86,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3646,7 +3669,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 41.9,
             "y": 38.6,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3665,7 +3688,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 45.04,
             "y": 39.03,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 21,
@@ -3687,7 +3710,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 41.85,
             "y": 35.52,
-            "region": "Okadia",
+            "region": "Okodia",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4715,7 +4738,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 37.62,
             "y": 31.7,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4725,7 +4748,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 25,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "kaldaros",
@@ -4792,7 +4816,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 43.12,
             "y": 23.71,
-            "region": "",
+            "region": "Barrford",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4801,8 +4825,9 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -54,
-            "labelOffsetY": 0,
-            "fontStyle": "Normal"
+            "labelOffsetY": 5,
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "eastmare",
@@ -4810,7 +4835,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 39.74,
             "y": 30.9,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4820,7 +4845,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "harelbek",
@@ -5013,7 +5039,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 39.1,
             "y": 29.3,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5023,7 +5049,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -50,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "greymill",
@@ -5031,7 +5058,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 40.6,
             "y": 27.3,
-            "region": "",
+            "region": "Barrford",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5041,7 +5068,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -62,
             "labelOffsetY": 9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "theemburerilocean",
@@ -5362,7 +5390,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 21.7,
             "y": 18.6,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5403,7 +5431,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 21.03,
             "y": 23.78,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5413,7 +5441,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -8,
             "labelOffsetY": -13,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "insloe",
@@ -5421,7 +5450,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 22.6,
             "y": 24.14,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5431,7 +5460,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -12,
             "labelOffsetY": -12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "habell",
@@ -5439,7 +5469,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 24.6,
             "y": 22.9,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5449,7 +5479,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -21,
             "labelOffsetY": -11,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "berest",
@@ -5457,7 +5488,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 26.9,
             "y": 24.2,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5467,7 +5498,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "dregwaypost",
@@ -5475,7 +5507,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 19.7,
             "y": 21.1,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5486,7 +5518,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 15,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "aelspire",
@@ -5494,7 +5527,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 22.83,
             "y": 21,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 16,
@@ -5506,7 +5539,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "tovar",
@@ -5514,7 +5548,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 26.56,
             "y": 22.47,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5524,7 +5558,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "tovarspan",
@@ -5532,7 +5567,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 26.64,
             "y": 21.2,
-            "region": "",
+            "region": "Geliden",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5543,7 +5578,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 11,
             "labelOffsetY": 4,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Mountains"
         },
         {
             "id": "pukett",
@@ -5551,7 +5587,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 25.37,
             "y": 20.39,
-            "region": "",
+            "region": "Geliden",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5561,7 +5597,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -47,
             "labelOffsetY": -2,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "urbank",
@@ -5569,7 +5606,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 26.9,
             "y": 19.9,
-            "region": "",
+            "region": "Geliden",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -5580,7 +5617,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -44,
             "labelOffsetY": -5,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Arctic"
         },
         {
             "id": "aesenfell",
@@ -5588,7 +5626,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 24,
             "y": 19,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5598,7 +5636,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "frostwold",
@@ -5606,7 +5645,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 22.95,
             "y": 17.62,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 16,
@@ -5627,7 +5666,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 25.73,
             "y": 16.2,
-            "region": "",
+            "region": "Geliden",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5637,7 +5676,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "alconny",
@@ -5645,7 +5685,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 29.95,
             "y": 19,
-            "region": "",
+            "region": "Geliden",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5655,7 +5695,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "whitewood",
@@ -5663,7 +5704,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 28.37,
             "y": 17.6,
-            "region": "",
+            "region": "Geliden",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 16,
@@ -5676,7 +5717,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 0.5,
-            "biome": "Forest"
+            "biome": "Arctic"
         },
         {
             "id": "thaelshore",
@@ -5684,7 +5725,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 15.18,
             "y": 17.6,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5694,7 +5735,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -70,
             "labelOffsetY": -6,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "porpen",
@@ -5702,7 +5744,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 13.53,
             "y": 19.8,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5712,7 +5754,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "claymere",
@@ -5720,7 +5763,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 17.79,
             "y": 19.2,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5730,7 +5773,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 4,
             "labelOffsetY": -8,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "ruinsofdruegend",
@@ -5738,7 +5782,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 17.6,
             "y": 20.3,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5749,7 +5793,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "fawrese",
@@ -5757,7 +5802,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 14.64,
             "y": 21.29,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5767,7 +5812,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": 12,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "grobh",
@@ -5775,7 +5821,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 16.02,
             "y": 19.63,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5785,7 +5831,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -11,
             "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "couleepeninula",
@@ -5793,7 +5840,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 16.34,
             "y": 19.01,
-            "region": "",
+            "region": "Lyewell Stretch",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 18,
@@ -5805,7 +5852,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "eusteraridge",
@@ -5836,7 +5884,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 30.8,
             "y": 20.5,
-            "region": "",
+            "region": "Geliden",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -5847,7 +5895,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -7,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Arctic"
         },
         {
             "id": "bonfaduhr",
@@ -5855,7 +5904,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 31.4,
             "y": 22.61,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5865,7 +5914,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -7,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "tariat",
@@ -5873,7 +5923,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 30.96,
             "y": 26,
-            "region": "",
+            "region": "Glenleah",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5883,7 +5933,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "bronzebellyfort",
@@ -5891,7 +5942,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 31.34,
             "y": 24.3,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -5902,7 +5953,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -5,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "deadwingmountains",
@@ -5933,7 +5985,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 25.63,
             "y": 12.43,
-            "region": "",
+            "region": "Geliden",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5943,7 +5995,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "avalvein",
@@ -5951,7 +6004,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 29.06,
             "y": 7.79,
-            "region": "",
+            "region": "Blisterfel",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5961,7 +6014,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -55,
             "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Tundra"
         },
         {
             "id": "blisteredkeep",
@@ -5969,7 +6023,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 27.8,
             "y": 11.3,
-            "region": "",
+            "region": "Geliden",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -5980,7 +6034,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -18,
             "labelOffsetY": -27,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Tundra"
         },
         {
             "id": "seorneasor",
@@ -5988,7 +6043,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 30.46,
             "y": 8.5,
-            "region": "",
+            "region": "Blisterfel",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5999,7 +6054,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 10,
             "labelOffsetY": 5,
             "fontStyle": "Normal",
-            "biome": "Forest"
+            "biome": "Arctic"
         },
         {
             "id": "mahralkal",
@@ -6007,7 +6062,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 29.92,
             "y": 10.6,
-            "region": "",
+            "region": "Blisterfel",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6017,7 +6072,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 9,
             "labelOffsetY": 17,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Tundra"
         },
         {
             "id": "snowlightfort",
@@ -6025,7 +6081,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 31.39,
             "y": 16.52,
-            "region": "",
+            "region": "Geliden",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -6046,7 +6102,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 31.8,
             "y": 16.5,
-            "region": "",
+            "region": "Roaring Hollow",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6065,7 +6121,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 35.03,
             "y": 13.87,
-            "region": "",
+            "region": "Roaring Hollow",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6105,7 +6161,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 36.3,
             "y": 23.5,
-            "region": "",
+            "region": "Aikshaw Descent",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6125,7 +6181,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 33.04,
             "y": 29.06,
-            "region": "",
+            "region": "Glenleah",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6135,7 +6191,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": 8,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "whistgrove",
@@ -6143,7 +6200,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 33.03,
             "y": 26.96,
-            "region": "",
+            "region": "Glenleah",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 17,
@@ -6204,7 +6261,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 37.44,
             "y": 23.93,
-            "region": "",
+            "region": "Barrford",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 12,
@@ -6217,7 +6274,8 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "rotation": -12,
             "opacity": 1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Mountains"
         },
         {
             "id": "mablihod",
@@ -6225,7 +6283,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 30.9,
             "y": 33.9,
-            "region": "",
+            "region": "Glenleah",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6235,7 +6293,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "tariatriver",
