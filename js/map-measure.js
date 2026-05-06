@@ -31,17 +31,13 @@ const MapMeasureTool = (function () {
   function getMapPointFromEvent(instance, event) {
     const container = instance.container;
     const mapImg = instance.mapImg;
-    const rect = container.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-    const state = MapController.getInstanceState(instance.containerId);
-    if (!state || !mapImg.naturalWidth || !mapImg.naturalHeight) return null;
+    if (!mapImg.naturalWidth || !mapImg.naturalHeight) return null;
 
-    const imgDisplayWidth = container.offsetWidth * state.scale;
-    const imgDisplayHeight = (mapImg.naturalHeight / mapImg.naturalWidth) * container.offsetWidth * state.scale;
+    const imgRect = mapImg.getBoundingClientRect();
+    if (!imgRect.width || !imgRect.height) return null;
 
-    const x = ((mouseX - state.pointX) / imgDisplayWidth) * 100;
-    const y = ((mouseY - state.pointY) / imgDisplayHeight) * 100;
+    const x = (event.clientX - imgRect.left) / imgRect.width * 100;
+    const y = (event.clientY - imgRect.top) / imgRect.height * 100;
 
     if (x < 0 || x > 100 || y < 0 || y > 100) return null;
     return { x, y };
@@ -57,12 +53,14 @@ const MapMeasureTool = (function () {
     const hex = typeof CoordGrid !== 'undefined' ? CoordGrid.describePoint(point.x, point.y, instance.containerId) : null;
 
     if (location) {
+      const natW = instance.mapImg.naturalWidth || 1;
+      const natH = instance.mapImg.naturalHeight || 1;
       return {
         type: 'location',
         id: location.id,
         name: location.name,
-        x: location.x,
-        y: location.y,
+        x: location.x + (location.markerOffsetX || 0) / natW * 100,
+        y: location.y + (location.markerOffsetY || 0) / natH * 100,
         hexCode: hex ? hex.code : '--'
       };
     }
@@ -77,6 +75,15 @@ const MapMeasureTool = (function () {
     };
   }
 
+  function setRouteSection(copyEl, text) {
+    if (!copyEl) return;
+    const headingEl = copyEl.previousElementSibling;
+    const visible = !!text;
+    copyEl.style.display = visible ? '' : 'none';
+    if (headingEl) headingEl.style.display = visible ? '' : 'none';
+    if (visible) copyEl.textContent = text;
+  }
+
   function updateDisplay(instance) {
     const from = instance.fromPoint;
     const to = instance.toPoint;
@@ -89,7 +96,8 @@ const MapMeasureTool = (function () {
     if (!from || !to) {
       instance.directLabel.textContent = '--';
       instance.daysLabel.textContent = '--';
-      instance.routeLabel.textContent = 'No route selected';
+      setRouteSection(instance.routeLabel, null);
+      setRouteSection(instance.seaRouteLabel, null);
       instance.statusLabel.textContent = from ? 'Choose the second point to finish the measurement.' : 'Click two locations or two points on the map.';
       return;
     }
@@ -106,12 +114,23 @@ const MapMeasureTool = (function () {
         const pathNames = route.path
           .map((locationId) => MapOverlay.getLocationById(locationId)?.name || locationId)
           .join(' -> ');
-        instance.routeLabel.textContent = `${formatMiles(route.miles)} miles / ${formatDays(route.days)} days via ${pathNames}`;
+        setRouteSection(instance.routeLabel, `${formatMiles(route.miles)} miles / ${formatDays(route.days)} days via ${pathNames}`);
       } else {
-        instance.routeLabel.textContent = 'No named road route found between these locations';
+        setRouteSection(instance.routeLabel, null);
+      }
+
+      const seaRoute = instance.seaRouteLabel ? MapOverlay.findSeaRouteBetweenLocations(from.id, to.id) : null;
+      if (seaRoute) {
+        const seaPathNames = seaRoute.path
+          .map((locationId) => MapOverlay.getLocationById(locationId)?.name || locationId)
+          .join(' -> ');
+        setRouteSection(instance.seaRouteLabel, `${formatMiles(seaRoute.miles)} miles / ${formatDays(seaRoute.days)} days via ${seaPathNames}`);
+      } else {
+        setRouteSection(instance.seaRouteLabel, null);
       }
     } else {
-      instance.routeLabel.textContent = 'Road-route estimates require two named locations';
+      setRouteSection(instance.routeLabel, null);
+      setRouteSection(instance.seaRouteLabel, null);
     }
 
     instance.statusLabel.textContent = `Direct travel uses ${pace.label.toLowerCase()} at ${pace.milesPerDay} miles per day.`;
@@ -131,7 +150,7 @@ const MapMeasureTool = (function () {
     const startMarker = makeSvgElement('circle', {
       cx: fromX,
       cy: fromY,
-      r: Math.max(10, natW * 0.0042),
+      r: Math.max(5, natW * 0.002),
       fill: 'rgba(212, 175, 55, 0.2)',
       stroke: '#f5deb3',
       'stroke-width': '2.2'
@@ -148,8 +167,8 @@ const MapMeasureTool = (function () {
       x2: toX,
       y2: toY,
       stroke: '#f0c96a',
-      'stroke-width': Math.max(3, natW * 0.0015),
-      'stroke-dasharray': `${Math.max(18, natW * 0.006)} ${Math.max(10, natW * 0.0038)}`,
+      'stroke-width': Math.max(1.5, natW * 0.0007),
+      'stroke-dasharray': `${Math.max(9, natW * 0.003)} ${Math.max(5, natW * 0.0018)}`,
       'stroke-linecap': 'round'
     });
     instance.overlaySvg.appendChild(line);
@@ -157,7 +176,7 @@ const MapMeasureTool = (function () {
     const endMarker = makeSvgElement('circle', {
       cx: toX,
       cy: toY,
-      r: Math.max(10, natW * 0.0042),
+      r: Math.max(5, natW * 0.002),
       fill: 'rgba(220, 20, 60, 0.18)',
       stroke: '#ffd7a3',
       'stroke-width': '2.2'
@@ -288,6 +307,7 @@ const MapMeasureTool = (function () {
       directLabel: document.getElementById(options.directLabelId),
       daysLabel: document.getElementById(options.daysLabelId),
       routeLabel: document.getElementById(options.routeLabelId),
+      seaRouteLabel: document.getElementById(options.seaRouteLabelId),
       statusLabel: document.getElementById(options.statusLabelId),
       paceSelect: document.getElementById(options.paceSelectId),
       clearButton: document.getElementById(options.clearButtonId),

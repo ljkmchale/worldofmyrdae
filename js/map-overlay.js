@@ -172,6 +172,7 @@ const MapOverlay = (function () {
         const locations = getLocationsForRender();
         MapOverlayRenderContext.rebuildLocationIndex(renderCtx, locations);
         renderCtx.roadLinksByLocation = MapOverlayRouteGraph.buildRoadLinks(renderCtx.data, renderCtx.locMap);
+        renderCtx.seaLinksByLocation = MapOverlayRouteGraph.buildSeaLinks(renderCtx.data, renderCtx.locMap);
 
         const rendererCtx = getRendererContext();
 
@@ -291,6 +292,7 @@ const MapOverlay = (function () {
         percentToMiles: MapOverlayRouteGraph.percentToMiles,
         milesToDays: MapOverlayRouteGraph.milesToDays,
         findRouteBetweenLocations: (fromId, toId) => MapOverlayRouteGraph.findRouteBetweenLocations(fromId, toId, renderCtx.roadLinksByLocation),
+        findSeaRouteBetweenLocations: (fromId, toId) => MapOverlayRouteGraph.findRouteBetweenLocations(fromId, toId, renderCtx.seaLinksByLocation),
         refreshRoad,
         addRoadToMap
     };

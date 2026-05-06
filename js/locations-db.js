@@ -2468,7 +2468,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 58.2,
             "y": 27.6,
-            "region": "",
+            "region": "Weldrake",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2478,7 +2478,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": -5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "gibuldon",
@@ -4484,7 +4485,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 53.15,
             "y": 25.7,
-            "region": "",
+            "region": "Frystarian Strand",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4494,7 +4495,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "stagled",
@@ -4660,7 +4662,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 48.99,
             "y": 20.8,
-            "region": "",
+            "region": "Tegenwald",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4670,7 +4672,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 1,
             "labelOffsetY": -10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Arctic"
         },
         {
             "id": "thehighsea",
@@ -14893,6 +14896,169 @@ const WORLD_LOCATIONS = {
             "boatColor": "#555555",
             "routePurpose": "military",
             "riskLevel": "low"
+        },
+        {
+            "id": "farview-tarrarin-sea-road",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "farview",
+                [
+                    72.18,
+                    73.33
+                ],
+                [
+                    71.19,
+                    74.85
+                ],
+                [
+                    69.78,
+                    75.88
+                ],
+                [
+                    68.77,
+                    76.85
+                ],
+                [
+                    66.81,
+                    79.02
+                ],
+                [
+                    64.43,
+                    81.75
+                ],
+                [
+                    61.68,
+                    84.35
+                ],
+                [
+                    60.06,
+                    85.89
+                ],
+                [
+                    59.15,
+                    87.24
+                ],
+                [
+                    57.23,
+                    88.73
+                ],
+                [
+                    54.75,
+                    89.25
+                ],
+                [
+                    52.86,
+                    89.44
+                ],
+                [
+                    50.73,
+                    88.76
+                ],
+                [
+                    49.24,
+                    86.54
+                ],
+                [
+                    47.67,
+                    83.21
+                ],
+                [
+                    46.45,
+                    80.78
+                ],
+                [
+                    46.53,
+                    78.42
+                ],
+                [
+                    47.15,
+                    76.23
+                ],
+                "tarrarin"
+            ],
+            "routePurpose": "merchant",
+            "riskLevel": "medium",
+            "shipName": "Wayward Home",
+            "shipType": "Frigate",
+            "boatColor": "#cc33ff",
+            "captainName": "Captain Vexture Outright",
+            "cargo": "Spices, Furs, Textiles"
+        },
+        {
+            "id": "sulura-nauldeaus-sea-road",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "sulura",
+                [
+                    73.29,
+                    33.44
+                ],
+                [
+                    70.22,
+                    32.33
+                ],
+                [
+                    68.79,
+                    33.22
+                ],
+                [
+                    67.14,
+                    32.38
+                ],
+                [
+                    64.74,
+                    30.76
+                ],
+                [
+                    64.58,
+                    29.78
+                ],
+                [
+                    64.51,
+                    29.43
+                ],
+                [
+                    62.74,
+                    28.62
+                ],
+                "nauldeaus"
+            ],
+            "shipName": "Smoken Hot",
+            "shipType": "Frigate",
+            "captainName": "Captain Heather Lox",
+            "boatColor": "#cc33ff",
+            "routePurpose": "smuggling",
+            "riskLevel": "high"
+        },
+        {
+            "id": "glaspero-nuwharf-sea-road",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "glaspero",
+                [
+                    69.22,
+                    68.05
+                ],
+                [
+                    67.74,
+                    69.35
+                ],
+                [
+                    66.19,
+                    68.92
+                ],
+                "nuwharf"
+            ],
+            "riskLevel": "low",
+            "cargo": "Wood, Coal, Wheat",
+            "routePurpose": "passenger",
+            "shipType": "Merchant Cog",
+            "boatColor": "#3377ff",
+            "captainName": "Captain Mayer Wood",
+            "shipName": "The Integrity"
         }
     ],
     "regions": []

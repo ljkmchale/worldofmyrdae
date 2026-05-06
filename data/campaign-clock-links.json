@@ -18,7 +18,7 @@
       "sourceWorldDateLine": "41st of Hemist – The Swamps",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 3",
-      "lastSyncedAt": "2026-05-05T22:54:14.863Z"
+      "lastSyncedAt": "2026-05-06T18:26:12.984Z"
     },
     {
       "id": "heroes-of-emberstran",
@@ -38,7 +38,7 @@
       "sourceWorldDateLine": "34th of Talil, 1246",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 21",
-      "lastSyncedAt": "2026-05-05T22:54:14.863Z"
+      "lastSyncedAt": "2026-05-06T18:26:12.984Z"
     },
     {
       "id": "a-new-adventure",
@@ -58,7 +58,7 @@
       "sourceWorldDateLine": "38th of Talil at the Pale Lantern",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 16",
-      "lastSyncedAt": "2026-05-05T22:54:14.863Z"
+      "lastSyncedAt": "2026-05-06T18:26:12.984Z"
     },
     {
       "id": "bloody-endeaver",
@@ -76,10 +76,10 @@
       "sourceSession": 28,
       "sourceSessionHeading": "28 - Better off Dead (12/08)",
       "sourceWorldDateLine": "3rd of Paramor, 1246 in Hol’gardur",
-      "syncStatus": "ok",
-      "syncMessage": "Parsed session 28",
-      "lastSyncedAt": "2026-05-05T22:54:14.863Z"
+      "syncStatus": "error",
+      "syncMessage": "HTTP 500",
+      "lastSyncedAt": "2026-05-06T18:26:12.984Z"
     }
   ],
-  "lastSyncedAt": "2026-05-05T22:54:14.863Z"
+  "lastSyncedAt": "2026-05-06T18:26:12.984Z"
 }

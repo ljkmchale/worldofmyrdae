@@ -6,6 +6,7 @@ const MapOverlayRouteGraph = (function () {
     const TRAVEL_MILES_PER_DAY = {
         major: 24,
         minor: 18,
+        'water-route': 72,
         default: 20
     };
 
@@ -137,6 +138,45 @@ const MapOverlayRouteGraph = (function () {
         return roadLinksByLocation;
     }
 
+    function buildSeaLinks(data, locMap) {
+        const seaLinksByLocation = new Map();
+        if (!data || !Array.isArray(data.roads)) return seaLinksByLocation;
+
+        data.roads.forEach((road) => {
+            if (road.type !== 'water-route') return;
+            const roadPoints = getRoadPointSource(road);
+            if (roadPoints.length < 2) return;
+
+            let lastNamedPoint = null;
+            let segmentPoints = [];
+
+            roadPoints.forEach((rawPoint) => {
+                const point = getRoadPointPercent(rawPoint, locMap);
+                if (!point) return;
+
+                if (!segmentPoints.length) segmentPoints.push(point);
+                else {
+                    const prev = segmentPoints[segmentPoints.length - 1];
+                    if (prev.x !== point.x || prev.y !== point.y || prev.locationId !== point.locationId) {
+                        segmentPoints.push(point);
+                    }
+                }
+
+                if (point.locationId) {
+                    if (lastNamedPoint && lastNamedPoint.locationId !== point.locationId && segmentPoints.length >= 2) {
+                        const percentDistance = measurePercentPath(segmentPoints);
+                        addRoadLink(seaLinksByLocation, locMap, lastNamedPoint.locationId, point.locationId, road, percentDistance);
+                        addRoadLink(seaLinksByLocation, locMap, point.locationId, lastNamedPoint.locationId, road, percentDistance);
+                    }
+                    lastNamedPoint = point;
+                    segmentPoints = [point];
+                }
+            });
+        });
+
+        return seaLinksByLocation;
+    }
+
     function findRouteBetweenLocations(fromId, toId, roadLinksByLocation) {
         if (!fromId || !toId || fromId === toId) return null;
         if (!roadLinksByLocation.has(fromId) || !roadLinksByLocation.has(toId)) return null;
@@ -216,6 +256,7 @@ const MapOverlayRouteGraph = (function () {
         percentToMiles,
         milesToDays,
         buildRoadLinks,
+        buildSeaLinks,
         findRouteBetweenLocations
     };
 })();
