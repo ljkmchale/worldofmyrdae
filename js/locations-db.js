@@ -2785,7 +2785,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 23.72,
             "y": 35.24,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2795,7 +2795,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -13,
             "labelOffsetY": 20,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "babbleglen",
@@ -2803,7 +2804,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 22.73,
             "y": 34.27,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2813,7 +2814,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "gilburough-cascades",
@@ -2860,7 +2862,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 23,
             "y": 31.8,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2870,7 +2872,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -16,
             "labelOffsetY": -9,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "wetlands-of-camburne",
@@ -2878,7 +2881,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 22.05,
             "y": 30.64,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 13,
@@ -2899,7 +2902,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 19.79,
             "y": 32.27,
-            "region": "",
+            "region": "Camburne",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2909,7 +2912,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "leoning",
@@ -2917,7 +2921,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 19.99,
             "y": 36.16,
-            "region": "",
+            "region": "Camburne",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2927,7 +2931,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -58,
             "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "layden",
@@ -2935,7 +2940,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 23,
             "y": 38.17,
-            "region": "",
+            "region": "Sutherford",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2945,7 +2950,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -4,
             "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "proth",
@@ -2953,7 +2959,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 21.4,
             "y": 39.3,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -2963,7 +2969,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "timberdown",
@@ -2971,7 +2978,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 24,
             "y": 37.7,
-            "region": "",
+            "region": "Sutherford",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -2982,7 +2989,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 7,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "sheperds-keep",
@@ -2990,7 +2998,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 19.9,
             "y": 33.9,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3001,7 +3009,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -60,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "broadmere-rest",
@@ -3009,7 +3018,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 20.2,
             "y": 30.2,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -3021,7 +3030,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -12,
             "labelOffsetY": -11,
             "labelAlign": "end",
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "nesulport",
@@ -3029,7 +3039,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 20,
             "y": 26.9,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3087,7 +3097,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 21.4,
             "y": 26.61,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 16,
@@ -3108,7 +3118,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 21.15,
             "y": 43.88,
-            "region": "",
+            "region": "Camburne",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3118,7 +3128,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -66,
             "labelOffsetY": -1,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "gristlow",
@@ -3126,7 +3137,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 22,
             "y": 41.51,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3136,7 +3147,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -1,
             "labelOffsetY": -7,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "morrey",
@@ -3144,7 +3156,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 21.5,
             "y": 44.7,
-            "region": "",
+            "region": "Sutherford",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3154,7 +3166,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -1,
             "labelOffsetY": -14,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "carnsby",
@@ -3162,7 +3175,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 23.7,
             "y": 45,
-            "region": "",
+            "region": "Sutherford",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3172,7 +3185,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -54,
             "labelOffsetY": -3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "kelmouth",
@@ -3180,7 +3194,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 24.58,
             "y": 46.94,
-            "region": "",
+            "region": "Sutherford",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3190,7 +3204,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -65,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "kith",
@@ -3198,7 +3213,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 27,
             "y": 46,
-            "region": "",
+            "region": "Sutherford",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3208,7 +3223,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -33,
             "labelOffsetY": 10,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "dhachaomhnoir",
@@ -3216,7 +3232,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 27.3,
             "y": 46.51,
-            "region": "",
+            "region": "Aelbon",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -3226,7 +3242,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -29,
             "labelOffsetY": 21,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "hillsofwheldrake",
@@ -4679,7 +4696,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 37.94,
             "y": 35.51,
-            "region": "",
+            "region": "Dunmoore",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4811,7 +4828,7 @@ const WORLD_LOCATIONS = {
             "type": "small-city",
             "x": 36.44,
             "y": 48.34,
-            "region": "",
+            "region": "Dunmoore",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4821,7 +4838,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "braelen",
@@ -4829,7 +4847,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 35.97,
             "y": 44.1,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -4839,7 +4857,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Coastal"
         },
         {
             "id": "serpentsplunge",
@@ -5156,7 +5175,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 21.22,
             "y": 41.31,
-            "region": "",
+            "region": "Camburne",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -5166,7 +5185,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -69,
             "labelOffsetY": 3,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "midrambasin",
@@ -5195,7 +5215,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 21.38,
             "y": 40.1,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 10,
@@ -5278,7 +5298,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 25.07,
             "y": 36.6,
-            "region": "",
+            "region": "Sutherford",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 15,
@@ -5291,7 +5311,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "biome": "Forest"
+            "biome": "Dense Forest"
         },
         {
             "id": "gilburoughriver",
@@ -5362,7 +5382,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 23.09,
             "y": 28.64,
-            "region": "",
+            "region": "Camburne",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 15,
@@ -5374,7 +5394,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 0,
             "labelOffsetY": 0,
             "labelAlign": "middle",
-            "opacity": 0.5
+            "opacity": 0.5,
+            "biome": "Mountains"
         },
         {
             "id": "Kodderl",
@@ -6244,7 +6265,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 33.75,
             "y": 36.99,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Nature",
             "fontFamily": "Penumbra Sans Std",
             "fontSize": 22,
@@ -6265,7 +6286,7 @@ const WORLD_LOCATIONS = {
             "type": "poi",
             "x": 30.33,
             "y": 36.94,
-            "region": "",
+            "region": "Sutherford",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6276,7 +6297,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -52,
             "labelOffsetY": -12,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "elondale",
@@ -6284,7 +6306,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 31.43,
             "y": 36.92,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6303,7 +6325,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 32.1,
             "y": 40.17,
-            "region": "",
+            "region": "Aelbon",
             "description": "City",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6313,7 +6335,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -73,
             "labelOffsetY": 5,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "River / Waterway"
         },
         {
             "id": "bluffhunt",
@@ -6321,7 +6344,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 33.7,
             "y": 36.3,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Nature",
             "fontFamily": "Simonetta",
             "fontSize": 12,
@@ -6332,7 +6355,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 12,
             "labelOffsetY": -9,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "hennibon",
@@ -6340,7 +6364,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 34.71,
             "y": 38.97,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6350,7 +6374,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 15,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "larnwik",
@@ -6358,7 +6383,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 33.3,
             "y": 40.7,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6368,7 +6393,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 16,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Forest"
         },
         {
             "id": "tinderhill",
@@ -6376,7 +6402,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 35.75,
             "y": 42.64,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 17,
@@ -6387,7 +6413,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 0,
             "labelOffsetY": 0,
-            "opacity": 0.7
+            "opacity": 0.7,
+            "biome": "Forest"
         },
         {
             "id": "edgewood",
@@ -6395,7 +6422,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 36,
             "y": 45.9,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 15,
@@ -6415,7 +6442,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 35.3,
             "y": 44.9,
-            "region": "",
+            "region": "Dunmoore",
             "description": "Nature",
             "fontFamily": "Garamond MT",
             "fontSize": 12,
@@ -6426,7 +6453,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -55,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Forest"
         },
         {
             "id": "elspire",
@@ -6434,7 +6462,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 31.77,
             "y": 45.9,
-            "region": "",
+            "region": "Aelbon",
             "description": "Town",
             "fontFamily": "Garamond MT",
             "fontSize": 14,
@@ -6444,7 +6472,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 10,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Coastal"
         },
         {
             "id": "greymossswamp",
@@ -6452,7 +6481,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 28.08,
             "y": 44.3,
-            "region": "",
+            "region": "Aelbon",
             "description": "Nature",
             "fontFamily": "Cinzel Decorative",
             "fontSize": 12,
@@ -6495,7 +6524,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 26.7,
             "y": 44.03,
-            "region": "",
+            "region": "Sutherford",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6506,7 +6535,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 9,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "carnsby-kith-denskelber-crossroad",
@@ -6533,7 +6563,7 @@ const WORLD_LOCATIONS = {
             "type": "nature",
             "x": 29.5,
             "y": 43.3,
-            "region": "",
+            "region": "Aelbon",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 16,
@@ -6699,7 +6729,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 29.81,
             "y": 45.62,
-            "region": "",
+            "region": "Aelbon",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6709,7 +6739,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": 12,
-            "labelOffsetY": 6
+            "labelOffsetY": 6,
+            "biome": "Plains"
         },
         {
             "id": "kilgrenney",
@@ -6717,7 +6748,7 @@ const WORLD_LOCATIONS = {
             "type": "town",
             "x": 31.3,
             "y": 42.52,
-            "region": "",
+            "region": "Aelbon",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6727,7 +6758,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetX": 0,
             "markerOffsetY": 0,
             "labelOffsetX": -74,
-            "labelOffsetY": 3
+            "labelOffsetY": 3,
+            "biome": "Forest"
         },
         {
             "id": "oakrest",
@@ -6735,7 +6767,7 @@ const WORLD_LOCATIONS = {
             "type": "landmark",
             "x": 32.53,
             "y": 43.77,
-            "region": "",
+            "region": "Aelbon",
             "description": "Point of Interest",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -6746,7 +6778,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 14,
             "labelOffsetY": 0,
-            "opacity": 1
+            "opacity": 1,
+            "biome": "Plains"
         },
         {
             "id": "blustery-waste",
