@@ -176,12 +176,11 @@ const MapOverlayTooltip = (function () {
     }
 
     function getCityPreviewImage(loc) {
-        const cityId = getTooltipCityFolderId(loc);
         const entry = getCityMapEntry(loc);
         if (entry && (entry.previewImage || entry.image)) {
             return entry.previewImage || entry.image || null;
         }
-        return cityId ? `images/cities/${cityId}/sketch.png` : null;
+        return null;
     }
 
     function getCustomTooltipHeaderImage(loc) {
@@ -271,6 +270,17 @@ const MapOverlayTooltip = (function () {
         if (textIncludesAny(text, ['market', 'bazaar', 'trade'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.market;
 
         return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.poi;
+    }
+
+    function getStaticGeneratedTooltipHeaderImage(loc) {
+        if (!loc || !loc.id || !loc.type) return null;
+        if (isWaterTooltipType(loc.type) || loc.type === 'nature' || loc.type === 'region') return null;
+        const id = String(loc.id)
+            .toLowerCase()
+            .replace(/['’]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        return id ? `images/tooltips/generated/locations/${id}.jpg` : null;
     }
 
     function generateTooltipHeaderImage(loc, ctx) {
@@ -369,12 +379,14 @@ const MapOverlayTooltip = (function () {
         const cityPreviewImage = getCityPreviewImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
+        const staticGeneratedPreviewImage = getStaticGeneratedTooltipHeaderImage(loc);
         const genericTypePreviewImage = getGenericTypeTooltipHeaderImage(loc);
         const generatedPreviewImage = (
             ENABLE_GENERATED_MAP_PREVIEWS
             && !cityPreviewImage
             && !biomePreviewImage
             && !waterPreviewImage
+            && !staticGeneratedPreviewImage
             && !genericTypePreviewImage
         ) ? generateTooltipHeaderImage(loc, ctx) : null;
 
@@ -383,6 +395,7 @@ const MapOverlayTooltip = (function () {
             cityPreviewImage,
             biomePreviewImage,
             waterPreviewImage,
+            staticGeneratedPreviewImage,
             genericTypePreviewImage,
             generatedPreviewImage
         ].filter(Boolean);
@@ -394,6 +407,7 @@ const MapOverlayTooltip = (function () {
             cityPreviewImage,
             biomePreviewImage,
             waterPreviewImage,
+            staticGeneratedPreviewImage,
             genericTypePreviewImage,
             generatedPreviewImage
         };
@@ -409,6 +423,7 @@ const MapOverlayTooltip = (function () {
                 cityPreviewImage: null,
                 biomePreviewImage: null,
                 waterPreviewImage: null,
+                staticGeneratedPreviewImage: null,
                 genericTypePreviewImage: null,
                 generatedPreviewImage: null
             }
@@ -422,6 +437,7 @@ const MapOverlayTooltip = (function () {
             cityPreviewImage: previewImages.cityPreviewImage,
             biomePreviewImage: previewImages.biomePreviewImage,
             waterPreviewImage: previewImages.waterPreviewImage,
+            staticGeneratedPreviewImage: previewImages.staticGeneratedPreviewImage,
             genericTypePreviewImage: previewImages.genericTypePreviewImage
         };
     }
@@ -500,7 +516,7 @@ const MapOverlayTooltip = (function () {
                 ? ' tt-generated-preview-wrap'
                 : state.cityPreviewImage
                     ? ' tt-city-preview-wrap'
-                    : (state.biomePreviewImage || state.waterPreviewImage)
+                    : (state.biomePreviewImage || state.waterPreviewImage || state.staticGeneratedPreviewImage)
                         ? ' tt-biome-preview-wrap'
                         : state.genericTypePreviewImage
                             ? ' tt-biome-preview-wrap'
@@ -590,6 +606,7 @@ const MapOverlayTooltip = (function () {
             cityPreviewImage: previewState.cityPreviewImage || '',
             biomePreviewImage: previewState.biomePreviewImage || '',
             waterPreviewImage: previewState.waterPreviewImage || '',
+            staticGeneratedPreviewImage: previewState.staticGeneratedPreviewImage || '',
             genericTypePreviewImage: previewState.genericTypePreviewImage || '',
             roadKey
         });
