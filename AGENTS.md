@@ -31,6 +31,13 @@ Desktop shell:
 npm run desktop:dev
 ```
 
+Windows notes:
+
+- Use PowerShell from this repo root: `C:\Users\Larry McHale\Desktop\WorldofMyrdae`.
+- If PowerShell blocks `npm.ps1`, run `npm.cmd run <script>` instead.
+- If `rg` fails with `Access is denied`, use PowerShell `Get-ChildItem` / `Select-String` for repo searches.
+- The local web server normally runs on `localhost:3000`; use that for browser smoke tests after map/editor UI changes.
+
 ## Architecture
 
 ### World data flow
@@ -77,6 +84,39 @@ npm run desktop:dev
 | `server.js` | static serving plus save, city, world clock, and AI endpoints |
 | `electron/main.js` | Electron app bootstrap |
 | `data/campaign-clock-links.json` | campaign anchors and Google Doc sync targets |
+
+## Directory Map
+
+Active runtime/source folders:
+
+- `css/` - shared styling, including the dark fantasy theme.
+- `data/` - campaign clock link data and other small runtime data files.
+- `electron/` - desktop shell, preload bridge, and app icon.
+- `fonts/` - local font assets referenced by CSS.
+- `images/cities/` - city map images, crests, sketches, and generated city assets.
+- `images/city-scenes/` - scene assets used by `city-scene.html` / `js/city-scene-data.js`.
+- `images/map-layers/` - layered world map imagery used by map/editor pages.
+- `images/tooltips/` - biome, water, city type, landmark, and ship tooltip imagery.
+- `js/` - application logic; `js/cities/` and `js/overlay/` are active submodules.
+
+Generated, local, or tooling folders:
+
+- `.agents/` - Codex skill definitions for this repo. Useful to agents, not app runtime.
+- `.claude/` - Claude/local tooling and worktrees. Not app runtime; worktree folders may be locked by running Claude sessions.
+- `backups/` - local safety snapshots; intentionally ignored by git.
+- `dist/` - Electron build output.
+- `docs/` - project notes and Unreal/export documentation.
+- `exports/` - large render/export artifacts; not used by the web/Electron app.
+- `node_modules/` - installed dependencies.
+- `scripts/` - manual image-processing scripts.
+- `session-notes/` - local transcript/voice-test artifacts; not app runtime.
+- `tools/` - UE/helper scripts; ignored by git.
+- `ue5-exports/` - Unreal export assets; ignored by git.
+
+Known cleanup candidates:
+
+- `images/myrdae-map-layers/` is currently empty.
+- `images/generic towns/` currently has a large generated image with no app references found.
 
 ## Data Model Notes
 
@@ -209,6 +249,8 @@ Before making significant changes to `js/locations-db.js`, create a backup.
 
 Use the `/backup` skill.
 
+`backups/` is local-only and should stay out of git.
+
 ## Common Tasks
 
 ### Add a new location
@@ -221,6 +263,7 @@ Use `/add-location`, edit `js/locations-db.js`, or place it through `editor.html
 - edit `js/cities/<city-id>.js`
 - place assets in `images/cities/<city-id>/`
 - verify in `city-viewer.html?city=<id>`
+- after importing city assets, make sure tooltip previews/crests resolve through `js/city-maps.js` and `js/overlay/tooltip.js`
 
 ### Validate the world database
 
@@ -241,10 +284,19 @@ If changes touch Electron boot, server mutability rules, or packaged assets, rev
 - Fonts center on Cinzel and Cormorant Garamond
 - No bundler and no build step for normal web development
 
+## Verification Notes
+
+- For data-only edits, at minimum parse or load the edited JS/JSON and check for duplicate IDs or broken references.
+- For editor interaction work, test the exact interaction in `http://localhost:3000/editor.html`.
+- For viewer changes, smoke test `map.html` and `embed-map.html` when shared overlay code changes.
+- For city map changes, smoke test `city-viewer.html?city=<id>`.
+- For Electron/server mutability changes, review `DESKTOP_BUILD.md` and verify the desktop shell still starts.
+
 ## What Not To Do
 
 - Do not switch persistence back to `localStorage`
 - Do not add npm dependencies casually
 - Do not edit files inside `backups/`
+- Do not commit generated/local folders such as `dist/`, `tools/`, `ue5-exports/`, `session-notes/`, or `.claude/worktrees/`
 - Do not assume only the web server exists; check Electron implications too
 - Do not assume standalone `city-*.html` pages are the primary city flow; the current system is `city-viewer.html` plus `js/city-maps.js` and `js/cities/`

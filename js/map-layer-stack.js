@@ -3,11 +3,11 @@
  * Keeps #map-image as the coordinate anchor while showing runtime map layers.
  */
 const MapLayerStack = (function () {
-    const WORLD_ANCHOR_SRC = 'images/map-layers/Myrdae-layered-preview.jpg';
-    const layers = [
-        { id: 'ocean-base', src: 'images/map-layers/display-ocean-base.jpg', zIndex: 0, opacity: 0.12 },
-        { id: 'land-composite', src: 'images/map-layers/display-land-composite.png', zIndex: 2 }
-    ];
+    const WORLD_COORDINATE_SPACE = Object.freeze({ width: 6400, height: 3600 });
+    const WORLD_REGISTRATION_OFFSET = Object.freeze({ x: 0, y: 0 });
+    const WORLD_LAYER_DIR = 'images/myrdae-map-layers';
+    const WORLD_ANCHOR_SRC = `${WORLD_LAYER_DIR}/Myrdae (v.4.2.c - Runtime Composite 6400).png`;
+    const layers = [];
 
     const instances = new Map();
 
@@ -33,7 +33,7 @@ const MapLayerStack = (function () {
     }
 
     function setAnchorMode(mapImg, layered) {
-        mapImg.style.opacity = layered ? '0' : '1';
+        mapImg.style.opacity = '1';
         mapImg.style.pointerEvents = 'none';
     }
 
@@ -89,11 +89,21 @@ const MapLayerStack = (function () {
         }
     }
 
+    function getCoordinateSpace() {
+        return WORLD_COORDINATE_SPACE;
+    }
+
+    function getRegistrationOffset() {
+        return WORLD_REGISTRATION_OFFSET;
+    }
+
     return {
         init,
         setTransform,
         showWorld,
         showSingleImage,
+        getCoordinateSpace,
+        getRegistrationOffset,
         WORLD_ANCHOR_SRC
     };
 })();

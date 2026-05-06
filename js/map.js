@@ -23,6 +23,10 @@ const MapController = (function () {
             startX: 0,
             startY: 0,
             ticking: false,
+            saveTimer: null,
+            animationId: null,
+            animationTimer: null,
+            animationToken: 0,
             cw: 0, ch: 0, baseWidth: 0, baseHeight: 0
         };
 
@@ -47,19 +51,33 @@ const MapController = (function () {
                 state.baseWidth = state.cw;
                 state.baseHeight = mapImg.naturalHeight * ratio;
             }
+            return hasReadyDimensions();
+        }
+
+        function hasReadyDimensions() {
+            return state.cw > 0 && state.ch > 0 && state.baseWidth > 0 && state.baseHeight > 0;
         }
 
         function requestUpdate(save = true) {
             if (!state.ticking) {
                 requestAnimationFrame(() => {
                     updateTransform();
-                    if (save) saveState();
+                    if (save) scheduleSaveState();
                 });
                 state.ticking = true;
             }
         }
 
+        function scheduleSaveState() {
+            if (state.saveTimer) clearTimeout(state.saveTimer);
+            state.saveTimer = setTimeout(() => {
+                state.saveTimer = null;
+                saveState();
+            }, 160);
+        }
+
         function saveState() {
+            if (!hasReadyDimensions()) return;
             localStorage.setItem(storageKey, JSON.stringify({
                 scale: state.scale,
                 pointX: state.pointX,
@@ -67,7 +85,30 @@ const MapController = (function () {
             }));
         }
 
+        function cancelAnimation() {
+            state.animationToken += 1;
+            if (state.animationId) {
+                cancelAnimationFrame(state.animationId);
+                state.animationId = null;
+            }
+            if (state.animationTimer) {
+                clearTimeout(state.animationTimer);
+                state.animationTimer = null;
+            }
+            const transformTarget = getTransformTarget();
+            if (transformTarget) transformTarget.style.transition = '';
+        }
+
+        function getTransformTarget() {
+            return options.layerGroup ? document.getElementById(options.layerGroup) : mapImg;
+        }
+
         function updateTransform() {
+            if (!hasReadyDimensions()) {
+                state.ticking = false;
+                return;
+            }
+
             state.scale = Math.min(state.scale, getMaxScale());
             const iw = state.baseWidth * state.scale;
             const ih = state.baseHeight * state.scale;
@@ -85,7 +126,7 @@ const MapController = (function () {
             }
 
             const transformStr = `translate3d(${state.pointX}px, ${state.pointY}px, 0) scale(${state.scale})`;
-            const transformTarget = options.layerGroup ? document.getElementById(options.layerGroup) : mapImg;
+            const transformTarget = getTransformTarget();
             transformTarget.style.transform = transformStr;
             transformTarget.style.transformOrigin = '0 0';
 
@@ -97,19 +138,19 @@ const MapController = (function () {
         }
 
         const onReady = () => {
-            updateDimensions();
+            if (!updateDimensions()) return;
             state.scale = Math.min(state.scale, getMaxScale());
             requestUpdate(false); // Initial draw, don't re-save immediately
         };
 
-        if (mapImg.complete) onReady();
+        if (mapImg.complete && mapImg.naturalWidth) onReady();
         mapImg.addEventListener('load', onReady);
 
         // Use ResizeObserver instead of window resize to handle flexbox rendering delays
         // and sidebar toggle resizing smoothly.
         const resizeObserver = new ResizeObserver(() => {
             if (container.offsetWidth === 0 || container.offsetHeight === 0) return;
-            updateDimensions();
+            if (!updateDimensions()) return;
             requestUpdate(false);
         });
         resizeObserver.observe(container);
@@ -123,6 +164,10 @@ const MapController = (function () {
 
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
+            cancelAnimation();
+            if (typeof MapOverlay !== 'undefined' && typeof MapOverlay.hideActiveTooltip === 'function') {
+                MapOverlay.hideActiveTooltip();
+            }
             const rect = container.getBoundingClientRect();
             const xs = (e.clientX - rect.left - state.pointX) / state.scale;
             const ys = (e.clientY - rect.top - state.pointY) / state.scale;
@@ -142,6 +187,10 @@ const MapController = (function () {
         container.addEventListener('mousedown', (e) => {
             if (e.button !== 0) return;
             if (e.target.closest('.legend-panel')) return; // Let legend panel clicks (inputs, buttons) through
+            cancelAnimation();
+            if (typeof MapOverlay !== 'undefined' && typeof MapOverlay.hideActiveTooltip === 'function') {
+                MapOverlay.hideActiveTooltip();
+            }
             e.preventDefault(); // Prevent text selection and default image dragging
             state.isDragging = true;
             state.startX = e.clientX - state.pointX;
@@ -160,14 +209,40 @@ const MapController = (function () {
             if (state.isDragging) {
                 state.isDragging = false;
                 container.style.cursor = 'grab';
+                if (state.saveTimer) {
+                    clearTimeout(state.saveTimer);
+                    state.saveTimer = null;
+                }
+                saveState();
             }
         });
 
         function animatePanTo(targetScale, targetX, targetY, duration) {
+            cancelAnimation();
+            const token = state.animationToken;
+            duration = duration || 500;
+
+            if (options.layerGroup && !options.onTransform) {
+                const transformTarget = getTransformTarget();
+                if (transformTarget) {
+                    transformTarget.style.transition = `transform ${duration}ms cubic-bezier(0.65, 0, 0.35, 1)`;
+                }
+                state.scale = targetScale;
+                state.pointX = targetX;
+                state.pointY = targetY;
+                updateTransform();
+                state.animationTimer = setTimeout(() => {
+                    if (token !== state.animationToken) return;
+                    if (transformTarget) transformTarget.style.transition = '';
+                    state.animationTimer = null;
+                    saveState();
+                }, duration + 40);
+                return;
+            }
+
             const startScale = state.scale;
             const startX = state.pointX;
             const startY = state.pointY;
-            duration = duration || 500;
             const startTime = performance.now();
 
             function easeInOutCubic(t) {
@@ -175,6 +250,7 @@ const MapController = (function () {
             }
 
             function step(now) {
+                if (token !== state.animationToken) return;
                 const elapsed = now - startTime;
                 const t = Math.min(elapsed / duration, 1);
                 const e = easeInOutCubic(t);
@@ -185,11 +261,15 @@ const MapController = (function () {
 
                 updateTransform();
 
-                if (t < 1) requestAnimationFrame(step);
-                else saveState();
+                if (t < 1) {
+                    state.animationId = requestAnimationFrame(step);
+                } else {
+                    state.animationId = null;
+                    saveState();
+                }
             }
 
-            requestAnimationFrame(step);
+            state.animationId = requestAnimationFrame(step);
         }
 
         return {
@@ -208,7 +288,8 @@ const MapController = (function () {
             getState: () => ({ ...state }),
             panToLocation: function (x, y, targetScale) {
                 updateDimensions();
-                const newScale = Math.min(Math.max(2, targetScale || 4), getMaxScale());
+                const desiredScale = Math.max(2, targetScale || 4, state.scale || 1);
+                const newScale = Math.min(desiredScale, getMaxScale());
                 const pixelX = (x / 100) * state.baseWidth;
                 const pixelY = (y / 100) * state.baseHeight;
                 const targetPointX = (state.cw / 2) - pixelX * newScale;

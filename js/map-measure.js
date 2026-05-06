@@ -43,6 +43,30 @@ const MapMeasureTool = (function () {
     return { x, y };
   }
 
+  function getMapCoordinateSpace(mapImg) {
+    const stack = (typeof MapLayerStack !== 'undefined') ? MapLayerStack : null;
+    const coordinateSpace = stack && typeof stack.getCoordinateSpace === 'function'
+      ? stack.getCoordinateSpace()
+      : null;
+    return {
+      width: coordinateSpace?.width || mapImg.naturalWidth || 1,
+      height: coordinateSpace?.height || mapImg.naturalHeight || 1
+    };
+  }
+
+  function getMapRegistrationOffset() {
+    const stack = (typeof MapLayerStack !== 'undefined') ? MapLayerStack : null;
+    return stack && typeof stack.getRegistrationOffset === 'function'
+      ? stack.getRegistrationOffset()
+      : { x: 0, y: 0 };
+  }
+
+  function getRegisteredViewBox(mapImg) {
+    const coordinateSpace = getMapCoordinateSpace(mapImg);
+    const offset = getMapRegistrationOffset();
+    return `${-offset.x} ${-offset.y} ${coordinateSpace.width} ${coordinateSpace.height}`;
+  }
+
   function buildPointDescriptor(instance, point, target) {
     const locationId = target && target.closest ? target.closest('[data-location-id]')?.getAttribute('data-location-id') : null;
     let location = locationId ? MapOverlay.getLocationById(locationId) : null;
@@ -53,14 +77,13 @@ const MapMeasureTool = (function () {
     const hex = typeof CoordGrid !== 'undefined' ? CoordGrid.describePoint(point.x, point.y, instance.containerId) : null;
 
     if (location) {
-      const natW = instance.mapImg.naturalWidth || 1;
-      const natH = instance.mapImg.naturalHeight || 1;
+      const coordinateSpace = getMapCoordinateSpace(instance.mapImg);
       return {
         type: 'location',
         id: location.id,
         name: location.name,
-        x: location.x + (location.markerOffsetX || 0) / natW * 100,
-        y: location.y + (location.markerOffsetY || 0) / natH * 100,
+        x: location.x + (location.markerOffsetX || 0) / coordinateSpace.width * 100,
+        y: location.y + (location.markerOffsetY || 0) / coordinateSpace.height * 100,
         hexCode: hex ? hex.code : '--'
       };
     }
@@ -142,8 +165,9 @@ const MapMeasureTool = (function () {
 
     if (!instance.fromPoint) return;
 
-    const natW = instance.mapImg.naturalWidth;
-    const natH = instance.mapImg.naturalHeight;
+    const coordinateSpace = getMapCoordinateSpace(instance.mapImg);
+    const natW = coordinateSpace.width;
+    const natH = coordinateSpace.height;
     const fromX = (instance.fromPoint.x / 100) * natW;
     const fromY = (instance.fromPoint.y / 100) * natH;
 
@@ -218,6 +242,7 @@ const MapMeasureTool = (function () {
     const overlayId = `${instance.containerId}-measure-overlay`;
     let overlay = document.getElementById(overlayId);
     if (overlay) {
+      overlay.setAttribute('viewBox', getRegisteredViewBox(instance.mapImg));
       instance.overlaySvg = overlay;
       return;
     }
@@ -225,7 +250,7 @@ const MapMeasureTool = (function () {
     overlay = makeSvgElement('svg', {
       id: overlayId,
       class: 'map-measure-overlay',
-      viewBox: `0 0 ${instance.mapImg.naturalWidth} ${instance.mapImg.naturalHeight}`,
+      viewBox: getRegisteredViewBox(instance.mapImg),
       preserveAspectRatio: 'xMinYMin meet'
     });
     overlay.style.position = 'absolute';
@@ -234,7 +259,7 @@ const MapMeasureTool = (function () {
     overlay.style.width = '100%';
     overlay.style.height = 'auto';
     overlay.style.pointerEvents = 'none';
-    overlay.style.zIndex = '9';
+    overlay.style.zIndex = '11';
 
     instance.mapImg.parentNode.insertBefore(overlay, instance.mapImg.nextSibling);
     instance.overlaySvg = overlay;

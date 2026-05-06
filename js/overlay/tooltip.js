@@ -2,6 +2,7 @@
  * Tooltip state, image resolution, and HTML rendering.
  */
 const MapOverlayTooltip = (function () {
+    const ENABLE_GENERATED_MAP_PREVIEWS = false;
     const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
         mountains: 'images/tooltips/biomes/mountains.png',
         forest: 'images/tooltips/biomes/forest.png',
@@ -15,6 +16,35 @@ const MapOverlayTooltip = (function () {
         coast: 'images/tooltips/water/coast.png',
         lake: 'images/tooltips/water/lake.png',
         river: 'images/tooltips/water/river.png'
+    });
+    const TOOLTIP_GENERIC_TYPE_IMAGE_PATHS = Object.freeze({
+        archive: 'images/tooltips/city-types/archive.png',
+        castle: 'images/tooltips/city-types/fortress.png',
+        cemetery: 'images/tooltips/city-types/cemetery.png',
+        church: 'images/tooltips/city-types/church.png',
+        city: 'images/tooltips/city-types/market.png',
+        fortress: 'images/tooltips/city-types/fortress.png',
+        gate: 'images/tooltips/city-types/gate.png',
+        harbor: 'images/tooltips/city-types/harbor.png',
+        keep: 'images/tooltips/city-types/keep.png',
+        landmark: 'images/tooltips/city-types/poi.png',
+        manor: 'images/tooltips/city-types/manor.png',
+        market: 'images/tooltips/city-types/market.png',
+        pass: 'images/tooltips/city-types/gate.png',
+        poi: 'images/tooltips/city-types/poi.png',
+        port: 'images/tooltips/city-types/harbor.png',
+        ruins: 'images/tooltips/city-types/ruins.png',
+        shop: 'images/tooltips/city-types/shop.png',
+        shrine: 'images/tooltips/city-types/temple.png',
+        settlement: 'images/tooltips/city-types/market.png',
+        stables: 'images/tooltips/city-types/stables.png',
+        tavern: 'images/tooltips/city-types/tavern.png',
+        temple: 'images/tooltips/city-types/temple.png',
+        tomb: 'images/tooltips/city-types/tomb.png',
+        tower: 'images/tooltips/city-types/tower.png',
+        town: 'images/tooltips/city-types/market.png',
+        vault: 'images/tooltips/city-types/vault.png',
+        village: 'images/tooltips/city-types/market.png'
     });
 
     const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -224,6 +254,25 @@ const MapOverlayTooltip = (function () {
         return TOOLTIP_WATER_IMAGE_PATHS.ocean;
     }
 
+    function getGenericTypeTooltipHeaderImage(loc) {
+        if (!loc || !loc.type) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.poi;
+        const typeKey = String(loc.type).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        if (TOOLTIP_GENERIC_TYPE_IMAGE_PATHS[typeKey]) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS[typeKey];
+
+        const text = normalizeTooltipMatchText([loc.name, loc.description, loc.region].filter(Boolean).join(' '));
+        if (textIncludesAny(text, ['harbor', 'harbour', 'port', 'dock', 'wharf'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.harbor;
+        if (textIncludesAny(text, ['ruin', 'ruins', 'ancient'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.ruins;
+        if (textIncludesAny(text, ['fort', 'fortress', 'keep', 'castle', 'citadel'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.fortress;
+        if (textIncludesAny(text, ['temple', 'shrine', 'sanctuary'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.temple;
+        if (textIncludesAny(text, ['tower', 'spire'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.tower;
+        if (textIncludesAny(text, ['tomb', 'crypt', 'barrow'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.tomb;
+        if (textIncludesAny(text, ['gate', 'pass', 'crossing'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.gate;
+        if (textIncludesAny(text, ['tavern', 'inn'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.tavern;
+        if (textIncludesAny(text, ['market', 'bazaar', 'trade'])) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.market;
+
+        return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.poi;
+    }
+
     function generateTooltipHeaderImage(loc, ctx) {
         if (!loc || typeof loc.x !== 'number' || typeof loc.y !== 'number') return null;
 
@@ -320,13 +369,21 @@ const MapOverlayTooltip = (function () {
         const cityPreviewImage = getCityPreviewImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
-        const generatedPreviewImage = generateTooltipHeaderImage(loc, ctx);
+        const genericTypePreviewImage = getGenericTypeTooltipHeaderImage(loc);
+        const generatedPreviewImage = (
+            ENABLE_GENERATED_MAP_PREVIEWS
+            && !cityPreviewImage
+            && !biomePreviewImage
+            && !waterPreviewImage
+            && !genericTypePreviewImage
+        ) ? generateTooltipHeaderImage(loc, ctx) : null;
 
         const ordered = [
             crestAvailable ? crestPreviewImage : null,
             cityPreviewImage,
             biomePreviewImage,
             waterPreviewImage,
+            genericTypePreviewImage,
             generatedPreviewImage
         ].filter(Boolean);
 
@@ -337,6 +394,7 @@ const MapOverlayTooltip = (function () {
             cityPreviewImage,
             biomePreviewImage,
             waterPreviewImage,
+            genericTypePreviewImage,
             generatedPreviewImage
         };
     }
@@ -351,6 +409,7 @@ const MapOverlayTooltip = (function () {
                 cityPreviewImage: null,
                 biomePreviewImage: null,
                 waterPreviewImage: null,
+                genericTypePreviewImage: null,
                 generatedPreviewImage: null
             }
             : buildPreviewImageCandidates(loc, ctx);
@@ -362,7 +421,8 @@ const MapOverlayTooltip = (function () {
             crestPreviewImage: previewImages.crestPreviewImage,
             cityPreviewImage: previewImages.cityPreviewImage,
             biomePreviewImage: previewImages.biomePreviewImage,
-            waterPreviewImage: previewImages.waterPreviewImage
+            waterPreviewImage: previewImages.waterPreviewImage,
+            genericTypePreviewImage: previewImages.genericTypePreviewImage
         };
     }
 
@@ -442,7 +502,9 @@ const MapOverlayTooltip = (function () {
                     ? ' tt-city-preview-wrap'
                     : (state.biomePreviewImage || state.waterPreviewImage)
                         ? ' tt-biome-preview-wrap'
-                        : ' tt-generated-preview-wrap';
+                        : state.genericTypePreviewImage
+                            ? ' tt-biome-preview-wrap'
+                            : ' tt-generated-preview-wrap';
 
             return `
                 <div class="tt-img-wrap${waterTooltip ? ' tt-water-img-wrap' : ''}${wrapClass}">
@@ -505,12 +567,48 @@ const MapOverlayTooltip = (function () {
         });
     }
 
-    function renderTooltipContent(loc, ctx) {
-        const previewState = resolveTooltipPreviewImage(loc, ctx);
-        ctx.tooltip.innerHTML = buildTooltipHTML(loc, {
-            ...previewState,
-            roadLinks: loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : []
+    function getTooltipHtmlCacheKey(loc, previewState, roadLinks) {
+        const roadKey = (roadLinks || [])
+            .slice(0, 6)
+            .map((link) => [link.roadId, link.destinationId, Math.round(link.miles || 0), Math.round((link.days || 0) * 10)].join(':'))
+            .join(',');
+        return JSON.stringify({
+            id: loc.id || '',
+            name: loc.name || '',
+            type: loc.type || '',
+            region: loc.region || '',
+            biome: loc.biome || '',
+            description: loc.description || '',
+            details: loc.details || '',
+            cityMap: loc.cityMap || '',
+            cityScene: loc.cityScene || '',
+            link: loc.link || '',
+            previewImage: previewState.previewImage || '',
+            fallbackPreviewImages: previewState.fallbackPreviewImages || [],
+            customPreviewImage: previewState.customPreviewImage || '',
+            crestPreviewImage: previewState.crestPreviewImage || '',
+            cityPreviewImage: previewState.cityPreviewImage || '',
+            biomePreviewImage: previewState.biomePreviewImage || '',
+            waterPreviewImage: previewState.waterPreviewImage || '',
+            genericTypePreviewImage: previewState.genericTypePreviewImage || '',
+            roadKey
         });
+    }
+
+    function renderTooltipContent(loc, ctx) {
+        if (!ctx.tooltipHtmlCache) ctx.tooltipHtmlCache = new Map();
+        const previewState = resolveTooltipPreviewImage(loc, ctx);
+        const roadLinks = loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : [];
+        const cacheKey = getTooltipHtmlCacheKey(loc, previewState, roadLinks);
+        let html = ctx.tooltipHtmlCache.get(cacheKey);
+        if (!html) {
+            html = buildTooltipHTML(loc, {
+            ...previewState,
+                roadLinks
+            });
+            ctx.tooltipHtmlCache.set(cacheKey, html);
+        }
+        ctx.tooltip.innerHTML = html;
         bindTooltipPreviewFallbacks(ctx);
     }
 

@@ -5,6 +5,7 @@
 const MapOverlay = (function () {
     const renderCtx = MapOverlayRenderContext.createRenderContext();
     let isListenerBound = false;
+    let isMotionDismissBound = false;
 
     function isEditorMode() {
         return typeof document !== 'undefined' && document.body && document.body.classList.contains('editor-mode');
@@ -145,19 +146,39 @@ const MapOverlay = (function () {
         return renderCtx;
     }
 
+    function getMapCoordinateSpace(mapImg) {
+        const stack = (typeof MapLayerStack !== 'undefined') ? MapLayerStack : null;
+        const space = stack && typeof stack.getCoordinateSpace === 'function'
+            ? stack.getCoordinateSpace()
+            : null;
+        return {
+            width: space?.width || mapImg.naturalWidth,
+            height: space?.height || mapImg.naturalHeight
+        };
+    }
+
+    function getMapRegistrationOffset() {
+        const stack = (typeof MapLayerStack !== 'undefined') ? MapLayerStack : null;
+        return stack && typeof stack.getRegistrationOffset === 'function'
+            ? stack.getRegistrationOffset()
+            : { x: 0, y: 0 };
+    }
+
     function renderOverlay(container, mapImg) {
         let existing = document.getElementById(`${container.id}-overlay`);
         if (existing) existing.remove();
 
         container.querySelectorAll('svg.map-overlay').forEach((overlay) => overlay.remove());
 
-        MapOverlayRenderContext.setRenderMetrics(renderCtx, mapImg.naturalWidth, mapImg.naturalHeight);
+        const coordinateSpace = getMapCoordinateSpace(mapImg);
+        MapOverlayRenderContext.setRenderMetrics(renderCtx, coordinateSpace.width, coordinateSpace.height);
         if (!renderCtx.natW || !renderCtx.natH) return;
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'map-overlay');
         svg.setAttribute('id', `${container.id}-overlay`);
-        svg.setAttribute('viewBox', `0 0 ${renderCtx.natW} ${renderCtx.natH}`);
+        const registrationOffset = getMapRegistrationOffset();
+        svg.setAttribute('viewBox', `${-registrationOffset.x} ${-registrationOffset.y} ${renderCtx.natW} ${renderCtx.natH}`);
         svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
         svg.style.width = '100%';
         svg.style.height = 'auto';
@@ -166,6 +187,7 @@ const MapOverlay = (function () {
         svg.style.left = '0';
         svg.style.pointerEvents = 'none';
         svg.style.willChange = 'transform';
+        svg.style.zIndex = '10';
         svg.style.display = renderCtx.overlayVisible ? '' : 'none';
         svg.appendChild(createOverlayDefs());
 
@@ -227,6 +249,8 @@ const MapOverlay = (function () {
         const mapImg = document.getElementById(imageId);
         if (!container || !mapImg) return;
 
+        bindMotionDismissHandlers();
+
         if (!renderCtx.initializedContainers.some((entry) => entry.containerId === containerId)) {
             renderCtx.initializedContainers.push({ containerId, imageId });
         }
@@ -242,6 +266,20 @@ const MapOverlay = (function () {
         } else {
             mapImg.onload = setupOverlay;
         }
+    }
+
+    function bindMotionDismissHandlers() {
+        if (isMotionDismissBound || typeof window === 'undefined') return;
+
+        const dismissForMapMotion = (event) => {
+            const target = event.target;
+            if (target && target.closest && target.closest('.map-tooltip a')) return;
+            MapOverlayTooltip.hideTooltipImmediately(renderCtx);
+        };
+
+        window.addEventListener('wheel', dismissForMapMotion, { capture: true, passive: true });
+        window.addEventListener('pointerdown', dismissForMapMotion, { capture: true, passive: true });
+        isMotionDismissBound = true;
     }
 
     function toggle(containerId) {
@@ -285,6 +323,7 @@ const MapOverlay = (function () {
         toggle,
         setTooltipsEnabled: (enabled) => MapOverlayTooltip.setTooltipsEnabled(renderCtx, enabled),
         areTooltipsEnabled: () => MapOverlayTooltip.areTooltipsEnabled(renderCtx),
+        hideActiveTooltip: () => MapOverlayTooltip.hideTooltipImmediately(renderCtx),
         getData,
         getLocationById,
         findNearestLocation,

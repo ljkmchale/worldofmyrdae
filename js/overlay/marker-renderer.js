@@ -94,7 +94,6 @@ const MapOverlayMarkerRenderer = (function () {
         text.style.pointerEvents = 'auto';
         text.style.cursor = 'pointer';
         text.addEventListener('mouseenter', (event) => ctx.tooltipHandlers.show(event, region, ctx));
-        text.addEventListener('mousemove', (event) => ctx.tooltipHandlers.move(event, ctx));
         text.addEventListener('mouseleave', (event) => ctx.tooltipHandlers.hide(event, ctx));
 
         if (region.opacity !== undefined) text.setAttribute('opacity', region.opacity);
@@ -207,7 +206,6 @@ const MapOverlayMarkerRenderer = (function () {
                 markerGroup.style.pointerEvents = 'none';
             } else {
                 markerGroup.addEventListener('mouseenter', (event) => ctx.tooltipHandlers.show(event, loc, ctx));
-                markerGroup.addEventListener('mousemove', (event) => ctx.tooltipHandlers.move(event, ctx));
                 markerGroup.addEventListener('mouseleave', (event) => ctx.tooltipHandlers.hide(event, ctx));
             }
             group.appendChild(markerGroup);
@@ -235,7 +233,6 @@ const MapOverlayMarkerRenderer = (function () {
             markerGroup.style.pointerEvents = 'none';
         } else {
             markerGroup.addEventListener('mouseenter', (event) => ctx.tooltipHandlers.show(event, loc, ctx));
-            markerGroup.addEventListener('mousemove', (event) => ctx.tooltipHandlers.move(event, ctx));
             markerGroup.addEventListener('mouseleave', (event) => ctx.tooltipHandlers.hide(event, ctx));
         }
 

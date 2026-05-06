@@ -17,6 +17,7 @@ const MapOverlayRenderContext = (function () {
             initializedContainers: [],
             tooltipHeaderImageCache: new Map(),
             tooltipImageAvailabilityCache: new Map(),
+            tooltipHtmlCache: new Map(),
             activeTooltipLocationId: null
         };
     }

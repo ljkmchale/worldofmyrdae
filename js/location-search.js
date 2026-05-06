@@ -72,7 +72,7 @@ const LocationSearch = (function () {
             item.appendChild(type);
 
             item.addEventListener('click', () => {
-                MapController.panToLocation(containerId, loc.x, loc.y, 7);
+                MapController.panToLocation(containerId, loc.x, loc.y, 5);
                 input.value = loc.name.replace(/\n/g, ' ');
                 hide(resultsEl);
             });

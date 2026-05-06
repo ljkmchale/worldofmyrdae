@@ -125,8 +125,12 @@ const CoordGrid = (function () {
   }
 
   function ensureMetrics(containerId, mapImg) {
-    const natW = mapImg.naturalWidth;
-    const natH = mapImg.naturalHeight;
+    const stack = (typeof MapLayerStack !== 'undefined') ? MapLayerStack : null;
+    const coordinateSpace = stack && typeof stack.getCoordinateSpace === 'function'
+      ? stack.getCoordinateSpace()
+      : null;
+    const natW = coordinateSpace?.width || mapImg.naturalWidth;
+    const natH = coordinateSpace?.height || mapImg.naturalHeight;
     if (!natW || !natH) return null;
 
     const cached = instances.get(containerId);
@@ -139,6 +143,13 @@ const CoordGrid = (function () {
     instance.metrics = metrics;
     instances.set(containerId, instance);
     return metrics;
+  }
+
+  function getMapRegistrationOffset() {
+    const stack = (typeof MapLayerStack !== 'undefined') ? MapLayerStack : null;
+    return stack && typeof stack.getRegistrationOffset === 'function'
+      ? stack.getRegistrationOffset()
+      : { x: 0, y: 0 };
   }
 
   function drawGrid(containerId, imageId) {
@@ -155,7 +166,7 @@ const CoordGrid = (function () {
     const svg = makeSvgElement('svg', {
       id: containerId + '-coord-grid',
       class: 'coord-grid-overlay',
-      viewBox: `0 0 ${metrics.natW} ${metrics.natH}`,
+      viewBox: `${-getMapRegistrationOffset().x} ${-getMapRegistrationOffset().y} ${metrics.natW} ${metrics.natH}`,
       preserveAspectRatio: 'xMinYMin meet'
     });
 
@@ -166,7 +177,7 @@ const CoordGrid = (function () {
     svg.style.left = '0';
     svg.style.pointerEvents = 'none';
     svg.style.display = active ? '' : 'none';
-    svg.style.zIndex = '6';
+    svg.style.zIndex = '9';
 
     const cellGroup = makeSvgElement('g', {
       opacity: '0.92',
