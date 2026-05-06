@@ -507,7 +507,7 @@ const WORLD_LOCATIONS = {
             "type": "city",
             "x": 62.8,
             "y": 41.5,
-            "region": "",
+            "region": "Crimson March",
             "description": "Town",
             "fontFamily": "Simonetta",
             "fontSize": 14,
@@ -517,7 +517,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -38,
             "labelOffsetY": 19,
-            "fontStyle": "Normal"
+            "fontStyle": "Normal",
+            "biome": "Plains"
         },
         {
             "id": "offwood-crossroad",
