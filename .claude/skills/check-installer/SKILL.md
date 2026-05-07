@@ -11,7 +11,7 @@ The installer bundles exactly the paths listed in `package.json` → `build.file
 ```
 electron/**/*   css/**/*   fonts/**/*   images/**/*   js/**/*
 *.html          server.js  package.json
-(excludes: backups/  dist/  out/)
+(excludes: backups/  dist/  out/  exports/)
 ```
 
 `electron/main.js` bootstraps the app by calling `startServer()` from `server.js`, then loads `http://127.0.0.1:{port}/editor.html`.
@@ -42,9 +42,11 @@ Run:
 ```bash
 ls -d */ 2>/dev/null
 ```
-The **only** covered root-level directories are: `electron/`, `css/`, `fonts/`, `images/`, `js/`
+The expected covered root-level directories are: `electron/`, `css/`, `fonts/`, `images/`, `js/`
 
 Flag any OTHER directories found (e.g. `config/`, `data/`, `sounds/`, `scripts/`) as **NOT INCLUDED in installer** — the user must add them to `build.files` in `package.json` if they contain needed files.
+
+Generated/local directories such as `exports/`, `dist/`, `tools/`, `ue5-exports/`, and `session-notes/` should remain excluded unless the project intentionally turns them into runtime assets.
 
 ### 3. New root-level files covered
 Run:

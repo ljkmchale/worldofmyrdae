@@ -2,17 +2,13 @@
 
 ## Current Starting Point
 
-Deston's Trading Post already has a Blender scene at:
+This note is historical planning context for a playable UE5 prototype. Generated Blender, frame, and Unreal export artifacts previously lived under `exports/destons-trading-post/`, but `exports/` is now treated as generated local output and is not tracked in git.
 
-`/Users/larrymchale/Desktop/worldofmyrdae-master/exports/destons-trading-post/destons-trading-post.blend`
+Regenerate or restore the local export assets before continuing UE work. Expected local working locations are:
 
-It now has Unreal-ready exports at:
-
-`/Users/larrymchale/Desktop/worldofmyrdae-master/exports/destons-trading-post/unreal-import/`
-
-The exporter is:
-
-`/Users/larrymchale/Desktop/worldofmyrdae-master/tools/export_destons_for_unreal.py`
+- `exports/destons-trading-post/`
+- `exports/destons-trading-post/unreal-import/`
+- `tools/export_destons_for_unreal.py`
 
 ## UE5 Setup
 

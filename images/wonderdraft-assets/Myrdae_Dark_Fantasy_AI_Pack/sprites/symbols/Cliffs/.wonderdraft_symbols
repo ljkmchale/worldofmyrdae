@@ -1,0 +1,58 @@
+{
+    "myrdae_sheer_gray_cliff": {
+        "name": "Sheer Gray Cliff",
+        "radius": 111,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_curved_road_cliff": {
+        "name": "Curved Road Cliff",
+        "radius": 111,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_black_shard_rocks": {
+        "name": "Black Shard Rocks",
+        "radius": 111,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_dead_tree_cliff": {
+        "name": "Dead Tree Cliff",
+        "radius": 122,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_basalt_wall": {
+        "name": "Basalt Wall",
+        "radius": 103,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_mossy_broken_cliff": {
+        "name": "Mossy Broken Cliff",
+        "radius": 102,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_stepped_ruin_cliff": {
+        "name": "Stepped Ruin Cliff",
+        "radius": 102,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_low_gray_bluff": {
+        "name": "Low Gray Bluff",
+        "radius": 104,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

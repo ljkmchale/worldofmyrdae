@@ -1,0 +1,30 @@
+{
+    "myrdae_stone_harbor_gate": {
+        "name": "Stone Harbor Gate",
+        "radius": 127,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_wooden_fishing_dock": {
+        "name": "Wooden Fishing Dock",
+        "radius": 113,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_circular_port_basin": {
+        "name": "Circular Port Basin",
+        "radius": 127,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_river_pier_house": {
+        "name": "River Pier House",
+        "radius": 112,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

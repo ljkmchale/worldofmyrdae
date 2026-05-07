@@ -204,8 +204,7 @@ Public API:
 
 ## Cities
 
-27 cities are registered in `js/city-maps.js` (as of 2026-04-23):
-Tratta, Emberstran, Nauldeaus, Adsuren, Onaren, Scarwatch Hold, Basctdelm, Shademoor, Abbey of Mont Rest, Farview, Glaspero, Climbor, Everlight, Aerley, Ole'stack, Sandgrave, Kallilos, Sari Lenora, Clador, Ulgrey, Trailpoint, Farnsby Port, Dunduar, Nuwharf, Tal'besar Ruins, Scarbrook, Nebisill.
+64 cities are registered in `js/city-maps.js` (as of 2026-05-07). Treat `js/city-maps.js` as the current source of truth for the exact list rather than copying city names into docs.
 
 Each city has:
 - `js/city-maps.js` entry (id, name, image paths)
@@ -240,6 +239,8 @@ Behaviors worth remembering:
 Backups live in `/backups/` and should be treated as snapshots.
 
 Before major edits to `js/locations-db.js`, create a backup via `/backup`.
+
+Generated render/export output belongs in `/exports/`. That folder is ignored and should not be committed.
 
 ## Common Tasks
 
@@ -281,4 +282,6 @@ Review `DESKTOP_BUILD.md` if you change:
 - Do not re-enable `localStorage` as the main persistence path
 - Do not casually add dependencies
 - Do not edit snapshot files under `backups/`
+- Do not commit generated/local folders such as `dist/`, `exports/`, `tools/`, `ue5-exports/`, `session-notes/`, or `.claude/worktrees/`
 - Do not assume old standalone city pages are the current city architecture
+- Do not remove the Electron desktop wrapper unless the project is explicitly dropping desktop builds

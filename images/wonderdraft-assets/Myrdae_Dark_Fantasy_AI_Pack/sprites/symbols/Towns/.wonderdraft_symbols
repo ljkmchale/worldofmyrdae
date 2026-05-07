@@ -1,0 +1,30 @@
+{
+    "myrdae_red_roof_market_town": {
+        "name": "Red Roof Market Town",
+        "radius": 112,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_timber_village_square": {
+        "name": "Timber Village Square",
+        "radius": 110,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_chapel_hamlet": {
+        "name": "Chapel Hamlet",
+        "radius": 104,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_dark_fortified_town": {
+        "name": "Dark Fortified Town",
+        "radius": 106,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

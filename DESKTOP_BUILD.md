@@ -18,6 +18,8 @@ npm run desktop:dev
 
 The Electron app starts the local HTTP server internally and stores writable data in the OS user-data folder instead of trying to edit packaged files in place.
 
+Generated render/export output belongs in `exports/`. It is ignored by git and should not be needed for web or desktop runtime.
+
 ## Writable Data In Desktop Builds
 
 The packaged app treats most bundled files as read-only. `server.js` overlays a small mutable subset from a writable runtime data directory.
@@ -36,6 +38,8 @@ The runtime data root is chosen from:
 2. otherwise Electron's user-data folder under `world-data`
 
 If you change persistence logic, make sure it still respects those mutability rules.
+
+If you add a new runtime asset folder, update `package.json` `build.files`; generated folders such as `exports/`, `dist/`, `tools/`, `ue5-exports/`, and `session-notes/` should stay out of packaged builds.
 
 ## Packaging
 

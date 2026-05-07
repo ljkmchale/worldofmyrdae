@@ -1,0 +1,30 @@
+{
+    "myrdae_black_spire_city": {
+        "name": "Black Spire City",
+        "radius": 125,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_golden_dome_city": {
+        "name": "Golden Dome City",
+        "radius": 117,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_obsidian_fortress_city": {
+        "name": "Obsidian Fortress City",
+        "radius": 144,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_white_wall_city": {
+        "name": "White Wall City",
+        "radius": 124,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

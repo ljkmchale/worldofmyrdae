@@ -1,0 +1,30 @@
+{
+    "myrdae_pine_grove": {
+        "name": "Pine Grove",
+        "radius": 108,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_crimson_oldwood": {
+        "name": "Crimson Oldwood",
+        "radius": 104,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_bluegreen_swampwood": {
+        "name": "Bluegreen Swampwood",
+        "radius": 110,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_deadwood_copse": {
+        "name": "Deadwood Copse",
+        "radius": 106,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

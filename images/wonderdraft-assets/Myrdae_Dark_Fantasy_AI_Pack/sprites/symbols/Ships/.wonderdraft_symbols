@@ -1,0 +1,30 @@
+{
+    "myrdae_black_sail_galleon": {
+        "name": "Black Sail Galleon",
+        "radius": 126,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_crimson_sail_caravel": {
+        "name": "Crimson Sail Caravel",
+        "radius": 132,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_ivory_sail_merchant": {
+        "name": "Ivory Sail Merchant",
+        "radius": 130,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_war_oared_longship": {
+        "name": "War Oared Longship",
+        "radius": 115,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

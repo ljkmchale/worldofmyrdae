@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1474"
+   height="1067"
+   viewBox="0 0 1474 1067"
+   version="1.1"
+   id="svg-arbescar-editable"
+   sodipodi:docname="arbescar-editable.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview"
+     pagecolor="#1d2c2e"
+     bordercolor="#7a7a7a"
+     borderopacity="1"
+     inkscape:showpageshadow="false"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     inkscape:deskcolor="#111111"
+     inkscape:zoom="3.6769553"
+     inkscape:cx="628.64513"
+     inkscape:cy="252.11076"
+     inkscape:window-width="1983"
+     inkscape:window-height="1000"
+     inkscape:current-layer="layer-roads"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
+  <defs
+     id="defs1">
+    <style
+       id="map-editing-styles"><![CDATA[
+      .label-main {
+        font-family: "Cinzel", "Cormorant Garamond", Georgia, serif;
+        font-size: 26px;
+        fill: #f1dfc3;
+        stroke: #2a1c14;
+        stroke-width: 4px;
+        paint-order: stroke fill;
+      }
+      .label-small {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 20px;
+        font-weight: 700;
+        fill: #f3e5cc;
+        stroke: #2a1c14;
+        stroke-width: 3px;
+        paint-order: stroke fill;
+      }
+      .route-line {
+        fill: none;
+        stroke: #7a514a;
+        stroke-width: 5px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 0.85;
+      }
+      .route-dash {
+        fill: none;
+        stroke: #ead6b8;
+        stroke-width: 2px;
+        stroke-linecap: round;
+        stroke-dasharray: 7 8;
+        opacity: 0.85;
+      }
+      .edit-note {
+        fill: none;
+        stroke: #ff8a00;
+        stroke-width: 3px;
+        stroke-dasharray: 10 8;
+      }
+    ]]></style>
+  </defs>
+  <g
+     id="layer-generated-map"
+     inkscape:groupmode="layer"
+     inkscape:label="Generated fantasy map base"
+     sodipodi:insensitive="true">
+    <image
+       id="generated-map-base"
+       width="1474"
+       height="1067"
+       preserveAspectRatio="none"
+       href="Generated%20image%201.png"
+       xlink:href="Generated image 1.png"
+       x="0"
+       y="0" />
+  </g>
+  <g
+     id="layer-original-reference"
+     inkscape:groupmode="layer"
+     inkscape:label="Original arbescar.PNG reference - hidden"
+     style="display:none"
+     opacity="0.45">
+    <image
+       id="original-arbescar-reference"
+       width="1474"
+       height="802"
+       preserveAspectRatio="none"
+       href="arbescar.PNG"
+       xlink:href="arbescar.PNG"
+       x="0"
+       y="0" />
+  </g>
+  <g
+     id="layer-terrain-paint"
+     inkscape:groupmode="layer"
+     inkscape:label="Editable terrain paint" />
+  <g
+     id="layer-roads"
+     inkscape:groupmode="layer"
+     inkscape:label="Editable roads and passes" />
+  <g
+     id="layer-labels"
+     inkscape:groupmode="layer"
+     inkscape:label="Editable labels" />
+  <g
+     id="layer-edit-notes"
+     inkscape:groupmode="layer"
+     inkscape:label="Editable correction notes" />
+</svg>

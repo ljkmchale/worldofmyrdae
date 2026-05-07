@@ -1,0 +1,30 @@
+{
+    "myrdae_ruined_cliff_falls": {
+        "name": "Ruined Cliff Falls",
+        "radius": 113,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_mossy_twin_falls": {
+        "name": "Mossy Twin Falls",
+        "radius": 116,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_black_needle_falls": {
+        "name": "Black Needle Falls",
+        "radius": 111,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    },
+    "myrdae_redleaf_cascade": {
+        "name": "Redleaf Cascade",
+        "radius": 109,
+        "offset_x": 0,
+        "offset_y": 0,
+        "draw_mode": "normal"
+    }
+}

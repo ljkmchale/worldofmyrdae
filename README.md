@@ -76,6 +76,7 @@ The usual runtime flow is:
 - `electron/main.js` - Electron bootstrap and embedded server startup
 - `electron/preload.js` - minimal desktop bridge
 - `DESKTOP_BUILD.md` - packaging notes
+- Generated render/export output belongs in `exports/`, which is ignored and should not be committed or bundled.
 
 ## Data Model Notes
 
@@ -150,10 +151,11 @@ In packaged Electron builds, only a small set of paths are writable. The server 
 - Do not edit files inside `backups/`; they are snapshots.
 - Avoid adding npm dependencies unless there is a strong reason.
 - `map-viewer.html` is a small coordinate helper page, not the main viewer.
-- The repo includes generated output in `dist/` and dependencies in `node_modules/`, but normal coding work should focus on source files.
+- Generated/local folders such as `dist/`, `exports/`, `tools/`, `ue5-exports/`, `session-notes/`, and `node_modules/` are intentionally kept out of normal source work.
+- Source cleanup should preserve the current `city-viewer.html` city-map flow and the Electron desktop wrapper unless the project is explicitly dropping those features.
 
 ## Current Gaps
 
 - There is no automated test suite yet.
 - A lot of editor behavior lives inline in `editor.html` plus `js/editor.js`, so UI changes often require checking both.
-- Some historical docs still describe the older standalone city pages; the current city flow is centered on `city-viewer.html` plus `js/city-maps.js` and `js/cities/`.
+- Historical standalone city pages and helper files have been retired; the current city flow is centered on `city-viewer.html` plus `js/city-maps.js` and `js/cities/`.

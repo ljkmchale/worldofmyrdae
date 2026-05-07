@@ -8,6 +8,10 @@
  *   OceanShader.setTransform(containerId, transformStr, transformOrigin)
  *   OceanShader.destroy(containerId)
  */
+if (typeof window !== 'undefined' && !('OCEAN_SHADER_ENABLED' in window)) {
+    window.OCEAN_SHADER_ENABLED = false;
+}
+
 const OceanShader = (function () {
     const instances = new Map();
 

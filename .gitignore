@@ -28,6 +28,7 @@ unreal/
 tools/
 ue5-exports/
 session-notes/
+exports/
 
 # Duplicate/copy images
 images/Myrdae_copy.jpg

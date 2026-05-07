@@ -618,26 +618,6 @@ const WORLD_LOCATIONS = {
             "biome": "River / Waterway"
         },
         {
-            "id": "stillbluff",
-            "name": "Stillbluff",
-            "type": "region",
-            "x": 75.94,
-            "y": 69.19,
-            "region": "Arbescar",
-            "description": "Nature",
-            "fontFamily": "Sell Your Soul",
-            "fontSize": 12,
-            "fontWeight": "300",
-            "fontStyle": "Normal",
-            "markerSize": 0.25,
-            "markerOffsetX": 0,
-            "markerOffsetY": 0,
-            "labelOffsetX": 0,
-            "labelOffsetY": 0,
-            "opacity": 1,
-            "biome": "Plains"
-        },
-        {
             "id": "emberstran",
             "name": "Emberstran",
             "type": "city",
@@ -8441,6 +8421,25 @@ const WORLD_LOCATIONS = {
             "rotation": -35,
             "opacity": 0.8,
             "biome": "River / Waterway"
+        },
+        {
+            "id": "stillbluff-town",
+            "name": "Stillbluff",
+            "type": "town",
+            "x": 76.5,
+            "y": 69,
+            "region": "Arbescar",
+            "description": "Town",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Normal",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 10,
+            "labelOffsetY": 3,
+            "biome": "Forest"
         }
     ],
     "roads": [
@@ -15038,6 +15037,31 @@ const WORLD_LOCATIONS = {
             "boatColor": "#3377ff",
             "captainName": "Captain Mayer Wood",
             "shipName": "The Integrity"
+        },
+        {
+            "id": "Scarbrook-stillbluff-road",
+            "type": "minor",
+            "curved": true,
+            "points": [
+                "scarbrook",
+                [
+                    73.08,
+                    67.9
+                ],
+                [
+                    73.23,
+                    68.19
+                ],
+                [
+                    73.51,
+                    68.59
+                ],
+                [
+                    75.44,
+                    68.52
+                ],
+                "stillbluff-town"
+            ]
         }
     ],
     "regions": []

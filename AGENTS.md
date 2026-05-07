@@ -106,7 +106,7 @@ Generated, local, or tooling folders:
 - `backups/` - local safety snapshots; intentionally ignored by git.
 - `dist/` - Electron build output.
 - `docs/` - project notes and Unreal/export documentation.
-- `exports/` - large render/export artifacts; not used by the web/Electron app.
+- `exports/` - generated render/export artifacts; ignored by git and may be absent locally.
 - `node_modules/` - installed dependencies.
 - `scripts/` - manual image-processing scripts.
 - `session-notes/` - local transcript/voice-test artifacts; not app runtime.
@@ -297,6 +297,6 @@ If changes touch Electron boot, server mutability rules, or packaged assets, rev
 - Do not switch persistence back to `localStorage`
 - Do not add npm dependencies casually
 - Do not edit files inside `backups/`
-- Do not commit generated/local folders such as `dist/`, `tools/`, `ue5-exports/`, `session-notes/`, or `.claude/worktrees/`
+- Do not commit generated/local folders such as `dist/`, `exports/`, `tools/`, `ue5-exports/`, `session-notes/`, or `.claude/worktrees/`
 - Do not assume only the web server exists; check Electron implications too
 - Do not assume standalone `city-*.html` pages are the primary city flow; the current system is `city-viewer.html` plus `js/city-maps.js` and `js/cities/`
