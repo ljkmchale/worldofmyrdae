@@ -9,6 +9,7 @@ const MapOverlayTooltip = (function () {
         swamp: 'images/tooltips/biomes/swamp.png',
         desert: 'images/tooltips/biomes/desert.png',
         highlands: 'images/tooltips/biomes/highlands.png',
+        plains: 'images/tooltips/biomes/plains.png',
         meadow: 'images/tooltips/biomes/meadow.png'
     });
     const TOOLTIP_WATER_IMAGE_PATHS = Object.freeze({
@@ -228,14 +229,26 @@ const MapOverlayTooltip = (function () {
     function getBiomeTooltipHeaderImage(loc) {
         if (!loc || (loc.type !== 'nature' && loc.type !== 'region')) return null;
 
-        const text = normalizeTooltipMatchText([loc.name, loc.description, loc.region].filter(Boolean).join(' '));
+        const explicitBiome = normalizeTooltipMatchText(loc.biome || '');
         let biome = null;
 
+        if (textIncludesAny(explicitBiome, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) biome = 'desert';
+        else if (textIncludesAny(explicitBiome, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) biome = 'swamp';
+        else if (textIncludesAny(explicitBiome, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) biome = 'forest';
+        else if (textIncludesAny(explicitBiome, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) biome = 'mountains';
+        else if (textIncludesAny(explicitBiome, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) biome = 'highlands';
+        else if (textIncludesAny(explicitBiome, ['plain', 'plains', 'grassland', 'grasslands', 'prairie', 'steppe', 'savanna'])) biome = 'plains';
+        else if (textIncludesAny(explicitBiome, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) biome = 'meadow';
+
+        if (biome) return TOOLTIP_BIOME_IMAGE_PATHS[biome];
+
+        const text = normalizeTooltipMatchText([loc.name, loc.description, loc.region].filter(Boolean).join(' '));
         if (textIncludesAny(text, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) biome = 'desert';
         else if (textIncludesAny(text, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) biome = 'swamp';
         else if (textIncludesAny(text, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) biome = 'forest';
         else if (textIncludesAny(text, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) biome = 'mountains';
         else if (textIncludesAny(text, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) biome = 'highlands';
+        else if (textIncludesAny(text, ['plain', 'plains', 'grassland', 'grasslands', 'prairie', 'steppe', 'savanna'])) biome = 'plains';
         else if (textIncludesAny(text, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) biome = 'meadow';
         else if (loc.type === 'region') biome = 'mountains';
 
@@ -255,6 +268,7 @@ const MapOverlayTooltip = (function () {
 
     function getGenericTypeTooltipHeaderImage(loc) {
         if (!loc || !loc.type) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.poi;
+        if (loc.type === 'nature' || loc.type === 'region' || isWaterTooltipType(loc.type)) return null;
         const typeKey = String(loc.type).toLowerCase().replace(/[^a-z0-9]+/g, '-');
         if (TOOLTIP_GENERIC_TYPE_IMAGE_PATHS[typeKey]) return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS[typeKey];
 
@@ -488,7 +502,7 @@ const MapOverlayTooltip = (function () {
         const metaSection = `
             <div class="tt-meta">
                 <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
-                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Region</span><span class="tt-meta-value">${escapeHTML(loc.region)}</span></div>` : ''}
+                ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Territory</span><span class="tt-meta-value">${escapeHTML(loc.region)}</span></div>` : ''}
                 ${loc.biome ? `<div class="tt-type"><span class="tt-meta-label">Biome</span><span class="tt-meta-value">${escapeHTML(loc.biome)}</span></div>` : ''}
             </div>
         `;
