@@ -15004,10 +15004,10 @@ const WORLD_LOCATIONS = {
                 "nauldeaus"
             ],
             "shipName": "Smoken Hot",
-            "shipType": "Frigate",
+            "shipType": "Pirate Ship",
             "captainName": "Captain Heather Lox",
-            "boatColor": "#cc33ff",
-            "routePurpose": "smuggling",
+            "boatColor": "#8b1e1e",
+            "routePurpose": "pirate",
             "riskLevel": "high"
         },
         {

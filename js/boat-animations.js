@@ -16,7 +16,7 @@ function _getBoatTooltip() {
 }
 
 const RISK_COLORS = { low: '#4caf50', medium: '#ff9800', high: '#f44336', deadly: '#9c27b0' };
-const PURPOSE_LABELS = { merchant: 'Merchant Trade', military: 'Military Patrol', exploration: 'Exploration', smuggling: 'Smuggling', fishing: 'Fishing', passenger: 'Passenger' };
+const PURPOSE_LABELS = { merchant: 'Merchant Trade', military: 'Military Patrol', exploration: 'Exploration', smuggling: 'Smuggling', pirate: 'Pirate / Raider', fishing: 'Fishing', passenger: 'Passenger' };
 const MAP_MILES_PER_PERCENT = 25;
 const SHIP_TOOLTIP_IMAGES = {
     'Caravel': 'images/tooltips/ships/caravel.png',
@@ -27,7 +27,8 @@ const SHIP_TOOLTIP_IMAGES = {
     'Merchant Cog': 'images/tooltips/ships/merchant-cog.png',
     'Longship': 'images/tooltips/ships/longship.png',
     'Warship': 'images/tooltips/ships/warship.png',
-    'Fishing Vessel': 'images/tooltips/ships/fishing-vessel.png'
+    'Fishing Vessel': 'images/tooltips/ships/fishing-vessel.png',
+    'Pirate Ship': 'images/tooltips/ships/pirate-ship.png'
 };
 const SAILING_SPEEDS = {
     'Caravel': 72,
@@ -39,6 +40,7 @@ const SAILING_SPEEDS = {
     'Longship': 88,
     'Warship': 80,
     'Fishing Vessel': 46,
+    'Pirate Ship': 82,
     'Ship': 68,
     default: 68
 };
@@ -196,7 +198,8 @@ class BoatFleet {
             'Merchant Cog': '#99ff33',
             'Longship': '#964B00',
             'Warship': '#555555',
-            'Fishing Vessel': '#00cccc'
+            'Fishing Vessel': '#00cccc',
+            'Pirate Ship': '#8b1e1e'
         };
 
         // Boat dots should be small markers on the map.

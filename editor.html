@@ -524,6 +524,21 @@
           <option value="">All Connected Regions</option>
         </select>
 
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+          <label style="font-size:0.75rem; color:#888; margin:0;">Road Kind</label>
+          <span id="road-kind-filter-badge" style="display:none; font-size:0.68rem; background:rgba(212,175,55,0.15); color:var(--color-gold); padding:1px 7px; border-radius:10px; border:1px solid rgba(212,175,55,0.5); letter-spacing:0.04em;">ACTIVE</span>
+        </div>
+        <select id="road-kind-filter" class="form-control"
+          style="margin-bottom:0.4rem; font-size:0.82rem; background:#1a1614; color:#d4af37; border:1px solid #584433; padding:0.35rem 0.5rem; cursor:pointer; width:100%; transition: border-color 0.2s;"
+          onchange="Editor.filterRoadsByKind(this.value)">
+          <option value="">All Road Kinds</option>
+          <option value="normal">Normal Roads</option>
+          <option value="crossroad">Crossroad Links</option>
+          <option value="sea">Sea Routes</option>
+          <option value="river">Rivers</option>
+          <option value="border">Borders</option>
+        </select>
+
         <div style="position:relative; margin-bottom:0.4rem;">
           <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.6rem; top:50%; transform:translateY(-50%); color:#584433; cursor:text;" onclick="document.getElementById('road-search').focus()"></i>
           <input type="text" id="road-search" placeholder="Search roads…" autocomplete="off"
@@ -580,6 +595,7 @@
                 <option value="Longship">Longship</option>
                 <option value="Warship">Warship</option>
                 <option value="Fishing Vessel">Fishing Vessel</option>
+                <option value="Pirate Ship">Pirate Ship</option>
                 <option value="Other">Other…</option>
               </select>
               <input type="text" id="ship-type-custom" class="form-control" style="display:none; margin-top:0.4rem;" placeholder="Custom ship type" oninput="Editor.previewRoad()">
@@ -613,6 +629,7 @@
                 <option value="military">Military Patrol</option>
                 <option value="exploration">Exploration</option>
                 <option value="smuggling">Smuggling</option>
+                <option value="pirate">Pirate / Raider</option>
                 <option value="fishing">Fishing</option>
                 <option value="passenger">Passenger</option>
               </select>

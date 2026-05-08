@@ -20,6 +20,7 @@ const Editor = (function () {
         regionFilter: '',
         typeFilter: '',
         roadRegionFilter: '',
+        roadKindFilter: '',
         locationPlacementMode: false,
         moveLocationMode: false,
         isNewPreview: false
@@ -226,6 +227,8 @@ const Editor = (function () {
             if (s) s.value = '';
             const roadRegionSel = document.getElementById('road-region-filter');
             if (roadRegionSel) roadRegionSel.value = state.roadRegionFilter || '';
+            const roadKindSel = document.getElementById('road-kind-filter');
+            if (roadKindSel) roadKindSel.value = state.roadKindFilter || '';
             renderRoadList();
         }
     }
@@ -924,46 +927,76 @@ const Editor = (function () {
 
     // --- Roads ---
 
+    const ROAD_KIND_FILTERS = {
+        normal: 'Normal Roads',
+        crossroad: 'Crossroad Links',
+        sea: 'Sea Routes',
+        river: 'Rivers',
+        border: 'Borders'
+    };
+
+    function isCrossroadLocation(loc) {
+        if (!loc) return false;
+        const text = `${loc.id || ''} ${loc.name || ''}`.toLowerCase();
+        return /\b(crossroads?|junction)\b/.test(text);
+    }
+
+    function isCrossroadRoad(road) {
+        if (!road || !Array.isArray(road.points)) return false;
+        return road.points.some(point => {
+            if (typeof point !== 'string') return false;
+            return isCrossroadLocation(state.locations.find(loc => loc.id === point));
+        });
+    }
+
+    function getRoadKind(road) {
+        if (!road) return 'normal';
+        if (road.type === 'water-route') return 'sea';
+        if (road.type === 'river') return 'river';
+        if (road.type === 'border') return 'border';
+        if (isCrossroadRoad(road)) return 'crossroad';
+        return 'normal';
+    }
+
     function renderRoadList(filter = '') {
         const list = document.getElementById('road-list');
         const q = filter.trim().toLowerCase();
         const regionQ = state.roadRegionFilter;
+        const kindQ = state.roadKindFilter;
         list.innerHTML = '<option value="">-- Select a Road --</option>';
 
-        const typeOrder = ['major', 'minor', 'river', 'water-route', 'border'];
-        const typeLabels = {
-            major: 'Major Roads', minor: 'Minor Roads', river: 'Rivers',
-            'water-route': 'Boat Routes / Sea Lanes', border: 'Borders'
-        };
+        const kindOrder = ['normal', 'crossroad', 'sea', 'river', 'border'];
 
-        const visible = (q || regionQ)
+        const visible = (q || regionQ || kindQ)
             ? state.roads.filter(r =>
                 (!regionQ || getRoadConnectedRegions(r).includes(regionQ)) &&
+                (!kindQ || getRoadKind(r) === kindQ) &&
                 (!q ||
                     (r.name || '').toLowerCase().includes(q) ||
                     (r.id || '').toLowerCase().includes(q) ||
-                    (r.type || '').toLowerCase().includes(q)))
+                    (r.type || '').toLowerCase().includes(q) ||
+                    (getRoadKind(r) || '').toLowerCase().includes(q)))
             : state.roads;
 
-        // Group by type
+        // Group by user-facing kind. Raw road.type stays unchanged in saved data.
         const grouped = {};
         visible.forEach(road => {
-            const type = road.type || 'minor';
-            if (!grouped[type]) grouped[type] = [];
-            grouped[type].push(road);
+            const kind = getRoadKind(road);
+            if (!grouped[kind]) grouped[kind] = [];
+            grouped[kind].push(road);
         });
 
         // Sort alphabetically within each group
         Object.values(grouped).forEach(arr => arr.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || '')));
 
-        const renderedTypes = new Set();
-        const renderGroup = (type) => {
-            if (!grouped[type] || renderedTypes.has(type)) return;
-            renderedTypes.add(type);
-            const label = typeLabels[type] || (type.charAt(0).toUpperCase() + type.slice(1));
+        const renderedKinds = new Set();
+        const renderGroup = (kind) => {
+            if (!grouped[kind] || renderedKinds.has(kind)) return;
+            renderedKinds.add(kind);
+            const label = ROAD_KIND_FILTERS[kind] || (kind.charAt(0).toUpperCase() + kind.slice(1));
             const optgroup = document.createElement('optgroup');
             optgroup.label = `── ${label} ──`;
-            grouped[type].forEach(road => {
+            grouped[kind].forEach(road => {
                 const opt = document.createElement('option');
                 opt.value = road.id;
                 opt.textContent = road.name || road.id;
@@ -973,7 +1006,7 @@ const Editor = (function () {
             list.appendChild(optgroup);
         };
 
-        typeOrder.forEach(renderGroup);
+        kindOrder.forEach(renderGroup);
         Object.keys(grouped).forEach(renderGroup);
     }
 
@@ -1027,6 +1060,15 @@ const Editor = (function () {
         const sel = document.getElementById('road-region-filter');
         if (badge) badge.style.display = region ? 'inline-block' : 'none';
         if (sel) sel.style.borderColor = region ? 'var(--color-gold)' : '#584433';
+        renderRoadList(document.getElementById('road-search')?.value || '');
+    }
+
+    function filterRoadsByKind(kind) {
+        state.roadKindFilter = kind;
+        const badge = document.getElementById('road-kind-filter-badge');
+        const sel = document.getElementById('road-kind-filter');
+        if (badge) badge.style.display = kind ? 'inline-block' : 'none';
+        if (sel) sel.style.borderColor = kind ? 'var(--color-gold)' : '#584433';
         renderRoadList(document.getElementById('road-search')?.value || '');
     }
 
@@ -1573,7 +1615,8 @@ const Editor = (function () {
             'Merchant Cog': '#99ff33',
             'Longship': '#964B00',
             'Warship': '#555555',
-            'Fishing Vessel': '#00cccc'
+            'Fishing Vessel': '#00cccc',
+            'Pirate Ship': '#8b1e1e'
         };
 
         if (select && custom) {
@@ -2024,6 +2067,7 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         filterLocationList,
         filterRoadList,
         filterRoadsByRegion,
+        filterRoadsByKind,
 
         // Roads
         selectRoad,
