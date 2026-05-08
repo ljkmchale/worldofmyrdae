@@ -534,7 +534,7 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -37,
             "labelOffsetY": 5,
-            "biome": "Dense Forest"
+            "biome": "Highlands"
         },
         {
             "id": "stonewood",
@@ -939,7 +939,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetY": 0,
             "labelAlign": "middle",
             "opacity": 1,
-            "biome": "Plains"
+            "biome": "Highlands"
         },
         {
             "id": "slagerum",
@@ -966,7 +966,7 @@ const WORLD_LOCATIONS = {
             "type": "region",
             "x": 53.93,
             "y": 51.73,
-            "region": "",
+            "region": "Serriveil",
             "description": "Nature",
             "fontFamily": "Sell Your Soul",
             "fontSize": 20,
@@ -980,7 +980,7 @@ const WORLD_LOCATIONS = {
             "rotation": -39,
             "opacity": 0.5,
             "fontStyle": "Normal",
-            "biome": "Plains"
+            "biome": "Highlands"
         },
         {
             "id": "shademeadow",
@@ -2024,7 +2024,7 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 11,
             "labelOffsetY": 0,
             "opacity": 1,
-            "biome": "Wetlands"
+            "biome": "Mountains"
         },
         {
             "id": "olduktali",
@@ -2727,7 +2727,7 @@ const WORLD_LOCATIONS = {
             "type": "water",
             "x": 25.34,
             "y": 33.74,
-            "region": "",
+            "region": "Glenleah",
             "description": "Nature",
             "fontFamily": "Quintessential",
             "fontSize": 12,
@@ -2740,7 +2740,7 @@ const WORLD_LOCATIONS = {
             "labelAlign": "middle",
             "opacity": 1,
             "fontStyle": "Normal",
-            "biome": "Ocean"
+            "biome": "River / Waterway"
         },
         {
             "id": "unstead",
@@ -7737,7 +7737,7 @@ const WORLD_LOCATIONS = {
             "x": 77.8,
             "y": 47.2,
             "region": "The Mahruud",
-            "description": "Capital of the Kingdom of Myrdae",
+            "description": "POI",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontStyle": "Italic",
@@ -7747,7 +7747,8 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": 10,
             "labelOffsetY": 3,
-            "biome": "Desert"
+            "biome": "Desert",
+            "opacity": 0.5
         },
         {
             "id": "runest",

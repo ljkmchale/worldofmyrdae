@@ -6,11 +6,18 @@ const MapOverlayTooltip = (function () {
     const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
         mountains: 'images/tooltips/biomes/mountains.png',
         forest: 'images/tooltips/biomes/forest.png',
+        denseForest: 'images/tooltips/biomes/dense-forest.png',
         swamp: 'images/tooltips/biomes/swamp.png',
+        wetlands: 'images/tooltips/biomes/wetlands.png',
         desert: 'images/tooltips/biomes/desert.png',
         highlands: 'images/tooltips/biomes/highlands.png',
         plains: 'images/tooltips/biomes/plains.png',
-        meadow: 'images/tooltips/biomes/meadow.png'
+        meadow: 'images/tooltips/biomes/meadow.png',
+        arctic: 'images/tooltips/biomes/arctic.png',
+        tundra: 'images/tooltips/biomes/tundra.png',
+        jungle: 'images/tooltips/biomes/jungle.png',
+        volcanic: 'images/tooltips/biomes/volcanic.png',
+        underground: 'images/tooltips/biomes/underground.png'
     });
     const TOOLTIP_WATER_IMAGE_PATHS = Object.freeze({
         ocean: 'images/tooltips/water/ocean.png',
@@ -229,30 +236,36 @@ const MapOverlayTooltip = (function () {
     function getBiomeTooltipHeaderImage(loc) {
         if (!loc || (loc.type !== 'nature' && loc.type !== 'region')) return null;
 
-        const explicitBiome = normalizeTooltipMatchText(loc.biome || '');
-        let biome = null;
+        const resolveBiomeImage = (text) => {
+            let biome = null;
 
-        if (textIncludesAny(explicitBiome, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) biome = 'desert';
-        else if (textIncludesAny(explicitBiome, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) biome = 'swamp';
-        else if (textIncludesAny(explicitBiome, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) biome = 'forest';
-        else if (textIncludesAny(explicitBiome, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) biome = 'mountains';
-        else if (textIncludesAny(explicitBiome, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) biome = 'highlands';
-        else if (textIncludesAny(explicitBiome, ['plain', 'plains', 'grassland', 'grasslands', 'prairie', 'steppe', 'savanna'])) biome = 'plains';
-        else if (textIncludesAny(explicitBiome, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) biome = 'meadow';
+            if (textIncludesAny(text, ['river waterway', 'waterway', 'river', 'brook', 'stream'])) return TOOLTIP_WATER_IMAGE_PATHS.river;
+            if (textIncludesAny(text, ['coastal', 'coast', 'shore', 'shoreline', 'bay', 'cove', 'inlet'])) return TOOLTIP_WATER_IMAGE_PATHS.coast;
+            if (textIncludesAny(text, ['ocean', 'sea', 'deep water'])) return TOOLTIP_WATER_IMAGE_PATHS.ocean;
+            if (textIncludesAny(text, ['lake', 'loch', 'mere'])) return TOOLTIP_WATER_IMAGE_PATHS.lake;
 
-        if (biome) return TOOLTIP_BIOME_IMAGE_PATHS[biome];
+            if (textIncludesAny(text, ['dense forest', 'deep forest', 'old growth', 'oldgrowth'])) biome = 'denseForest';
+            else if (textIncludesAny(text, ['jungle', 'rainforest', 'tropical'])) biome = 'jungle';
+            else if (textIncludesAny(text, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) biome = 'forest';
+            else if (textIncludesAny(text, ['wetland', 'wetlands', 'swamp', 'swamps', 'marsh', 'morass', 'slough', 'mire', 'bog'])) biome = 'wetlands';
+            else if (textIncludesAny(text, ['arctic', 'polar', 'icefield', 'ice field', 'glacier', 'glacial'])) biome = 'arctic';
+            else if (textIncludesAny(text, ['tundra', 'taiga', 'permafrost'])) biome = 'tundra';
+            else if (textIncludesAny(text, ['volcanic', 'volcano', 'lava', 'basalt', 'ashfield', 'ash field'])) biome = 'volcanic';
+            else if (textIncludesAny(text, ['underground', 'cavern', 'cave', 'subterranean', 'underdeep'])) biome = 'underground';
+            else if (textIncludesAny(text, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) biome = 'desert';
+            else if (textIncludesAny(text, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) biome = 'mountains';
+            else if (textIncludesAny(text, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) biome = 'highlands';
+            else if (textIncludesAny(text, ['plain', 'plains', 'grassland', 'grasslands', 'prairie', 'steppe', 'savanna'])) biome = 'plains';
+            else if (textIncludesAny(text, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) biome = 'meadow';
+
+            return biome ? TOOLTIP_BIOME_IMAGE_PATHS[biome] : null;
+        };
+
+        const explicitBiomeImage = resolveBiomeImage(normalizeTooltipMatchText(loc.biome || ''));
+        if (explicitBiomeImage) return explicitBiomeImage;
 
         const text = normalizeTooltipMatchText([loc.name, loc.description, loc.region].filter(Boolean).join(' '));
-        if (textIncludesAny(text, ['desert', 'waste', 'wastes', 'sands', 'searing flats', 'blistered'])) biome = 'desert';
-        else if (textIncludesAny(text, ['swamp', 'swamps', 'wetland', 'wetlands', 'marsh', 'morass', 'slough', 'mire', 'bog'])) biome = 'swamp';
-        else if (textIncludesAny(text, ['forest', 'woods', 'wood', 'wilds', 'grove', 'thicket', 'pines', 'pine'])) biome = 'forest';
-        else if (textIncludesAny(text, ['mountain', 'mountains', 'mount ', 'mount', 'peak', 'peaks', 'spine', 'crag', 'crags'])) biome = 'mountains';
-        else if (textIncludesAny(text, ['highland', 'highlands', 'hill', 'hills', 'knoll', 'knolls', 'ridge', 'bluff', 'bluffs', 'rise', 'wold', 'wolds', 'crest', 'peninsula'])) biome = 'highlands';
-        else if (textIncludesAny(text, ['plain', 'plains', 'grassland', 'grasslands', 'prairie', 'steppe', 'savanna'])) biome = 'plains';
-        else if (textIncludesAny(text, ['meadow', 'mead', 'vale', 'valley', 'field', 'fields', 'garde'])) biome = 'meadow';
-        else if (loc.type === 'region') biome = 'mountains';
-
-        return biome ? TOOLTIP_BIOME_IMAGE_PATHS[biome] : null;
+        return resolveBiomeImage(text) || (loc.type === 'region' ? TOOLTIP_BIOME_IMAGE_PATHS.mountains : null);
     }
 
     function getWaterTooltipHeaderImage(loc) {
