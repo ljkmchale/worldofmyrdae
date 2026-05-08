@@ -6828,8 +6828,8 @@ const WORLD_LOCATIONS = {
             "id": "talbesar",
             "name": "Tal'besar\nRuins",
             "type": "ruins",
-            "x": 73.1,
-            "y": 64.7,
+            "x": 73.28,
+            "y": 65.07,
             "region": "Arbescar",
             "description": "Small Town",
             "link": "https://docs.google.com/document/d/1DiuIO2qtBG5l-wQECq-OqyMS2hc44vLnqJmNPQFi1AA/edit?tab=t.0",
@@ -6843,7 +6843,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -65,
             "labelOffsetY": -5,
             "cityMap": "city-viewer.html?city=talbesar",
-            "biome": "Plains"
+            "biome": "Plains",
+            "opacity": 1
         },
         {
             "id": "scarbrook",
@@ -9357,8 +9358,8 @@ const WORLD_LOCATIONS = {
             "points": [
                 "talbesar",
                 [
-                    72.8,
-                    64.9
+                    73.12,
+                    65.25
                 ],
                 [
                     73.1,
@@ -14821,50 +14822,78 @@ const WORLD_LOCATIONS = {
             "riskLevel": "medium"
         },
         {
-            "id": "tratta-nauldeaus-patrol-sea-road",
+            "id": "tratta-nauldeaus-patrol-sea-route",
             "type": "water-route",
             "curved": true,
             "points": [
                 "tratta",
                 [
-                    70.7,
-                    33.87
+                    70.65,
+                    33.96
                 ],
                 [
-                    70.42,
-                    30.04
+                    70.73,
+                    31.93
                 ],
                 [
-                    70.32,
-                    26.86
+                    69.96,
+                    31.31
                 ],
                 [
-                    70.24,
-                    23.9
+                    70.52,
+                    28.17
                 ],
                 [
-                    69.59,
-                    22.68
+                    70.46,
+                    26.77
                 ],
                 [
-                    68.17,
-                    22.1
+                    70.35,
+                    25.75
                 ],
                 [
-                    66.35,
-                    22.05
+                    69.22,
+                    24.96
                 ],
                 [
-                    64.42,
-                    24.82
+                    67.76,
+                    24.3
                 ],
                 [
-                    63.52,
-                    26.61
+                    67.37,
+                    22.15
                 ],
                 [
-                    62.58,
-                    28.29
+                    67.03,
+                    21.61
+                ],
+                [
+                    65.56,
+                    22.57
+                ],
+                [
+                    65.25,
+                    24.06
+                ],
+                [
+                    65.91,
+                    25.21
+                ],
+                [
+                    66.44,
+                    26.09
+                ],
+                [
+                    66.52,
+                    27.24
+                ],
+                [
+                    66.26,
+                    27.9
+                ],
+                [
+                    64.05,
+                    28.53
                 ],
                 "nauldeaus"
             ],
@@ -15062,6 +15091,57 @@ const WORLD_LOCATIONS = {
                 ],
                 "stillbluff-town"
             ]
+        },
+        {
+            "id": "stinson-harelbek-sea-route",
+            "type": "water-route",
+            "curved": true,
+            "points": [
+                "stinson",
+                [
+                    43.76,
+                    24.84
+                ],
+                [
+                    43.74,
+                    26.67
+                ],
+                [
+                    42.27,
+                    30.22
+                ],
+                [
+                    40.51,
+                    32.98
+                ],
+                [
+                    39.23,
+                    39.26
+                ],
+                [
+                    38.66,
+                    43.07
+                ],
+                [
+                    38.47,
+                    46.21
+                ],
+                [
+                    37.73,
+                    47.94
+                ],
+                [
+                    37.5,
+                    48.96
+                ],
+                "harelbek"
+            ],
+            "shipType": "Warship",
+            "boatColor": "#555555",
+            "routePurpose": "military",
+            "shipName": "Ambleside",
+            "riskLevel": "low",
+            "captainName": "Captain Henry Pellew"
         }
     ],
     "regions": []
