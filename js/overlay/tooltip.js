@@ -180,7 +180,7 @@ const MapOverlayTooltip = (function () {
 
     function getCityCrestImage(loc) {
         const cityId = getTooltipCityFolderId(loc);
-        return cityId ? `images/cities/${cityId}/crest.png` : null;
+        return cityId ? `images/cities/${cityId}/crest.png?v=20260521` : null;
     }
 
     function getCityPreviewImage(loc) {

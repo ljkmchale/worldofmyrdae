@@ -68,4 +68,5 @@ const CITY_MAPS = [
   { id: "ulkef"                   , name: "Ulkef"                   , image: "images/cities/ulkef/sketch.png", previewImage: "images/cities/ulkef/sketch.png" },
   { id: "waypoint"                , name: "Waypoint"                , image: "images/cities/waypoint/sketch.png", previewImage: "images/cities/waypoint/sketch.png" },
   { id: "wheldrake"               , name: "Wheldrake"               , image: "images/cities/wheldrake/sketch.png", previewImage: "images/cities/wheldrake/sketch.png" },
+  { id: "caelora"                 , name: "Caelora"                 , image: "images/cities/caelora/sketch.png", previewImage: "images/cities/caelora/sketch.png" },
 ];

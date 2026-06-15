@@ -5,6 +5,7 @@
 # Environment / secrets — never commit API keys
 .env
 .env.*
+!.env.example
 
 # Node
 node_modules/
@@ -35,3 +36,4 @@ images/Myrdae_copy.jpg
 images/Myrdae - Copy.jpg
 *.tmp-*.json
 .tmp-*.json
+.runtime/

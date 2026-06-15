@@ -12,6 +12,7 @@
     "dist": "electron-builder",
     "dist:win": "electron-builder --win msi",
     "dist:mac": "electron-builder --mac dmg",
+    "share:map-editor": "powershell -ExecutionPolicy Bypass -File scripts/start-map-editor-server.ps1",
     "push": "./push-git.sh"
   },
   "build": {

@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const net = require('net');
+const crypto = require('crypto');
 
 const DEFAULT_PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const COMFY_PORT = 8188;
@@ -144,6 +145,198 @@ function sendJson(res, statusCode, payload) {
 function sendError(res, err, fallbackStatus = 500) {
     const status = err && err.statusCode ? err.statusCode : fallbackStatus;
     sendJson(res, status, { success: false, error: err && err.message ? err.message : 'Server error' });
+}
+
+function getMapUpdateLogPath() {
+    return path.join(runtimeConfig.dataRootReal, '.runtime', 'map-update-log.jsonl');
+}
+
+function stableStringify(value) {
+    if (Array.isArray(value)) {
+        return `[${value.map(stableStringify).join(',')}]`;
+    }
+    if (value && typeof value === 'object') {
+        return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(',')}}`;
+    }
+    return JSON.stringify(value);
+}
+
+function deepEqual(a, b) {
+    return stableStringify(a) === stableStringify(b);
+}
+
+function extractWorldLocations(source) {
+    const match = String(source || '').match(/const\s+WORLD_LOCATIONS\s*=\s*([\s\S]*?);\s*$/);
+    if (!match) {
+        throw new Error('WORLD_LOCATIONS assignment not found');
+    }
+    return JSON.parse(match[1]);
+}
+
+function getRecordKey(record, index) {
+    return record && record.id ? String(record.id) : `index:${index}`;
+}
+
+function diffRecordFields(before, after) {
+    const changes = [];
+    const fields = new Set([
+        ...Object.keys(before || {}),
+        ...Object.keys(after || {})
+    ]);
+
+    Array.from(fields).sort().forEach((field) => {
+        const oldValue = before ? before[field] : undefined;
+        const newValue = after ? after[field] : undefined;
+        if (!deepEqual(oldValue, newValue)) {
+            changes.push({ field, oldValue, newValue });
+        }
+    });
+
+    return changes;
+}
+
+function diffWorldCollection(collectionName, beforeList, afterList) {
+    const beforeMap = new Map();
+    const afterMap = new Map();
+    const changes = [];
+
+    (Array.isArray(beforeList) ? beforeList : []).forEach((record, index) => {
+        beforeMap.set(getRecordKey(record, index), record);
+    });
+    (Array.isArray(afterList) ? afterList : []).forEach((record, index) => {
+        afterMap.set(getRecordKey(record, index), record);
+    });
+
+    Array.from(beforeMap.keys()).sort().forEach((key) => {
+        if (!afterMap.has(key)) {
+            changes.push({
+                collection: collectionName,
+                id: key,
+                name: beforeMap.get(key) && beforeMap.get(key).name,
+                action: 'removed',
+                oldValue: beforeMap.get(key),
+                newValue: null
+            });
+        }
+    });
+
+    Array.from(afterMap.keys()).sort().forEach((key) => {
+        const after = afterMap.get(key);
+        if (!beforeMap.has(key)) {
+            changes.push({
+                collection: collectionName,
+                id: key,
+                name: after && after.name,
+                action: 'added',
+                oldValue: null,
+                newValue: after
+            });
+            return;
+        }
+
+        const before = beforeMap.get(key);
+        const fieldChanges = diffRecordFields(before, after);
+        if (fieldChanges.length > 0) {
+            changes.push({
+                collection: collectionName,
+                id: key,
+                name: (after && after.name) || (before && before.name),
+                action: 'updated',
+                changes: fieldChanges
+            });
+        }
+    });
+
+    return changes;
+}
+
+function diffWorldLocations(before, after) {
+    return ['locations', 'roads', 'regions'].flatMap((collectionName) =>
+        diffWorldCollection(collectionName, before && before[collectionName], after && after[collectionName])
+    );
+}
+
+function createMapUpdateAuditEntry(req, filePath, oldContent, newContent) {
+    const entry = {
+        timestamp: new Date().toISOString(),
+        route: 'POST /save',
+        file: path.relative(runtimeConfig.dataRootReal, filePath).replace(/\\/g, '/'),
+        remoteAddress: req.socket && req.socket.remoteAddress,
+        userAgent: req.headers['user-agent'] || null,
+        referer: req.headers.referer || req.headers.referrer || null,
+        changes: []
+    };
+
+    try {
+        const before = oldContent ? extractWorldLocations(oldContent) : { locations: [], roads: [], regions: [] };
+        const after = extractWorldLocations(newContent);
+        entry.changes = diffWorldLocations(before, after);
+    } catch (err) {
+        entry.parseError = err.message;
+        entry.changes = [{
+            collection: 'file',
+            action: 'replaced',
+            oldValue: oldContent ? { sha256: crypto.createHash('sha256').update(oldContent).digest('hex') } : null,
+            newValue: { sha256: crypto.createHash('sha256').update(newContent).digest('hex') }
+        }];
+    }
+
+    entry.changeCount = entry.changes.length;
+    return entry;
+}
+
+function appendMapUpdateLog(entry) {
+    if (!entry || entry.changeCount < 1) return;
+    const logPath = getMapUpdateLogPath();
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf8');
+}
+
+function readMapUpdateLog(limit = 50) {
+    const logPath = getMapUpdateLogPath();
+    if (!fs.existsSync(logPath)) {
+        return [];
+    }
+
+    const safeLimit = Math.max(1, Math.min(Number(limit) || 50, 500));
+    return fs.readFileSync(logPath, 'utf8')
+        .split(/\r?\n/)
+        .filter(Boolean)
+        .slice(-safeLimit)
+        .map((line) => JSON.parse(line));
+}
+
+function createStaticFileEtag(stat) {
+    return `"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
+}
+
+function getStaticCacheControl(reqPath, extname) {
+    if (reqPath === '/editor.html' || reqPath === '/js/locations-db.js') {
+        return 'no-store, no-cache, must-revalidate, proxy-revalidate';
+    }
+
+    if (['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.mp4', '.webm', '.mov', '.woff', '.woff2'].includes(extname)) {
+        return 'public, max-age=604800, must-revalidate';
+    }
+
+    if (['.js', '.css', '.json'].includes(extname)) {
+        return 'no-cache, must-revalidate';
+    }
+
+    return 'no-cache, must-revalidate';
+}
+
+function isFreshStaticRequest(req, stat, etag) {
+    const ifNoneMatch = req.headers['if-none-match'];
+    if (ifNoneMatch && String(ifNoneMatch).split(',').map(value => value.trim()).includes(etag)) {
+        return true;
+    }
+
+    const ifModifiedSince = req.headers['if-modified-since'];
+    if (!ifModifiedSince) return false;
+
+    const sinceTime = Date.parse(ifModifiedSince);
+    return Number.isFinite(sinceTime) && Math.floor(stat.mtimeMs / 1000) <= Math.floor(sinceTime / 1000);
 }
 
 function mergeUnique(entries) {
@@ -462,6 +655,32 @@ function handleRequest(req, res) {
     let url = req.url.split('?')[0];
     if (url !== '/' && url.endsWith('/')) {
         url = url.slice(0, -1);
+    }
+
+    if (req.method === 'GET' && url === '/api/editor-auth/status') {
+        sendJson(res, 200, {
+            authRequired: false,
+            authorized: true
+        });
+        return;
+    }
+
+    if (req.method === 'GET' && url === '/api/map-update-log') {
+        try {
+            const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+            sendJson(res, 200, {
+                success: true,
+                entries: readMapUpdateLog(params.get('limit'))
+            });
+        } catch (err) {
+            sendError(res, err);
+        }
+        return;
+    }
+
+    if (req.method === 'POST' && url === '/api/editor-auth') {
+        sendJson(res, 200, { success: true, authRequired: false });
+        return;
     }
 
     // Handle POST request to save a single city file (js/cities/<id>.js)
@@ -1328,8 +1547,15 @@ ${text}`;
         readRequestBody(req).then((body) => {
             try {
                 const filePath = resolveWritablePath('js/locations-db.js');
+                const oldContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+                const auditEntry = createMapUpdateAuditEntry(req, filePath, oldContent, body);
+                appendMapUpdateLog(auditEntry);
                 fs.writeFileSync(filePath, body);
-                sendJson(res, 200, { success: true, message: 'Saved successfully to disk' });
+                sendJson(res, 200, {
+                    success: true,
+                    message: 'Saved successfully to disk',
+                    changeCount: auditEntry.changeCount
+                });
             } catch (err) {
                 console.error('Save Error:', err);
                 sendError(res, err);
@@ -1381,26 +1607,51 @@ ${text}`;
 
     const contentType = mimeTypes[extname] || 'application/octet-stream';
 
-    fs.readFile(filePath, (error, content) => {
-        if (error) {
-            if (error.code == 'ENOENT') {
+    fs.stat(filePath, (statError, stat) => {
+        if (statError || !stat.isFile()) {
+            if (statError && statError.code == 'ENOENT') {
                 console.log(`[404] Not Found: ${req.url}`);
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
                 res.end('File Not Found');
             } else {
-                console.log(`[500] Server Error: ${error.code}`);
+                console.log(`[500] Server Error: ${statError ? statError.code : 'NOT_FILE'}`);
                 res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.end('Server Error: ' + error.code);
+                res.end('Server Error: ' + (statError ? statError.code : 'NOT_FILE'));
             }
-        } else {
-            res.writeHead(200, {
-                'Content-Type': contentType,
-                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-            });
-            res.end(content, 'utf-8');
+            return;
         }
+
+        const etag = createStaticFileEtag(stat);
+        const cacheControl = getStaticCacheControl(reqPath, extname);
+        const headers = {
+            'Content-Type': contentType,
+            'Cache-Control': cacheControl,
+            'ETag': etag,
+            'Last-Modified': stat.mtime.toUTCString()
+        };
+
+        if (isFreshStaticRequest(req, stat, etag)) {
+            res.writeHead(304, headers);
+            res.end();
+            return;
+        }
+
+        fs.readFile(filePath, (error, content) => {
+            if (error) {
+                if (error.code == 'ENOENT') {
+                    console.log(`[404] Not Found: ${req.url}`);
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('File Not Found');
+                } else {
+                    console.log(`[500] Server Error: ${error.code}`);
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Server Error: ' + error.code);
+                }
+            } else {
+                res.writeHead(200, headers);
+                res.end(content, 'utf-8');
+            }
+        });
     });
 }
 

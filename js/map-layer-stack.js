@@ -6,7 +6,7 @@ const MapLayerStack = (function () {
     const WORLD_COORDINATE_SPACE = Object.freeze({ width: 6400, height: 3600 });
     const WORLD_REGISTRATION_OFFSET = Object.freeze({ x: 0, y: 0 });
     const WORLD_LAYER_DIR = 'images/myrdae-map-layers';
-    const WORLD_ANCHOR_SRC = `${WORLD_LAYER_DIR}/Myrdae (v.4.2.c - Runtime Composite 6400).png`;
+    const WORLD_ANCHOR_SRC = `${WORLD_LAYER_DIR}/Myrdae (v.4.3.a - Runtime Composite 6400).png?v=riverfix-20260521-1`;
     const layers = [];
 
     const instances = new Map();

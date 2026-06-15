@@ -24,6 +24,15 @@ Run the desktop shell:
 npm run desktop:dev
 ```
 
+Start the map editor for the Cloudflare tunnel:
+
+```powershell
+npm run share:map-editor
+```
+
+The shared editor URL is `https://mapeditor.suwaneegamers.net`; see `docs/MAP_EDITOR_CLOUDFLARE.md`.
+The tunnel forwards to the local map editor server on port `4615`.
+
 ## Architecture
 
 The main world data source is `js/locations-db.js`, which defines `WORLD_LOCATIONS` for:

@@ -3701,7 +3701,8 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": -57,
             "labelOffsetY": 5,
             "fontStyle": "Normal",
-            "biome": "Plains"
+            "biome": "Plains",
+            "cityMap": "city-viewer.html?city=caelora"
         },
         {
             "id": "darafee",

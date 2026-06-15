@@ -16,9 +16,9 @@
       "sourceSession": 3,
       "sourceSessionHeading": "03 – FUKWAD (January 3, 2026)",
       "sourceWorldDateLine": "41st of Hemist – The Swamps",
-      "syncStatus": "ok",
-      "syncMessage": "Parsed session 3",
-      "lastSyncedAt": "2026-05-08T18:47:50.490Z"
+      "syncStatus": "error",
+      "syncMessage": "No session/world date pair found in document",
+      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
     },
     {
       "id": "heroes-of-emberstran",
@@ -38,7 +38,7 @@
       "sourceWorldDateLine": "34th of Talil, 1246",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 21",
-      "lastSyncedAt": "2026-05-08T18:47:50.490Z"
+      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
     },
     {
       "id": "a-new-adventure",
@@ -58,7 +58,7 @@
       "sourceWorldDateLine": "38th of Talil at the Pale Lantern",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 16",
-      "lastSyncedAt": "2026-05-08T18:47:50.490Z"
+      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
     },
     {
       "id": "bloody-endeaver",
@@ -78,8 +78,8 @@
       "sourceWorldDateLine": "3rd of Paramor, 1246 in Hol’gardur",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 28",
-      "lastSyncedAt": "2026-05-08T18:47:50.490Z"
+      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
     }
   ],
-  "lastSyncedAt": "2026-05-08T18:47:50.490Z"
+  "lastSyncedAt": "2026-06-15T00:27:20.414Z"
 }
