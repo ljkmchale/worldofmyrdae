@@ -15169,7 +15169,7 @@ const WORLD_LOCATIONS = {
         }
     ],
     "underdark": {
-        "mapImage": "images/myrdae-map-layers/underdark-map.png",
+        "mapImage": "images/myrdae-map-layers/underdark-map.webp",
         "locations": [],
         "roads": []
     }

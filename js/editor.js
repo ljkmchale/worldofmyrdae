@@ -6,7 +6,7 @@ const Editor = (function () {
     let state = {
         tab: 'locations',
         realm: 'surface',
-        underdarkMapImage: 'images/myrdae-map-layers/underdark-map.png',
+        underdarkMapImage: 'images/myrdae-map-layers/underdark-map.webp',
         realms: {
             surface: { locations: [], roads: [] },
             underdark: { locations: [], roads: [] }
@@ -246,7 +246,7 @@ const Editor = (function () {
                 roads: cloneData(world.underdark?.roads || [])
             };
             state.underdarkMapImage = world.underdark?.mapImage
-                || 'images/myrdae-map-layers/underdark-map.png';
+                || 'images/myrdae-map-layers/underdark-map.webp';
             loadRealmIntoState('surface');
         } else {
             console.warn('World database unavailable. Creating empty map state.');
@@ -2214,7 +2214,7 @@ const Editor = (function () {
                 roads: data.underdark?.roads || []
             };
             state.underdarkMapImage = data.underdark?.mapImage
-                || 'images/myrdae-map-layers/underdark-map.png';
+                || 'images/myrdae-map-layers/underdark-map.webp';
             loadRealmIntoState(activeRealm);
 
             renderLists();

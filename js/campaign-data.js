@@ -12,7 +12,7 @@ const CampaignData = (function () {
     };
     let activeRealm = 'surface';
     let realmData = { surface: data, underdark: { locations: [], roads: [], notes: {} } };
-    let underdarkMapImage = 'images/myrdae-map-layers/underdark-map.png';
+    let underdarkMapImage = 'images/myrdae-map-layers/underdark-map.webp';
     let syncListenersBound = false;
     let pollingIntervalId = null;
     let storageListener = null;

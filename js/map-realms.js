@@ -9,7 +9,7 @@ const MapRealmController = (function () {
     function getUnderdarkImage() {
         return (typeof CampaignData !== 'undefined' && typeof CampaignData.getUnderdarkMapImage === 'function')
             ? CampaignData.getUnderdarkMapImage()
-            : 'images/myrdae-map-layers/underdark-map.png';
+            : 'images/myrdae-map-layers/underdark-map.webp';
     }
 
     function updateButton(realm, buttonId = 'underdark-toggle') {

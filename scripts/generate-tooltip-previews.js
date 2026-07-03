@@ -10,7 +10,7 @@ const vm = require('vm');
 const sharp = require('sharp');
 
 const ROOT = path.join(__dirname, '..');
-const MAP_IMAGE = path.join(ROOT, 'images', 'myrdae-map-layers', 'Myrdae (v.4.3.a - Runtime Composite 6400).png');
+const MAP_IMAGE = path.join(ROOT, 'images', 'myrdae-map-layers', 'Myrdae (v.4.3.a - Runtime Composite 6400).webp');
 const OUT_DIR = path.join(ROOT, 'images', 'tooltips', 'generated', 'locations');
 const TOOLTIP_WIDTH = 560;
 const TOOLTIP_HEIGHT = 300;
