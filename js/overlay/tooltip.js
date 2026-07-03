@@ -54,6 +54,22 @@ const MapOverlayTooltip = (function () {
         vault: 'images/tooltips/city-types/vault.png',
         village: 'images/tooltips/city-types/market.png'
     });
+    const TOOLTIP_UNDERDARK_TYPE_IMAGE_PATHS = Object.freeze({
+        capital: 'images/tooltips/underdark-types/capital.png',
+        city: 'images/tooltips/underdark-types/city.png',
+        'small-city': 'images/tooltips/underdark-types/small-city.png',
+        town: 'images/tooltips/underdark-types/town.png',
+        village: 'images/tooltips/underdark-types/village.png',
+        port: 'images/tooltips/underdark-types/port.png',
+        ruins: 'images/tooltips/underdark-types/ruins.png',
+        landmark: 'images/tooltips/underdark-types/landmark.png',
+        pass: 'images/tooltips/underdark-types/pass.png',
+        poi: 'images/tooltips/underdark-types/poi.png',
+        nature: 'images/tooltips/underdark-types/nature.png',
+        region: 'images/tooltips/underdark-types/region.png',
+        water: 'images/tooltips/underdark-types/water.png',
+        river: 'images/tooltips/underdark-types/river.png'
+    });
 
     const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
     function escapeHTML(value) {
@@ -299,6 +315,17 @@ const MapOverlayTooltip = (function () {
         return TOOLTIP_GENERIC_TYPE_IMAGE_PATHS.poi;
     }
 
+    function getUnderdarkTypeTooltipHeaderImage(loc) {
+        const activeRealm = document.body?.dataset?.mapRealm
+            || (typeof MapRealmController !== 'undefined' && typeof MapRealmController.getRealm === 'function'
+                ? MapRealmController.getRealm()
+                : 'surface');
+        if (activeRealm !== 'underdark' || !loc || !loc.type) return null;
+
+        const typeKey = String(loc.type).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        return TOOLTIP_UNDERDARK_TYPE_IMAGE_PATHS[typeKey] || TOOLTIP_UNDERDARK_TYPE_IMAGE_PATHS.poi;
+    }
+
     function getStaticGeneratedTooltipHeaderImage(loc) {
         if (!loc || !loc.id || !loc.type) return null;
         if (isWaterTooltipType(loc.type) || loc.type === 'nature' || loc.type === 'region') return null;
@@ -404,6 +431,7 @@ const MapOverlayTooltip = (function () {
         const crestPreviewImage = getCityCrestImage(loc);
         const crestAvailable = getCachedImageAvailability(ctx, crestPreviewImage) === true;
         const cityPreviewImage = getCityPreviewImage(loc);
+        const underdarkTypePreviewImage = getUnderdarkTypeTooltipHeaderImage(loc);
         const biomePreviewImage = getBiomeTooltipHeaderImage(loc);
         const waterPreviewImage = getWaterTooltipHeaderImage(loc);
         const staticGeneratedPreviewImage = getStaticGeneratedTooltipHeaderImage(loc);
@@ -420,6 +448,7 @@ const MapOverlayTooltip = (function () {
         const ordered = [
             crestAvailable ? crestPreviewImage : null,
             cityPreviewImage,
+            underdarkTypePreviewImage,
             biomePreviewImage,
             waterPreviewImage,
             staticGeneratedPreviewImage,
@@ -432,6 +461,7 @@ const MapOverlayTooltip = (function () {
             fallbackPreviewImages: ordered.slice(1),
             crestPreviewImage: crestAvailable ? crestPreviewImage : null,
             cityPreviewImage,
+            underdarkTypePreviewImage,
             biomePreviewImage,
             waterPreviewImage,
             staticGeneratedPreviewImage,
@@ -448,6 +478,7 @@ const MapOverlayTooltip = (function () {
                 fallbackPreviewImages: [],
                 crestPreviewImage: null,
                 cityPreviewImage: null,
+                underdarkTypePreviewImage: null,
                 biomePreviewImage: null,
                 waterPreviewImage: null,
                 staticGeneratedPreviewImage: null,
@@ -462,6 +493,7 @@ const MapOverlayTooltip = (function () {
             customPreviewImage,
             crestPreviewImage: previewImages.crestPreviewImage,
             cityPreviewImage: previewImages.cityPreviewImage,
+            underdarkTypePreviewImage: previewImages.underdarkTypePreviewImage,
             biomePreviewImage: previewImages.biomePreviewImage,
             waterPreviewImage: previewImages.waterPreviewImage,
             staticGeneratedPreviewImage: previewImages.staticGeneratedPreviewImage,
@@ -512,11 +544,16 @@ const MapOverlayTooltip = (function () {
             </div>` : '';
         const desc = escapeHTML(truncate(getTooltipDescription(loc), 160));
         const details = escapeHTML(truncate(loc.details, 100));
+        const disposition = ['hostile', 'neutral', 'friendly'].includes(String(loc.disposition || '').toLowerCase())
+            ? String(loc.disposition).toLowerCase()
+            : 'neutral';
+        const dispositionLabel = disposition.charAt(0).toUpperCase() + disposition.slice(1);
         const metaSection = `
             <div class="tt-meta">
                 <div class="tt-type"><span class="tt-meta-label">Type</span><span class="tt-meta-value">${typeName}</span></div>
                 ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Territory</span><span class="tt-meta-value">${escapeHTML(loc.region)}</span></div>` : ''}
                 ${loc.biome ? `<div class="tt-type"><span class="tt-meta-label">Biome</span><span class="tt-meta-value">${escapeHTML(loc.biome)}</span></div>` : ''}
+                <div class="tt-type"><span class="tt-meta-label">Disposition</span><span class="tt-disposition tt-disposition-${disposition}">${dispositionLabel}</span></div>
             </div>
         `;
 
@@ -543,7 +580,7 @@ const MapOverlayTooltip = (function () {
                 ? ' tt-generated-preview-wrap'
                 : state.cityPreviewImage
                     ? ' tt-city-preview-wrap'
-                    : (state.biomePreviewImage || state.waterPreviewImage || state.staticGeneratedPreviewImage)
+                    : (state.underdarkTypePreviewImage || state.biomePreviewImage || state.waterPreviewImage || state.staticGeneratedPreviewImage)
                         ? ' tt-biome-preview-wrap'
                         : state.genericTypePreviewImage
                             ? ' tt-biome-preview-wrap'
@@ -621,6 +658,7 @@ const MapOverlayTooltip = (function () {
             type: loc.type || '',
             region: loc.region || '',
             biome: loc.biome || '',
+            disposition: loc.disposition || 'neutral',
             description: loc.description || '',
             details: loc.details || '',
             cityMap: loc.cityMap || '',
@@ -631,6 +669,7 @@ const MapOverlayTooltip = (function () {
             customPreviewImage: previewState.customPreviewImage || '',
             crestPreviewImage: previewState.crestPreviewImage || '',
             cityPreviewImage: previewState.cityPreviewImage || '',
+            underdarkTypePreviewImage: previewState.underdarkTypePreviewImage || '',
             biomePreviewImage: previewState.biomePreviewImage || '',
             waterPreviewImage: previewState.waterPreviewImage || '',
             staticGeneratedPreviewImage: previewState.staticGeneratedPreviewImage || '',

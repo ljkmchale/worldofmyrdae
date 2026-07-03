@@ -7,15 +7,8 @@
     <meta name="description" content="Interactive Map of Myrdae - Embeddable world map with locations and roads.">
     <title>Map of Myrdae</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
-        rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fonts/local-fonts.css">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
 
     <!-- Base styles for CSS variables and map-overlay styles -->
     <link rel="stylesheet" href="css/styles.css">
@@ -1117,6 +1110,13 @@
     <!-- Map fills the entire viewport — no sidebar, no header -->
     <div class="map-container" id="map-container">
         <div class="map-controls">
+            <div class="realm-switch" role="group" aria-label="Map realm">
+                <button id="surface-toggle" class="active" onclick="setMapRealm('surface')" aria-pressed="true">Surface</button>
+                <button id="underdark-toggle" onclick="setMapRealm('underdark')" aria-pressed="false">Underdark</button>
+            </div>
+            <button id="surface-locations-toggle" class="surface-reference-toggle"
+                onclick="MapOverlay.toggleSurfaceReferences()" aria-pressed="false" aria-hidden="true"
+                title="Show Surface locations without roads">Surface Locations</button>
             <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
                 <i class="fa-solid fa-compass"></i>
             </button>
@@ -1144,10 +1144,10 @@
             <button class="map-btn" id="water-routes-toggle" onclick="toggleWaterRoutes()" title="Toggle Water Routes" style="opacity:0.5;">
                 <i class="fa-solid fa-water"></i>
             </button>
-            <button class="map-btn" id="time-toggle" title="Adjust World Time" style="opacity:0.6;">
+            <button class="map-btn" id="time-toggle" title="Adjust World Time" style="display:none; opacity:0.6;">
                 <i class="fa-solid fa-clock"></i>
             </button>
-            <button class="map-btn" id="awakening-btn" onclick="replayGreatAwakening()" title="Replay The Awakening">
+            <button class="map-btn" id="awakening-btn" onclick="replayGreatAwakening()" title="Replay The Awakening" style="display:none;">
                 <i class="fa-solid fa-bolt-lightning"></i>
             </button>
         </div>
@@ -1289,7 +1289,6 @@
         </div>
     </div>
 
-    <script src="js/locations-db.js"></script>
     <script src="js/city-maps.js"></script>
     <script src="js/campaign-data.js"></script>
     <script src="js/map.js"></script>
@@ -1307,12 +1306,14 @@
     <script src="js/coord-grid.js"></script>
     <script src="js/map-measure.js"></script>
     <script src="js/map-layer-stack.js"></script>
+    <script src="js/map-realms.js"></script>
     <script src="js/ocean-shader.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             await CampaignData.init();
             MapLayerStack.init('map-container', 'map-image');
+            MapRealmController.preloadUnderdark();
 
             // Initialize primary map — overlay SVG lives inside map-layer-group, moves with it automatically
             MapController.init('map-container', 'map-image', {
@@ -1383,6 +1384,26 @@
                 btn.style.opacity = '1';
                 btn.title = 'Hide Territories';
             }
+        }
+
+        function setMapRealm(requestedRealm) {
+            const realm = MapRealmController.setRealm(requestedRealm, { buttonId: 'underdark-toggle' });
+            const territories = document.getElementById('territories-layer');
+            const territoriesButton = document.getElementById('territories-toggle');
+            if (territories) territories.style.display = 'none';
+            if (territoriesButton) {
+                territoriesButton.style.opacity = '0.5';
+                territoriesButton.title = 'Show Territories';
+                territoriesButton.disabled = realm === 'underdark';
+            }
+            const searchInput = document.getElementById('location-search');
+            const searchResults = document.getElementById('search-results');
+            if (searchInput) searchInput.value = '';
+            if (searchResults) searchResults.style.display = 'none';
+        }
+
+        function toggleUnderdark() {
+            return setMapRealm(MapRealmController.getRealm() === 'surface' ? 'underdark' : 'surface');
         }
 
         function toggleOverlay() {
@@ -1530,10 +1551,12 @@
             const revealTitle = document.getElementById('awakening-reveal-title');
             const cloudVeil   = document.getElementById('cloud-veil');
             const rainVeil    = document.getElementById('rain-veil');
+            const realmButton = document.getElementById('underdark-toggle');
 
             const sleep = ms => new Promise(r => setTimeout(r, ms));
 
             if (btn) { btn.style.opacity = '0.3'; btn.disabled = true; }
+            if (realmButton) realmButton.disabled = true;
 
             // ── Reset everything for replay ──
             entity.style.transition = 'none'; entity.style.opacity = '0';
@@ -1807,6 +1830,7 @@
             await sleep(1800);
 
             if (btn) { btn.style.opacity = '1'; btn.disabled = false; }
+            if (realmButton) realmButton.disabled = false;
             awakeningRunning = false;
         }
     </script>

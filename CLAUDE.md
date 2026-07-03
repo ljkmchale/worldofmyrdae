@@ -2,7 +2,7 @@
 
 ## What This Project Is
 
-An interactive fantasy world map editor and viewer for Myrdae. The web app is zero-framework HTML/CSS/JS served by Node, and the same project can be packaged inside Electron.
+An interactive fantasy world map editor and viewer for Myrdae. The zero-framework HTML/CSS/JS app is hosted by the local Node service and persists world data in SQLite.
 
 ## Running The Project
 
@@ -25,20 +25,15 @@ Useful pages:
 - `http://localhost:3000/map-3d-planet.html`
 - `http://localhost:3000/map-viewer.html`
 
-Desktop mode:
-
-```bash
-npm run desktop:dev
-```
-
 ## Architecture
 
 ### Main world flow
 
-1. `js/locations-db.js` defines `WORLD_LOCATIONS`.
-2. `js/campaign-data.js` loads it, wraps it, and emits update events.
-3. `js/map-overlay.js` renders the visual overlay on top of the world map image.
-4. Additional viewer systems hook into the same page:
+1. `data/myrdae.db` is the local source of truth; `lib/world-store.js` owns its schema.
+2. `server.js` exposes world data through `GET/PUT /api/world-data`.
+3. `js/campaign-data.js` loads the active Surface or Underdark realm and emits update events.
+4. `js/map-overlay.js` renders the visual overlay on top of the active map image.
+5. Additional viewer systems hook into the same page:
    - `js/boat-animations.js`
    - `js/dragon-overlay.js`
    - `js/world-clock.js`
@@ -46,7 +41,7 @@ npm run desktop:dev
    - `js/map-measure.js`
    - `js/ocean-shader.js`
    - `js/coord-grid.js`
-5. `js/editor.js` keeps a cloned local editing state and previews unsaved changes through a temporary `CampaignData` bridge.
+6. `js/editor.js` keeps a cloned local editing state, previews unsaved changes, and saves through the database API.
 
 ### City map flow
 
@@ -55,17 +50,19 @@ npm run desktop:dev
 3. `js/cities/<id>.js` registers detailed pins/labels into `window.CITY_MAPS_REGISTRY`.
 4. `images/cities/<id>/` stores the visual assets for that city.
 
-### Desktop flow
+### Server data flow
 
-1. `electron/main.js` starts the server with a writable runtime data root.
-2. Mutable files are overlaid from that runtime directory in packaged builds.
-3. The bundled app remains read-only apart from those allowed overlay paths.
+1. SQLite lives at `data/myrdae.db` under the active data root.
+2. The legacy `js/locations-db.js` file is used only to seed an empty database.
+3. Set `MYRDAE_DATA_DIR` to relocate mutable server data.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `js/locations-db.js` | source of truth for world data |
+| `data/myrdae.db` | local authoritative world data |
+| `lib/world-store.js` | SQLite schema, migration, and transactions |
+| `js/locations-db.js` | one-time legacy migration seed only; not loaded by any page |
 | `js/city-maps.js` | thin city registry |
 | `js/cities/*.js` | per-city pins and labels |
 | `js/map-overlay.js` | markers, labels, roads, tooltips, route graph logic |
@@ -75,7 +72,6 @@ npm run desktop:dev
 | `js/map-measure.js` | world distance measurement UI |
 | `js/location-search.js` | viewer search |
 | `server.js` | static server, persistence API, world clock sync, AI routes |
-| `electron/main.js` | Electron bootstrap |
 | `data/campaign-clock-links.json` | campaign anchors synced from Google Docs |
 
 ## Data Structure Notes
@@ -105,14 +101,6 @@ npm run desktop:dev
       curved: true
       // legacy waypoints arrays are also still handled by some helpers
     }
-  ],
-  regions: [
-    {
-      id: "region-id",
-      name: "Region Name",
-      color: "rgba(...)",
-      points: [{ x: 10, y: 20 }]
-    }
   ]
 }
 ```
@@ -122,6 +110,7 @@ Important notes:
 - Roads now primarily use `points`, not just `waypoints`.
 - Non-water roads are also used as a route graph for tooltip distance/travel calculations.
 - `water-route` roads can include ship metadata for animated boats.
+- Region membership is stored on `locations.region`; visible region names are `locations` with `type: "region"`, not a separate `regions` collection.
 
 ### City modules
 
@@ -137,7 +126,7 @@ Important write/API routes in `server.js`:
 
 | Route | Purpose |
 |-------|---------|
-| `POST /save` | Write `js/locations-db.js` |
+| `POST /save` | Legacy alias; writes to `data/myrdae.db` (same as `/api/world-data`) |
 | `POST /save-city/:cityId` | Write `js/cities/<id>.js` |
 | `POST /save-city-map` | Write `js/city-maps.js` |
 | `POST /delete-city/:cityId` | Delete `js/cities/<id>.js` + `images/cities/<id>/` dir |
@@ -262,13 +251,9 @@ Use `/add-city` or the server-backed city scaffold flow, then verify:
 - `/validate-db` for integrity checks
 - `/sort-locations` after bulk world-data edits
 
-### Packaging-sensitive changes
+### Persistence-sensitive changes
 
-Review `DESKTOP_BUILD.md` if you change:
-
-- `server.js` persistence behavior
-- `electron/main.js`
-- packaged asset paths
+When changing `server.js` or `lib/world-store.js`, verify migration and a database write/read round trip against a temporary data root.
 
 ## Style Notes
 
@@ -284,4 +269,4 @@ Review `DESKTOP_BUILD.md` if you change:
 - Do not edit snapshot files under `backups/`
 - Do not commit generated/local folders such as `dist/`, `exports/`, `tools/`, `ue5-exports/`, `session-notes/`, or `.claude/worktrees/`
 - Do not assume old standalone city pages are the current city architecture
-- Do not remove the Electron desktop wrapper unless the project is explicitly dropping desktop builds
+- Do not write live world changes into `js/locations-db.js`; SQLite is authoritative.

@@ -1,0 +1,41 @@
+@import url('./cinzel/latin-400.css');
+@import url('./cinzel/latin-500.css');
+@import url('./cinzel/latin-600.css');
+@import url('./cinzel/latin-700.css');
+@import url('./cinzel/latin-900.css');
+@import url('./cinzel-decorative/latin-400.css');
+@import url('./cinzel-decorative/latin-700.css');
+@import url('./cinzel-decorative/latin-900.css');
+@import url('./cormorant-garamond/latin-400.css');
+@import url('./cormorant-garamond/latin-400-italic.css');
+@import url('./cormorant-garamond/latin-500.css');
+@import url('./cormorant-garamond/latin-600.css');
+@import url('./cormorant-garamond/latin-700.css');
+@import url('./inter/latin-400.css');
+@import url('./inter/latin-500.css');
+@import url('./inter/latin-600.css');
+@import url('./inter/latin-700.css');
+
+@font-face {
+    font-family: 'Simonetta';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../../fonts/Simonetta/Simonetta-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Simonetta';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../../fonts/Simonetta/Simonetta-Italic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Simonetta';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('../../fonts/Simonetta/Simonetta-Black.ttf') format('truetype');
+}

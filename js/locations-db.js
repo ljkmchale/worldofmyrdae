@@ -1,8 +1,8 @@
 /**
- * World of Myrdae - Default Location Database
- * 
- * This file contains the default data for locations, roads, and regions.
- * It is loaded as a script to bypass CORS restrictions when running locally via file:// protocol.
+ * World of Myrdae - Legacy Seed Database
+ *
+ * One-time migration seed for data/myrdae.db. Read only by server.js when the
+ * database is empty at startup; not loaded by any page at runtime.
  */
 
 const WORLD_LOCATIONS = {
@@ -501,12 +501,13 @@ const WORLD_LOCATIONS = {
         },
         {
             "id": "offwood-crossroad",
-            "name": "",
+            "name": "Offwood Crossroad",
             "type": "town",
             "x": 65.16,
             "y": 40.74,
             "region": "",
             "description": "Town",
+            "hideLabel": true,
             "fontFamily": "Simonetta",
             "fontSize": 1,
             "fontWeight": "300",
@@ -7421,12 +7422,12 @@ const WORLD_LOCATIONS = {
         },
         {
             "id": "buvero",
-            "name": "Buvero",
-            "type": "town",
+            "name": "Ruins of Buvero",
+            "type": "poi",
             "x": 76,
             "y": 35.9,
             "region": "Uldrea",
-            "description": "Town",
+            "description": "Ruins",
             "fontFamily": "Simonetta",
             "fontSize": 14,
             "fontWeight": "300",
@@ -7435,8 +7436,9 @@ const WORLD_LOCATIONS = {
             "markerOffsetY": 0,
             "labelOffsetX": -20,
             "labelOffsetY": -10,
-            "fontStyle": "Normal",
-            "biome": "Plains"
+            "fontStyle": "Italic",
+            "biome": "Plains",
+            "opacity": 0.8
         },
         {
             "id": "sulura",
@@ -8443,6 +8445,26 @@ const WORLD_LOCATIONS = {
             "labelOffsetX": 10,
             "labelOffsetY": 3,
             "biome": "Forest"
+        },
+        {
+            "id": "iparos",
+            "name": "Iparos",
+            "type": "landmark",
+            "x": 51.87,
+            "y": 31.68,
+            "region": "Borealian Sway",
+            "description": "Point of Interest",
+            "fontFamily": "Simonetta",
+            "fontSize": 14,
+            "fontWeight": "300",
+            "fontStyle": "Italic",
+            "markerSize": 0.25,
+            "markerOffsetX": 0,
+            "markerOffsetY": 0,
+            "labelOffsetX": 0,
+            "labelOffsetY": 0,
+            "opacity": 100,
+            "biome": "Dense Forest"
         }
     ],
     "roads": [
@@ -15146,5 +15168,9 @@ const WORLD_LOCATIONS = {
             "captainName": "Captain Henry Pellew"
         }
     ],
-    "regions": []
+    "underdark": {
+        "mapImage": "images/myrdae-map-layers/underdark-map.png",
+        "locations": [],
+        "roads": []
+    }
 };

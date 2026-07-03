@@ -6,6 +6,7 @@ const MapOverlay = (function () {
     const renderCtx = MapOverlayRenderContext.createRenderContext();
     let isListenerBound = false;
     let isMotionDismissBound = false;
+    let surfaceReferencesVisible = false;
 
     function isEditorMode() {
         return typeof document !== 'undefined' && document.body && document.body.classList.contains('editor-mode');
@@ -20,19 +21,29 @@ const MapOverlay = (function () {
     }
 
     function getLocationsForRender() {
-        if (renderCtx.data && Array.isArray(renderCtx.data.locations) && renderCtx.data.locations.length > 0) {
-            return renderCtx.data.locations;
-        }
-        if (typeof WORLD_LOCATIONS !== 'undefined' && Array.isArray(WORLD_LOCATIONS.locations)) {
-            return WORLD_LOCATIONS.locations;
-        }
-        return [];
+        return (renderCtx.data && Array.isArray(renderCtx.data.locations)) ? renderCtx.data.locations : [];
     }
 
     function getRoadsForRender() {
-        if (renderCtx.data && Array.isArray(renderCtx.data.roads)) return renderCtx.data.roads;
-        if (typeof WORLD_LOCATIONS !== 'undefined' && Array.isArray(WORLD_LOCATIONS.roads)) return WORLD_LOCATIONS.roads;
-        return [];
+        return (renderCtx.data && Array.isArray(renderCtx.data.roads)) ? renderCtx.data.roads : [];
+    }
+
+    function getCampaignDataModule() {
+        return (typeof window !== 'undefined' && window.CampaignData) ? window.CampaignData
+            : (typeof CampaignData !== 'undefined') ? CampaignData
+            : null;
+    }
+
+    function getSurfaceReferenceLocations() {
+        const campaign = getCampaignDataModule();
+        if (!campaign || typeof campaign.getSurfaceLocations !== 'function') return [];
+        const locations = campaign.getSurfaceLocations();
+        return Array.isArray(locations) ? locations : [];
+    }
+
+    function isUnderdarkActive() {
+        return typeof MapRealmController !== 'undefined'
+            && MapRealmController.getRealm() === 'underdark';
     }
 
     function findNearestLocation(x, y, maxPercentDistance = 1.5) {
@@ -59,23 +70,25 @@ const MapOverlay = (function () {
             return renderCtx.data;
         }
 
-        const campaign = (typeof CampaignData !== 'undefined') ? CampaignData
-            : (typeof window !== 'undefined' && window.CampaignData) ? window.CampaignData
-            : null;
+        // Prefer window.CampaignData: editor.js replaces it with a state-bridge object via
+        // `window.CampaignData = {...}`, which does not affect the `const CampaignData`
+        // lexical binding declared in campaign-data.js, so the bare identifier would keep
+        // resolving to the original (never-initialized-in-editor) module.
+        const campaign = getCampaignDataModule();
 
         if (!campaign) {
             throw new Error('CampaignData module not found — js/campaign-data.js must load before map-overlay.');
         }
 
         const cached = campaign.getData();
-        if (cached && cached.locations && cached.locations.length > 0) {
+        if (cached && Array.isArray(cached.locations)) {
             MapOverlayRenderContext.setRenderData(renderCtx, cached);
             return renderCtx.data;
         }
 
         const initialized = await campaign.init();
-        if (!initialized || !Array.isArray(initialized.locations) || initialized.locations.length === 0) {
-            throw new Error('CampaignData.init() returned no locations — check that js/locations-db.js loaded successfully.');
+        if (!initialized || !Array.isArray(initialized.locations)) {
+            throw new Error('CampaignData.init() returned no locations — check that the world database API is reachable.');
         }
         MapOverlayRenderContext.setRenderData(renderCtx, initialized);
         return renderCtx.data;
@@ -198,17 +211,6 @@ const MapOverlay = (function () {
 
         const rendererCtx = getRendererContext();
 
-        if (renderCtx.data && Array.isArray(renderCtx.data.regions)) {
-            const regionGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            regionGroup.setAttribute('class', 'overlay-regions');
-            renderCtx.data.regions.forEach((region) => {
-                const px = (region.x / 100) * renderCtx.natW;
-                const py = (region.y / 100) * renderCtx.natH;
-                MapOverlayMarkerRenderer.addRegionLabel(regionGroup, region, px, py, rendererCtx);
-            });
-            svg.appendChild(regionGroup);
-        }
-
         const roads = getRoadsForRender();
         if (roads.length > 0) {
             renderCtx.roadGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -227,6 +229,37 @@ const MapOverlay = (function () {
             if (typeof initializeBoatAnimations === 'function') {
                 initializeBoatAnimations(svg, renderCtx.data, renderCtx.locMap, renderCtx.natW, renderCtx.natH);
             }
+        }
+
+        const surfaceLocations = surfaceReferencesVisible && isUnderdarkActive()
+            ? getSurfaceReferenceLocations()
+            : [];
+        if (surfaceLocations.length > 0) {
+            const referenceGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            referenceGroup.setAttribute('class', 'surface-reference-locations');
+            referenceGroup.setAttribute('data-reference-realm', 'surface');
+            referenceGroup.setAttribute('opacity', '0.72');
+            referenceGroup.style.pointerEvents = 'none';
+
+            const referenceRendererCtx = {
+                ...rendererCtx,
+                tooltipHandlers: {
+                    show: () => {},
+                    move: () => {},
+                    hide: () => {},
+                    isSuppressed: () => true
+                }
+            };
+
+            surfaceLocations.forEach((loc) => {
+                const px = (loc.x / 100) * renderCtx.natW;
+                const py = (loc.y / 100) * renderCtx.natH;
+                MapOverlayMarkerRenderer.addMarker(referenceGroup, {
+                    ...loc,
+                    id: `surface-reference-${loc.id}`
+                }, px, py, referenceRendererCtx);
+            });
+            svg.appendChild(referenceGroup);
         }
 
         if (locations.length > 0) {
@@ -290,6 +323,38 @@ const MapOverlay = (function () {
         return renderCtx.overlayVisible;
     }
 
+    function syncSurfaceReferenceButton() {
+        const button = document.getElementById('surface-locations-toggle');
+        if (!button) return;
+        const available = isUnderdarkActive();
+        button.style.display = available ? 'flex' : 'none';
+        button.classList.toggle('active', available && surfaceReferencesVisible);
+        button.setAttribute('aria-pressed', surfaceReferencesVisible ? 'true' : 'false');
+        button.setAttribute('aria-hidden', available ? 'false' : 'true');
+        button.title = surfaceReferencesVisible
+            ? 'Hide Surface locations'
+            : 'Show Surface locations without roads';
+    }
+
+    function refreshInitializedOverlays() {
+        renderCtx.initializedContainers.forEach((entry) => {
+            const container = document.getElementById(entry.containerId);
+            const mapImg = document.getElementById(entry.imageId);
+            if (container && mapImg) renderOverlay(container, mapImg);
+        });
+    }
+
+    function toggleSurfaceReferences() {
+        surfaceReferencesVisible = !surfaceReferencesVisible;
+        refreshInitializedOverlays();
+        syncSurfaceReferenceButton();
+        return surfaceReferencesVisible;
+    }
+
+    function updateRealmControls() {
+        syncSurfaceReferenceButton();
+    }
+
     function refreshRoad(roadId) {
         const road = renderCtx.data?.roads?.find((entry) => entry.id === roadId);
         if (!road) return;
@@ -321,6 +386,9 @@ const MapOverlay = (function () {
     return {
         init,
         toggle,
+        toggleSurfaceReferences,
+        updateRealmControls,
+        areSurfaceReferencesVisible: () => surfaceReferencesVisible,
         setTooltipsEnabled: (enabled) => MapOverlayTooltip.setTooltipsEnabled(renderCtx, enabled),
         areTooltipsEnabled: () => MapOverlayTooltip.areTooltipsEnabled(renderCtx),
         hideActiveTooltip: () => MapOverlayTooltip.hideTooltipImmediately(renderCtx),

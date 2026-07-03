@@ -60,8 +60,6 @@
   unicode-range: U+0020, U+0027, U+0041-005A, U+0061-007A, U+00C0-00FF, U+0100-017F;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap');
-
 /* ---------- CSS Custom Properties ---------- */
 :root {
   /* Premium Color Palette */
@@ -866,6 +864,76 @@ p {
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
+.realm-switch {
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    gap: 2px;
+    border: 1px solid var(--color-gold);
+    border-radius: 4px;
+    background: rgba(10, 10, 15, 0.8);
+}
+
+.realm-switch button {
+    flex: 1;
+    padding: 0.4rem 0.5rem;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--color-gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.realm-switch button:hover {
+    background: var(--color-gold);
+    color: #000;
+}
+
+.realm-switch button.active {
+    background: var(--color-gold);
+    color: #000;
+}
+
+.realm-switch button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.surface-reference-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0.42rem 0.55rem;
+    border: 1px solid rgba(212, 175, 55, 0.65);
+    border-radius: 4px;
+    background: rgba(10, 10, 15, 0.86);
+    color: var(--color-gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.15;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.surface-reference-toggle:hover,
+.surface-reference-toggle.active {
+    background: var(--color-gold);
+    color: #000;
+}
+
+.surface-reference-locations {
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.65));
+}
+
 .map-measure-panel {
   position: absolute;
   top: 0.85rem;
@@ -1400,6 +1468,23 @@ p {
 
 .tt-meta-value {
   color: #d8cc9f;
+}
+
+.tt-disposition {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.tt-disposition-friendly {
+  color: #78c98b;
+}
+
+.tt-disposition-neutral {
+  color: #d8cc9f;
+}
+
+.tt-disposition-hostile {
+  color: #ef6b64;
 }
 
 .tt-desc {

@@ -246,7 +246,7 @@ Create a small `MapScene` module that owns SVG root creation and named `<g>` lay
 
 Suggested layer order:
 
-- `regions`
+- `regionLabels`
 - `roads`
 - `waterRoutes`
 - `locations`

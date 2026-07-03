@@ -5,11 +5,16 @@
 const Editor = (function () {
     let state = {
         tab: 'locations',
+        realm: 'surface',
+        underdarkMapImage: 'images/myrdae-map-layers/underdark-map.png',
+        realms: {
+            surface: { locations: [], roads: [] },
+            underdark: { locations: [], roads: [] }
+        },
         selectedLocId: null,
         selectedRoadId: null,
         locations: [],
         roads: [],
-        regions: [],
         locationDraft: null,
         locationDraftOriginalId: null,
         roadDraft: null,
@@ -23,7 +28,10 @@ const Editor = (function () {
         roadKindFilter: '',
         locationPlacementMode: false,
         moveLocationMode: false,
-        isNewPreview: false
+        isNewPreview: false,
+        sheetSyncPollId: null,
+        lastSeenSheetDatabaseWriteAt: null,
+        lastSheetSyncAlertKey: null
     };
 
     const _structuredCloneFn = (typeof structuredClone === 'function') ? structuredClone : null;
@@ -46,6 +54,14 @@ const Editor = (function () {
         if (!el) return;
         el.textContent = text || '';
         el.style.color = text ? (isError ? '#ff9b8f' : '#8f8576') : '#8f8576';
+    }
+
+    function setSheetSyncMessage(text, isError = false) {
+        setActionMessage('sheet-sync-status', text, isError);
+    }
+
+    function hasOpenDraft() {
+        return Boolean(state.locationDraft || state.roadDraft || state.selectedLocId === '__preview__');
     }
 
     function flashButton(id, html, successColor = '#0a0') {
@@ -104,7 +120,10 @@ const Editor = (function () {
             init: async () => renderState,
             getData: () => renderState,
             getLocations: () => renderState.locations,
-            getRoads: () => renderState.roads
+            getRoads: () => renderState.roads,
+            getSurfaceLocations: () => state.realm === 'surface'
+                ? getRenderableLocations()
+                : cloneData(state.realms.surface.locations || [])
         };
         return renderState;
     }
@@ -127,15 +146,110 @@ const Editor = (function () {
         }
     }
 
+    function snapshotActiveRealm() {
+        state.realms[state.realm] = {
+            locations: cloneData(state.locations),
+            roads: cloneData(state.roads)
+        };
+    }
+
+    function getWorldDataSnapshot() {
+        snapshotActiveRealm();
+        return {
+            locations: cloneData(state.realms.surface.locations),
+            roads: cloneData(state.realms.surface.roads),
+            underdark: {
+                mapImage: state.underdarkMapImage,
+                locations: cloneData(state.realms.underdark.locations),
+                roads: cloneData(state.realms.underdark.roads)
+            }
+        };
+    }
+
+    function loadRealmIntoState(realm) {
+        const source = state.realms[realm] || { locations: [], roads: [] };
+        state.realm = realm;
+        state.locations = cloneData(source.locations || []);
+        state.roads = cloneData(source.roads || []);
+        state.selectedLocId = null;
+        state.selectedRoadId = null;
+        state.locationDraft = null;
+        state.locationDraftOriginalId = null;
+        state.roadDraft = null;
+        state.roadDraftOriginalId = null;
+        state.locationPlacementMode = false;
+        state.moveLocationMode = false;
+        state.isNewPreview = false;
+        state.undoStack = [];
+        state.redoStack = [];
+    }
+
+    function setRealm(realm) {
+        if (typeof CityEditor !== 'undefined' && CityEditor.isActive()) return state.realm;
+        const nextRealm = realm === 'underdark' ? 'underdark' : 'surface';
+        if (nextRealm === state.realm) return state.realm;
+
+        cancelLocation();
+        cancelRoad();
+        snapshotActiveRealm();
+        loadRealmIntoState(nextRealm);
+
+        const territories = document.getElementById('territories-layer');
+        const territoriesButton = document.getElementById('territories-toggle');
+        if (territories) territories.style.display = 'none';
+        if (territoriesButton) {
+            territoriesButton.style.opacity = '0.5';
+            territoriesButton.title = 'Show Territories';
+            territoriesButton.disabled = nextRealm === 'underdark';
+        }
+
+        if (typeof MapRealmController !== 'undefined') {
+            MapRealmController.setVisualRealm(nextRealm, {
+                visualOnly: true,
+                buttonId: 'underdark-toggle',
+                imageSrc: state.underdarkMapImage
+            });
+        }
+
+        const indicator = document.getElementById('editor-realm-indicator');
+        if (indicator) indicator.textContent = nextRealm === 'underdark' ? 'Underdark' : 'Surface World';
+        renderLists();
+        updateLocationPlacementUI();
+        updateUndoButtons();
+        refreshMap();
+        return state.realm;
+    }
+
+    function toggleRealm() {
+        return setRealm(state.realm === 'surface' ? 'underdark' : 'surface');
+    }
+
     /** Initialize Editor State */
     async function init() {
-        // Copy the original WORLD_LOCATIONS locally to manipulate
-        if (typeof WORLD_LOCATIONS !== 'undefined') {
-            state.locations = cloneData(WORLD_LOCATIONS.locations || []);
-            state.roads = cloneData(WORLD_LOCATIONS.roads || []);
-            state.regions = cloneData(WORLD_LOCATIONS.regions || []);
+        let world = null;
+        try {
+            const response = await fetch('/api/world-data', { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const payload = await response.json();
+            world = payload.world;
+        } catch (error) {
+            console.error('World database API unavailable.', error);
+        }
+
+        if (world) {
+            state.realms.surface = {
+                locations: cloneData(world.locations || []),
+                roads: cloneData(world.roads || [])
+            };
+            state.realms.underdark = {
+                locations: cloneData(world.underdark?.locations || []),
+                roads: cloneData(world.underdark?.roads || [])
+            };
+            state.underdarkMapImage = world.underdark?.mapImage
+                || 'images/myrdae-map-layers/underdark-map.png';
+            loadRealmIntoState('surface');
         } else {
-            console.warn("WORLD_LOCATIONS not found. Creating empty map.");
+            console.warn('World database unavailable. Creating empty map state.');
         }
 
         syncCampaignDataBridge();
@@ -145,6 +259,8 @@ const Editor = (function () {
 
         renderLists();
         updateLocationPlacementUI();
+        refreshSheetsSyncStatus({ reloadOnSheetWrite: false });
+        startSheetsSyncPolling();
 
         // --- Keyboard shortcuts ---
         document.addEventListener('keydown', (e) => {
@@ -507,6 +623,7 @@ const Editor = (function () {
         document.getElementById('loc-type').value = loc.type || 'town';
         document.getElementById('loc-region').value = loc.region || '';
         document.getElementById('loc-biome').value = loc.biome || '';
+        document.getElementById('loc-disposition').value = loc.disposition || 'neutral';
         document.getElementById('loc-desc').value = loc.description || '';
         document.getElementById('loc-details').value = loc.details || '';
         document.getElementById('loc-link').value = loc.link || '';
@@ -559,6 +676,7 @@ const Editor = (function () {
         document.getElementById('loc-type').value = 'town';
         document.getElementById('loc-region').value = '';
         document.getElementById('loc-biome').value = '';
+        document.getElementById('loc-disposition').value = 'neutral';
         document.getElementById('loc-desc').value = '';
         document.getElementById('loc-details').value = '';
         document.getElementById('loc-link').value = '';
@@ -584,6 +702,7 @@ const Editor = (function () {
             id: '__preview__', name: 'New Location', type: 'town',
             x: x !== undefined ? parseFloat(x.toFixed(1)) : 50,
             y: y !== undefined ? parseFloat(y.toFixed(1)) : 50,
+            disposition: 'neutral',
             _ghost: true
         };
         _debouncedRefresh();
@@ -656,6 +775,7 @@ const Editor = (function () {
             x: parseFloat(document.getElementById('loc-x').value) || 0,
             y: parseFloat(document.getElementById('loc-y').value) || 0,
             region: document.getElementById('loc-region').value,
+            disposition: document.getElementById('loc-disposition').value || 'neutral',
             description: document.getElementById('loc-desc').value || defaultDesc
         };
 
@@ -1777,6 +1897,8 @@ const Editor = (function () {
         document.getElementById('loc-y').value = copy.y;
         document.getElementById('loc-type').value = copy.type || 'town';
         document.getElementById('loc-region').value = copy.region || '';
+        document.getElementById('loc-biome').value = copy.biome || '';
+        document.getElementById('loc-disposition').value = copy.disposition || 'neutral';
         document.getElementById('loc-desc').value = copy.description || '';
         document.getElementById('loc-details').value = copy.details || '';
         document.getElementById('loc-link').value = copy.link || '';
@@ -1948,59 +2070,126 @@ const Editor = (function () {
         document.dispatchEvent(new CustomEvent('campaign-data-updated', { detail: renderState }));
     }
 
-    async function exportData() {
-        // Generate JS content string
-        const obj = {
-            locations: state.locations,
-            roads: state.roads,
-            regions: state.regions
-        };
+    async function refreshSheetsSyncStatus(options = {}) {
+        const { reloadOnSheetWrite = true } = options;
+        try {
+            const response = await fetch('/api/sheets-sync/status?v=' + Date.now(), { cache: 'no-store' });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const payload = await response.json();
+            const status = payload.status || {};
+            const writeAt = payload.lastSheetDatabaseWriteAt || null;
 
-        const str = `/**
- * World of Myrdae - Default Location Database
- * 
- * This file contains the default data for locations, roads, and regions.
- * It is loaded as a script to bypass CORS restrictions when running locally via file:// protocol.
- */
-
-const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
-
-        // If running on a local server, trigger the POST save
-        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-            try {
-                const response = await fetch('/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: str
-                });
-
-                if (response.ok) {
-                    return true;
-                } else {
-                    throw new Error('Save failed');
-                }
-            } catch (err) {
-                console.error("Save API failed. Falling back to download.", err);
-                downloadFile(str);
-                return false;
+            if (!payload.configured) {
+                setSheetSyncMessage('Google Sheet sync is not configured on this server.');
+                return status;
             }
-        } else {
-            // Fallback: Download blob
-            downloadFile(str);
-            return false;
+
+            const parts = [];
+            if (status.action) parts.push(status.action);
+            if (status.timestamp) parts.push(new Date(status.timestamp).toLocaleString());
+            if (Number.isFinite(status.importedRows)) parts.push(`${status.importedRows} imported`);
+            if (Number.isFinite(status.deletedRows)) parts.push(`${status.deletedRows} deleted`);
+            if (Number.isFinite(status.conflictRows) && status.conflictRows > 0) parts.push(`${status.conflictRows} conflicts`);
+            if (Number.isFinite(status.invalidRows) && status.invalidRows > 0) parts.push(`${status.invalidRows} invalid`);
+            if (status.error) parts.push(status.error);
+            if (payload.schedule && Array.isArray(payload.schedule.syncTimes) && payload.schedule.syncTimes.length) {
+                parts.push(`daily ${payload.schedule.syncTimes.join(', ')}`);
+            }
+            if (payload.schedule && payload.schedule.nextRunAt) {
+                parts.push(`next ${new Date(payload.schedule.nextRunAt).toLocaleString()}`);
+            }
+
+            setSheetSyncMessage(parts.length ? `Sheet sync: ${parts.join(' | ')}` : 'Sheet sync configured.', status.ok === false);
+
+            if (status.ok === false && status.error) {
+                const alertKey = `${status.timestamp || ''}:${status.error}`;
+                if (alertKey !== state.lastSheetSyncAlertKey) {
+                    state.lastSheetSyncAlertKey = alertKey;
+                    alert('Google Sheet sync failed: ' + status.error);
+                }
+            }
+
+            if (writeAt && state.lastSeenSheetDatabaseWriteAt && writeAt !== state.lastSeenSheetDatabaseWriteAt) {
+                if (reloadOnSheetWrite && !hasOpenDraft()) {
+                    await reloadPage();
+                    setSheetSyncMessage('Sheet changes were imported and the editor reloaded.');
+                } else if (hasOpenDraft()) {
+                    setSheetSyncMessage('Sheet changes were imported. Reload data after saving or canceling this edit.', true);
+                }
+            }
+            state.lastSeenSheetDatabaseWriteAt = writeAt || state.lastSeenSheetDatabaseWriteAt;
+            return status;
+        } catch (err) {
+            console.error('Failed to read sheet sync status:', err);
+            setSheetSyncMessage('Sheet sync status unavailable: ' + err.message, true);
+            return null;
         }
     }
 
-    function downloadFile(str) {
-        const blob = new Blob([str], { type: 'application/javascript' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'locations-db.js';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    function startSheetsSyncPolling() {
+        if (state.sheetSyncPollId) clearInterval(state.sheetSyncPollId);
+        state.sheetSyncPollId = setInterval(() => {
+            refreshSheetsSyncStatus({ reloadOnSheetWrite: true });
+        }, 15000);
+    }
+
+    async function postSheetsSync(path, buttonId, labelHtml) {
+        const btn = document.getElementById(buttonId);
+        const originalHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Working';
+        }
+        try {
+            const response = await fetch(path, { method: 'POST' });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok || payload.success === false) {
+                const message = payload.status && payload.status.error ? payload.status.error : (payload.error || 'Sheet sync failed');
+                throw new Error(message);
+            }
+            await refreshSheetsSyncStatus({ reloadOnSheetWrite: false });
+            if (btn) flashButton(buttonId, '<i class="fa-solid fa-check"></i> Done');
+            return payload.status;
+        } catch (err) {
+            console.error('Sheet sync request failed:', err);
+            setSheetSyncMessage(err.message, true);
+            return null;
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = labelHtml || originalHtml;
+            }
+        }
+    }
+
+    function exportToSheet() {
+        return postSheetsSync('/api/sheets-sync/export', 'btn-sheet-export', '<i class="fa-solid fa-table"></i> Export Sheet');
+    }
+
+    function syncSheet() {
+        return postSheetsSync('/api/sheets-sync/sync', 'btn-sheet-sync', '<i class="fa-solid fa-arrows-rotate"></i> Sync Sheet');
+    }
+
+    async function exportData() {
+        const obj = getWorldDataSnapshot();
+        try {
+            const response = await fetch('/api/world-data', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ world: obj })
+            });
+
+            if (response.ok) {
+                refreshSheetsSyncStatus({ reloadOnSheetWrite: false });
+                return true;
+            } else {
+                throw new Error('Save failed');
+            }
+        } catch (err) {
+            console.error('World database save failed.', err);
+            alert('World database save failed: ' + err.message);
+            return false;
+        }
     }
 
     async function reloadPage() {
@@ -2010,24 +2199,23 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
         }
 
         try {
-            const res = await fetch('js/locations-db.js?v=' + Date.now());
+            const res = await fetch('/api/world-data?v=' + Date.now(), { cache: 'no-store' });
             if (!res.ok) throw new Error("HTTP error " + res.status);
-            const text = await res.text();
-
-            const jsonStart = text.indexOf('{');
-            if (jsonStart === -1) throw new Error("Invalid format");
-
-            let jsonStr = text.substring(jsonStart).trim();
-            if (jsonStr.endsWith(';')) jsonStr = jsonStr.slice(0, -1);
-
-            const data = JSON.parse(jsonStr);
-            state.locations = data.locations || [];
-            state.roads = data.roads || [];
-            state.regions = data.regions || [];
-            state.locationDraft = null;
-            state.locationDraftOriginalId = null;
-            state.roadDraft = null;
-            state.roadDraftOriginalId = null;
+            const payload = await res.json();
+            const data = payload.world;
+            if (!data) throw new Error('World database returned no data');
+            const activeRealm = state.realm;
+            state.realms.surface = {
+                locations: data.locations || [],
+                roads: data.roads || []
+            };
+            state.realms.underdark = {
+                locations: data.underdark?.locations || [],
+                roads: data.underdark?.roads || []
+            };
+            state.underdarkMapImage = data.underdark?.mapImage
+                || 'images/myrdae-map-layers/underdark-map.png';
+            loadRealmIntoState(activeRealm);
 
             renderLists();
 
@@ -2090,8 +2278,14 @@ const WORLD_LOCATIONS = ${JSON.stringify(obj, null, 4)};\n`;
 
         // Core
         exportData,
+        exportToSheet,
+        syncSheet,
+        refreshSheetsSyncStatus,
         reloadPage,
         refreshMap,
+        setRealm,
+        toggleRealm,
+        getWorldDataSnapshot,
 
         // Undo / Redo
         undo,

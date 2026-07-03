@@ -8,9 +8,11 @@ const CampaignData = (function () {
     let data = {
         locations: [],
         roads: [],
-        regions: [],
         notes: {}
     };
+    let activeRealm = 'surface';
+    let realmData = { surface: data, underdark: { locations: [], roads: [], notes: {} } };
+    let underdarkMapImage = 'images/myrdae-map-layers/underdark-map.png';
     let syncListenersBound = false;
     let pollingIntervalId = null;
     let storageListener = null;
@@ -166,26 +168,50 @@ const CampaignData = (function () {
         return issues;
     }
 
+    function prepRealm(source) {
+        const prep = (arr) => (arr || []).map(item => ({ ...item, fromDefault: true }));
+        return {
+            locations: prep(source && source.locations),
+            roads: prep(source && source.roads),
+            notes: {}
+        };
+    }
+
     async function loadDefaults() {
-        // Use embedded data from locations-db.js
-        if (typeof WORLD_LOCATIONS !== 'undefined') {
-            const issues = validateWorldLocations(WORLD_LOCATIONS);
+        let world = null;
+        try {
+            const response = await fetch('/api/world-data', { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const payload = await response.json();
+            world = payload.world;
+        } catch (error) {
+            console.error('[CampaignData] World database API unavailable.', error);
+        }
+
+        if (world) {
+            const issues = validateWorldLocations(world);
             if (issues.length) {
-                console.warn(`[CampaignData] WORLD_LOCATIONS has ${issues.length} validation issue(s):`);
+                console.warn(`[CampaignData] World surface data has ${issues.length} validation issue(s):`);
                 issues.slice(0, 25).forEach((msg) => console.warn('  •', msg));
                 if (issues.length > 25) console.warn(`  ...and ${issues.length - 25} more`);
             }
-            const prep = (arr) => (arr || []).map(item => ({ ...item, fromDefault: true }));
-            data = {
-                locations: prep(WORLD_LOCATIONS.locations),
-                roads: prep(WORLD_LOCATIONS.roads),
-                regions: prep(WORLD_LOCATIONS.regions),
-                notes: {}
+            const underdarkIssues = validateWorldLocations(world.underdark || {});
+            if (underdarkIssues.length) {
+                console.warn(`[CampaignData] World underdark data has ${underdarkIssues.length} validation issue(s):`);
+                underdarkIssues.slice(0, 25).forEach((msg) => console.warn('  -', msg));
+            }
+            realmData = {
+                surface: prepRealm(world),
+                underdark: prepRealm(world.underdark || {})
             };
+            underdarkMapImage = (world.underdark && typeof world.underdark.mapImage === 'string')
+                ? world.underdark.mapImage
+                : underdarkMapImage;
+            data = realmData[activeRealm];
             if (USE_LOCAL_STORAGE) save();
-            console.log('Initialized data from embedded WORLD_LOCATIONS');
+            console.log('Initialized world data from local server');
         } else {
-            console.error('WORLD_LOCATIONS not found. Ensure js/locations-db.js is loaded.');
+            console.error('World data not found. Ensure the local server is running.');
         }
     }
 
@@ -205,6 +231,26 @@ const CampaignData = (function () {
 
     function getData() {
         return data;
+    }
+
+    function setRealm(realm) {
+        const nextRealm = realm === 'underdark' ? 'underdark' : 'surface';
+        activeRealm = nextRealm;
+        data = realmData[nextRealm];
+        triggerUpdate();
+        return data;
+    }
+
+    function getRealm() {
+        return activeRealm;
+    }
+
+    function getUnderdarkMapImage() {
+        return underdarkMapImage;
+    }
+
+    function getSurfaceLocations() {
+        return Array.isArray(realmData.surface?.locations) ? realmData.surface.locations : [];
     }
 
     function reset() {
@@ -265,6 +311,10 @@ const CampaignData = (function () {
         save,
         reset,
         getData,
+        setRealm,
+        getRealm,
+        getUnderdarkMapImage,
+        getSurfaceLocations,
         getLocations,
         getLocation,
         updateLocation,

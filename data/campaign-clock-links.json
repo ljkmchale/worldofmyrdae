@@ -18,7 +18,7 @@
       "sourceWorldDateLine": "41st of Hemist – The Swamps",
       "syncStatus": "error",
       "syncMessage": "No session/world date pair found in document",
-      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
+      "lastSyncedAt": "2026-07-03T14:03:19.878Z"
     },
     {
       "id": "heroes-of-emberstran",
@@ -38,7 +38,7 @@
       "sourceWorldDateLine": "34th of Talil, 1246",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 21",
-      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
+      "lastSyncedAt": "2026-07-03T14:03:19.878Z"
     },
     {
       "id": "a-new-adventure",
@@ -58,7 +58,7 @@
       "sourceWorldDateLine": "38th of Talil at the Pale Lantern",
       "syncStatus": "ok",
       "syncMessage": "Parsed session 16",
-      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
+      "lastSyncedAt": "2026-07-03T14:03:19.878Z"
     },
     {
       "id": "bloody-endeaver",
@@ -68,18 +68,18 @@
       "notes": "Anchor will update from the latest parseable session header in the Google Doc.",
       "anchor": {
         "year": 1246,
-        "harmon": "Paramor",
-        "day": 3,
+        "harmon": "Paramore",
+        "day": 1,
         "hour": 10,
         "minute": 0
       },
-      "sourceSession": 28,
-      "sourceSessionHeading": "28 - Better off Dead (12/08)",
-      "sourceWorldDateLine": "3rd of Paramor, 1246 in Hol’gardur",
+      "sourceSession": 26,
+      "sourceSessionHeading": "26 - Goin’ Up the Mountain (10/27)",
+      "sourceWorldDateLine": "1st of Paramore in Hol’gardur (Runegrip Clan)",
       "syncStatus": "ok",
-      "syncMessage": "Parsed session 28",
-      "lastSyncedAt": "2026-06-15T00:27:20.414Z"
+      "syncMessage": "Parsed session 26",
+      "lastSyncedAt": "2026-07-03T14:03:19.878Z"
     }
   ],
-  "lastSyncedAt": "2026-06-15T00:27:20.414Z"
+  "lastSyncedAt": "2026-07-03T14:03:19.878Z"
 }

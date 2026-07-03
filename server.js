@@ -4,6 +4,16 @@ const path = require('path');
 const { spawn } = require('child_process');
 const net = require('net');
 const crypto = require('crypto');
+const { WorldStore, normalizeWorld } = require('./lib/world-store');
+const {
+    isConfigured: isSheetsSyncConfigured,
+    getConfig: getSheetsSyncConfig,
+    exportLocationsToSheet,
+    syncLocationsWithSheet,
+    getStatus: getSheetsSyncStatus,
+    recordSyncFailure,
+    stampLocation
+} = require('./lib/google-sheets-sync');
 
 const DEFAULT_PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const COMFY_PORT = 8188;
@@ -21,7 +31,11 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 let comfyProcess = null;
 let server = null;
+let worldStore = null;
 let runtimeConfig = createRuntimeConfig();
+let sheetsSyncTimer = null;
+let sheetsSyncInFlight = null;
+let sheetsSyncNextRunAt = null;
 
 function createRuntimeConfig(options = {}) {
     const bundledRoot = path.resolve(options.bundledRoot || DEFAULT_BUNDLED_ROOT);
@@ -42,6 +56,7 @@ function createRuntimeConfig(options = {}) {
         port: Number.isFinite(requestedPort) ? requestedPort : DEFAULT_PORT,
         bundledRootReal,
         dataRootReal: fs.realpathSync(requestedDataRoot),
+        databasePath: path.join(fs.realpathSync(requestedDataRoot), 'data', 'myrdae.db'),
         autoStartComfy
     };
 }
@@ -84,7 +99,7 @@ function resolvePublicPath(requestPath) {
 
 function resolveWritablePath(requestPath) {
     if (!isMutableRelativePath(requestPath)) {
-        throw new Error('Path is read-only in packaged builds');
+        throw new Error('Path is not writable through the local server');
     }
 
     return resolveWithinRoot(runtimeConfig.dataRootReal, requestPath);
@@ -147,6 +162,22 @@ function sendError(res, err, fallbackStatus = 500) {
     sendJson(res, status, { success: false, error: err && err.message ? err.message : 'Server error' });
 }
 
+function isSensitiveStaticPath(requestPath) {
+    const relativePath = normalizeRelativePath(requestPath).toLowerCase();
+    return relativePath === 'server.js' ||
+        relativePath === 'package.json' ||
+        relativePath === 'package-lock.json' ||
+        relativePath === 'data/myrdae.db' ||
+        relativePath.startsWith('data/myrdae.db-') ||
+        relativePath === '.env' ||
+        relativePath.startsWith('.env.') ||
+        relativePath.startsWith('.git/') ||
+        relativePath.startsWith('.runtime/') ||
+        relativePath.startsWith('backups/') ||
+        relativePath.startsWith('node_modules/') ||
+        relativePath.startsWith('lib/');
+}
+
 function getMapUpdateLogPath() {
     return path.join(runtimeConfig.dataRootReal, '.runtime', 'map-update-log.jsonl');
 }
@@ -171,6 +202,24 @@ function extractWorldLocations(source) {
         throw new Error('WORLD_LOCATIONS assignment not found');
     }
     return JSON.parse(match[1]);
+}
+
+function serializeWorldLocations(world) {
+    return `const WORLD_LOCATIONS = ${JSON.stringify(normalizeWorld(world), null, 4)};\n`;
+}
+
+function initializeWorldStore() {
+    if (worldStore) worldStore.close();
+    worldStore = new WorldStore(runtimeConfig.databasePath);
+    if (!worldStore.isEmpty()) return;
+
+    const legacyPath = resolvePublicPath('js/locations-db.js');
+    if (!fs.existsSync(legacyPath)) {
+        throw new Error(`Cannot initialize world database: legacy seed not found at ${legacyPath}`);
+    }
+    const seed = extractWorldLocations(fs.readFileSync(legacyPath, 'utf8'));
+    worldStore.writeWorld(seed, { source: 'legacy-js-migration' });
+    console.log(`[World DB] Migrated legacy map data into ${runtimeConfig.databasePath}`);
 }
 
 function getRecordKey(record, index) {
@@ -251,9 +300,122 @@ function diffWorldCollection(collectionName, beforeList, afterList) {
 }
 
 function diffWorldLocations(before, after) {
-    return ['locations', 'roads', 'regions'].flatMap((collectionName) =>
+    const surfaceChanges = ['locations', 'roads'].flatMap((collectionName) =>
         diffWorldCollection(collectionName, before && before[collectionName], after && after[collectionName])
     );
+    const underdarkChanges = ['locations', 'roads'].flatMap((collectionName) =>
+        diffWorldCollection(
+            `underdark.${collectionName}`,
+            before && before.underdark && before.underdark[collectionName],
+            after && after.underdark && after.underdark[collectionName]
+        )
+    );
+    const beforeImage = before && before.underdark && before.underdark.mapImage;
+    const afterImage = after && after.underdark && after.underdark.mapImage;
+    const settingsChanges = deepEqual(beforeImage, afterImage) ? [] : [{
+        collection: 'underdark.settings',
+        id: 'map-image',
+        name: 'Underdark map image',
+        action: 'updated',
+        changes: [{ field: 'mapImage', oldValue: beforeImage, newValue: afterImage }]
+    }];
+    return surfaceChanges.concat(underdarkChanges, settingsChanges);
+}
+
+function indexLocationsById(locations = []) {
+    return new Map((Array.isArray(locations) ? locations : []).map((location) => [location.id, location]));
+}
+
+function stampChangedLocations(previousWorld, nextWorld, source) {
+    const stampedWorld = normalizeWorld(nextWorld);
+    const stampRealm = (previousLocations, nextLocations) => {
+        const previousById = indexLocationsById(previousLocations);
+        return (Array.isArray(nextLocations) ? nextLocations : []).map((location) => {
+            const previous = previousById.get(location.id);
+            if (previous && deepEqual(previous, location)) return location;
+            return stampLocation(location, source);
+        });
+    };
+
+    stampedWorld.locations = stampRealm(previousWorld && previousWorld.locations, stampedWorld.locations);
+    stampedWorld.underdark.locations = stampRealm(
+        previousWorld && previousWorld.underdark && previousWorld.underdark.locations,
+        stampedWorld.underdark.locations
+    );
+    return stampedWorld;
+}
+
+function runSheetsSync(source = 'scheduled-sync') {
+    if (!worldStore || !isSheetsSyncConfigured()) return Promise.resolve(null);
+    if (sheetsSyncInFlight) return sheetsSyncInFlight;
+
+    sheetsSyncInFlight = syncLocationsWithSheet(worldStore, runtimeConfig.dataRootReal, source)
+        .catch((err) => {
+            console.warn(`[Google Sheets Sync] ${err.message}`);
+            try {
+                recordSyncFailure(worldStore, runtimeConfig.dataRootReal, {
+                    action: source,
+                    error: err.message
+                });
+            } catch (metaErr) {
+                console.warn(`[Google Sheets Sync] Failed to record status: ${metaErr.message}`);
+            }
+            return null;
+        })
+        .finally(() => {
+            sheetsSyncInFlight = null;
+        });
+    return sheetsSyncInFlight;
+}
+
+function scheduleSheetsSync(source = 'ui-save') {
+    if (!isSheetsSyncConfigured()) return;
+    setTimeout(() => runSheetsSync(source), 250);
+}
+
+function getNextSheetsSyncRun(syncTimes, fromDate = new Date()) {
+    const times = Array.isArray(syncTimes) && syncTimes.length ? syncTimes : ['06:00', '18:00'];
+    for (let dayOffset = 0; dayOffset <= 1; dayOffset += 1) {
+        for (const time of times) {
+            const [hour, minute] = time.split(':').map(Number);
+            const candidate = new Date(fromDate);
+            candidate.setDate(fromDate.getDate() + dayOffset);
+            candidate.setHours(hour, minute, 0, 0);
+            if (candidate > fromDate) return candidate;
+        }
+    }
+
+    const [hour, minute] = times[0].split(':').map(Number);
+    const fallback = new Date(fromDate);
+    fallback.setDate(fromDate.getDate() + 1);
+    fallback.setHours(hour, minute, 0, 0);
+    return fallback;
+}
+
+function startSheetsSyncTimer() {
+    if (sheetsSyncTimer) {
+        clearTimeout(sheetsSyncTimer);
+        sheetsSyncTimer = null;
+    }
+    sheetsSyncNextRunAt = null;
+    if (!isSheetsSyncConfigured()) return;
+
+    const config = getSheetsSyncConfig();
+    const scheduleNext = () => {
+        const nextRun = getNextSheetsSyncRun(config.syncTimes);
+        sheetsSyncNextRunAt = nextRun.toISOString();
+        const delayMs = Math.max(1000, nextRun.getTime() - Date.now());
+        sheetsSyncTimer = setTimeout(() => {
+            runSheetsSync('scheduled-sync').finally(scheduleNext);
+        }, delayMs);
+        worldStore.setMetaValue('google_sheets_sync_schedule', {
+            syncTimes: config.syncTimes,
+            nextRunAt: sheetsSyncNextRunAt
+        });
+        console.log(`[Google Sheets Sync] Next scheduled sync: ${nextRun.toLocaleString()} (${config.syncTimes.join(', ')})`);
+    };
+
+    scheduleNext();
 }
 
 function createMapUpdateAuditEntry(req, filePath, oldContent, newContent) {
@@ -268,7 +430,7 @@ function createMapUpdateAuditEntry(req, filePath, oldContent, newContent) {
     };
 
     try {
-        const before = oldContent ? extractWorldLocations(oldContent) : { locations: [], roads: [], regions: [] };
+        const before = oldContent ? extractWorldLocations(oldContent) : { locations: [], roads: [] };
         const after = extractWorldLocations(newContent);
         entry.changes = diffWorldLocations(before, after);
     } catch (err) {
@@ -287,6 +449,7 @@ function createMapUpdateAuditEntry(req, filePath, oldContent, newContent) {
 
 function appendMapUpdateLog(entry) {
     if (!entry || entry.changeCount < 1) return;
+    if (worldStore) worldStore.recordAudit(entry);
     const logPath = getMapUpdateLogPath();
     fs.mkdirSync(path.dirname(logPath), { recursive: true });
     fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf8');
@@ -308,6 +471,18 @@ function readMapUpdateLog(limit = 50) {
 
 function createStaticFileEtag(stat) {
     return `"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
+}
+
+function injectCacheBusters(html) {
+    return html.replace(/(href|src)="((?!(?:[a-z][a-z0-9+.-]*:|\/\/|#|data:))[^"?]+\.(?:css|js))"/gi, (match, attr, assetPath) => {
+        try {
+            const publicAssetPath = '/' + assetPath.replace(/^\.?\//, '');
+            const assetStat = fs.statSync(resolvePublicPath(publicAssetPath));
+            return `${attr}="${assetPath}?v=${Math.floor(assetStat.mtimeMs)}"`;
+        } catch (err) {
+            return match;
+        }
+    });
 }
 
 function getStaticCacheControl(reqPath, extname) {
@@ -668,13 +843,107 @@ function handleRequest(req, res) {
     if (req.method === 'GET' && url === '/api/map-update-log') {
         try {
             const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+            const limit = params.get('limit');
+            const databaseEntries = worldStore.readAudit(limit);
             sendJson(res, 200, {
                 success: true,
-                entries: readMapUpdateLog(params.get('limit'))
+                entries: databaseEntries.length ? databaseEntries : readMapUpdateLog(limit)
             });
         } catch (err) {
             sendError(res, err);
         }
+        return;
+    }
+
+    if (req.method === 'GET' && url === '/api/sheets-sync/status') {
+        try {
+            const config = getSheetsSyncConfig();
+            const storedSchedule = worldStore.getMeta('google_sheets_sync_schedule', {});
+            sendJson(res, 200, {
+                success: true,
+                configured: isSheetsSyncConfigured(),
+                status: getSheetsSyncStatus(worldStore),
+                lastSheetDatabaseWriteAt: worldStore.getMeta('last_sheet_database_write_at', null),
+                schedule: {
+                    syncTimes: config.syncTimes,
+                    nextRunAt: sheetsSyncNextRunAt || storedSchedule.nextRunAt || null
+                }
+            });
+        } catch (err) {
+            sendError(res, err);
+        }
+        return;
+    }
+
+    if (req.method === 'POST' && url === '/api/sheets-sync/export') {
+        exportLocationsToSheet(worldStore, runtimeConfig.dataRootReal, 'manual-export')
+            .then((status) => sendJson(res, status && status.ok === false ? 400 : 200, { success: !!(status && status.ok), status }))
+            .catch((err) => sendError(res, err, 400));
+        return;
+    }
+
+    if (req.method === 'POST' && url === '/api/sheets-sync/sync') {
+        if (!isSheetsSyncConfigured()) {
+            sendJson(res, 400, {
+                success: false,
+                status: {
+                    configured: false,
+                    ok: false,
+                    error: 'Google Sheets sync is not configured.'
+                }
+            });
+            return;
+        }
+        runSheetsSync('manual-sync')
+            .then((status) => sendJson(res, status && status.ok === false ? 409 : 200, { success: !!(status && status.ok), status }))
+            .catch((err) => sendError(res, err, 400));
+        return;
+    }
+
+    if (req.method === 'GET' && url === '/api/world-data') {
+        try {
+            sendJson(res, 200, {
+                success: true,
+                world: worldStore.readWorld(),
+                counts: worldStore.getCounts(),
+                meta: {
+                    lastWriteAt: worldStore.getMeta('last_write_at', null),
+                    lastWriteSource: worldStore.getMeta('last_write_source', null),
+                    lastSheetDatabaseWriteAt: worldStore.getMeta('last_sheet_database_write_at', null)
+                }
+            });
+        } catch (err) {
+            sendError(res, err);
+        }
+        return;
+    }
+
+    if ((req.method === 'PUT' || req.method === 'POST') && url === '/api/world-data') {
+        readRequestBody(req).then((body) => {
+            try {
+                const parsed = JSON.parse(body || '{}');
+                const nextWorld = normalizeWorld(parsed.world || parsed);
+                const previousWorld = worldStore.readWorld();
+                const stampedWorld = stampChangedLocations(previousWorld, nextWorld, 'map-editor');
+                const auditEntry = createMapUpdateAuditEntry(
+                    req,
+                    runtimeConfig.databasePath,
+                    serializeWorldLocations(previousWorld),
+                    serializeWorldLocations(stampedWorld)
+                );
+                worldStore.writeWorld(stampedWorld, { source: 'api/world-data' });
+                appendMapUpdateLog(auditEntry);
+                scheduleSheetsSync('map-editor-save');
+                sendJson(res, 200, {
+                    success: true,
+                    message: 'World database saved',
+                    changeCount: auditEntry.changeCount,
+                    counts: worldStore.getCounts()
+                });
+            } catch (err) {
+                sendError(res, err, 400);
+            }
+        }).catch((err) => sendError(res, err, 400));
         return;
     }
 
@@ -1546,14 +1815,21 @@ ${text}`;
     if (req.method === 'POST' && url === '/save') {
         readRequestBody(req).then((body) => {
             try {
-                const filePath = resolveWritablePath('js/locations-db.js');
-                const oldContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
-                const auditEntry = createMapUpdateAuditEntry(req, filePath, oldContent, body);
+                const nextWorld = extractWorldLocations(body);
+                const previousWorld = worldStore.readWorld();
+                const stampedWorld = stampChangedLocations(previousWorld, nextWorld, 'legacy-save-route');
+                const auditEntry = createMapUpdateAuditEntry(
+                    req,
+                    runtimeConfig.databasePath,
+                    serializeWorldLocations(previousWorld),
+                    serializeWorldLocations(stampedWorld)
+                );
+                worldStore.writeWorld(stampedWorld, { source: 'legacy-save-route' });
                 appendMapUpdateLog(auditEntry);
-                fs.writeFileSync(filePath, body);
+                scheduleSheetsSync('legacy-save-route');
                 sendJson(res, 200, {
                     success: true,
-                    message: 'Saved successfully to disk',
+                    message: 'Saved successfully to world database',
                     changeCount: auditEntry.changeCount
                 });
             } catch (err) {
@@ -1576,6 +1852,22 @@ ${text}`;
     } catch (err) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.end('Bad Request');
+        return;
+    }
+
+    if (req.method === 'GET' && reqPath === '/js/locations-db.js') {
+        const content = `/**\n * World of Myrdae - Database-backed runtime snapshot\n * Generated by server.js from data/myrdae.db.\n */\n\n${serializeWorldLocations(worldStore.readWorld())}`;
+        res.writeHead(200, {
+            'Content-Type': 'text/javascript; charset=utf-8',
+            'Cache-Control': 'no-store'
+        });
+        res.end(content, 'utf-8');
+        return;
+    }
+
+    if (isSensitiveStaticPath(reqPath)) {
+        res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('Forbidden');
         return;
     }
 
@@ -1602,7 +1894,9 @@ ${text}`;
         '.webm': 'video/webm',
         '.mov': 'video/quicktime',
         '.woff': 'font/woff',
-        '.woff2': 'font/woff2'
+        '.woff2': 'font/woff2',
+        '.ttf': 'font/ttf',
+        '.otf': 'font/otf'
     };
 
     const contentType = mimeTypes[extname] || 'application/octet-stream';
@@ -1647,6 +1941,9 @@ ${text}`;
                     res.writeHead(500, { 'Content-Type': 'text/plain' });
                     res.end('Server Error: ' + error.code);
                 }
+            } else if (extname === '.html') {
+                res.writeHead(200, headers);
+                res.end(injectCacheBusters(content.toString('utf-8')), 'utf-8');
             } else {
                 res.writeHead(200, headers);
                 res.end(content, 'utf-8');
@@ -1680,6 +1977,12 @@ function startServer(options = {}) {
         });
     }
 
+    try {
+        initializeWorldStore();
+    } catch (err) {
+        return Promise.reject(err);
+    }
+
     server = http.createServer(handleRequest);
 
     return new Promise((resolve, reject) => {
@@ -1699,6 +2002,7 @@ function startServer(options = {}) {
             syncCampaignClockRegistry({ force: false }).catch(err => {
                 console.warn(`[World Clock] Failed to sync campaign docs on startup: ${err.message}`);
             });
+            startSheetsSyncTimer();
 
             resolve({ server, port: actualPort, dataRoot: runtimeConfig.dataRootReal });
         });
@@ -1707,6 +2011,12 @@ function startServer(options = {}) {
 
 function stopServer() {
     return new Promise((resolve) => {
+        if (sheetsSyncTimer) {
+            clearTimeout(sheetsSyncTimer);
+            sheetsSyncTimer = null;
+        }
+        sheetsSyncNextRunAt = null;
+
         if (comfyProcess) {
             console.log(`[AI] Shutting down ComfyUI...`);
             comfyProcess.kill();
@@ -1716,12 +2026,20 @@ function stopServer() {
         if (server && server.listening) {
             server.close(() => {
                 server = null;
+                if (worldStore) {
+                    worldStore.close();
+                    worldStore = null;
+                }
                 resolve();
             });
             return;
         }
 
         server = null;
+        if (worldStore) {
+            worldStore.close();
+            worldStore = null;
+        }
         resolve();
     });
 }
@@ -1743,5 +2061,6 @@ if (require.main === module) {
 module.exports = {
     startServer,
     stopServer,
+    injectCacheBusters,
     getRuntimeConfig: () => ({ ...runtimeConfig })
 };

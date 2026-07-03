@@ -6,6 +6,7 @@
 .env
 .env.*
 !.env.example
+.secrets/
 
 # Node
 node_modules/
@@ -37,3 +38,8 @@ images/Myrdae - Copy.jpg
 *.tmp-*.json
 .tmp-*.json
 .runtime/
+
+# Local authoritative SQLite world database and transient journals
+data/*.db
+data/*.db-shm
+data/*.db-wal

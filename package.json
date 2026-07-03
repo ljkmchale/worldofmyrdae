@@ -4,67 +4,17 @@
   "version": "1.1.0",
   "description": "Interactive fantasy world map editor and viewer for the World of Myrdae.",
   "author": "World of Myrdae",
-  "main": "electron/main.js",
   "scripts": {
     "start": "node server.js",
-    "desktop:dev": "electron .",
-    "desktop:pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win msi",
-    "dist:mac": "electron-builder --mac dmg",
+    "db:counts": "node scripts/world-db-tools.js counts",
+    "db:validate": "node scripts/world-db-tools.js validate",
+    "db:integrity": "node scripts/world-db-tools.js integrity",
+    "db:backup": "node scripts/world-db-tools.js backup",
+    "db:migrate:v2": "node scripts/migrate-world-db-v2.js up",
+    "db:migrate:v2:down": "node scripts/migrate-world-db-v2.js down",
+    "test": "node --test \"test/**/*.test.js\"",
     "share:map-editor": "powershell -ExecutionPolicy Bypass -File scripts/start-map-editor-server.ps1",
     "push": "./push-git.sh"
-  },
-  "build": {
-    "appId": "com.worldofmyrdae.editor",
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "asar": true,
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "electron/**/*",
-      "css/**/*",
-      "fonts/**/*",
-      "images/**/*",
-      "js/**/*",
-      "*.html",
-      "server.js",
-      "package.json",
-      "!backups/**",
-      "!dist/**",
-      "!out/**"
-    ],
-    "win": {
-      "icon": "electron/icon.ico",
-      "signAndEditExecutable": false,
-      "verifyUpdateCodeSignature": false,
-      "target": [
-        {
-          "target": "msi",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
-    "mac": {
-      "category": "public.app-category.games",
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ]
-    }
-  },
-  "devDependencies": {
-    "electron": "^35.1.4",
-    "electron-builder": "^24.13.3",
-    "png-to-ico": "^3.0.1"
   },
   "dependencies": {
     "sharp": "^0.34.5"

@@ -6,15 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Map Editor | World of Myrdae</title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Simonetta:ital,wght@0,400;0,900;1,400;1,900&display=swap"
-    rel="stylesheet">
-
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="vendor/fonts/local-fonts.css">
+  <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/styles.css">
@@ -129,7 +122,7 @@
     <div class="editor-sidebar" id="editor-sidebar">
       <div class="editor-hero">
         <div class="editor-hero-kicker">World of Myrdae</div>
-        <h2 class="editor-title">Map Editor</h2>
+        <h2 class="editor-title">Map Editor <span id="editor-realm-indicator" style="display:block; margin-top:0.25rem; font-family:'Inter',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--color-gold);">Surface World</span></h2>
         <p class="editor-subtitle">Shape the atlas with the same dark-fantasy polish the map reveals in its tooltips.</p>
         <div class="editor-action-row">
           <button id="btn-refresh-map" class="btn btn-secondary btn-flex" onclick="Editor.refreshMap()"><i
@@ -141,6 +134,11 @@
           <button id="btn-undo" class="btn btn-secondary btn-flex" onclick="Editor.undo()" disabled title="Nothing to undo"><i class="fa-solid fa-rotate-left"></i> Undo</button>
           <button id="btn-redo" class="btn btn-secondary btn-flex" onclick="Editor.redo()" disabled title="Nothing to redo"><i class="fa-solid fa-rotate-right"></i> Redo</button>
         </div>
+        <div class="editor-action-row editor-action-row-tight" style="margin-top:0.5rem;">
+          <button id="btn-sheet-export" class="btn btn-secondary btn-flex" onclick="Editor.exportToSheet()"><i class="fa-solid fa-table"></i> Export Sheet</button>
+          <button id="btn-sheet-sync" class="btn btn-secondary btn-flex" onclick="Editor.syncSheet()"><i class="fa-solid fa-arrows-rotate"></i> Sync Sheet</button>
+        </div>
+        <div id="sheet-sync-status" style="min-height:1.1rem; margin-top:0.35rem; font-size:0.74rem; color:#8f8576; font-style:italic;">Sheet sync status pending.</div>
       </div>
 
       <!-- Editor Tabs -->
@@ -273,6 +271,15 @@
               <option value="Underground">Underground</option>
               <option value="Ocean">Ocean</option>
               <option value="River / Waterway">River / Waterway</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Disposition</label>
+            <select id="loc-disposition" class="form-control" onchange="Editor.previewLocation()">
+              <option value="neutral">Neutral</option>
+              <option value="friendly">Friendly</option>
+              <option value="hostile">Hostile</option>
             </select>
           </div>
 
@@ -766,6 +773,13 @@
     <div class="editor-map-area">
       <div class="map-container" id="map-container">
         <div class="map-controls">
+          <div class="realm-switch" role="group" aria-label="Map realm">
+            <button id="surface-toggle" class="active" onclick="Editor.setRealm('surface')" aria-pressed="true">Surface</button>
+            <button id="underdark-toggle" onclick="Editor.setRealm('underdark')" aria-pressed="false">Underdark</button>
+          </div>
+          <button id="surface-locations-toggle" class="surface-reference-toggle"
+            onclick="MapOverlay.toggleSurfaceReferences()" aria-pressed="false" aria-hidden="true"
+            title="Show Surface locations without roads">Surface Locations</button>
           <button class="map-btn" onclick="MapController.reset('map-container', 'map-image')" title="Reset View">
             <i class="fa-solid fa-compass"></i>
           </button>
@@ -794,7 +808,6 @@
 
   <script src="js/city-maps.js"></script>
   <script src="js/city-scene-data.js"></script>
-  <script src="js/locations-db.js"></script>
   <script src="js/campaign-data.js"></script>
   <script src="js/map.js"></script>
   <script src="js/overlay/render-context.js"></script>
@@ -807,6 +820,7 @@
   <script src="js/coord-grid.js"></script>
   <script src="js/boat-animations.js"></script>
   <script src="js/map-layer-stack.js"></script>
+  <script src="js/map-realms.js"></script>
   <script src="js/ocean-shader.js"></script>
   <script src="js/editor.js"></script>
 
@@ -1538,6 +1552,10 @@ const CityEditor = (function () {
     // Swap map image, hide world overlay
     const img = document.getElementById('map-image');
     cityMapActive = true;
+    const realmButton = document.getElementById('underdark-toggle');
+    if (realmButton) realmButton.disabled = true;
+    const surfaceRealmButton = document.getElementById('surface-toggle');
+    if (surfaceRealmButton) surfaceRealmButton.disabled = true;
     img.onload = () => { _setOverlay(false); _setTerritories(false); renderPins(); };
     if (window.OCEAN_SHADER_ENABLED) OceanShader.destroy('map-container');
     MapLayerStack.showSingleImage('map-container', 'map-image', cityData.image);
@@ -1575,7 +1593,7 @@ const CityEditor = (function () {
   }
 
   function _restoreWorldOverlay() {
-    if (window.OCEAN_SHADER_ENABLED && typeof OceanShader !== 'undefined') {
+    if (Editor.state?.realm !== 'underdark' && window.OCEAN_SHADER_ENABLED && typeof OceanShader !== 'undefined') {
       OceanShader.init('map-container', 'map-image');
     }
     _setOverlay(true);
@@ -1590,10 +1608,18 @@ const CityEditor = (function () {
     document.querySelectorAll('.city-pin').forEach(el => el.remove());
     const img = document.getElementById('map-image');
     img.onload = () => { _restoreWorldOverlay(); };
-    MapLayerStack.showWorld('map-container', 'map-image');
+    MapRealmController.setVisualRealm(Editor.state?.realm || 'surface', {
+      visualOnly: true,
+      buttonId: 'underdark-toggle',
+      imageSrc: Editor.state?.underdarkMapImage
+    });
     if (img.complete && img.naturalWidth) _restoreWorldOverlay();
     _setTerritories(false);
     setCoordinateTrackerEnabled(true);
+    const realmButton = document.getElementById('underdark-toggle');
+    if (realmButton) realmButton.disabled = false;
+    const surfaceRealmButton = document.getElementById('surface-toggle');
+    if (surfaceRealmButton) surfaceRealmButton.disabled = false;
     document.getElementById('city-world-link').style.display   = 'none';
     document.getElementById('city-pin-controls').style.display = 'none';
     document.getElementById('city-action-btns').style.display  = 'none';

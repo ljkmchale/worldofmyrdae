@@ -226,6 +226,10 @@ const DragonFlyover = (function () {
     }
 
     function init(containerId, imageId) {
+        if (document.body?.dataset?.mapRealm === 'underdark') {
+            destroy();
+            return;
+        }
         const overlay = getOverlay(containerId);
         if (!overlay) {
             // SVG overlay not ready yet — retry until it appears
@@ -271,8 +275,8 @@ const DragonFlyover = (function () {
 
     if (typeof document !== 'undefined') {
         document.addEventListener('campaign-data-updated', () => {
-            if (dragonGroup && dragonGroup.parentNode) {
-                destroy();
+            destroy();
+            if (document.body?.dataset?.mapRealm !== 'underdark') {
                 const containerId = 'map-container';
                 init(containerId, 'map-image');
             }
