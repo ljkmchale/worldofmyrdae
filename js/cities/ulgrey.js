@@ -2,8 +2,8 @@ window.CITY_MAPS_REGISTRY = window.CITY_MAPS_REGISTRY || {};
 window.CITY_MAPS_REGISTRY["ulgrey"] = {
   id: "ulgrey",
   name: "Ulgrey",
-  image: "images/cities/ulgrey/ulgrey.png",
-  previewImage: "images/cities/ulgrey/ulgrey.png",
+  image: "images/cities/ulgrey/ulgrey.png?v=2",
+  previewImage: "images/cities/ulgrey/ulgrey.png?v=2",
   pins: [
     { n:  1, x: 54.2, y:  9.5, name: "Torec's Circle", type: "poi", desc: "" },
     { n:  2, x: 70.0, y:  8.0, name: "Graveyard", type: "poi", desc: "" },
