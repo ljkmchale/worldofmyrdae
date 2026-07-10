@@ -1270,11 +1270,16 @@ p {
 .map-tooltip {
   position: fixed;
   z-index: 10000;
+  box-sizing: border-box;
   background: linear-gradient(145deg, rgba(20, 20, 30, 0.97) 0%, rgba(10, 10, 15, 0.99) 100%);
   border: 1px solid rgba(212, 175, 55, 0.6);
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  max-width: 280px;
+  max-width: min(280px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   pointer-events: none;
   box-shadow:
     0 0 15px rgba(212, 175, 55, 0.15),

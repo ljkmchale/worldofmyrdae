@@ -1,6 +1,68 @@
 /**
  * Tooltip state, image resolution, and HTML rendering.
  */
+window.MapTooltipPositioning = (function () {
+    const VIEWPORT_GUTTER = 12;
+    const CURSOR_GAP = 15;
+    const DEFAULT_MAX_WIDTH = 280;
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function getViewportBounds() {
+        const viewport = window.visualViewport;
+        const left = viewport ? viewport.offsetLeft : 0;
+        const top = viewport ? viewport.offsetTop : 0;
+        const width = viewport
+            ? viewport.width
+            : (document.documentElement.clientWidth || window.innerWidth);
+        const height = viewport
+            ? viewport.height
+            : (document.documentElement.clientHeight || window.innerHeight);
+
+        return {
+            left,
+            top,
+            right: left + width,
+            bottom: top + height,
+            width,
+            height
+        };
+    }
+
+    function place(tooltip, event) {
+        if (!tooltip || !event) return;
+
+        const viewport = getViewportBounds();
+        const availableWidth = Math.max(0, viewport.width - (VIEWPORT_GUTTER * 2));
+        const availableHeight = Math.max(0, viewport.height - (VIEWPORT_GUTTER * 2));
+        tooltip.style.maxWidth = `${Math.min(DEFAULT_MAX_WIDTH, availableWidth)}px`;
+        tooltip.style.maxHeight = `${availableHeight}px`;
+
+        const rect = tooltip.getBoundingClientRect();
+        let x = event.clientX + CURSOR_GAP;
+        let y = event.clientY + CURSOR_GAP;
+
+        if (x + rect.width > viewport.right - VIEWPORT_GUTTER) {
+            x = event.clientX - rect.width - CURSOR_GAP;
+        }
+        if (y + rect.height > viewport.bottom - VIEWPORT_GUTTER) {
+            y = event.clientY - rect.height - CURSOR_GAP;
+        }
+
+        const maxX = Math.max(viewport.left + VIEWPORT_GUTTER, viewport.right - rect.width - VIEWPORT_GUTTER);
+        const maxY = Math.max(viewport.top + VIEWPORT_GUTTER, viewport.bottom - rect.height - VIEWPORT_GUTTER);
+        x = clamp(x, viewport.left + VIEWPORT_GUTTER, maxX);
+        y = clamp(y, viewport.top + VIEWPORT_GUTTER, maxY);
+
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+    }
+
+    return { place };
+})();
+
 const MapOverlayTooltip = (function () {
     const ENABLE_GENERATED_MAP_PREVIEWS = false;
     const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
@@ -697,14 +759,7 @@ const MapOverlayTooltip = (function () {
 
     function positionTooltip(event, ctx) {
         if (!ctx.tooltip) return;
-        const padding = 15;
-        let x = event.clientX + padding;
-        let y = event.clientY + padding;
-        const rect = ctx.tooltip.getBoundingClientRect();
-        if (x + rect.width > window.innerWidth) x = event.clientX - rect.width - padding;
-        if (y + rect.height > window.innerHeight) y = event.clientY - rect.height - padding;
-        ctx.tooltip.style.left = `${x}px`;
-        ctx.tooltip.style.top = `${y}px`;
+        MapTooltipPositioning.place(ctx.tooltip, event);
     }
 
     function showTooltip(event, loc, ctx) {

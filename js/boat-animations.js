@@ -163,14 +163,7 @@ function _showBoatTooltip(e, boat) {
 
 function _positionBoatTooltip(e) {
     const tt = _getBoatTooltip();
-    const margin = 14;
-    let x = e.clientX + margin;
-    let y = e.clientY + margin;
-    const rect = tt.getBoundingClientRect();
-    if (x + rect.width  > window.innerWidth)  x = e.clientX - rect.width  - margin;
-    if (y + rect.height > window.innerHeight) y = e.clientY - rect.height - margin;
-    tt.style.left = x + 'px';
-    tt.style.top  = y + 'px';
+    MapTooltipPositioning.place(tt, e);
 }
 
 function _hideBoatTooltip() {
