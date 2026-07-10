@@ -26,7 +26,6 @@ const CITY_MAPS = [
   { id: "kallilos"                , name: "Kallilos"                , image: "images/cities/kallilos/kallilos.png", previewImage: "images/cities/kallilos/kallilos.png" },
   { id: "sari-lenora"             , name: "Sari Lenora"             , image: "images/cities/sari-lenora/sari-lenora.png", previewImage: "images/cities/sari-lenora/sari-lenora.png" },
   { id: "clador"                  , name: "Clador"                  , image: "images/cities/clador/clador.png", previewImage: "images/cities/clador/clador.png" },
-  { id: "ulgrey"                  , name: "Ulgrey"                  , image: "images/cities/ulgrey/ulgrey.png", previewImage: "images/cities/ulgrey/ulgrey.png" },
   { id: "trailpoint"              , name: "Trailpoint"              , image: "images/cities/trailpoint/trailpoint.png", previewImage: "images/cities/trailpoint/trailpoint.png" },
   { id: "farnsby-port"            , name: "Farnsby Port"            , image: "images/cities/farnsby-port/farnsby-port.png", previewImage: "images/cities/farnsby-port/farnsby-port.png" },
   { id: "dunduar"                 , name: "Dunduar"                 , image: "images/cities/dunduar/dunduar.png", previewImage: "images/cities/dunduar/dunduar.png" },
@@ -69,4 +68,5 @@ const CITY_MAPS = [
   { id: "waypoint"                , name: "Waypoint"                , image: "images/cities/waypoint/sketch.png", previewImage: "images/cities/waypoint/sketch.png" },
   { id: "wheldrake"               , name: "Wheldrake"               , image: "images/cities/wheldrake/sketch.png", previewImage: "images/cities/wheldrake/sketch.png" },
   { id: "caelora"                 , name: "Caelora"                 , image: "images/cities/caelora/sketch.png", previewImage: "images/cities/caelora/sketch.png" },
+  { id: "ulgrey"                  , name: "Ulgrey"                  , image: "images/cities/ulgrey/ulgrey.png", previewImage: "images/cities/ulgrey/ulgrey.png" },
 ];

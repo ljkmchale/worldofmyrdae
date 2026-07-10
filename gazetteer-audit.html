@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gazetteer Audit | World of Myrdae</title>
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  body {
+    background: var(--bg-primary, #14100d);
+    color: var(--text-primary, #e8dcc8);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    margin: 0;
+    padding: 2rem;
+  }
+  .audit-wrap { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold, #c9a959);
+    font-size: 2rem;
+    margin: 0 0 0.25rem;
+  }
+  .subtitle { opacity: 0.75; margin-bottom: 1.5rem; font-size: 1.1rem; }
+  .toolbar { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  button {
+    font-family: 'Cinzel', serif;
+    background: rgba(201, 169, 89, 0.12);
+    color: var(--gold, #c9a959);
+    border: 1px solid var(--gold, #c9a959);
+    border-radius: 4px;
+    padding: 0.45rem 1.1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  button:hover:not(:disabled) { background: rgba(201, 169, 89, 0.28); }
+  button:disabled { opacity: 0.4; cursor: wait; }
+  button.small { padding: 0.2rem 0.6rem; font-size: 0.75rem; }
+  #status-line { font-style: italic; opacity: 0.8; }
+  table { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+  th {
+    font-family: 'Cinzel', serif;
+    color: var(--gold, #c9a959);
+    text-align: left;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(201, 169, 89, 0.4);
+  }
+  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(201, 169, 89, 0.12); vertical-align: top; }
+  td a { color: var(--gold, #c9a959); }
+  .pill {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid;
+  }
+  .pill.ok { color: #8fbf7f; border-color: #8fbf7f; }
+  .pill.stale-images { color: var(--crimson, #a33b3b); border-color: var(--crimson, #a33b3b); }
+  .pill.text-changed { color: #d9b64a; border-color: #d9b64a; }
+  .pill.error { color: #cc7755; border-color: #cc7755; }
+  .pill.unchecked { color: #888; border-color: #666; }
+  .detail { font-size: 0.9rem; opacity: 0.85; margin-top: 0.25rem; }
+  .detail .miss { color: var(--crimson, #a33b3b); }
+  .add-form { display: flex; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; align-items: center; }
+  .add-form input {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(201, 169, 89, 0.4);
+    color: var(--text-primary, #e8dcc8);
+    border-radius: 4px;
+    padding: 0.45rem 0.6rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+  .add-form input#add-url { flex: 1; min-width: 280px; }
+  h2 { font-family: 'Cinzel', serif; color: var(--gold, #c9a959); font-size: 1.15rem; margin-top: 2.5rem; }
+</style>
+</head>
+<body>
+<div class="audit-wrap">
+  <h1>Gazetteer Audit</h1>
+  <div class="subtitle">Checks each city's Google Doc gazetteer and reports whether the crest, map, and locations-overlay images in the doc are present locally.</div>
+
+  <div class="toolbar">
+    <button id="btn-audit-all" onclick="runAudit()">Run Full Audit</button>
+    <span id="status-line"></span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>City</th><th>Status</th><th>Last Audit</th><th>Doc</th><th></th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <h2>Register a Gazetteer Doc</h2>
+  <div class="add-form">
+    <input id="add-id" placeholder="city-id (e.g. dunduar)" size="18">
+    <input id="add-name" placeholder="Display name" size="18">
+    <input id="add-url" placeholder="https://docs.google.com/document/d/...">
+    <button onclick="addLink()">Save Link</button>
+  </div>
+</div>
+
+<script>
+let registry = { cities: [] };
+let lastResults = {}; // cityId -> audit result
+
+function setStatus(msg) {
+  document.getElementById('status-line').textContent = msg || '';
+}
+
+function roleLabel(role) {
+  return { crest: 'crest', map: 'map', locationsOverlay: 'locations overlay' }[role] || role;
+}
+
+function render() {
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '';
+  for (const entry of registry.cities) {
+    const result = lastResults[entry.id];
+    const status = result ? result.status : (entry.lastAuditStatus || 'unchecked');
+    const tr = document.createElement('tr');
+
+    let detailHtml = '';
+    if (result && result.images) {
+      const parts = result.images.map(img => {
+        if (img.matchedLocalFile) return `${roleLabel(img.role)} ✓ (${img.matchedLocalFile})`;
+        if (img.error) return `<span class="miss">${roleLabel(img.role)}: ${img.error}</span>`;
+        return `<span class="miss">${roleLabel(img.role)}: no matching local file</span>`;
+      });
+      if (result.textChanged === true) parts.push('<span class="miss">doc text changed since last ack</span>');
+      if (result.error) parts.push(`<span class="miss">${result.error}</span>`);
+      detailHtml = `<div class="detail">${parts.join(' · ')}</div>`;
+    } else if (result && result.error) {
+      detailHtml = `<div class="detail"><span class="miss">${result.error}</span></div>`;
+    }
+
+    const ackButton = (result && result.textChanged === true)
+      ? `<button class="small" onclick="ackText('${entry.id}')">Ack text</button>` : '';
+
+    tr.innerHTML = `
+      <td><a href="city-viewer.html?city=${entry.id}" target="_blank">${entry.name || entry.id}</a>${detailHtml}</td>
+      <td><span class="pill ${status}">${status}</span></td>
+      <td>${entry.lastAuditAt ? new Date(entry.lastAuditAt).toLocaleString() : '—'}</td>
+      <td><a href="${entry.docUrl}" target="_blank">open doc</a></td>
+      <td><button class="small" onclick="runAudit('${entry.id}')">Audit</button> ${ackButton}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+async function loadRegistry() {
+  const res = await fetch('/api/gazetteer/links');
+  registry = await res.json();
+  render();
+}
+
+async function runAudit(cityId) {
+  const btn = document.getElementById('btn-audit-all');
+  btn.disabled = true;
+  setStatus(cityId ? `Auditing ${cityId}…` : `Auditing ${registry.cities.length} cities… (this fetches each Google Doc, give it a minute)`);
+  try {
+    const res = await fetch('/api/gazetteer/audit' + (cityId ? `?cityId=${encodeURIComponent(cityId)}` : ''));
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    for (const r of data.results) lastResults[r.id] = r;
+    setStatus(`Audited ${data.total} — ${data.stale} with stale/missing images, ${data.errors} errors.`);
+    await loadRegistry();
+  } catch (e) {
+    setStatus('Audit failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function ackText(cityId) {
+  const result = lastResults[cityId];
+  if (!result || !result.textHash) return;
+  await fetch('/api/gazetteer/ack', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cityId, textHash: result.textHash })
+  });
+  result.textChanged = false;
+  if (result.status === 'text-changed') result.status = 'ok';
+  render();
+}
+
+async function addLink() {
+  const id = document.getElementById('add-id').value.trim();
+  const name = document.getElementById('add-name').value.trim();
+  const docUrl = document.getElementById('add-url').value.trim();
+  if (!id || !docUrl) { setStatus('City id and doc URL are required.'); return; }
+  const res = await fetch('/api/gazetteer/links', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, name, docUrl })
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('add-id').value = '';
+    document.getElementById('add-name').value = '';
+    document.getElementById('add-url').value = '';
+    setStatus(`Saved link for ${id}.`);
+    await loadRegistry();
+  } else {
+    setStatus('Save failed: ' + (data.error || 'unknown error'));
+  }
+}
+
+loadRegistry();
+</script>
+</body>
+</html>

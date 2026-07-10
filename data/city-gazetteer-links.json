@@ -1,0 +1,116 @@
+{
+  "cities": [
+    {
+      "id": "abbey-of-mont-rest",
+      "name": "Abbey of Mont Rest",
+      "docUrl": "https://docs.google.com/document/d/14hX4cryRE61O6wLcZ26qFtsAXACJzqU60rwIgFkQYjQ/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "adsuren",
+      "name": "Adsuren",
+      "docUrl": "https://docs.google.com/document/d/13vD63-iUc9eMgQz0Ycoi-n7LMDfw_I6NWImY6N_fqNA/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "ahndashere",
+      "name": "Ahndashere",
+      "docUrl": "https://docs.google.com/document/d/1tfgzGJK9ZZcaoiva1lfVAgR0xmbe_2Mn0uFoVj9bFLQ/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "basctdelm",
+      "name": "Basctdelm",
+      "docUrl": "https://docs.google.com/document/d/1kaDz6BPYRFUbRPyZefm41tVdlCHEUBqiZkgKtnDw1qk/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "emberstran",
+      "name": "Emberstran",
+      "docUrl": "https://docs.google.com/document/d/1oECFiNos1Qqa1CfGo-2DJWbyet9SOF_gMKd3ZR2kY6c/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "everlight",
+      "name": "Everlight",
+      "docUrl": "https://docs.google.com/document/d/1h-nnyV84AUZnSn1DgnK2msedBhNuf7rPuvPNDb9Xo1M/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "hesfal",
+      "name": "Hesfal",
+      "docUrl": "https://docs.google.com/document/d/17NYd6qTASw18WSgO4XxuKzAfQ-dZKM9TtNrQuRsS0wg/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "lehnthruakk",
+      "name": "Lehnthru'akk",
+      "docUrl": "https://docs.google.com/document/d/1OMJ-Jq5iTfG6oabmr79bWLPphvwfWL_xM2qEPPPjamE/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "onaren",
+      "name": "O'naren",
+      "docUrl": "https://docs.google.com/document/d/1ot7DXOzqFjYKucVqVu-tqmTRflrfBKSAwRZjNZtGLXU/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "scarwatch-hold",
+      "name": "Scarwatch Hold",
+      "docUrl": "https://docs.google.com/document/d/1U1YgTimFZtG1VsC4fjWoh1wVCxGGdokU4peu8hh6jx8/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "shademoor",
+      "name": "Shademoor",
+      "docUrl": "https://docs.google.com/document/d/1Bq6DDjHDkgMwH6-rko5hITz-hCnT5MmcbPIOwCavM-E/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "talbesar",
+      "name": "Tal'besar Ruins",
+      "docUrl": "https://docs.google.com/document/d/1DiuIO2qtBG5l-wQECq-OqyMS2hc44vLnqJmNPQFi1AA/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "error"
+    },
+    {
+      "id": "trailpoint",
+      "name": "Trailpoint",
+      "docUrl": "https://docs.google.com/document/d/1fhbQ8CwQYQ7D055Y0pOuxjnBlbhu3zEqUR4rVGeRHuo/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "tratta",
+      "name": "Tratta",
+      "docUrl": "https://docs.google.com/document/d/1nbv3ZA-BTR3i1qT535PrR0A3sFHzOuxeYAmXDD83TwY/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "tynevale",
+      "name": "Tyne'vale",
+      "docUrl": "https://docs.google.com/document/d/1J553Gt1bLDE58Cfx2Lt2zUh4pT6XlRj__qlzz2GMyXg/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "stale-images"
+    },
+    {
+      "id": "ulgrey",
+      "name": "Ulgrey",
+      "docUrl": "https://docs.google.com/document/d/1bZeBMIb3D0rT01FFwWeJpkFt_5aoTOQGrNiwkvMSqmM/edit?tab=t.0",
+      "lastAuditAt": "2026-07-10T13:40:23.704Z",
+      "lastAuditStatus": "ok"
+    }
+  ]
+}

@@ -142,6 +142,10 @@ Important write/API routes in `server.js`:
 | `GET /api/ai/fetch-google-doc` | Proxy-fetch raw Google Doc text |
 | `GET /api/ai/parse-gazetteer` | Fetch Google Doc as HTML; extract crest/map/location images and text |
 | `POST /api/ai/summarize` | Summarize gazetteer locations via Gemini 2.0 Flash |
+| `GET /api/gazetteer/links` | List registered city gazetteer doc links |
+| `POST /api/gazetteer/links` | Add/update a city's gazetteer doc link |
+| `GET /api/gazetteer/audit` | Compare each registered doc's images vs local city files (`?cityId=` for one) |
+| `POST /api/gazetteer/ack` | Acknowledge a doc's current text hash after review |
 
 Mutable files in packaged mode are restricted to:
 
@@ -180,7 +184,11 @@ Two independent AI integrations live in `server.js`:
 
 **Gemini 2.0 Flash** — `POST /api/ai/summarize` calls the Gemini API (requires `GEMINI_API_KEY` in `.env`) to turn raw gazetteer text into numbered location summaries for the city editor.
 
-**Gazetteer parser** — `GET /api/ai/parse-gazetteer?url=<docUrl>&cityId=<id>` fetches a Google Doc as HTML, splits it by headings, extracts the crest (page-1 image), city map sketch, and locations-overlay image, saves them all to `images/cities/<id>/`, and returns structured JSON with location text.
+**Gazetteer parser** — `GET /api/ai/parse-gazetteer?url=<docUrl>&cityId=<id>` fetches a Google Doc as HTML, splits it by headings, extracts the crest (page-1 image), city map sketch, and locations-overlay image, saves them all to `images/cities/<id>/`, and returns structured JSON with location text. Shared fetch/parse helpers live in `lib/gazetteer.js`.
+
+## Gazetteer Audit System
+
+`data/city-gazetteer-links.json` maps city IDs to their Google Doc gazetteers (`{ cities: [{ id, name, docUrl, ackTextHash?, lastAuditAt?, lastAuditStatus? }] }`). `GET /api/gazetteer/audit` fetches every registered doc's HTML export, hashes **every** image in it (docs don't always have a "Map" heading, so all images are checked, including `data:` URI embeds), and compares against SHA-256 hashes of the files in `images/cities/<id>/`. A doc image with no byte-identical local file means the local assets are stale or were never downloaded. Doc text changes are tracked separately via `ackTextHash`; `POST /api/gazetteer/ack` marks the current text as reviewed. `gazetteer-audit.html` is the UI: run audits, see per-city status, and register new doc links. Caveat: images hosted on googleusercontent (rather than embedded as data URIs) may be re-encoded by Google, which can flag a false mismatch — inspect the doc before re-downloading.
 
 ## Ocean Shader (`js/ocean-shader.js`)
 

@@ -5,6 +5,7 @@ const { spawn } = require('child_process');
 const net = require('net');
 const crypto = require('crypto');
 const { WorldStore, normalizeWorld } = require('./lib/world-store');
+const gazetteer = require('./lib/gazetteer');
 const {
     isConfigured: isSheetsSyncConfigured,
     getConfig: getSheetsSyncConfig,
@@ -566,6 +567,114 @@ function writeCampaignClockRegistry(registry) {
     const filePath = getCampaignClockRegistryWritablePath();
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(registry, null, 2) + '\n', 'utf8');
+}
+
+function getGazetteerRegistryBundledPath() {
+    return path.join(runtimeConfig.bundledRootReal, 'data', 'city-gazetteer-links.json');
+}
+
+function getGazetteerRegistryWritablePath() {
+    return path.join(runtimeConfig.dataRootReal, 'data', 'city-gazetteer-links.json');
+}
+
+function readGazetteerRegistry() {
+    const candidatePaths = [
+        getGazetteerRegistryWritablePath(),
+        getGazetteerRegistryBundledPath()
+    ];
+
+    for (const candidatePath of candidatePaths) {
+        if (!fs.existsSync(candidatePath)) continue;
+        const parsed = JSON.parse(fs.readFileSync(candidatePath, 'utf8'));
+        return Array.isArray(parsed) ? { cities: parsed } : parsed;
+    }
+
+    return { cities: [] };
+}
+
+function writeGazetteerRegistry(registry) {
+    const filePath = getGazetteerRegistryWritablePath();
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(registry, null, 2) + '\n', 'utf8');
+}
+
+// Hash every image file currently stored for a city (checks both data and
+// bundled roots; data root wins on duplicate filenames).
+function hashLocalCityImages(cityId) {
+    const hashes = {}; // filename -> sha256
+    const roots = [runtimeConfig.bundledRootReal, runtimeConfig.dataRootReal];
+    for (const root of roots) {
+        const dir = path.join(root, 'images', 'cities', cityId);
+        if (!fs.existsSync(dir)) continue;
+        for (const name of fs.readdirSync(dir)) {
+            const filePath = path.join(dir, name);
+            try {
+                if (!fs.statSync(filePath).isFile()) continue;
+                hashes[name] = gazetteer.sha256(fs.readFileSync(filePath));
+            } catch (e) { /* unreadable file — skip */ }
+        }
+    }
+    return hashes;
+}
+
+// Compare one city's gazetteer doc against its local images.
+// Returns { id, status, images: [{role, matchedLocalFile}], textHash, textChanged, error? }
+async function auditGazetteerCity(entry) {
+    const docId = extractGoogleDocId(entry.docUrl);
+    if (!docId) {
+        return { id: entry.id, status: 'error', error: 'Invalid Google Doc URL' };
+    }
+
+    const exportUrl = `https://docs.google.com/document/d/${docId}/export?format=html`;
+    const { data: htmlBuf } = await gazetteer.fetchUrl(exportUrl);
+    const html = htmlBuf.toString('utf8');
+
+    if (/JavaScript isn't enabled in your browser/i.test(html) || /This browser version is no longer supported/i.test(html)) {
+        return { id: entry.id, status: 'error', error: 'Doc export returned the interactive shell — check sharing settings' };
+    }
+
+    const parsed = gazetteer.parseGazetteerHtml(html);
+    const localHashes = hashLocalCityImages(entry.id);
+    const localHashSet = new Map(Object.entries(localHashes).map(([name, hash]) => [hash, name]));
+
+    // Check every image in the doc (not just the heuristic roles) — docs
+    // don't always have a "Map" heading, and a changed map must never slip by.
+    const roleBySrc = new Map();
+    if (parsed.crestSrcUrl) roleBySrc.set(parsed.crestSrcUrl, 'crest');
+    if (parsed.mapSrcUrl) roleBySrc.set(parsed.mapSrcUrl, 'map');
+    if (parsed.locOverlaySrcUrl) roleBySrc.set(parsed.locOverlaySrcUrl, 'locationsOverlay');
+
+    const uniqueSrcs = [...new Set(parsed.allImages)];
+    const images = [];
+    for (let i = 0; i < uniqueSrcs.length; i++) {
+        const src = uniqueSrcs[i];
+        const role = roleBySrc.get(src) || `image-${i + 1}`;
+        try {
+            const bytes = await gazetteer.imageBytesFromSrc(src);
+            const hash = gazetteer.sha256(bytes);
+            images.push({ role, hash, matchedLocalFile: localHashSet.get(hash) || null });
+        } catch (e) {
+            images.push({ role, hash: null, matchedLocalFile: null, error: e.message });
+        }
+    }
+
+    const textHash = gazetteer.sha256(Buffer.from(gazetteer.stripHtml(html), 'utf8'));
+    const textChanged = entry.ackTextHash ? textHash !== entry.ackTextHash : null;
+
+    const unmatched = images.filter(img => !img.matchedLocalFile);
+    let status = 'ok';
+    if (unmatched.length > 0) status = 'stale-images';
+    else if (textChanged === true) status = 'text-changed';
+
+    return {
+        id: entry.id,
+        status,
+        docImageCount: parsed.allImages.length,
+        images,
+        localImageFiles: Object.keys(localHashes),
+        textHash,
+        textChanged
+    };
 }
 
 function extractGoogleDocId(docUrl) {
@@ -1432,8 +1541,6 @@ function handleRequest(req, res) {
                     return;
                 }
 
-                const https = require('https');
-
                 function normalizeGoogleDocUrl(docUrl, format) {
                     if (!docUrl || !/docs\.google\.com\/document\/d\//i.test(docUrl)) {
                         return docUrl;
@@ -1451,213 +1558,34 @@ function handleRequest(req, res) {
                 // the parser gets the actual document content instead of the JS shell.
                 const htmlExportUrl = normalizeGoogleDocUrl(rawDocUrl, 'html').replace(/format=\w+/i, 'format=html');
 
-                // Fetch with redirect following, returns { data: Buffer, contentType: string }
-                function fetchUrl(targetUrl, depth) {
-                    depth = depth || 0;
-                    return new Promise((resolve, reject) => {
-                        if (depth > 8) { reject(new Error('Too many redirects')); return; }
-                        const mod = targetUrl.startsWith('https') ? https : http;
-                        mod.get(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (r) => {
-                            if ([301, 302, 307, 308].includes(r.statusCode) && r.headers.location) {
-                                fetchUrl(r.headers.location, depth + 1).then(resolve, reject);
-                                return;
-                            }
-                            if (r.statusCode !== 200) { reject(new Error('HTTP ' + r.statusCode)); return; }
-                            const chunks = [];
-                            r.on('data', c => chunks.push(c));
-                            r.on('end', () => resolve({ data: Buffer.concat(chunks), contentType: r.headers['content-type'] || '' }));
-                            r.on('error', reject);
-                        }).on('error', reject);
-                    });
-                }
-
-                // Download a remote image and save to destPath, returns true on success
+                // Download an image (data URI or remote URL) and save to destPath
                 async function downloadImage(imageUrl, destPath) {
-                    if (imageUrl.startsWith('data:')) {
-                        const base64Data = imageUrl.split(',')[1];
-                        if (!base64Data) throw new Error('Invalid data URI');
-                        const buffer = Buffer.from(base64Data, 'base64');
-                        fs.mkdirSync(path.dirname(destPath), { recursive: true });
-                        fs.writeFileSync(destPath, buffer);
-                        return true;
-                    }
-                    const result = await fetchUrl(imageUrl);
-                    // Only save if it looks like an image
-                    const ct = result.contentType.toLowerCase();
-                    if (!ct.includes('image') && result.data.length < 100) throw new Error('Not an image');
+                    const buffer = await gazetteer.imageBytesFromSrc(imageUrl);
                     fs.mkdirSync(path.dirname(destPath), { recursive: true });
-                    fs.writeFileSync(destPath, result.data);
+                    fs.writeFileSync(destPath, buffer);
                     return true;
-                }
-
-                // Strip HTML tags, decode entities, collapse whitespace
-                function stripHtml(html) {
-                    // 1. Extract body content
-                    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-                    let content = bodyMatch ? bodyMatch[1] : html;
-
-                    // 2. Aggressively remove style and script tags + their content
-                    // We use a loop to ensure we catch every single one
-                    while (content.includes('<style') || content.includes('<script')) {
-                        const newContent = content
-                            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-                            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-                        if (newContent === content) break;
-                        content = newContent;
-                    }
-
-                    return content
-                        // Handle tables: add spaces between cells, newlines between rows
-                        .replace(/<\/tr>/gi, '\n')
-                        .replace(/<\/td>/gi, '  ')
-                        .replace(/<\/th>/gi, '  ')
-                        // Replace line-breaking tags with newlines
-                        .replace(/<br\s*\/?>/gi, '\n')
-                        .replace(/<\/p>/gi, '\n')
-                        .replace(/<\/div>/gi, '\n')
-                        .replace(/<\/li>/gi, '\n')
-                        .replace(/<\/h[1-6]>/gi, '\n')
-                        // Remove all remaining tags
-                        .replace(/<[^>]+>/g, '')
-                        // Decode entities
-                        .replace(/&amp;/g, '&')
-                        .replace(/&lt;/g, '<')
-                        .replace(/&gt;/g, '>')
-                        .replace(/&nbsp;/g, ' ')
-                        .replace(/\xa0/g, ' ') // Non-breaking space
-                        .replace(/&#39;/g, "'")
-                        .replace(/&rsquo;/g, "'")
-                        .replace(/&lsquo;/g, "'")
-                        .replace(/&rdquo;/g, '"')
-                        .replace(/&ldquo;/g, '"')
-                        .replace(/&quot;/g, '"')
-                        // Cleanup whitespace
-                        .replace(/[ \t]+/g, ' ')
-                        .replace(/\r/g, '')
-                        .replace(/\n[ \t]+/g, '\n')
-                        .replace(/\n{3,}/g, '\n\n')
-                        .trim();
                 }
 
                 // Fetch document as HTML
                 console.log('[AI] Fetching gazetteer HTML:', htmlExportUrl);
-                const { data: htmlBuf } = await fetchUrl(htmlExportUrl);
+                const { data: htmlBuf } = await gazetteer.fetchUrl(htmlExportUrl);
                 const html = htmlBuf.toString('utf8');
 
                 if (/JavaScript isn't enabled in your browser/i.test(html) || /This browser version is no longer supported/i.test(html)) {
                     throw new Error('Google Doc returned the interactive shell instead of export content. Check the sharing settings or doc URL.');
                 }
 
-                // Extract all image src URLs
-                const allImages = [...html.matchAll(/<img[^>]+src="([^"]+)"/gi)].map(m => m[1]);
-
-                // Split document into sections by h1/h2/h3 headings
-                const headingRegex = /<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi;
-                const headings = [];
-                let hm;
-                while ((hm = headingRegex.exec(html)) !== null) {
-                    headings.push({
-                        text: hm[1].replace(/<[^>]+>/g, '').trim(),
-                        index: hm.index,
-                        end: hm.index + hm[0].length
-                    });
-                }
-
-                // Content before the first heading (page 1 — crest lives here)
-                const preHtml = headings.length > 0 ? html.slice(0, headings[0].index) : html;
-                const preImages = [...preHtml.matchAll(/<img[^>]+src="([^"]+)"/gi)].map(m => m[1]);
-
-                // Build per-section data
-                const sections = headings.map((h, i) => {
-                    const sHtml = html.slice(h.end, i + 1 < headings.length ? headings[i + 1].index : html.length);
-                    return {
-                        heading: h.text,
-                        text: stripHtml(sHtml),
-                        images: [...sHtml.matchAll(/<img[^>]+src="([^"]+)"/gi)].map(m => m[1])
-                    };
-                });
-
-                function summarizeLocationText(text) {
-                    return (text || '')
-                        .replace(/\s+/g, ' ')
-                        .replace(/\bNon-Player Characters?\b.*$/i, '')
-                        .trim();
-                }
-
-                function collectHeadingBasedLocations(allSections) {
-                    const genericHeadingPattern = /^(overview|history|citizenry|races|holidays and traditions|winterfest|government|the village council|town meetings|customs|interaction with external forces|laws|economy and trade|trade and barter|specialized craftsmanship|local resources|professional guilds|religion|central beliefs|the everlight deity.*|beliefs|the balance of elements|the festival of winterfest|religious practices|daily offerings|blessings and rituals|sacred sites|clergy and key figures|landmarks|notable.?locations?|locations?|points? of interest|lodging|meals|services provided|approaching|entering|unique items|map|city\s*map|non-player characters?)$/i;
-                    const entries = [];
-
-                    for (const section of allSections) {
-                        const heading = (section.heading || '').trim();
-                        const text = summarizeLocationText(section.text || '');
-                        if (!heading || genericHeadingPattern.test(heading)) {
-                            continue;
-                        }
-                        if (text.length < 80) {
-                            continue;
-                        }
-                        entries.push({
-                            heading,
-                            text
-                        });
-                    }
-
-                    return entries;
-                }
-
-                // Identify key sections
-                const mapSection = sections.find(s => /^(map|city\s*map)$/i.test(s.heading.trim()));
-                const locSectionIdx = sections.findIndex(s =>
-                    /landmarks/i.test(s.heading) ||
-                    /notable.?locations?/i.test(s.heading) ||
-                    /^locations?$/i.test(s.heading.trim()) ||
-                    /points? of interest/i.test(s.heading)
-                );
-                const locSection = locSectionIdx !== -1 ? sections[locSectionIdx] : null;
-
-                // If the Notable Locations section itself has no body text, the doc uses headings
-                // per location — collect all sub-section text until the next major section
-                if (locSection && locSection.text.trim().length < 50 && locSectionIdx !== -1) {
-                    const majorSectionKeywords = /^(non-player characters|services provided|approaching|entering|lodging|meals|unique items|npc|overview|history|government|economy|religion|traditions|laws|punishment)$/i;
-                    const subTexts = [];
-                    for (let si = locSectionIdx + 1; si < sections.length; si++) {
-                        const s = sections[si];
-                        if (!majorSectionKeywords.test(s.heading.trim())) {
-                            subTexts.push(s.heading + (s.text ? '\n' + s.text : ''));
-                        }
-                    }
-                    locSection.text = subTexts.join('\n\n');
-                }
-
-                const headingBasedLocations = collectHeadingBasedLocations(sections);
-                const formattedHeadingLocations = headingBasedLocations
-                    .map((entry, index) => `${index + 1}. ${entry.heading}: ${entry.text}`)
-                    .join('\n\n');
-
-                if (locSection && (!locSection.text || locSection.text.trim().length < 50) && formattedHeadingLocations) {
-                    locSection.text = formattedHeadingLocations;
-                }
-
-                // Source URLs for crest, map, and numbered-locations overlay
-                const crestSrcUrl    = preImages[0] || allImages[0] || null;
-                const mapSrcUrl      = mapSection && mapSection.images.length > 0 ? mapSection.images[0] : null;
-
-                // Smarter overlay discovery: 
-                // 1. Second image in Map section
-                // 2. First image in Locations section
-                // 3. Next image in doc after the map
-                let locOverlaySrcUrl = null;
-                if (mapSection && mapSection.images.length > 1) {
-                    locOverlaySrcUrl = mapSection.images[1];
-                } else if (locSection && locSection.images.length > 0) {
-                    locOverlaySrcUrl = locSection.images[0];
-                } else if (mapSrcUrl) {
-                    const mapIdx = allImages.indexOf(mapSrcUrl);
-                    if (mapIdx !== -1 && allImages[mapIdx + 1]) {
-                        locOverlaySrcUrl = allImages[mapIdx + 1];
-                    }
-                }
+                const {
+                    allImages,
+                    sections,
+                    mapSection,
+                    locSection,
+                    headingBasedLocations,
+                    formattedHeadingLocations,
+                    crestSrcUrl,
+                    mapSrcUrl,
+                    locOverlaySrcUrl
+                } = gazetteer.parseGazetteerHtml(html);
 
                 // Save images locally... (rest of logic)
                 const cityDir = resolveWritablePath(path.join('images', 'cities', cityId));
@@ -1730,7 +1658,7 @@ function handleRequest(req, res) {
                         imageCount: s.images.length,
                         textLength: s.text.length
                     })),
-                    fullText: stripHtml(html),
+                    fullText: gazetteer.stripHtml(html),
                     imageCount: allImages.length
                 }));
 
@@ -1740,6 +1668,114 @@ function handleRequest(req, res) {
                 res.end(JSON.stringify({ error: err.message }));
             }
         })();
+        return;
+    }
+
+    // GET /api/gazetteer/links — list registered city gazetteer docs
+    if (req.method === 'GET' && url === '/api/gazetteer/links') {
+        try {
+            sendJson(res, 200, readGazetteerRegistry());
+        } catch (err) {
+            sendError(res, err);
+        }
+        return;
+    }
+
+    // POST /api/gazetteer/links — add or update a city's gazetteer doc link
+    // Body: { id, name?, docUrl }
+    if (req.method === 'POST' && url === '/api/gazetteer/links') {
+        readRequestBody(req, { maxBytes: 64 * 1024 }).then((body) => {
+            try {
+                const payload = JSON.parse(body || '{}');
+                const cityId = String(payload.id || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                const docUrl = String(payload.docUrl || '').trim();
+                if (!cityId) throw Object.assign(new Error('Missing city id'), { statusCode: 400 });
+                if (!extractGoogleDocId(docUrl)) throw Object.assign(new Error('docUrl is not a valid Google Doc URL'), { statusCode: 400 });
+
+                const registry = readGazetteerRegistry();
+                let entry = registry.cities.find(c => c.id === cityId);
+                if (!entry) {
+                    entry = { id: cityId };
+                    registry.cities.push(entry);
+                    registry.cities.sort((a, b) => a.id.localeCompare(b.id));
+                }
+                if (payload.name) entry.name = String(payload.name);
+                entry.docUrl = docUrl;
+                writeGazetteerRegistry(registry);
+                sendJson(res, 200, { success: true, entry });
+            } catch (err) {
+                sendError(res, err);
+            }
+        }).catch((err) => sendError(res, err));
+        return;
+    }
+
+    // GET /api/gazetteer/audit[?cityId=<id>] — compare each registered doc's
+    // images against the files in images/cities/<id>/ and report staleness
+    if (req.method === 'GET' && url === '/api/gazetteer/audit') {
+        (async () => {
+            const params = new URL(req.url, `http://${req.headers.host}`).searchParams;
+            const onlyCityId = params.get('cityId');
+
+            const registry = readGazetteerRegistry();
+            const targets = onlyCityId
+                ? registry.cities.filter(c => c.id === onlyCityId)
+                : registry.cities;
+
+            if (onlyCityId && targets.length === 0) {
+                sendJson(res, 404, { error: `No gazetteer link registered for city "${onlyCityId}"` });
+                return;
+            }
+
+            const results = [];
+            const BATCH_SIZE = 4;
+            for (let i = 0; i < targets.length; i += BATCH_SIZE) {
+                const batch = targets.slice(i, i + BATCH_SIZE);
+                const settled = await Promise.all(batch.map(entry =>
+                    auditGazetteerCity(entry).catch(err => ({ id: entry.id, status: 'error', error: err.message }))
+                ));
+                results.push(...settled);
+            }
+
+            const auditedAt = new Date().toISOString();
+            for (const result of results) {
+                const entry = registry.cities.find(c => c.id === result.id);
+                if (entry) {
+                    entry.lastAuditAt = auditedAt;
+                    entry.lastAuditStatus = result.status;
+                }
+            }
+            writeGazetteerRegistry(registry);
+
+            sendJson(res, 200, {
+                auditedAt,
+                total: results.length,
+                stale: results.filter(r => r.status === 'stale-images').length,
+                errors: results.filter(r => r.status === 'error').length,
+                results
+            });
+        })().catch((err) => sendError(res, err));
+        return;
+    }
+
+    // POST /api/gazetteer/ack — acknowledge a doc's current text so future
+    // audits only flag text changes newer than this. Body: { cityId, textHash }
+    if (req.method === 'POST' && url === '/api/gazetteer/ack') {
+        readRequestBody(req, { maxBytes: 64 * 1024 }).then((body) => {
+            try {
+                const payload = JSON.parse(body || '{}');
+                const registry = readGazetteerRegistry();
+                const entry = registry.cities.find(c => c.id === payload.cityId);
+                if (!entry) throw Object.assign(new Error('Unknown city id'), { statusCode: 404 });
+                if (!payload.textHash) throw Object.assign(new Error('Missing textHash'), { statusCode: 400 });
+                entry.ackTextHash = String(payload.textHash);
+                entry.ackTextAt = new Date().toISOString();
+                writeGazetteerRegistry(registry);
+                sendJson(res, 200, { success: true, entry });
+            } catch (err) {
+                sendError(res, err);
+            }
+        }).catch((err) => sendError(res, err));
         return;
     }
 
