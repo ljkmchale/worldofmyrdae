@@ -208,6 +208,7 @@ const MapOverlay = (function () {
         MapOverlayRenderContext.rebuildLocationIndex(renderCtx, locations);
         renderCtx.roadLinksByLocation = MapOverlayRouteGraph.buildRoadLinks(renderCtx.data, renderCtx.locMap);
         renderCtx.seaLinksByLocation = MapOverlayRouteGraph.buildSeaLinks(renderCtx.data, renderCtx.locMap);
+        renderCtx.settlementLinksByLocation = MapOverlayRouteGraph.buildSettlementLinks(renderCtx.roadLinksByLocation, renderCtx.locMap);
 
         const rendererCtx = getRendererContext();
 

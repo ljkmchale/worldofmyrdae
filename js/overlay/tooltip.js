@@ -755,7 +755,9 @@ const MapOverlayTooltip = (function () {
     function renderTooltipContent(loc, ctx) {
         if (!ctx.tooltipHtmlCache) ctx.tooltipHtmlCache = new Map();
         const previewState = resolveTooltipPreviewImage(loc, ctx);
-        const roadLinks = loc.id ? (ctx.roadLinksByLocation.get(loc.id) || []) : [];
+        // Settlement-to-settlement distances only: non-settlements have no
+        // entries in the contracted graph, so their tooltips show no road list.
+        const roadLinks = loc.id ? ((ctx.settlementLinksByLocation || ctx.roadLinksByLocation).get(loc.id) || []) : [];
         const cacheKey = getTooltipHtmlCacheKey(loc, previewState, roadLinks);
         let html = ctx.tooltipHtmlCache.get(cacheKey);
         if (!html) {

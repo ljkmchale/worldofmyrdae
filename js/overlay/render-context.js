@@ -14,6 +14,7 @@ const MapOverlayRenderContext = (function () {
             natH: 0,
             roadGroup: null,
             roadLinksByLocation: new Map(),
+            settlementLinksByLocation: new Map(),
             initializedContainers: [],
             tooltipHeaderImageCache: new Map(),
             tooltipImageAvailabilityCache: new Map(),

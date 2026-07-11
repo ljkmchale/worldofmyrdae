@@ -8,9 +8,9 @@
  */
 const MapOverlayLocationTypes = (function () {
     const DISPOSITION_COLORS = {
-        friendly: { fill: '#2d6a1f', edge: '#1c4413' },
+        friendly: { fill: '#235415', edge: '#16360d' },
         neutral: { fill: '#4a331f', edge: '#2e1f12' },
-        hostile: { fill: '#a31414', edge: '#6d0d0d' }
+        hostile: { fill: '#8a1010', edge: '#5c0a0a' }
     };
     const HALO = 'rgba(255, 255, 255, 0.95)';
 

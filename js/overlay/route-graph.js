@@ -177,6 +177,76 @@ const MapOverlayRouteGraph = (function () {
         return seaLinksByLocation;
     }
 
+    const SETTLEMENT_TYPES = new Set(['capital', 'city', 'small-city', 'town', 'village', 'port']);
+
+    function isSettlementLocation(locMap, locationId) {
+        const loc = locMap.get(locationId);
+        return Boolean(loc && SETTLEMENT_TYPES.has(loc.type));
+    }
+
+    /**
+     * Contract the full road graph to settlement-to-settlement links: from each
+     * settlement, walk outward through non-settlement named points (POIs,
+     * landmarks, crossroads) accumulating distance, and stop at the first
+     * settlement reached in each direction. Non-settlements never appear as
+     * destinations; they only contribute path distance.
+     */
+    function buildSettlementLinks(roadLinksByLocation, locMap) {
+        const settlementLinks = new Map();
+
+        roadLinksByLocation.forEach((links, fromId) => {
+            if (!isSettlementLocation(locMap, fromId)) return;
+
+            const fromLoc = locMap.get(fromId);
+            const best = new Map();
+            const visited = new Map([[fromId, 0]]);
+            const queue = [{ id: fromId, miles: 0, days: 0, firstLink: null, hops: 0 }];
+
+            while (queue.length) {
+                let bestIndex = 0;
+                for (let i = 1; i < queue.length; i += 1) {
+                    if (queue[i].miles < queue[bestIndex].miles) bestIndex = i;
+                }
+                const current = queue.splice(bestIndex, 1)[0];
+
+                (roadLinksByLocation.get(current.id) || []).forEach((link) => {
+                    const miles = current.miles + link.miles;
+                    const days = current.days + link.days;
+                    if (visited.has(link.destinationId) && visited.get(link.destinationId) <= miles) return;
+                    visited.set(link.destinationId, miles);
+
+                    const firstLink = current.firstLink || link;
+                    const hops = current.hops + 1;
+                    if (isSettlementLocation(locMap, link.destinationId)) {
+                        const previous = best.get(link.destinationId);
+                        if (!previous || miles < previous.miles) {
+                            const singleLine = (text) => String(text || '').replace(/[\r\n]+/g, ' ');
+                            best.set(link.destinationId, {
+                                destinationId: link.destinationId,
+                                destinationName: link.destinationName,
+                                roadId: firstLink.roadId,
+                                roadName: hops > 1 && fromLoc
+                                    ? `${singleLine(fromLoc.name)} to ${singleLine(link.destinationName)}`
+                                    : firstLink.roadName,
+                                roadType: firstLink.roadType,
+                                miles,
+                                days
+                            });
+                        }
+                        // Stop here: routes through a settlement belong to that settlement.
+                    } else {
+                        queue.push({ id: link.destinationId, miles, days, firstLink, hops });
+                    }
+                });
+            }
+
+            const entries = Array.from(best.values()).sort((a, b) => a.miles - b.miles);
+            if (entries.length) settlementLinks.set(fromId, entries);
+        });
+
+        return settlementLinks;
+    }
+
     function findRouteBetweenLocations(fromId, toId, roadLinksByLocation) {
         if (!fromId || !toId || fromId === toId) return null;
         if (!roadLinksByLocation.has(fromId) || !roadLinksByLocation.has(toId)) return null;
@@ -257,6 +327,8 @@ const MapOverlayRouteGraph = (function () {
         milesToDays,
         buildRoadLinks,
         buildSeaLinks,
+        buildSettlementLinks,
+        isSettlementLocation,
         findRouteBetweenLocations
     };
 })();
