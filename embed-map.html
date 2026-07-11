@@ -442,8 +442,7 @@
             width: 16px;
             height: 16px;
             background: #4a331f;
-            border-radius: 0;
-            clip-path: polygon(50% 0%, 60% 25%, 85% 15%, 75% 40%, 100% 50%, 75% 60%, 85% 85%, 60% 75%, 50% 100%, 40% 75%, 15% 85%, 25% 60%, 0% 50%, 25% 40%, 15% 15%, 40% 25%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             position: relative;
         }
 
@@ -452,11 +451,11 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 6px;
-            height: 6px;
+            width: 12px;
+            height: 12px;
             transform: translate(-50%, -50%);
-            border-radius: 50%;
             background: #FFFFFF;
+            clip-path: polygon(50% 0%, 60% 25%, 85% 15%, 75% 40%, 100% 50%, 75% 60%, 85% 85%, 60% 75%, 50% 100%, 40% 75%, 15% 85%, 25% 60%, 0% 50%, 25% 40%, 15% 15%, 40% 25%);
         }
 
         .legend-marker.city {
@@ -1271,17 +1270,12 @@
             </div>
             <h4><i class="fa-solid fa-scroll"></i> Map Legend</h4>
             <div class="legend-items">
-                <div class="legend-item"><span class="legend-marker capital"></span> <span>Capital City</span></div>
-                <div class="legend-item"><span class="legend-marker city"></span> <span>Major City</span></div>
-                <div class="legend-item"><span class="legend-marker small-city"></span> <span>Small City</span></div>
-                <div class="legend-item"><span class="legend-marker town"></span> <span>Town</span></div>
-                <div class="legend-item"><span class="legend-marker village"></span> <span>Village / Settlement</span>
-                </div>
-                <div class="legend-item"><span class="legend-marker port"></span> <span>Port / Coastal Hub</span></div>
-                <div class="legend-item"><span class="legend-marker ruins"></span> <span>Ancient Ruins</span></div>
+                <div class="legend-item"><span class="legend-marker capital"></span> <span>Capital</span></div>
+                <div class="legend-item"><span class="legend-marker city"></span> <span>Large Settlement</span></div>
+                <div class="legend-item"><span class="legend-marker small-city"></span> <span>Mid-sized Settlement</span></div>
+                <div class="legend-item"><span class="legend-marker town"></span> <span>Small Settlement</span></div>
                 <div class="legend-item"><span class="legend-marker landmark"></span> <span>Landmark</span></div>
                 <div class="legend-item"><span class="legend-marker poi"></span> <span>Point of Interest</span></div>
-                <div class="legend-item"><span class="legend-marker pass"></span> <span>Mountain Pass</span></div>
                 <div class="legend-item"><span class="legend-marker road-major"></span> <span>Major Highway</span></div>
                 <div class="legend-item"><span class="legend-marker road-minor"></span> <span>Minor Road / Trail</span>
                 </div>

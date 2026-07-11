@@ -1,5 +1,9 @@
 /**
  * Hex grid overlay and lookup helpers for World of Myrdae.
+ *
+ * The visible grid is a single SVG <pattern>-filled rect (constant DOM cost
+ * regardless of map size), and cell lookups are computed mathematically
+ * instead of scanning a cell list.
  */
 const CoordGrid = (function () {
   let active = false;
@@ -51,15 +55,13 @@ const CoordGrid = (function () {
     }
   }
 
-  function getHexPoints(cx, cy, size) {
+  function hexPathAt(cx, cy, size) {
     const points = [];
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI / 180) * (60 * i);
-      const x = cx + size * Math.cos(angle);
-      const y = cy + size * Math.sin(angle);
-      points.push(`${x},${y}`);
+      points.push(`${cx + size * Math.cos(angle)},${cy + size * Math.sin(angle)}`);
     }
-    return points.join(' ');
+    return `M ${points.join(' L ')} Z`;
   }
 
   function buildGridMetrics(natW, natH) {
@@ -71,55 +73,63 @@ const CoordGrid = (function () {
     const verticalStep = hexHeight;
     const originX = HEX_REFERENCE.originX * scaleX;
     const originY = HEX_REFERENCE.originY * scaleY;
-    const cells = [];
 
-    for (let col = 0; ; col++) {
-      const cx = originX + col * horizontalStep;
-      if (cx - size > natW + size) break;
-
-      const yOffset = col % 2 === 0 ? 0 : hexHeight / 2;
-      for (let row = 0; ; row++) {
-        const cy = originY + yOffset + row * verticalStep;
-        if (cy - hexHeight / 2 > natH + hexHeight / 2) break;
-
-        cells.push({
-          col,
-          row,
-          code: `${toColumnLabel(col)}${row + 1}`,
-          cx,
-          cy,
-          xPercent: (cx / natW) * 100,
-          yPercent: (cy / natH) * 100
-        });
-      }
-    }
+    // Same bounds the cell loops used to enforce.
+    const maxCol = Math.max(0, Math.ceil((natW + 2 * size - originX) / horizontalStep));
+    const maxRow = Math.max(0, Math.ceil((natH + hexHeight - originY) / verticalStep));
 
     return {
       natW,
       natH,
       size,
       hexHeight,
+      horizontalStep,
+      verticalStep,
       originX,
       originY,
-      cells
+      maxCol,
+      maxRow
+    };
+  }
+
+  function cellAt(metrics, col, row) {
+    const cx = metrics.originX + col * metrics.horizontalStep;
+    const yOffset = col % 2 === 0 ? 0 : metrics.hexHeight / 2;
+    const cy = metrics.originY + yOffset + row * metrics.verticalStep;
+    return {
+      col,
+      row,
+      code: `${toColumnLabel(col)}${row + 1}`,
+      cx,
+      cy,
+      xPercent: (cx / metrics.natW) * 100,
+      yPercent: (cy / metrics.natH) * 100
     };
   }
 
   function findNearestCell(metrics, xPx, yPx) {
-    if (!metrics || !metrics.cells.length) return null;
+    if (!metrics) return null;
 
+    const approxCol = Math.round((xPx - metrics.originX) / metrics.horizontalStep);
     let nearest = null;
     let nearestDistanceSq = Infinity;
 
-    metrics.cells.forEach((cell) => {
-      const dx = cell.cx - xPx;
-      const dy = cell.cy - yPx;
-      const distanceSq = dx * dx + dy * dy;
-      if (distanceSq < nearestDistanceSq) {
-        nearestDistanceSq = distanceSq;
-        nearest = cell;
+    for (let col = approxCol - 1; col <= approxCol + 1; col++) {
+      if (col < 0 || col > metrics.maxCol) continue;
+      const yOffset = col % 2 === 0 ? 0 : metrics.hexHeight / 2;
+      const approxRow = Math.round((yPx - metrics.originY - yOffset) / metrics.verticalStep);
+      for (let row = approxRow - 1; row <= approxRow + 1; row++) {
+        if (row < 0 || row > metrics.maxRow) continue;
+        const cell = cellAt(metrics, col, row);
+        const dx = cell.cx - xPx;
+        const dy = cell.cy - yPx;
+        const distanceSq = dx * dx + dy * dy;
+        if (distanceSq < nearestDistanceSq) {
+          nearestDistanceSq = distanceSq;
+          nearest = cell;
+        }
       }
-    });
+    }
 
     return nearest;
   }
@@ -179,20 +189,49 @@ const CoordGrid = (function () {
     svg.style.display = active ? '' : 'none';
     svg.style.zIndex = '9';
 
+    // One pattern tile covers two columns (even + odd). Hexes are drawn at the
+    // tile corners and center so the clipped parts are completed by adjacent
+    // tiles, producing a seamless grid from a single rect fill.
+    const s = metrics.size;
+    const h = metrics.hexHeight;
+    const tileW = 3 * s;
+    const tileH = h;
+    const patternId = `${containerId}-coord-grid-hex`;
+
+    const defs = makeSvgElement('defs', {});
+    const pattern = makeSvgElement('pattern', {
+      id: patternId,
+      x: metrics.originX,
+      y: metrics.originY,
+      width: tileW,
+      height: tileH,
+      patternUnits: 'userSpaceOnUse'
+    });
+    const hexes = [
+      [0, 0], [tileW, 0], [0, tileH], [tileW, tileH],
+      [1.5 * s, tileH / 2]
+    ];
+    const path = makeSvgElement('path', {
+      d: hexes.map(([cx, cy]) => hexPathAt(cx, cy, s)).join(' '),
+      fill: HEX_FILL,
+      stroke: HEX_STROKE,
+      'stroke-width': Math.max(1, metrics.natW * 0.00022)
+    });
+    pattern.appendChild(path);
+    defs.appendChild(pattern);
+
     const cellGroup = makeSvgElement('g', {
       opacity: '0.92',
       'shape-rendering': 'geometricPrecision'
     });
-
-    metrics.cells.forEach((cell) => {
-      const polygon = makeSvgElement('polygon', {
-        points: getHexPoints(cell.cx, cell.cy, metrics.size),
-        fill: HEX_FILL,
-        stroke: HEX_STROKE,
-        'stroke-width': Math.max(1, metrics.natW * 0.00022)
-      });
-      cellGroup.appendChild(polygon);
+    const fillRect = makeSvgElement('rect', {
+      x: -2 * s,
+      y: -2 * s,
+      width: metrics.natW + 4 * s,
+      height: metrics.natH + 4 * s,
+      fill: `url(#${patternId})`
     });
+    cellGroup.appendChild(fillRect);
 
     const frame = makeSvgElement('rect', {
       x: '1',
@@ -204,6 +243,7 @@ const CoordGrid = (function () {
       'stroke-width': '1.3'
     });
 
+    svg.appendChild(defs);
     svg.appendChild(cellGroup);
     svg.appendChild(frame);
     mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);

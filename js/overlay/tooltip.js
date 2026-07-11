@@ -585,10 +585,22 @@ const MapOverlayTooltip = (function () {
         `;
     }
 
+    const TYPE_DISPLAY_NAMES = Object.freeze({
+        capital: 'Capital',
+        city: 'Large Settlement',
+        'small-city': 'Mid-sized Settlement',
+        town: 'Small Settlement',
+        village: 'Small Settlement',
+        poi: 'Point of Interest',
+        landmark: 'Landmark'
+    });
+
     function buildTooltipHTML(loc, state) {
         const typeConfig = MapOverlayLocationTypes.getTypeConfig(loc.type);
         const icon = typeConfig.icon || '&#128205;';
-        const rawTypeName = loc.type ? loc.type.charAt(0).toUpperCase() + loc.type.slice(1) : 'Location';
+        const rawTypeName = loc.type
+            ? (TYPE_DISPLAY_NAMES[loc.type] || loc.type.charAt(0).toUpperCase() + loc.type.slice(1))
+            : 'Location';
         const typeName = escapeHTML(rawTypeName);
         const waterTooltip = isWaterTooltipType(loc.type);
         const fallbackPreviewImagesAttr = escapeHTML(JSON.stringify(state.fallbackPreviewImages || []));

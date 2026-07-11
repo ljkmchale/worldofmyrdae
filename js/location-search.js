@@ -64,9 +64,18 @@ const LocationSearch = (function () {
             name.className = 'search-result-name';
             name.textContent = loc.name.replace(/\n/g, ' ');
 
+            const TYPE_DISPLAY_NAMES = {
+                capital: 'Capital',
+                city: 'Large Settlement',
+                'small-city': 'Mid-sized Settlement',
+                town: 'Small Settlement',
+                village: 'Small Settlement',
+                poi: 'Point of Interest',
+                landmark: 'Landmark'
+            };
             const type = document.createElement('span');
             type.className = 'search-result-type';
-            type.textContent = loc.type || '';
+            type.textContent = TYPE_DISPLAY_NAMES[loc.type] || loc.type || '';
 
             item.appendChild(name);
             item.appendChild(type);

@@ -29,19 +29,18 @@ const MapOverlayLocationTypes = (function () {
         return points.trim();
     }
 
-    // Capital: colored 8-point starburst with a hollow white center.
+    // Capital: colored disc with a white 8-point starburst inside (no center dot).
     function buildCapitalMarker(ctx) {
         const { markerGroup, px, py, radius, makeCircle, svg } = ctx;
         const colors = dispositionColors(ctx);
 
-        const star = svg('polygon');
-        star.setAttribute('points', starPoints(px, py, radius * 1.15, radius * 0.62, 8));
-        star.setAttribute('fill', colors.fill);
-        star.setAttribute('stroke', HALO);
-        star.setAttribute('stroke-width', '1.2');
-        markerGroup.appendChild(star);
+        markerGroup.appendChild(makeCircle(px, py, radius, colors.fill, HALO, 1.5));
 
-        markerGroup.appendChild(makeCircle(px, py, radius * 0.4, '#FFFFFF', 'none', 0));
+        const star = svg('polygon');
+        star.setAttribute('points', starPoints(px, py, radius * 0.8, radius * 0.32, 8));
+        star.setAttribute('fill', '#FFFFFF');
+        star.setAttribute('stroke', 'none');
+        markerGroup.appendChild(star);
     }
 
     // Large: colored outer ring, white gap, colored center dot (bullseye).
@@ -123,7 +122,7 @@ const MapOverlayLocationTypes = (function () {
         const colors = dispositionColors(ctx);
         const diamond = svg('polygon');
         const r = radius * 1.15;
-        diamond.setAttribute('points', `${px},${py - r} ${px + r * 0.78},${py} ${px},${py + r} ${px - r * 0.78},${py}`);
+        diamond.setAttribute('points', `${px},${py - r} ${px + r},${py} ${px},${py + r} ${px - r},${py}`);
         diamond.setAttribute('fill', colors.fill);
         diamond.setAttribute('stroke', HALO);
         diamond.setAttribute('stroke-width', '1');

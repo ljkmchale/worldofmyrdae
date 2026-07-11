@@ -530,7 +530,7 @@ const Editor = (function () {
         // Group locations by type
         const typeOrder = ['capital', 'city', 'small-city', 'town', 'village', 'port', 'poi', 'landmark', 'ruins', 'region', 'water', 'river'];
         const typeLabels = {
-            capital: 'Capitals', city: 'Cities (Large)', 'small-city': 'Cities (Small)', town: 'Towns', village: 'Villages',
+            capital: 'Capitals', city: 'Large Settlements', 'small-city': 'Mid-sized Settlements', town: 'Small Settlements', village: 'Small Settlements',
             port: 'Ports', poi: 'Points of Interest', landmark: 'Landmarks',
             ruins: 'Ruins', region: 'Region Labels', water: 'Water Labels', river: 'River Labels'
         };
@@ -2043,10 +2043,10 @@ const Editor = (function () {
     function getTypeLabel(type) {
         const typeLabels = {
             capital: 'Capital',
-            city: 'City (Large)',
-            'small-city': 'City (Small)',
-            town: 'Town',
-            village: 'Village',
+            city: 'Large Settlement',
+            'small-city': 'Mid-sized Settlement',
+            town: 'Small Settlement',
+            village: 'Small Settlement',
             port: 'Port',
             poi: 'Point of Interest',
             landmark: 'Landmark',
