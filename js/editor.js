@@ -347,6 +347,7 @@ const Editor = (function () {
             if (roadKindSel) roadKindSel.value = state.roadKindFilter || '';
             renderRoadList();
         }
+        notifyWaypointHandles();
     }
 
     // --- Map Interactions ---
@@ -596,7 +597,8 @@ const Editor = (function () {
         setTimeout(applyFocus, 120);
     }
 
-    function selectLocation(id) {
+    function selectLocation(id, options = {}) {
+        const { focus = true } = options;
         state.selectedLocId = id;
         state.locationPlacementMode = false;
         state.moveLocationMode = false;
@@ -647,7 +649,7 @@ const Editor = (function () {
         document.getElementById('loc-hideLabel').checked = !!loc.hideLabel;
 
         // Pan map to the selected location
-        if (loc.x !== undefined && loc.y !== undefined) {
+        if (focus && loc.x !== undefined && loc.y !== undefined) {
             focusLocationOnMap(loc, 4);
         }
     }
@@ -990,7 +992,7 @@ const Editor = (function () {
                 ? 'Placement mode is on. Click anywhere on the map to place the new location.'
                 : state.moveLocationMode
                     ? 'Move mode is on. Drag the selected location on the map, then release to save its new position.'
-                    : 'Placement mode is off. Clicking the map will not create or move a selected location.';
+                    : 'Placement mode is off. Tip: Alt+drag (or Shift+drag) a marker on the map to move it directly.';
             hint.style.color = (state.locationPlacementMode || state.moveLocationMode) ? 'var(--color-gold)' : '';
         }
     }
@@ -1042,6 +1044,25 @@ const Editor = (function () {
         if (!saved) return false;
         state.moveLocationMode = false;
         updateLocationPlacementUI();
+        return true;
+    }
+
+    // Alt/Shift+drag a marker: select it (without panning) and arm the same
+    // move machinery the Move Location button uses; finishLocationMove resets it.
+    function beginDirectLocationMove(locationId) {
+        if (state.tab !== 'locations') return false;
+        if (!locationId || locationId === '__preview__') return false;
+        if (!getLocationById(locationId)) return false;
+
+        if (state.selectedLocId !== locationId) {
+            selectLocation(locationId, { focus: false });
+        }
+        if (state.selectedLocId !== locationId) return false;
+
+        state.locationPlacementMode = false;
+        state.moveLocationMode = true;
+        updateLocationPlacementUI();
+        pushUndo();
         return true;
     }
 
@@ -1347,6 +1368,12 @@ const Editor = (function () {
         saveRoad(true, { validateComplete: false, showFeedback: false, exportToDisk: false, pushHistory: false });
     }
 
+    // Lets the map page rebuild the draggable waypoint-handle layer whenever
+    // the selected road, its points, or the active tab changes.
+    function notifyWaypointHandles() {
+        document.dispatchEvent(new CustomEvent('editor-waypoints-changed'));
+    }
+
     function renderRoadPoints(points) {
         const list = document.getElementById('road-points-list');
         list.innerHTML = '';
@@ -1359,6 +1386,7 @@ const Editor = (function () {
 
         if (points.length === 0) {
             list.innerHTML = '<div style="color:#666; font-style:italic; padding:0.5rem;">No points yet. Select start and end locations above.</div>';
+            notifyWaypointHandles();
             return;
         }
         points.forEach((pt, idx) => {
@@ -1447,6 +1475,7 @@ const Editor = (function () {
             }
             list.appendChild(el);
         });
+        notifyWaypointHandles();
     }
 
     function editWaypoint(idx) {
@@ -1489,6 +1518,47 @@ const Editor = (function () {
         }
     }
 
+    // --- Drag-and-drop waypoint handles (map-side) ---
+
+    // Undo is pushed lazily on first actual movement so a plain click on a
+    // handle (e.g. the first half of a double-click delete) stays a no-op.
+    let _waypointMovePushed = false;
+
+    function isDraggableWaypointIndex(road, idx) {
+        return !!road && Array.isArray(road.points)
+            && Number.isInteger(idx) && idx > 0 && idx < road.points.length - 1
+            && Array.isArray(road.points[idx]);
+    }
+
+    function beginRoadWaypointMove(idx) {
+        if (state.tab !== 'roads' || !state.selectedRoadId) return false;
+        const road = getRoadById(state.selectedRoadId);
+        if (!isDraggableWaypointIndex(road, idx)) return false;
+        _waypointMovePushed = false;
+        return true;
+    }
+
+    function moveRoadWaypointPreview(idx, x, y) {
+        if (!state.selectedRoadId) return false;
+        const road = getRoadById(state.selectedRoadId);
+        if (!isDraggableWaypointIndex(road, idx)) return false;
+        if (!_waypointMovePushed) {
+            pushUndo();
+            _waypointMovePushed = true;
+        }
+        road.points[idx] = [Math.round(x * 100) / 100, Math.round(y * 100) / 100];
+        syncRoadDraftFromState();
+        _debouncedRefresh();
+        return true;
+    }
+
+    function finishRoadWaypointMove() {
+        if (!_waypointMovePushed) return false;
+        _waypointMovePushed = false;
+        if (!state.selectedRoadId) return false;
+        return saveRoad(false, { validateComplete: false, showFeedback: false, pushHistory: false });
+    }
+
     function removeRoadPoint(idx) {
         if (!state.selectedRoadId) return;
         const road = getRoadById(state.selectedRoadId);
@@ -1497,13 +1567,15 @@ const Editor = (function () {
             if (idx === 0 || idx === road.points.length - 1) {
                 return;
             }
+            // Snapshot before the splice so undo restores the removed waypoint
+            pushUndo();
             road.points.splice(idx, 1);
             state.editingWaypointIndex = null; // Cancel any editing
             renderRoadPoints(road.points);
             syncRoadDraftFromState();
             refreshMap();
             // Auto-save after removing point
-            saveRoad(false, { validateComplete: false, showFeedback: false });
+            saveRoad(false, { validateComplete: false, showFeedback: false, pushHistory: false });
         }
     }
 
@@ -1864,6 +1936,7 @@ const Editor = (function () {
         setActionMessage('road-form-message', '');
         renderRoadList();
         refreshMap();
+        notifyWaypointHandles();
     }
 
     // --- Duplicate Location ---
@@ -2302,6 +2375,10 @@ const Editor = (function () {
         beginLocationMove,
         moveSelectedLocationPreview,
         finishLocationMove,
+        beginDirectLocationMove,
+        beginRoadWaypointMove,
+        moveRoadWaypointPreview,
+        finishRoadWaypointMove,
         applyRenameRegion
     };
 })();

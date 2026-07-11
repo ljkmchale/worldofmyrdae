@@ -158,7 +158,7 @@
           </button>
         </div>
         <p id="location-placement-hint" class="editor-intro" style="margin-top:0; margin-bottom:0.75rem; font-size:0.92rem;">
-          Placement mode is off. Clicking the map will not create a location.
+          Placement mode is off. Tip: Alt+drag (or Shift+drag) a marker on the map to move it directly.
         </p>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
@@ -746,7 +746,7 @@
             <i class="fa-solid fa-circle-info"></i> Roads must start and end at locations. Use dropdowns above or click location markers on the map.
           </p>
           <p id="waypoint-map-hint" style="display:none; font-size:0.78rem; color:#4da6ff; font-style:italic; margin-top:0.25rem; padding:0.4rem 0.6rem; background:rgba(30,144,255,0.08); border:1px solid rgba(30,144,255,0.2); border-radius:4px;">
-            <i class="fa-solid fa-map-location-dot"></i> Start &amp; end are set — click anywhere on the map to add intermediate waypoints. Click the <i class="fa-solid fa-pencil" style="font-size:0.7rem;"></i> icon to edit a waypoint's coordinates.
+            <i class="fa-solid fa-map-location-dot"></i> Start &amp; end are set — click anywhere on the map to add intermediate waypoints. Drag a gold handle on the map to move a waypoint, or double-click it to delete. The <i class="fa-solid fa-pencil" style="font-size:0.7rem;"></i> icon still edits exact coordinates.
           </p>
 
           <div class="editor-action-wrap" style="margin-top: 1rem;">
@@ -836,9 +836,14 @@
           const overlay = document.getElementById('map-container-overlay');
           const coordGrid = document.getElementById('map-container-coord-grid');
           const territories = document.getElementById('territories-layer');
+          const waypointLayer = document.getElementById('editor-waypoint-layer');
           if (overlay) {
             overlay.style.transform = transformStr;
             overlay.style.transformOrigin = '0 0';
+          }
+          if (waypointLayer) {
+            waypointLayer.style.transform = transformStr;
+            waypointLayer.style.transformOrigin = '0 0';
           }
           if (coordGrid) {
             coordGrid.style.transform = transformStr;
@@ -888,28 +893,146 @@
         };
       }
 
+      // --- Draggable road waypoint handles ---
+      // A sibling SVG layer over the map overlay (same viewBox + pan/zoom
+      // transform) showing grab handles for the selected road's waypoints.
+      const WaypointHandles = (() => {
+        const SVG_NS = 'http://www.w3.org/2000/svg';
+
+        function getMetrics() {
+          const space = (typeof MapLayerStack !== 'undefined' && MapLayerStack.getCoordinateSpace)
+            ? MapLayerStack.getCoordinateSpace() : null;
+          const w = space?.width || mapImg.naturalWidth;
+          const h = space?.height || mapImg.naturalHeight;
+          const off = (typeof MapLayerStack !== 'undefined' && MapLayerStack.getRegistrationOffset)
+            ? MapLayerStack.getRegistrationOffset() : { x: 0, y: 0 };
+          return { w, h, off };
+        }
+
+        function refresh() {
+          const existing = document.getElementById('editor-waypoint-layer');
+          if (existing) existing.remove();
+
+          if (typeof CityEditor !== 'undefined' && CityEditor.isActive()) return;
+          if (!Editor.state || Editor.state.tab !== 'roads' || !Editor.state.selectedRoadId) return;
+          const road = Editor.state.roads.find(r => r.id === Editor.state.selectedRoadId);
+          if (!road || !Array.isArray(road.points) || road.points.length < 3) return;
+
+          const { w, h, off } = getMetrics();
+          if (!w || !h) return;
+
+          const svg = document.createElementNS(SVG_NS, 'svg');
+          svg.setAttribute('id', 'editor-waypoint-layer');
+          svg.setAttribute('viewBox', `${-off.x} ${-off.y} ${w} ${h}`);
+          svg.setAttribute('preserveAspectRatio', 'xMinYMin meet');
+          svg.style.cssText = 'width:100%;height:auto;position:absolute;top:0;left:0;pointer-events:none;z-index:11;';
+
+          const r = w * 0.002;
+          const hitR = w * 0.0045;
+
+          road.points.forEach((pt, idx) => {
+            const isWaypoint = idx > 0 && idx < road.points.length - 1 && Array.isArray(pt);
+            if (!isWaypoint) return;
+            const cx = (pt[0] / 100) * w;
+            const cy = (pt[1] / 100) * h;
+
+            const g = document.createElementNS(SVG_NS, 'g');
+            g.setAttribute('class', 'editor-waypoint-handle');
+            g.setAttribute('data-waypoint-idx', idx);
+            g.style.pointerEvents = 'auto';
+            g.style.cursor = 'grab';
+
+            const hit = document.createElementNS(SVG_NS, 'circle');
+            hit.setAttribute('cx', cx);
+            hit.setAttribute('cy', cy);
+            hit.setAttribute('r', hitR);
+            hit.setAttribute('fill', 'transparent');
+            g.appendChild(hit);
+
+            const dot = document.createElementNS(SVG_NS, 'circle');
+            dot.setAttribute('cx', cx);
+            dot.setAttribute('cy', cy);
+            dot.setAttribute('r', r);
+            dot.setAttribute('fill', '#d4af37');
+            dot.setAttribute('fill-opacity', '0.85');
+            dot.setAttribute('stroke', '#1b1612');
+            dot.setAttribute('stroke-width', r * 0.35);
+            g.appendChild(dot);
+
+            svg.appendChild(g);
+          });
+
+          mapImg.parentNode.insertBefore(svg, mapImg.nextSibling);
+
+          const mapState = MapController.getInstanceState('map-container');
+          if (mapState) {
+            svg.style.transform = `translate3d(${mapState.pointX}px, ${mapState.pointY}px, 0) scale(${mapState.scale})`;
+            svg.style.transformOrigin = '0 0';
+          }
+        }
+
+        // Cheap position update while dragging, between debounced full refreshes.
+        function moveHandle(idx, xPct, yPct) {
+          const layer = document.getElementById('editor-waypoint-layer');
+          if (!layer) return;
+          const g = layer.querySelector(`[data-waypoint-idx="${idx}"]`);
+          if (!g) return;
+          const { w, h } = getMetrics();
+          const cx = (xPct / 100) * w;
+          const cy = (yPct / 100) * h;
+          g.querySelectorAll('circle').forEach(c => {
+            c.setAttribute('cx', cx);
+            c.setAttribute('cy', cy);
+          });
+        }
+
+        return { refresh, moveHandle };
+      })();
+
+      document.addEventListener('campaign-data-updated', () => WaypointHandles.refresh());
+      document.addEventListener('editor-waypoints-changed', () => WaypointHandles.refresh());
+      WaypointHandles.refresh();
+
+      let draggingWaypointIdx = null;
+
       container.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
 
+        // Waypoint handle drag (roads tab)
+        const handleEl = e.target.closest('.editor-waypoint-handle');
+        if (handleEl) {
+          const idx = parseInt(handleEl.getAttribute('data-waypoint-idx'), 10);
+          if (Editor.beginRoadWaypointMove(idx)) {
+            draggingWaypointIdx = idx;
+            suppressNextMapClick = true;
+            container.style.cursor = 'grabbing';
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+            return;
+          }
+        }
+
+        // Location drag: armed Move mode, or Alt/Shift+drag directly on a marker
         const clickedMarker = e.target.closest('.marker-group');
         const locId = clickedMarker?.getAttribute('data-location-id');
-        if (
-          Editor.state &&
-          Editor.state.tab === 'locations' &&
-          Editor.state.moveLocationMode &&
-          locId &&
-          Editor.beginLocationMove(locId)
-        ) {
-          draggingLocation = true;
-          suppressNextMapClick = true;
-          e.stopImmediatePropagation();
-          e.stopPropagation();
-          e.preventDefault();
-          const point = getMapPercentFromPointer(e.clientX, e.clientY);
-          if (point) {
-            Editor.moveSelectedLocationPreview(point.x, point.y);
+        if (Editor.state && Editor.state.tab === 'locations' && locId) {
+          const armed = Editor.state.moveLocationMode
+            ? Editor.beginLocationMove(locId)
+            : ((e.altKey || e.shiftKey) && Editor.beginDirectLocationMove(locId));
+          if (armed) {
+            draggingLocation = true;
+            suppressNextMapClick = true;
+            container.style.cursor = 'grabbing';
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+            const point = getMapPercentFromPointer(e.clientX, e.clientY);
+            if (point) {
+              Editor.moveSelectedLocationPreview(point.x, point.y);
+            }
+            return;
           }
-          return;
         }
 
         mapPointerDown = true;
@@ -918,7 +1041,29 @@
         startY = e.clientY;
       }, true);
 
+      // Double-click a waypoint handle to delete it
+      container.addEventListener('dblclick', (e) => {
+        const handleEl = e.target.closest('.editor-waypoint-handle');
+        if (!handleEl) return;
+        const idx = parseInt(handleEl.getAttribute('data-waypoint-idx'), 10);
+        if (!Number.isInteger(idx)) return;
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+        Editor.removeRoadPoint(idx);
+      }, true);
+
       window.addEventListener('mousemove', (e) => {
+        if (draggingWaypointIdx !== null) {
+          const point = getMapPercentFromPointer(e.clientX, e.clientY);
+          if (point) {
+            Editor.moveRoadWaypointPreview(draggingWaypointIdx, point.x, point.y);
+            WaypointHandles.moveHandle(draggingWaypointIdx, point.x, point.y);
+          }
+          suppressNextMapClick = true;
+          return;
+        }
+
         if (draggingLocation) {
           const point = getMapPercentFromPointer(e.clientX, e.clientY);
           if (point) {
@@ -935,8 +1080,14 @@
       });
 
       window.addEventListener('mouseup', () => {
+        if (draggingWaypointIdx !== null) {
+          draggingWaypointIdx = null;
+          container.style.cursor = '';
+          Editor.finishRoadWaypointMove();
+        }
         if (draggingLocation) {
           draggingLocation = false;
+          container.style.cursor = '';
           Editor.finishLocationMove();
         }
         mapPointerDown = false;

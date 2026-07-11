@@ -437,53 +437,58 @@
             display: inline-block;
         }
 
-        /* Visual styles to match map-overlay.js markers */
+        /* Visual styles to match map-overlay.js markers (shape = size tier, color = disposition) */
         .legend-marker.capital {
-            background: #FFFFFF;
-            border: 2px solid #3e2723;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            width: 16px;
+            height: 16px;
+            background: #4a331f;
+            border-radius: 0;
+            clip-path: polygon(50% 0%, 60% 25%, 85% 15%, 75% 40%, 100% 50%, 75% 60%, 85% 85%, 60% 75%, 50% 100%, 40% 75%, 15% 85%, 25% 60%, 0% 50%, 25% 40%, 15% 15%, 40% 25%);
             position: relative;
         }
 
         .legend-marker.capital::after {
-            content: '★';
+            content: '';
             position: absolute;
             top: 50%;
             left: 50%;
+            width: 6px;
+            height: 6px;
             transform: translate(-50%, -50%);
-            font-size: 8px;
-            color: #3e2723;
+            border-radius: 50%;
+            background: #FFFFFF;
         }
 
         .legend-marker.city {
-            background: radial-gradient(circle at center, #3e2723 30%, #FFFFFF 30%);
-            border: 2px solid #3e2723;
+            background: radial-gradient(circle at center, #4a331f 0%, #4a331f 30%, #FFFFFF 32%, #FFFFFF 58%, #4a331f 60%);
         }
 
         .legend-marker.small-city {
-            background: #FFFFFF;
-            border: 1.5px solid #3e2723;
-            width: 11px;
-            height: 11px;
-            margin: 1.5px;
+            width: 12px;
+            height: 12px;
+            margin: 1px;
+            background: radial-gradient(circle at center, #FFFFFF 0%, #FFFFFF 32%, #4a331f 34%);
         }
 
         .legend-marker.town {
-            background: #3e2723;
-            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            width: 11px;
+            height: 11px;
+            margin: 1.5px;
+            background: #4a331f;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .legend-marker.village {
-            background: #A0522D;
-            width: 10px;
-            height: 10px;
-            margin: 2px;
-            border: 1px solid #1b1612;
+            background: #4a331f;
+            width: 9px;
+            height: 9px;
+            margin: 2.5px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         .legend-marker.port {
             background: #E8F4FD;
-            border: 1.5px solid #3e2723;
+            border: 1.5px solid #4a331f;
         }
 
         .legend-marker.ruins {
@@ -492,9 +497,35 @@
         }
 
         .legend-marker.landmark {
-            background: #FF8C00;
+            background: #4a331f;
+            border-radius: 2px;
+            width: 11px;
+            height: 11px;
+            margin: 1.5px;
+        }
+
+        .legend-marker.poi {
+            background: #4a331f;
             clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
             border-radius: 0;
+        }
+
+        .legend-marker.disp-friendly { background: #2d6a1f; }
+        .legend-marker.disp-neutral { background: #4a331f; }
+        .legend-marker.disp-hostile { background: #a31414; }
+
+        .legend-disposition-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.75rem;
+            color: #b8b0a4;
+        }
+
+        .legend-disposition-row .legend-marker {
+            width: 10px;
+            height: 10px;
+            margin-right: 0.2rem;
         }
 
         .legend-marker.pass {
@@ -1248,10 +1279,16 @@
                 </div>
                 <div class="legend-item"><span class="legend-marker port"></span> <span>Port / Coastal Hub</span></div>
                 <div class="legend-item"><span class="legend-marker ruins"></span> <span>Ancient Ruins</span></div>
-                <div class="legend-item"><span class="legend-marker landmark"></span> <span>Landmark / POI</span></div>
+                <div class="legend-item"><span class="legend-marker landmark"></span> <span>Landmark</span></div>
+                <div class="legend-item"><span class="legend-marker poi"></span> <span>Point of Interest</span></div>
                 <div class="legend-item"><span class="legend-marker pass"></span> <span>Mountain Pass</span></div>
                 <div class="legend-item"><span class="legend-marker road-major"></span> <span>Major Highway</span></div>
                 <div class="legend-item"><span class="legend-marker road-minor"></span> <span>Minor Road / Trail</span>
+                </div>
+                <div class="legend-disposition-row">
+                    <span><span class="legend-marker disp-friendly"></span>Friendly</span>
+                    <span><span class="legend-marker disp-neutral"></span>Neutral</span>
+                    <span><span class="legend-marker disp-hostile"></span>Hostile</span>
                 </div>
             </div>
         </div>

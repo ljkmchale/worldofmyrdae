@@ -217,12 +217,15 @@ const MapOverlayMarkerRenderer = (function () {
         const markerPx = px + (loc.markerOffsetX || 0);
         const markerPy = py + (loc.markerOffsetY || 0);
 
+        const disposition = String(loc.disposition || 'neutral').toLowerCase();
+
         (typeConfig.drawMarker || MapOverlayLocationTypes.getTypeConfig('default').drawMarker)({
             markerGroup,
             px: markerPx,
             py: markerPy,
             radius,
             colors,
+            disposition,
             makeCircle,
             svg
         });
