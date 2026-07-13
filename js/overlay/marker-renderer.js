@@ -110,7 +110,11 @@ const MapOverlayMarkerRenderer = (function () {
         const offsetX = loc.labelOffsetX !== undefined ? loc.labelOffsetX : defaultX;
         const offsetY = loc.labelOffsetY !== undefined ? loc.labelOffsetY : defaultY;
         const collisionZone = radius * 1.5;
-        const wouldCollide = Math.abs(offsetX) < collisionZone && Math.abs(offsetY) < collisionZone;
+        // Auto-center only when the location has no explicit placement; hand-placed
+        // labels must render exactly where the editor put them. Offsets of exactly
+        // (0,0) count as unplaced — rendering at the marker center is never wanted.
+        const hasExplicitOffset = Boolean(loc.labelOffsetX || loc.labelOffsetY);
+        const wouldCollide = !hasExplicitOffset && Math.abs(offsetX) < collisionZone && Math.abs(offsetY) < collisionZone;
 
         const label = svg('text');
         let labelX;

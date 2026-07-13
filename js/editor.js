@@ -742,7 +742,11 @@ const Editor = (function () {
             id = (state.selectedLocId && !isPreview) ? state.selectedLocId : name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         }
 
-        const locType = document.getElementById('loc-type').value;
+        // The type select can be blank when a location's saved type is no longer
+        // offered in the dropdown; keep the existing type instead of clearing it.
+        const locType = document.getElementById('loc-type').value
+            || (state.locationDraft && state.locationDraft.type)
+            || 'town';
         const _lt = locType.toLowerCase();
         const isSettlement = ['city', 'small-city', 'town', 'capital'].includes(_lt);
         const isTown     = _lt === 'town';
