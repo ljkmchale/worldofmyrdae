@@ -6,30 +6,32 @@ argument-hint: [optional commit message]
 
 Sync the World of Myrdae project with GitHub master. This pulls remote changes, commits any local edits, and pushes — all in one step.
 
+All commands run from the project root: `C:\Users\Larry McHale\Desktop\WorldofMyrdae` (the session working directory — no `-C` flag needed).
+
 ## Steps
 
 1. **Check for local changes:**
    ```bash
-   git -C "/Users/larrymchale/Desktop/worldofmyrdae-master" status --short
+   git status --short
    ```
 
 2. **Pull latest from remote first:**
    ```bash
-   git -C "/Users/larrymchale/Desktop/worldofmyrdae-master" pull origin master
+   git pull origin master
    ```
    If there are merge conflicts, stop and report them to the user clearly.
 
 3. **If there are local changes, stage and commit them:**
    - Stage all modified tracked files:
      ```bash
-     git -C "/Users/larrymchale/Desktop/worldofmyrdae-master" add js/ css/ *.html .claude/skills/
+     git add js/ css/ lib/ data/ *.html .claude/skills/
      ```
    - Use the commit message from $ARGUMENTS if provided, otherwise generate a short descriptive one based on what files changed (e.g. "Update locations database", "Edit map overlay styles", etc.)
    - Commit with that message plus the Co-Authored-By trailer.
 
 4. **Push to master:**
    ```bash
-   git -C "/Users/larrymchale/Desktop/worldofmyrdae-master" push origin master
+   git push origin master
    ```
 
 5. **Report to the user:**
@@ -43,3 +45,4 @@ Sync the World of Myrdae project with GitHub master. This pulls remote changes, 
 - Always pull before committing to avoid conflicts
 - Never force push
 - If $ARGUMENTS is provided, use it as the commit message
+- Never stage `backups/`, `exports/`, or `.claude/worktrees/`
