@@ -27,9 +27,10 @@
     .map-controls {
       position: absolute;
       top: 1rem;
-      right: 1rem;
+      right: 0.5rem;
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
       gap: 0.5rem;
       z-index: 100;
     }
@@ -1000,7 +1001,7 @@
             <button type="button" class="measure-clear-btn" id="measure-clear">Clear Measure</button>
           </div>
 
-          <div class="time-display-panel"><strong>World Date</strong><div id="season-display"></div></div>
+          <div class="time-display-panel" style="display:none"><strong>World Date</strong><div id="season-display"></div></div>
 
           <!-- Title card shown during pre-awakening reveal -->
           <div id="awakening-title">

@@ -568,7 +568,7 @@ const MapOverlayTooltip = (function () {
             const daysText = link.days >= 10 ? `${Math.round(link.days)} days` : `${link.days.toFixed(1)} days`;
             return `
                 <div style="display:flex;justify-content:space-between;gap:0.75rem;font-family:'Cormorant Garamond', serif;font-size:0.9rem;color:#d7cfbb;">
-                    <span><strong style="color:#efe4bd;">${escapeHTML(singleLineText(link.roadName))}</strong></span>
+                    <span><strong style="color:#efe4bd;">${escapeHTML(singleLineText(link.destinationName || link.roadName))}</strong></span>
                     <span style="white-space:nowrap;color:#bfae82;">${Math.round(link.miles)} mi • ${escapeHTML(daysText)}</span>
                 </div>
             `;
