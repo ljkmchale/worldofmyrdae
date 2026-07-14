@@ -2169,6 +2169,13 @@ const Editor = (function () {
             if (Number.isFinite(status.conflictRows) && status.conflictRows > 0) parts.push(`${status.conflictRows} conflicts`);
             if (Number.isFinite(status.invalidRows) && status.invalidRows > 0) parts.push(`${status.invalidRows} invalid`);
             if (status.error) parts.push(status.error);
+            if (status.warning) parts.push(status.warning);
+            if (Array.isArray(status.conflictRowKeys) && status.conflictRowKeys.length) {
+                parts.push(`conflicts: ${status.conflictRowKeys.join(', ')}`);
+            }
+            if (Array.isArray(status.invalidRowKeys) && status.invalidRowKeys.length) {
+                parts.push(`invalid: ${status.invalidRowKeys.join(', ')}`);
+            }
             if (payload.schedule && Array.isArray(payload.schedule.syncTimes) && payload.schedule.syncTimes.length) {
                 parts.push(`daily ${payload.schedule.syncTimes.join(', ')}`);
             }
@@ -2176,7 +2183,7 @@ const Editor = (function () {
                 parts.push(`next ${new Date(payload.schedule.nextRunAt).toLocaleString()}`);
             }
 
-            setSheetSyncMessage(parts.length ? `Sheet sync: ${parts.join(' | ')}` : 'Sheet sync configured.', status.ok === false);
+            setSheetSyncMessage(parts.length ? `Sheet sync: ${parts.join(' | ')}` : 'Sheet sync configured.', status.ok === false || Boolean(status.warning));
 
             if (status.ok === false && status.error) {
                 const alertKey = `${status.timestamp || ''}:${status.error}`;

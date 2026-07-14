@@ -1979,12 +1979,15 @@ ${text}`;
                     res.writeHead(500, { 'Content-Type': 'text/plain' });
                     res.end('Server Error: ' + error.code);
                 }
-            } else if (extname === '.html') {
-                res.writeHead(200, headers);
-                res.end(injectCacheBusters(content.toString('utf-8')), 'utf-8');
             } else {
-                res.writeHead(200, headers);
-                res.end(content, 'utf-8');
+                const responseContent = extname === '.html'
+                    ? Buffer.from(injectCacheBusters(content.toString('utf-8')), 'utf-8')
+                    : content;
+                res.writeHead(200, {
+                    ...headers,
+                    'Content-Length': responseContent.length
+                });
+                res.end(responseContent);
             }
         });
     });
