@@ -60,6 +60,31 @@ const Editor = (function () {
         setActionMessage('sheet-sync-status', text, isError);
     }
 
+    function showSheetSyncToast(text) {
+        let toast = document.getElementById('sheet-sync-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'sheet-sync-toast';
+            toast.style.cssText = 'position:fixed;bottom:18px;right:18px;z-index:10000;max-width:420px;'
+                + 'background:#3a1f1c;color:#ffd9d2;border:1px solid #a33;border-radius:6px;'
+                + 'padding:10px 34px 10px 14px;font-size:13px;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.5);';
+            const close = document.createElement('button');
+            close.textContent = '×';
+            close.setAttribute('aria-label', 'Dismiss');
+            close.style.cssText = 'position:absolute;top:4px;right:8px;background:none;border:none;'
+                + 'color:#ffd9d2;font-size:16px;cursor:pointer;padding:0;';
+            close.addEventListener('click', () => toast.remove());
+            toast.appendChild(close);
+            const body = document.createElement('div');
+            body.id = 'sheet-sync-toast-text';
+            toast.appendChild(body);
+            document.body.appendChild(toast);
+        }
+        toast.querySelector('#sheet-sync-toast-text').textContent = text;
+        clearTimeout(toast._hideTimer);
+        toast._hideTimer = setTimeout(() => toast.remove(), 12000);
+    }
+
     function hasOpenDraft() {
         return Boolean(state.locationDraft || state.roadDraft || state.selectedLocId === '__preview__');
     }
@@ -2189,7 +2214,7 @@ const Editor = (function () {
                 const alertKey = `${status.timestamp || ''}:${status.error}`;
                 if (alertKey !== state.lastSheetSyncAlertKey) {
                     state.lastSheetSyncAlertKey = alertKey;
-                    alert('Google Sheet sync failed: ' + status.error);
+                    showSheetSyncToast('Google Sheet sync failed: ' + status.error);
                 }
             }
 
