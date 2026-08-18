@@ -307,7 +307,7 @@ const MapOverlay = (function () {
 
         const dismissForMapMotion = (event) => {
             const target = event.target;
-            if (target && target.closest && target.closest('.map-tooltip a')) return;
+            if (target && target.closest && target.closest('.map-tooltip a, .map-tooltip button')) return;
             MapOverlayTooltip.hideTooltipImmediately(renderCtx);
         };
 
