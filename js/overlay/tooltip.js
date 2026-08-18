@@ -636,9 +636,14 @@ const MapOverlayTooltip = (function () {
         const citySceneHref = safeHref(loc.cityScene);
         const linkHref = safeHref(loc.link);
         const guideRating = adventsGuideRatings[loc.id] || null;
-        const guideRatingText = guideRating
-            ? `★ ${Number(guideRating.averageRating).toFixed(1)} · ${guideRating.reviewCount} ${guideRating.reviewCount === 1 ? 'review' : 'reviews'}`
-            : 'Not yet rated';
+        const guideRatingText = (() => {
+            if (!guideRating) return '☆☆☆☆☆ Not yet rated';
+            const average = Number(guideRating.averageRating) || 0;
+            const filled = Math.max(0, Math.min(5, Math.round(average)));
+            const stars = '★'.repeat(filled) + '☆'.repeat(5 - filled);
+            const count = guideRating.reviewCount;
+            return `${stars}  ${average.toFixed(1)} · ${count} ${count === 1 ? 'review' : 'reviews'}`;
+        })();
         const guideSection = loc.id ? `
             <button type="button" class="tt-type advents-guide-link"
                 data-location-id="${escapeHTML(loc.id)}"
