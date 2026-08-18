@@ -1291,6 +1291,44 @@ p {
   backdrop-filter: blur(8px);
 }
 
+.advents-guide-link {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 4px;
+  background: rgba(212, 175, 55, 0.07);
+  color: #efe4bd;
+  cursor: pointer;
+  text-align: left;
+}
+
+.advents-guide-link:hover,
+.advents-guide-link:focus-visible {
+  background: rgba(212, 175, 55, 0.16);
+  border-color: rgba(255, 215, 0, 0.85);
+  outline: none;
+}
+
+.advents-guide-link-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  color: #d4af37;
+}
+
+.advents-guide-link-rating {
+  flex: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  color: #d7cfbb;
+  white-space: nowrap;
+}
+
 .tooltip-header {
   display: flex;
   align-items: center;

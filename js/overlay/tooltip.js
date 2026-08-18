@@ -65,6 +65,16 @@ window.MapTooltipPositioning = (function () {
 
 const MapOverlayTooltip = (function () {
     const ENABLE_GENERATED_MAP_PREVIEWS = false;
+    let adventsGuideRatings = {};
+
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+        window.addEventListener('message', (event) => {
+            if (!event.data || event.data.type !== 'advents-guide:ratings') return;
+            adventsGuideRatings = event.data.ratings && typeof event.data.ratings === 'object'
+                ? event.data.ratings
+                : {};
+        });
+    }
     const TOOLTIP_BIOME_IMAGE_PATHS = Object.freeze({
         mountains: 'images/tooltips/biomes/mountains.png',
         forest: 'images/tooltips/biomes/forest.png',
@@ -163,6 +173,21 @@ const MapOverlayTooltip = (function () {
             tooltip.style.pointerEvents = 'auto';
         });
         tooltip.addEventListener('mouseleave', (event) => hideTooltip(event, ctx));
+        tooltip.addEventListener('click', (event) => {
+            const button = event.target && event.target.closest
+                ? event.target.closest('.advents-guide-link')
+                : null;
+            if (!button) return;
+            event.preventDefault();
+            const location = {
+                id: button.dataset.locationId || '',
+                name: button.dataset.locationName || '',
+                type: button.dataset.locationType || '',
+                region: button.dataset.locationRegion || ''
+            };
+            if (!location.id || !location.name) return;
+            window.parent.postMessage({ type: 'advents-guide:open', location }, '*');
+        });
 
         ctx.tooltip = tooltip;
         return tooltip;
@@ -610,6 +635,19 @@ const MapOverlayTooltip = (function () {
         const cityMapHref = safeHref(loc.cityMap);
         const citySceneHref = safeHref(loc.cityScene);
         const linkHref = safeHref(loc.link);
+        const guideRating = adventsGuideRatings[loc.id] || null;
+        const guideRatingText = guideRating
+            ? `★ ${Number(guideRating.averageRating).toFixed(1)} · ${guideRating.reviewCount} ${guideRating.reviewCount === 1 ? 'review' : 'reviews'}`
+            : 'Not yet rated';
+        const guideSection = loc.id ? `
+            <button type="button" class="advents-guide-link"
+                data-location-id="${escapeHTML(loc.id)}"
+                data-location-name="${safeName}"
+                data-location-type="${escapeHTML(loc.type || '')}"
+                data-location-region="${escapeHTML(loc.region || '')}">
+                <span class="advents-guide-link-title">Advents Guide to Myrdae</span>
+                <span class="advents-guide-link-rating">${escapeHTML(guideRatingText)}</span>
+            </button>` : '';
         const linksSection = (cityMapHref || citySceneHref || linkHref) ? `
             <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
                 ${cityMapHref ? `<a href="${cityMapHref}" target="_blank" rel="noopener noreferrer" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#d4af37;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;border:1px solid rgba(212,175,55,0.5);border-radius:3px;" onmouseenter="this.style.background='rgba(212,175,55,0.15)'" onmouseleave="this.style.background='transparent'">&#9680; City Map</a>` : ''}
@@ -646,6 +684,7 @@ const MapOverlayTooltip = (function () {
                         ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                         ${roadSection}
                         ${linksSection}
+                        ${guideSection}
                     </div>
                 `;
             }
@@ -672,6 +711,7 @@ const MapOverlayTooltip = (function () {
                     ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                     ${roadSection}
                     ${linksSection}
+                    ${guideSection}
                 </div>
             `;
         }
@@ -687,6 +727,7 @@ const MapOverlayTooltip = (function () {
                 ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                 ${roadSection}
                 ${linksSection}
+                ${guideSection}
             </div>
         `;
     }
@@ -749,6 +790,7 @@ const MapOverlayTooltip = (function () {
             staticGeneratedPreviewImage: previewState.staticGeneratedPreviewImage || '',
             genericTypePreviewImage: previewState.genericTypePreviewImage || '',
             roadKey
+            , guideRating: adventsGuideRatings[loc.id] || null
         });
     }
 
