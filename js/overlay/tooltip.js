@@ -636,14 +636,19 @@ const MapOverlayTooltip = (function () {
         const citySceneHref = safeHref(loc.cityScene);
         const linkHref = safeHref(loc.link);
         const guideRating = adventsGuideRatings[loc.id] || null;
-        const guideRatingText = (() => {
-            if (!guideRating) return '☆☆☆☆☆ Not yet rated';
+        // Stars + average on the first line, review count on its own line below,
+        // so the rating never wraps awkwardly mid-phrase.
+        let guideStarsText, guideCountText;
+        if (guideRating) {
             const average = Number(guideRating.averageRating) || 0;
             const filled = Math.max(0, Math.min(5, Math.round(average)));
-            const stars = '★'.repeat(filled) + '☆'.repeat(5 - filled);
+            guideStarsText = `${'★'.repeat(filled)}${'☆'.repeat(5 - filled)}  ${average.toFixed(1)}`;
             const count = guideRating.reviewCount;
-            return `${stars}  ${average.toFixed(1)} · ${count} ${count === 1 ? 'review' : 'reviews'}`;
-        })();
+            guideCountText = `${count} ${count === 1 ? 'review' : 'reviews'}`;
+        } else {
+            guideStarsText = '☆☆☆☆☆';
+            guideCountText = 'Not yet rated';
+        }
         const guideSection = loc.id ? `
             <button type="button" class="tt-type advents-guide-link"
                 data-location-id="${escapeHTML(loc.id)}"
@@ -651,7 +656,7 @@ const MapOverlayTooltip = (function () {
                 data-location-type="${escapeHTML(loc.type || '')}"
                 data-location-region="${escapeHTML(loc.region || '')}">
                 <span class="tt-meta-label">Advents Rating</span>
-                <span class="tt-meta-value advents-guide-link-rating">${escapeHTML(guideRatingText)}</span>
+                <span class="tt-meta-value advents-guide-link-rating">${escapeHTML(guideStarsText)}<span class="advents-guide-link-count" style="display:block;font-size:0.82em;opacity:0.75;">${escapeHTML(guideCountText)}</span></span>
             </button>` : '';
         const linksSection = (cityMapHref || citySceneHref || linkHref) ? `
             <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
