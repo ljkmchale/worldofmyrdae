@@ -54,7 +54,7 @@ const SAILING_SPEEDS = {
 // compresses each world-hour into real milliseconds so a typical route laps in a few
 // visible minutes instead of several real hours. Raise it to slow the fleet, lower it
 // to speed it up — relative ship speeds are preserved either way.
-const BOAT_REAL_MS_PER_WORLD_HOUR = 1000;
+const BOAT_REAL_MS_PER_WORLD_HOUR = 2000;
 
 function _measurePathMiles(points) {
     let totalPercent = 0;
