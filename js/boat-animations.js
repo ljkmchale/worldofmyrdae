@@ -56,6 +56,11 @@ const SAILING_SPEEDS = {
 // to speed it up — relative ship speeds are preserved either way.
 const BOAT_REAL_MS_PER_WORLD_HOUR = 2000;
 
+// When a vessel reaches either end of its route it lays over in port for roughly a
+// day before setting out again, instead of instantly reversing. Expressed in world
+// hours so it scales with BOAT_REAL_MS_PER_WORLD_HOUR like the sailing legs do.
+const BOAT_DWELL_WORLD_HOURS = 24;
+
 function _measurePathMiles(points) {
     let totalPercent = 0;
     for (let i = 1; i < points.length; i += 1) {
@@ -68,16 +73,6 @@ function _measurePathMiles(points) {
 
 function _getSailingSpeed(shipType) {
     return SAILING_SPEEDS[shipType] || SAILING_SPEEDS.default;
-}
-
-function _getRouteProgress(roundTripWorldHours, startOffset = 0, now = Date.now()) {
-    if (!roundTripWorldHours || roundTripWorldHours <= 0) {
-        return ((startOffset % 1) + 1) % 1;
-    }
-
-    // Pure function of absolute UTC time → identical for all viewers, stable across refresh.
-    const lapRealMs = roundTripWorldHours * BOAT_REAL_MS_PER_WORLD_HOUR;
-    return (((now / lapRealMs) + startOffset) % 1 + 1) % 1;
 }
 
 function _getWaterRouteDisplayName(route, pathPoints, locMap) {
@@ -445,27 +440,33 @@ class BoatFleet {
     }
 
     updateBoat(boat) {
-        // Raw progress from 0 to 1 for the total round trip
-        const now = Date.now();
-        const totalProgress = _getRouteProgress(boat.roundTripWorldHours, boat.startOffset, now);
-        
-        // Split progress: 0.0-0.5 is forward, 0.5-1.0 is backward
-        let raw, reversed;
-        if (totalProgress < 0.5) {
-            raw = totalProgress * 2; // Map 0-0.5 to 0-1
+        // Deterministic cycle from absolute UTC time so every viewer — and every page
+        // refresh — sees the same vessel in the same place:
+        //   sail A→B  ·  lay over at B (~a day)  ·  sail B→A  ·  lay over at A
+        const now     = Date.now();
+        const legMs   = (boat.roundTripWorldHours / 2) * BOAT_REAL_MS_PER_WORLD_HOUR; // one-way sail
+        const dwellMs = BOAT_DWELL_WORLD_HOURS * BOAT_REAL_MS_PER_WORLD_HOUR;         // pause per arrival
+        const cycleMs = (legMs + dwellMs) * 2;
+
+        // startOffset (0..1) staggers boats so they don't all depart in unison.
+        const frac = (((now / cycleMs) + boat.startOffset) % 1 + 1) % 1;
+        const t    = frac * cycleMs; // milliseconds into this boat's cycle
+
+        let progress; // 0 = at endpoint A, 1 = at endpoint B
+        let reversed; // travelling B→A, so the hull faces the other way
+        if (t < legMs) {
+            progress = t / legMs;                                // sailing A→B
             reversed = false;
+        } else if (t < legMs + dwellMs) {
+            progress = 1;                                        // docked at B
+            reversed = false;
+        } else if (t < (legMs * 2) + dwellMs) {
+            progress = 1 - ((t - legMs - dwellMs) / legMs);      // sailing B→A
+            reversed = true;
         } else {
-            raw = (totalProgress - 0.5) * 2; // Map 0.5-1.0 to 0-1
+            progress = 0;                                        // docked at A
             reversed = true;
         }
-
-        const progress = reversed ? 1 - raw : raw;
-
-        // Fade in/out near the "docking" points (ends of the route)
-        // Since it's a round trip, it only "docks" at progress 0 and 1
-        let opacity = 1;
-        if      (raw < 0.05) opacity = raw / 0.05;
-        else if (raw > 0.95) opacity = (1 - raw) / 0.05;
 
         const pos  = this.interpolatePosition(boat.pathPoints, progress);
         const rot  = this.calculateRotation(boat.pathPoints, progress);
@@ -476,12 +477,12 @@ class BoatFleet {
             boat.element = this.createBoatElement(boat);
         }
 
-        // Adjust rotation based on direction (reversed travels backward, so rotate 180)
+        // Reversed travels backward along the path, so spin the hull 180°.
         const finalRot = reversed ? rot + 180 : rot;
 
-        // Shapes pointing Up (negative Y) need +90 to align with atan2 output
+        // Shapes pointing Up (negative Y) need +90 to align with atan2 output.
         boat.element.setAttribute('transform', `translate(${svgX},${svgY}) rotate(${finalRot + 90})`);
-        boat.element.setAttribute('opacity', opacity);
+        boat.element.setAttribute('opacity', 1);
     }
 
     animate = () => {
