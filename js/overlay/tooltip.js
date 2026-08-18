@@ -645,7 +645,7 @@ const MapOverlayTooltip = (function () {
                 data-location-name="${safeName}"
                 data-location-type="${escapeHTML(loc.type || '')}"
                 data-location-region="${escapeHTML(loc.region || '')}">
-                <span class="advents-guide-link-title">Advents Guide to Myrdae</span>
+                <span class="advents-guide-link-title">Advents Rating</span>
                 <span class="advents-guide-link-rating">${escapeHTML(guideRatingText)}</span>
             </button>` : '';
         const linksSection = (cityMapHref || citySceneHref || linkHref) ? `
