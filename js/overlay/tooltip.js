@@ -640,13 +640,13 @@ const MapOverlayTooltip = (function () {
             ? `★ ${Number(guideRating.averageRating).toFixed(1)} · ${guideRating.reviewCount} ${guideRating.reviewCount === 1 ? 'review' : 'reviews'}`
             : 'Not yet rated';
         const guideSection = loc.id ? `
-            <button type="button" class="advents-guide-link"
+            <button type="button" class="tt-type advents-guide-link"
                 data-location-id="${escapeHTML(loc.id)}"
                 data-location-name="${safeName}"
                 data-location-type="${escapeHTML(loc.type || '')}"
                 data-location-region="${escapeHTML(loc.region || '')}">
-                <span class="advents-guide-link-title">Advents Rating</span>
-                <span class="advents-guide-link-rating">${escapeHTML(guideRatingText)}</span>
+                <span class="tt-meta-label">Advents Rating</span>
+                <span class="tt-meta-value advents-guide-link-rating">${escapeHTML(guideRatingText)}</span>
             </button>` : '';
         const linksSection = (cityMapHref || citySceneHref || linkHref) ? `
             <div style="margin-top:0.5rem;padding-top:0.4rem;border-top:1px solid rgba(212,175,55,0.2);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
@@ -666,6 +666,7 @@ const MapOverlayTooltip = (function () {
                 ${loc.region ? `<div class="tt-type"><span class="tt-meta-label">Territory</span><span class="tt-meta-value">${escapeHTML(loc.region)}</span></div>` : ''}
                 ${loc.biome ? `<div class="tt-type"><span class="tt-meta-label">Biome</span><span class="tt-meta-value">${escapeHTML(loc.biome)}</span></div>` : ''}
                 <div class="tt-type"><span class="tt-meta-label">Disposition</span><span class="tt-disposition tt-disposition-${disposition}">${dispositionLabel}</span></div>
+                ${guideSection}
             </div>
         `;
 
@@ -680,7 +681,6 @@ const MapOverlayTooltip = (function () {
                     </div>
                     <div class="tt-body">
                         ${metaSection}
-                        ${guideSection}
                         ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                         ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                         ${roadSection}
@@ -707,7 +707,6 @@ const MapOverlayTooltip = (function () {
                 </div>
                 <div class="tt-body">
                     ${metaSection}
-                    ${guideSection}
                     ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                     ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                     ${roadSection}
@@ -723,7 +722,6 @@ const MapOverlayTooltip = (function () {
             </div>
             <div class="tt-body">
                 ${metaSection}
-                ${guideSection}
                 ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                 ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                 ${roadSection}

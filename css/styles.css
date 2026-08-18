@@ -1292,54 +1292,28 @@ p {
 }
 
 .advents-guide-link {
-  width: auto;
-  margin-top: 0.35rem;
+  appearance: none;
+  width: 100%;
+  margin: 0;
   padding: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
   border: 0;
-  border-radius: 0;
   background: transparent;
-  color: #efe4bd;
+  font: inherit;
   cursor: pointer;
   text-align: left;
-}
-
-.advents-guide-link-title::after {
-  content: ' ·';
-  color: #8f8770;
 }
 
 .advents-guide-link:hover,
 .advents-guide-link:focus-visible {
   background: transparent;
-  color: #fff1b8;
   outline: none;
 }
 
-.advents-guide-link-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.68rem;
-  line-height: 1.25;
-  color: #d4af37;
-  text-decoration: underline;
-  text-decoration-color: rgba(212, 175, 55, 0.35);
-  text-underline-offset: 3px;
-}
-
-.advents-guide-link:hover .advents-guide-link-title,
-.advents-guide-link:focus-visible .advents-guide-link-title {
+.advents-guide-link:hover .advents-guide-link-rating,
+.advents-guide-link:focus-visible .advents-guide-link-rating {
   color: #ffd966;
-  text-decoration-color: currentColor;
-}
-
-.advents-guide-link-rating {
-  flex: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.68rem;
-  color: #d7cfbb;
-  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .tooltip-header {
