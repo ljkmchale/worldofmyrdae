@@ -1292,25 +1292,29 @@ p {
 }
 
 .advents-guide-link {
-  width: 100%;
-  margin-top: 0.6rem;
-  padding: 0.55rem 0.65rem;
-  display: flex;
+  width: auto;
+  margin-top: 0.35rem;
+  padding: 0;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  border: 1px solid rgba(212, 175, 55, 0.5);
-  border-radius: 4px;
-  background: rgba(212, 175, 55, 0.07);
+  gap: 0.35rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: #efe4bd;
   cursor: pointer;
   text-align: left;
 }
 
+.advents-guide-link-title::after {
+  content: ' ·';
+  color: #8f8770;
+}
+
 .advents-guide-link:hover,
 .advents-guide-link:focus-visible {
-  background: rgba(212, 175, 55, 0.16);
-  border-color: rgba(255, 215, 0, 0.85);
+  background: transparent;
+  color: #fff1b8;
   outline: none;
 }
 
@@ -1319,6 +1323,15 @@ p {
   font-size: 0.68rem;
   line-height: 1.25;
   color: #d4af37;
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 175, 55, 0.35);
+  text-underline-offset: 3px;
+}
+
+.advents-guide-link:hover .advents-guide-link-title,
+.advents-guide-link:focus-visible .advents-guide-link-title {
+  color: #ffd966;
+  text-decoration-color: currentColor;
 }
 
 .advents-guide-link-rating {
