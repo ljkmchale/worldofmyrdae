@@ -44,7 +44,17 @@ const SAILING_SPEEDS = {
     'Ship': 68,
     default: 68
 };
-const FALLBACK_DAY_REAL_MS = 60 * 60 * 1000;
+// Watercraft are paced off the absolute wall clock (UTC epoch milliseconds) so that
+// every viewer — and every page refresh — computes the exact same vessel position for
+// any given instant. Position is a pure function of Date.now(); it deliberately does
+// NOT read the scrubbable / per-campaign world-clock display, because a viewer nudging
+// the in-world date must not desync the shared fleet.
+//
+// A boat's realistic round trip is `roundTripWorldHours` world-hours; this constant
+// compresses each world-hour into real milliseconds so a typical route laps in a few
+// visible minutes instead of several real hours. Raise it to slow the fleet, lower it
+// to speed it up — relative ship speeds are preserved either way.
+const BOAT_REAL_MS_PER_WORLD_HOUR = 1000;
 
 function _measurePathMiles(points) {
     let totalPercent = 0;
@@ -60,21 +70,14 @@ function _getSailingSpeed(shipType) {
     return SAILING_SPEEDS[shipType] || SAILING_SPEEDS.default;
 }
 
-function _getFallbackWorldHours(now = performance.now()) {
-    return (now / FALLBACK_DAY_REAL_MS) * 24;
-}
-
-function _getRouteProgress(roundTripWorldHours, startOffset = 0, now = performance.now()) {
-    if (window.MyrdaeWorldClock && typeof window.MyrdaeWorldClock.getRouteProgress === 'function') {
-        return window.MyrdaeWorldClock.getRouteProgress(roundTripWorldHours, startOffset, now);
-    }
-
+function _getRouteProgress(roundTripWorldHours, startOffset = 0, now = Date.now()) {
     if (!roundTripWorldHours || roundTripWorldHours <= 0) {
         return ((startOffset % 1) + 1) % 1;
     }
 
-    const totalWorldHours = _getFallbackWorldHours(now);
-    return (((totalWorldHours / roundTripWorldHours) + startOffset) % 1 + 1) % 1;
+    // Pure function of absolute UTC time → identical for all viewers, stable across refresh.
+    const lapRealMs = roundTripWorldHours * BOAT_REAL_MS_PER_WORLD_HOUR;
+    return (((now / lapRealMs) + startOffset) % 1 + 1) % 1;
 }
 
 function _getWaterRouteDisplayName(route, pathPoints, locMap) {
@@ -443,7 +446,7 @@ class BoatFleet {
 
     updateBoat(boat) {
         // Raw progress from 0 to 1 for the total round trip
-        const now = performance.now();
+        const now = Date.now();
         const totalProgress = _getRouteProgress(boat.roundTripWorldHours, boat.startOffset, now);
         
         // Split progress: 0.0-0.5 is forward, 0.5-1.0 is backward
