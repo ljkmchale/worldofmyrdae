@@ -680,11 +680,11 @@ const MapOverlayTooltip = (function () {
                     </div>
                     <div class="tt-body">
                         ${metaSection}
+                        ${guideSection}
                         ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                         ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                         ${roadSection}
                         ${linksSection}
-                        ${guideSection}
                     </div>
                 `;
             }
@@ -707,11 +707,11 @@ const MapOverlayTooltip = (function () {
                 </div>
                 <div class="tt-body">
                     ${metaSection}
+                    ${guideSection}
                     ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                     ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                     ${roadSection}
                     ${linksSection}
-                    ${guideSection}
                 </div>
             `;
         }
@@ -723,11 +723,11 @@ const MapOverlayTooltip = (function () {
             </div>
             <div class="tt-body">
                 ${metaSection}
+                ${guideSection}
                 ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
                 ${details ? `<div class="tt-desc" style="color:#888;font-style:italic;margin-top:0.25rem;font-size:0.82rem;">${details}</div>` : ''}
                 ${roadSection}
                 ${linksSection}
-                ${guideSection}
             </div>
         `;
     }
