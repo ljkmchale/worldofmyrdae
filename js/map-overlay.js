@@ -154,7 +154,8 @@ const MapOverlay = (function () {
             show: MapOverlayTooltip.showTooltip,
             move: MapOverlayTooltip.moveTooltip,
             hide: MapOverlayTooltip.hideTooltip,
-            isSuppressed: MapOverlayTooltip.isTooltipSuppressedLocation
+            isSuppressed: MapOverlayTooltip.isTooltipSuppressedLocation,
+            trackClick: MapOverlayTooltip.trackLocationClick
         };
         return renderCtx;
     }

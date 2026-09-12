@@ -856,6 +856,23 @@ const MapOverlayTooltip = (function () {
         // Intentionally static after opening so links remain easy to click.
     }
 
+    // Reports a deliberate marker/region click to the embedding page (the
+    // Suwanee Gamers site), separate from 'advents-guide:open' which only
+    // fires when the Advents Rating link inside the tooltip is clicked. This
+    // is the signal for "which places on the map people actually go to."
+    function trackLocationClick(loc) {
+        if (!loc || !loc.id || !loc.name || typeof window === 'undefined' || !window.parent) return;
+        window.parent.postMessage({
+            type: 'map:location-click',
+            location: {
+                id: loc.id,
+                name: loc.name,
+                kind: loc.type || '',
+                region: loc.region || ''
+            }
+        }, '*');
+    }
+
     function hideTooltip(event, ctx) {
         if (!ctx.tooltip) return;
         if (!ctx.tooltipsEnabled) {
@@ -900,6 +917,7 @@ const MapOverlayTooltip = (function () {
         isTooltipSuppressedLocation,
         showTooltip,
         moveTooltip,
-        hideTooltip
+        hideTooltip,
+        trackLocationClick
     };
 })();

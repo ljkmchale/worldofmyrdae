@@ -95,6 +95,7 @@ const MapOverlayMarkerRenderer = (function () {
         text.style.cursor = 'pointer';
         text.addEventListener('mouseenter', (event) => ctx.tooltipHandlers.show(event, region, ctx));
         text.addEventListener('mouseleave', (event) => ctx.tooltipHandlers.hide(event, ctx));
+        text.addEventListener('click', () => ctx.tooltipHandlers.trackClick(region));
 
         if (region.opacity !== undefined) text.setAttribute('opacity', region.opacity);
 
@@ -211,6 +212,7 @@ const MapOverlayMarkerRenderer = (function () {
             } else {
                 markerGroup.addEventListener('mouseenter', (event) => ctx.tooltipHandlers.show(event, loc, ctx));
                 markerGroup.addEventListener('mouseleave', (event) => ctx.tooltipHandlers.hide(event, ctx));
+                markerGroup.addEventListener('click', () => ctx.tooltipHandlers.trackClick(loc));
             }
             group.appendChild(markerGroup);
             return;
@@ -241,6 +243,7 @@ const MapOverlayMarkerRenderer = (function () {
         } else {
             markerGroup.addEventListener('mouseenter', (event) => ctx.tooltipHandlers.show(event, loc, ctx));
             markerGroup.addEventListener('mouseleave', (event) => ctx.tooltipHandlers.hide(event, ctx));
+            markerGroup.addEventListener('click', () => ctx.tooltipHandlers.trackClick(loc));
         }
 
         group.appendChild(markerGroup);
