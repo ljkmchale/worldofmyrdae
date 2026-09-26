@@ -481,16 +481,62 @@
       wallData.normals=new Array(wallPositions.length).fill(0);BABYLON.VertexData.ComputeNormals(wallPositions,wallIndices,wallData.normals);
       wallData.applyToMesh(wall);wall.material=mats.parapet;wall.isPickable=false;
     }
-    if(bridge) for(const portion of [.25,.5,.75]) {
-      const point=centerline[Math.round(portion*(centerline.length-1))];
+    if(bridge) archedBridge(road,centerline);
+  }
+  // Solid masonry beneath each bridge deck: spandrel walls drop to the river
+  // except where round arches open between piers, a vault closes each arch,
+  // and pointed cutwaters stand upstream and downstream of every pier.
+  function archedBridge(road,centerline) {
+    const WATER=-1.3,SPRING=-.5,face=road.width/2+.54;
+    const samples=[];
+    for(let i=0;i<centerline.length-1;i++) for(let k=0;k<8;k++) {
+      const u=(i+k/8)/(centerline.length-1);
+      samples.push({p:BABYLON.Vector3.Lerp(centerline[i],centerline[i+1],k/8),u});
+    }
+    samples.push({p:centerline[centerline.length-1],u:1});
+    let length=0;for(let i=1;i<samples.length;i++)length+=BABYLON.Vector3.Distance(samples[i-1].p,samples[i].p);
+    const arches=Math.max(3,Math.round(length/10)),pier=.1;
+    const deckAt=u=>.04+2.45*Math.sin(Math.PI*u);
+    const bottomAt=u=>{
+      const cell=u*arches,t=cell-Math.floor(cell);
+      if(u<=0||u>=1||t<pier||t>1-pier)return WATER;
+      const crown=Math.min(deckAt(u)-.8,SPRING+2.6);
+      if(crown<=SPRING)return WATER;
+      const tt=(t-pier)/(1-2*pier);
+      return SPRING+(crown-SPRING)*Math.sqrt(Math.max(0,1-(2*tt-1)**2));
+    };
+    const frames=samples.map((s,i)=>{
+      const a=samples[Math.max(0,i-1)].p,b=samples[Math.min(samples.length-1,i+1)].p;
+      const t=b.subtract(a).normalize();
+      return {p:s.p,t,across:new BABYLON.Vector3(t.z,0,-t.x),top:deckAt(s.u),bottom:bottomAt(s.u)};
+    });
+    const up=new BABYLON.Vector3(0,1,0),down=new BABYLON.Vector3(0,-1,0);
+    const at=(fr,side,off,y)=>new BABYLON.Vector3(fr.p.x+fr.across.x*side*off,y,fr.p.z+fr.across.z*side*off);
+    for(let i=1;i<frames.length;i++) {
+      const a=frames[i-1],b=frames[i];
       for(const side of [-1,1]) {
-        const before=centerline[Math.max(0,Math.round(portion*(centerline.length-1))-1)];
-        const after=centerline[Math.min(centerline.length-1,Math.round(portion*(centerline.length-1))+1)];
-        const tangent=after.subtract(before).normalize(),across=new BABYLON.Vector3(tangent.z,0,-tangent.x);
-        const support=point.add(across.scale(side*(road.width*.5+.15)));
-        const rise=2.45*Math.sin(Math.PI*portion),height=rise+.7;
-        const pier=BABYLON.MeshBuilder.CreateCylinder(road.name+' stone river pier',{diameterTop:1.5,diameterBottom:1.9,height,tessellation:10},scene);
-        pier.position=new BABYLON.Vector3(support.x,(height-.3)/2,support.z);pier.material=mats.stoneDark;
+        const out=a.across.scale(side);
+        addPolygon(mats.stoneDark,[at(a,side,face,a.bottom),at(b,side,face,b.bottom),at(b,side,face,b.top-.05),at(a,side,face,a.top-.05)],out);
+        // A projecting string course marks the deck line along each face.
+        addPolygon(mats.stone,[at(a,side,face+.16,a.top-.38),at(b,side,face+.16,b.top-.38),at(b,side,face+.16,a.top-.14+(b.top-a.top)),at(a,side,face+.16,a.top-.14)],out);
+        addPolygon(mats.stone,[at(a,side,face,a.top-.14),at(b,side,face,b.top-.14),at(b,side,face+.16,b.top-.14),at(a,side,face+.16,a.top-.14)],up);
+        addPolygon(mats.stone,[at(a,side,face,a.top-.38),at(b,side,face,b.top-.38),at(b,side,face+.16,b.top-.38),at(a,side,face+.16,a.top-.38)],down);
+      }
+      if(a.bottom>WATER||b.bottom>WATER)
+        addPolygon(mats.stoneDark,[at(a,-1,face,a.bottom),at(b,-1,face,b.bottom),at(b,1,face,b.bottom),at(a,1,face,a.bottom)],down);
+    }
+    for(let k=1;k<arches;k++) {
+      const fr=frames[Math.round(k/arches*(frames.length-1))],capY=SPRING+.55;
+      for(const side of [-1,1]) {
+        const out=fr.across.scale(side),half=fr.t.scale(pier*length/arches*.95);
+        const base=at(fr,side,face,0),nose=at(fr,side,face+1.5,0);
+        const l=base.subtract(half),r=base.add(half);
+        const pts=y=>[new BABYLON.Vector3(l.x,y,l.z),new BABYLON.Vector3(nose.x,y,nose.z),new BABYLON.Vector3(r.x,y,r.z)];
+        const lo=pts(WATER),hi=pts(capY),cap=[new BABYLON.Vector3(l.x,capY+.02,l.z),new BABYLON.Vector3(nose.x,capY-.35,nose.z),new BABYLON.Vector3(r.x,capY+.02,r.z)];
+        addPolygon(mats.stoneDark,[lo[0],lo[1],hi[1],hi[0]],out.subtract(fr.t));
+        addPolygon(mats.stoneDark,[lo[1],lo[2],hi[2],hi[1]],out.add(fr.t));
+        addPolygon(mats.stone,[hi[0],hi[1],cap[1],cap[0]],out.subtract(fr.t).add(up));
+        addPolygon(mats.stone,[hi[1],hi[2],cap[2],cap[1]],out.add(fr.t).add(up));
       }
     }
   }
@@ -556,6 +602,9 @@
   // a walled capital actually packs its streets); the roof sites traced from
   // the illustrated map then fill the back lots wherever they still fit.
   const plasterMats=[mats.plaster,mats.plasterLight,mats.plasterOchre,mats.plasterRose,mats.plasterGrey];
+  mats.flowers=material('window-box geraniums','#9e2a2f');
+  mats.flowersPale=material('window-box marigolds','#b87a24');
+  const signMats=[mats.marketRed,mats.marketBlue,mats.gold,mats.wood];
   const roadLines=roads.map(road=>({road,line:roadCenterline(road),bridge:isBridge(road)}));
   const wallLines=[...outerWalls,...innerWalls].map(points);
   const pinPoints=city.pins.map(p=>map(p.x,p.y));
@@ -608,7 +657,12 @@
     const span=(D+jetty)/2;
     const rise=span*(zone==='high'||zone==='north'?1.05:.82)*(.85+R(4)*.4);
     const roofMat=zone==='high'||zone==='north'?(R(5)<.8?mats.slate:mats.tileDark):R(5)<.62?mats.tile:R(5)<.8?mats.tileDark:mats.slate;
-    gableRoof(at(0,H,jetty/2),yaw,f,span,.5,rise,roofMat,wallMat,.06);
+    // About a third of houses turn their gable to the street, which breaks the
+    // eave line into the saw-tooth skyline of a real medieval street.
+    const gableFront=f>=4.6&&R(13)<.34;
+    const gableRise=f/2*(1.05+R(14)*.3);
+    if(gableFront) gableRoof(at(0,H,jetty/2),yaw+Math.PI/2,D+jetty,f/2,.32,gableRise,roofMat,wallMat,.3);
+    else gableRoof(at(0,H,jetty/2),yaw,f,span,.5,rise,roofMat,wallMat,.06);
     const timbered=isPlaster&&R(6)>.4,shuttered=R(7)>.45,shop=(zone==='trade'||zone==='central'||zone==='lower')&&R(8)>.4;
     const bays=Math.max(1,Math.round(f/1.9)),bw=f/bays,door=Math.floor(R(9)*bays);
     const frameMat=wallMat===mats.brick||wallMat===mats.stone?mats.stoneDark:mats.timber;
@@ -644,8 +698,40 @@
       for(let b=0;b<=bays;b++) part(mats.timber,.2,top,.08,-f/2+bw*b+(b===0?.1:b===bays?-.1:0),groundH+top/2,upperFront+.04);
       for(let k=1;k<floors;k++) part(mats.timber,f,.2,.08,0,groundH+k*floorH-.05,upperFront+.04);
     }
+    if(gableFront) {
+      // Attic window high in the street gable, with a timber collar beam.
+      windowAt(0,H+gableRise*.34,upperFront,1,.8);
+      part(mats.timber,f*.7,.18,.1,0,H+gableRise*.1,upperFront+.04);
+    } else if(f>=5&&R(15)>.5) {
+      // A small pitched dormer on the street slope.
+      const dz=span*.42,dw=1.35;
+      part(wallMat,dw,1.3,1.4,0,H+.55,jetty/2+dz);
+      gableRoof(at(0,H+1.2,jetty/2+dz),yaw+Math.PI/2,1.5,dw/2,.12,.62,roofMat,wallMat,.06);
+      part(mats.glass,.7,.75,.08,0,H+.62,jetty/2+dz+.71);
+      part(mats.timber,.95,.1,.12,0,H+1.03,jetty/2+dz+.74);
+    }
+    if(isPlaster&&!timbered&&R(16)>.35) {
+      // Dressed stone quoins at the front corners of rendered houses.
+      for(let y=.7,k=0;y<H-.3;y+=.34,k++) for(const s of [-1,1]) {
+        const w=k%2?.28:.46,z=y<groundH?front:upperFront;
+        part(mats.stone,w,.3,.08,s*(f/2-w/2+.02),y,z+.03);
+      }
+    }
+    if(shop) {
+      // Hanging trade sign on an iron-dark bracket.
+      const sx=(R(17)>.5?1:-1)*(f/2-.35);
+      part(mats.timber,.07,.07,1.1,sx,3.95,upperFront+.55);
+      part(signMats[Math.floor(R(18)*signMats.length)],.06,.62,.78,sx,3.5,upperFront+.72);
+    }
+    if(R(19)>.62) for(let b=0;b<bays;b++) {
+      // Window boxes of geraniums on the first floor.
+      if(floors<2)break;
+      const x=-f/2+bw*(b+.5),y=groundH+.8;
+      part(mats.wood,.92,.2,.26,x,y,upperFront+.17);
+      part(R(20+b)>.5?mats.flowers:mats.flowersPale,.84,.16,.2,x,y+.16,upperFront+.17);
+    }
     if(R(11)>.5) {
-      const cx=(R(12)>.5?1:-1)*(f/2-.55),ch=rise+1.5;
+      const cx=(R(12)>.5?1:-1)*(f/2-.55),ch=(gableFront?gableRise*.5:rise)+1.5;
       part(mats.stoneDark,.75,ch,.95,cx,H+ch/2-.2,-span*.3);
       part(mats.stone,.95,.16,1.15,cx,H+ch-.12,-span*.3);
     }
@@ -913,10 +999,19 @@
     if(!b)continue;
     const t=hash(i*87),x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t;
     const near=map(x,y),dir=map(b[0],b[1]).subtract(map(a[0],a[1])).normalize();
-    const side=i%2?1:-1,normal=new BABYLON.Vector3(dir.z,0,-dir.x).scale(side*(road.width/2+1.2));
-    const at=near.add(normal);
-    const lamp=box('street lantern post '+i,.17,4.4,.17,at.add(new BABYLON.Vector3(0,2.2,0)),mats.timber);
-    box('street lantern glass '+i,.52,.75,.52,at.add(new BABYLON.Vector3(0,4.6,0)),mats.lantern);
+    // Bridge lanterns stand on the parapet; street lanterns on the kerb, clear of houses.
+    const bridge=isBridge(road),side=i%2?1:-1;
+    const across=new BABYLON.Vector3(dir.z,0,-dir.x).scale(side);
+    const at=near.add(across.scale(bridge?road.width/2+.27:road.width/2+1.2));
+    const q=pct(at);
+    if(!bridge&&(!inside(q.x,q.y,islandOutline)||collisions.some(c=>hitsCollider(c,at.x,at.z,.35))))continue;
+    const base=bridge?.04+bridgeRiseAt(x,y)+1.15:0,height=bridge?2.6:4.2;
+    const yaw=Math.atan2(-across.x,-across.z);
+    const lx=(u,v,w)=>at.add(new BABYLON.Vector3(-across.x*u,v,-across.z*u)).add(new BABYLON.Vector3(0,base,0));
+    box('street lantern post '+i,.16,height,.16,lx(0,height/2,0),mats.timber);
+    box('lantern bracket '+i,.08,.08,.8,lx(.36,height-.12,0),mats.timber).rotation.y=yaw;
+    box('street lantern glass '+i,.28,.4,.28,lx(.7,height-.45,0),mats.lantern);
+    box('lantern cap '+i,.38,.08,.38,lx(.7,height-.22,0),mats.timber);
   }
 
   const keys=new Set();
@@ -1138,6 +1233,9 @@
   }
   function blocked(v) {
     if(!isWalkable(v))return true;
+    // Street life (people, moving carts) blocks the player too; basctdelm-life.js supplies it.
+    const moving=window.BasctdelmWalk&&window.BasctdelmWalk.dynamicBlocked;
+    if(moving&&moving(v.x,v.z,camera.position.x,camera.position.z))return true;
     return collisions.some(c=>hitsCollider(c,v.x,v.z,.6));
   }
   function updateWalk(delta) {
