@@ -4,6 +4,9 @@
  */
 (function () {
   'use strict';
+  // The city builds asynchronously (it waits for the building kit), so start once it is ready.
+  if (window.BasctdelmWalk) run(); else window.addEventListener('basctdelm-ready', run, { once: true });
+  function run() {
   const W = window.BasctdelmWalk;
   if (!W || !window.BABYLON) return;
   const { scene, shadows, collisions, hitsCollider, roadLines, roadClearance, hash, mats, pct } = W;
@@ -13,11 +16,13 @@
   let seedCounter = 1;
   const rnd = () => hash(seedCounter++ * 1.618);
 
-  function prepare(mesh) {
+  // Static things join the city's render-once shadow map; moving ones (people,
+  // horses, travelling carts) get soft contact shadows instead.
+  function prepare(mesh, cast = true) {
     mesh.isPickable = false;
     mesh.receiveShadows = true;
     mesh.alwaysSelectAsActiveMesh = true;
-    shadows.addShadowCaster(mesh, false);
+    if (cast || !W.staticShadows) shadows.addShadowCaster(mesh, false);
     return mesh;
   }
   function freeAt(x, z, radius) {
@@ -34,10 +39,10 @@
   const iron = new BABYLON.StandardMaterial('cart ironwork', scene);
   iron.diffuseColor = rgb('#2c2c2c'); iron.specularColor = rgb('#303030');
   const WHEEL_Y = .55, WHEEL_X = .76, WHEEL_Z = -.1, WHEEL_R = .54;
-  function merged(parts, name) {
+  function merged(parts, name, cast = true) {
     const mesh = BABYLON.Mesh.MergeMeshes(parts, true, true, undefined, false, true);
     mesh.name = name;
-    return prepare(mesh);
+    return prepare(mesh, cast);
   }
   const box = (w, h, d) => BABYLON.MeshBuilder.CreateBox('cart part', { width: w, height: h, depth: d }, scene);
   function part(parts, mesh, mat, x, y, z, rx = 0, rz = 0) {
@@ -53,7 +58,7 @@
   }
   // Hand carts have shafts sloping to the cobbles; horse carts carry them
   // level at the horse's flanks, reaching forward past its shoulders.
-  function buildCart(horse, wheels, name) {
+  function buildCart(horse, wheels, name, cast = true) {
     const parts = [];
     part(parts, box(1.3, .1, 2), mats.wood, 0, .78, 0);
     for (const s of [-1, 1]) {
@@ -65,12 +70,12 @@
     }
     const axle = BABYLON.MeshBuilder.CreateCylinder('cart axle', { diameter: .08, height: 1.6, tessellation: 8 }, scene);
     part(parts, axle, iron, 0, WHEEL_Y, WHEEL_Z, 0, Math.PI / 2);
-    return merged(parts, name);
+    return merged(parts, name, cast);
   }
   function buildWheel() {
     const parts = [];
     wheelParts(parts, 0, 0, 0);
-    return merged(parts, 'rolling cart wheels');
+    return merged(parts, 'rolling cart wheels', false);
   }
 
   // --------------------------------------------------------------- horses
@@ -83,7 +88,7 @@
     mat.diffuseColor = new BABYLON.Color3(.9, .9, .9); mat.specularColor = rgb('#1c1c1c');
     mesh.material = mat; mesh.name = 'horse ' + name;
     mesh.thinInstanceRegisterAttribute('color', 4);
-    return prepare(mesh);
+    return prepare(mesh, false);
   }
   const RX = a => M.RotationX(a);
   const H = {
@@ -192,7 +197,7 @@
   const travellers = [];
   const rolling = {};
   function driveCarts() {
-    rolling.body = buildCart(true, false, 'travelling horse carts');
+    rolling.body = buildCart(true, false, 'travelling horse carts', false);
     rolling.wheel = buildWheel();
     roadLines.forEach(({ road, line, bridge }, ri) => {
       if (bridge || road.width < 4.1) return;
@@ -289,6 +294,7 @@
       }
     });
     (W.extraProps || []).forEach(e => { const prop = props[e.kind]; if (prop) put(prop, e.x, e.y || 0, e.z, e.yaw || 0, false); });
+    if (W.refreshShadows) setTimeout(W.refreshShadows, 50);
     // Beside every market stall.
     W.stalls.forEach((s, i) => {
       for (const [dx, dz, prop] of [[1.95, .4, basket], [1.95, -.5, crate], [-1.95, .2, barrel]]) {
@@ -315,7 +321,7 @@
     });
   }
   function loadProps() {
-    const names = { barrel: 'Barrel_01', wine: 'wine_barrel_01', crate: 'wooden_crate_01', bucket: 'wooden_bucket_01', basket: 'wicker_basket_01' };
+    const names = { barrel: 'wine_barrel_01', wine: 'wine_barrel_01', crate: 'wooden_crate_01', bucket: 'wooden_bucket_01', basket: 'wicker_basket_01' };
     Promise.all(Object.entries(names).map(([key, asset]) => loadProp(asset).then(p => [key, p])))
       .then(entries => spread(Object.fromEntries(entries)))
       .catch(error => console.warn('Basctdelm props could not load:', error));
@@ -335,7 +341,7 @@
     mat.diffuseColor = new BABYLON.Color3(.95, .95, .95); mat.specularColor = rgb('#0d0d0d');
     mesh.material = mat; mesh.name = 'townsfolk ' + name;
     mesh.thinInstanceRegisterAttribute('color', 4);
-    return prepare(mesh);
+    return prepare(mesh, false);
   }
   const MB = BABYLON.MeshBuilder, down = d => M.Translation(0, -d, 0);
   const P = {
@@ -603,7 +609,7 @@
     parts.forEach(m => {
       m.bakedVertexAnimationManager = manager;
       m.alwaysSelectAsActiveMesh = true; m.receiveShadows = true;
-      shadows.addShadowCaster(m, false);
+      if (!W.staticShadows) shadows.addShadowCaster(m, false);
     });
     return { name, mesh, parts, manager, ranges, inv: mesh.computeWorldMatrix(true).clone().invert(), members: [] };
   }
@@ -655,6 +661,35 @@
       v.manager.time += dt;
     }
   }
+  // ------------------------------------------------ contact shadows
+  // A soft dark disc under everyone and everything that moves.
+  const blobTex = new BABYLON.DynamicTexture('contact shadow', { width: 64, height: 64 }, scene, false);
+  (() => { const g = blobTex.getContext(), grad = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+    grad.addColorStop(0, 'rgba(0,0,0,.62)'); grad.addColorStop(.55, 'rgba(0,0,0,.34)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = grad; g.fillRect(0, 0, 64, 64); blobTex.update(); })();
+  blobTex.hasAlpha = true;
+  const blobMat = new BABYLON.StandardMaterial('contact shadow', scene);
+  blobMat.diffuseColor = BABYLON.Color3.Black(); blobMat.specularColor = BABYLON.Color3.Black();
+  blobMat.opacityTexture = blobTex; blobMat.disableLighting = true; blobMat.zOffset = -2;
+  const blob = BABYLON.MeshBuilder.CreateGround('contact shadows', { width: 1, height: 1 }, scene);
+  blob.material = blobMat; blob.isPickable = false; blob.alwaysSelectAsActiveMesh = true;
+  let blobData = null;
+  const bm = new M();
+  function writeBlob(i, x, y, z, sx, sz, yaw) {
+    M.ComposeToRef(new V3(sx, 1, sz), Q.RotationYawPitchRoll(yaw, 0, 0), new V3(x, y + .035, z), bm);
+    bm.copyToArray(blobData, i * 16);
+  }
+  function drawBlobs() {
+    if (!blobData) {
+      blobData = new Float32Array((people.length + horses.length + travellers.length) * 16);
+      blob.thinInstanceSetBuffer('matrix', blobData, 16, false);
+    }
+    let i = 0;
+    for (const p of people) writeBlob(i++, p.x, p.drawY || 0, p.z, .95 * p.scale, .95 * p.scale, 0);
+    for (const h of horses) { const t = h.root.getTranslation(); writeBlob(i++, t.x, t.y, t.z, 1.25, 2.9, Math.atan2(h.root.m[8], h.root.m[10])); }
+    for (const c of travellers) writeBlob(i++, c.x, 0, c.z, 1.9, 2.8, c.yaw || 0);
+    blob.thinInstanceBufferUpdated('matrix');
+  }
   const camFar = 70 * 70;
   function animate() {
     if (W.isAerial()) return;
@@ -672,6 +707,7 @@
     if (RIG.ready) drawRigged(dt); else for (const part in P) P[part].thinInstanceBufferUpdated('matrix');
     for (const h of horses) { if (!h.moving) h.phase += dt; poseHorse(h); }
     for (const part in H) H[part].thinInstanceBufferUpdated('matrix');
+    drawBlobs();
   }
 
   parkCarts();
@@ -696,4 +732,5 @@
   // The rigged cast streams in after the city is on screen.
   setTimeout(loadRigged, 400);
   W.life = { people, carts, horses, travellers, rig: RIG };
+  }
 })();

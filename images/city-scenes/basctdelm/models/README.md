@@ -4,7 +4,6 @@ These 1K glTF models are from [Poly Haven](https://polyhaven.com/), released und
 
 | Folder | Source |
 | --- | --- |
-| `Barrel_01/` | https://polyhaven.com/a/Barrel_01 |
 | `wine_barrel_01/` | https://polyhaven.com/a/wine_barrel_01 |
 | `wooden_crate_01/` | https://polyhaven.com/a/wooden_crate_01 |
 | `wooden_bucket_01/` | https://polyhaven.com/a/wooden_bucket_01 |

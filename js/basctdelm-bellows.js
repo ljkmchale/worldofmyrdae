@@ -12,6 +12,9 @@
  */
 (function () {
   'use strict';
+  // The city builds asynchronously (it waits for the building kit), so start once it is ready.
+  if (window.BasctdelmWalk) run(); else window.addEventListener('basctdelm-ready', run, { once: true });
+  function run() {
   const W = window.BasctdelmWalk;
   if (!W || !window.BABYLON) return;
   const { scene, camera, map, hash, mats, collisions, hitsCollider, roadClearance, shadows } = W;
@@ -358,6 +361,8 @@
   const coolFill = new BABYLON.HemisphericLight('Bellows cavern fill', new V3(0, 1, 0), scene);
   coolFill.diffuse = rgb('#4f6385'); coolFill.groundColor = rgb('#0c1016'); coolFill.intensity = .75;
   coolFill.includedOnlyMeshes = bellowsMeshes;
+  const glowLayer0 = W.glow;
+  if (glowLayer0) bellowsMeshes.filter(m => m.material === lamp || m.material === glow).forEach(m => glowLayer0.addIncludedOnlyMesh(m));
   mirror.renderList = bellowsMeshes.filter(m => m !== water && !mists.some(x => x.m === m));
 
   // ------------------------------------------- townsfolk, carriage, cargo
@@ -443,7 +448,7 @@
   const glowLayer = scene.effectLayers && scene.effectLayers.find(l => l.name === 'lantern glow');
   let saved = null, busy = false;
   const setBellowsVisible = on => bellowsMeshes.forEach(m => m.setEnabled(on));
-  const surfaceStatic = () => (W.cityMeshes || []).concat(W.decor || [], scene.meshes.filter(m => /sky|Dibaryn|original map/.test(m.name)));
+  const surfaceStatic = () => (W.cityMeshes || []).concat(W.decor || [], W.kitMeshes || [], scene.meshes.filter(m => /sky|Dibaryn|original map/.test(m.name)));
   setBellowsVisible(false);
   bellowsLights.forEach(l => l.setEnabled(false)); coolFill.setEnabled(false);
 
@@ -495,4 +500,5 @@
     } else if (camera.position.z - origin.z < LEAD_END + .6) exitBellows(false);
   });
   W.bellows = { enter: enterBellows, exit: exitBellows, portal, origin, FLOOR };
+  }
 })();

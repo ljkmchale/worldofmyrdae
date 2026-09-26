@@ -2,7 +2,7 @@
  * All plan points below are percentages of basctdelm.png, which keeps streets,
  * walls, shorelines, bridges and gazetteer pins aligned with the source artwork.
  */
-(function () {
+(async function () {
   'use strict';
   const navigation = window.BasctdelmNavigation;
   const MAP_WIDTH = navigation.WIDTH;
@@ -953,6 +953,143 @@
       }
     });
   }
+  // ------------------------------------------------ Blender building kit
+  // scripts/blender/build_kit.py exports every house piece (stone, brick and
+  // rendered ground floors; timber-framed and masonry upper floors; jetties,
+  // tiled roofs, gables, oriels, chimneys) with baked ambient occlusion into
+  // one glTF. Houses are assembled from those pieces exactly as the Blender
+  // preview does, in Blender's frame (facade on y = 0 facing -Y, bays along
+  // +X, Z up), and every piece is drawn as thin instances:
+  // one instanced draw per piece type across the whole city.
+  const KIT_DIR='images/city-scenes/basctdelm/kit/',KIT_BAY=2.4,KIT_GROUND=3.4,KIT_FLOOR=2.9,KIT_CHUNK=60;
+  let kit=null;
+  const pickBays=seed=>{const r=hash(seed*1.9+.3);return r<.1?1:r<.68?2:3;};
+  async function loadKit() {
+    try {
+      const res=await BABYLON.SceneLoader.ImportMeshAsync('',KIT_DIR,'basctdelm-kit.glb',scene);
+      const pieces={};
+      // Blender (x, y, z) -> glTF (x, z, -y): the exporter's conversion, applied before each mesh's own matrix.
+      const G=BABYLON.Matrix.FromValues(1,0,0,0, 0,0,-1,0, 0,1,0,0, 0,0,0,1),Ginv=G.clone().invert();
+      res.meshes.forEach(m=>{
+        m.isPickable=false;
+        if(!m.getTotalVertices())return;
+        const name=m.name.replace(/_primitive\d+$/,'');
+        (pieces[name]=pieces[name]||[]).push(m);
+        const R=m.computeWorldMatrix(true).clone();
+        m.metadata={kit:true,R,Rinv:R.clone().invert()};
+        m.setEnabled(false);
+      });
+      res.transformNodes.forEach(n=>{n.metadata={kit:true};});
+      return {pieces,G,Ginv,chunks:new Map(),missing:new Set()};
+    } catch(e) {
+      console.warn('Building kit unavailable; using procedural houses:',e);
+      return null;
+    }
+  }
+  const kitOrigin=new BABYLON.Vector3();
+  function kitInstance(name,B,H) {
+    const list=kit.pieces[name];
+    if(!list){kit.missing.add(name);return;}
+    for(const m of list) {
+      const I=kit.Ginv.multiply(B).multiply(kit.G).multiply(m.metadata.R).multiply(H).multiply(m.metadata.Rinv);
+      const id=m.uniqueId;
+      if(!kit.chunks.has(id))kit.chunks.set(id,{src:m,mats:[]});
+      const a=new Float32Array(16);I.copyToArray(a);kit.chunks.get(id).mats.push(a);
+    }
+  }
+  function finishKit() {
+    const out=[];
+    kit.chunks.forEach(e=>{
+      // One instanced draw per piece for the whole city: splitting into districts
+      // multiplied draw calls (and every shadow pass) far more than culling saved.
+      const c=e.src;
+      c.setEnabled(true);c.metadata={kit:true};c.isPickable=false;c.receiveShadows=true;
+      const buf=new Float32Array(e.mats.length*16);e.mats.forEach((a,i)=>buf.set(a,i*16));
+      c.thinInstanceSetBuffer('matrix',buf,16,true);
+      c.thinInstanceRefreshBoundingInfo(false);
+      out.push(c);
+    });
+    if(kit.missing.size)console.warn('Kit pieces missing:',[...kit.missing]);
+    return out;
+  }
+  const kitPlaster={white:()=>mats.plasterLight,ochre:()=>mats.plasterOchre,rose:()=>mats.plasterRose,worn:()=>mats.plasterGrey};
+  function kitHouse(center,yaw,bays,D,zone,seed,floors) {
+    const R=k=>hash(seed*7.13+k*1.7),pickR=(a,r)=>a[Math.floor(r*a.length)%a.length];
+    const W=bays*KIT_BAY;
+    const style=zone==='trade'?(R(1)<.45?'brick':R(1)<.8?'timber':'render')
+      :zone==='high'?(R(1)<.5?'stone':R(1)<.75?'render':'timber')
+      :zone==='north'?(R(1)<.4?'stone':'timber')
+      :zone==='central'?pickR(['timber','timber','stone','render','brick'],R(1))
+      :(R(1)<.72?'timber':'render');
+    const pk=pickR(['white','ochre','rose','worn'],R(2)),pk2=pk==='ochre'?'ochre':'white';
+    // Blender house frame -> the web frame (front at z = +D/2) -> the street.
+    const H=BABYLON.Matrix.Translation(W/2,0,D/2).multiply(BABYLON.Matrix.RotationY(yaw)).multiply(BABYLON.Matrix.Translation(center.x,0,center.z));
+    const put=(name,x,y,z,rz=0,sx=1,sy=1,sz=1)=>kitInstance(name,
+      BABYLON.Matrix.Scaling(sx,sy,sz).multiply(BABYLON.Matrix.RotationZ(rz)).multiply(BABYLON.Matrix.Translation(x,y,z)),H);
+    const groundMat={brick:'brick',stone:'stone',render:'plaster',timber:'stone'}[style];
+    const door=Math.floor(R(3)*bays),kinds=[];
+    for(let b=0;b<bays;b++) {
+      const shopZone=zone==='trade'||zone==='central'||zone==='lower';
+      const kind=b===door?'door':R(10+b)<(shopZone?.55:.22)?'shop':'window';
+      kinds.push(kind);
+      if(style==='timber'&&kind!=='window'&&R(20+b)<.5)put(`GT_${kind}_${pk2}`,b*KIT_BAY,0,0);
+      else put(`G_${kind}_${groundMat}`,b*KIT_BAY,0,0);
+    }
+    let z=KIT_GROUND,front=0;
+    const jet=style==='timber'&&floors>1&&R(4)<.75;
+    const oriel=(style==='timber'||style==='stone')&&floors>1&&R(5)<.3?Math.floor(R(6)*bays):-1;
+    for(let k=1;k<floors;k++) {
+      if(jet){front-=.45;for(let b=0;b<bays;b++)put('JETTY',b*KIT_BAY,front+.45,z);}
+      for(let b=0;b<bays;b++) {
+        let name;
+        if(style==='timber') name=`UT_${pickR(['cross','close','herring'],R(30+k))}_${R(40+k*5+b)<.82?'win':'solid'}_${pk}`;
+        else if(R(50+k*5+b)<.1) name=`US_${{stone:'stone',brick:'brick',render:'white'}[style]}_none`;
+        else name={stone:'US_stone_cross',brick:'US_brick_lancet',render:`US_${pk2}_small`}[style];
+        put(name,b*KIT_BAY,front,z);
+        if(k===1&&b===oriel)put(`ORIEL_${pk2}`,b*KIT_BAY+.3,front,z+.45);
+      }
+      z+=KIT_FLOOR;
+    }
+    const dRoof=D-front;
+    const roof=style==='stone'||zone==='high'?(R(7)<.75?'ROOF_slate':'ROOF_tile'):(R(7)<.72?'ROOF_tile':'ROOF_slate');
+    const gableFront=(style==='brick'&&bays>1)||R(8)<({timber:.45,stone:.45,render:.15,brick:0}[style]);
+    if(gableFront) {
+      const s=W/8;
+      for(let i=0;i<Math.ceil(dRoof/KIT_BAY);i++)put(roof,W,front+i*KIT_BAY,z,Math.PI/2,1,s,s);
+      if(style==='brick')put(`STEP_${bays===2?4.8:7.2}`,0,front-.06,z);
+      else put(style==='stone'?'GABLE_stone':`GABLE_timber_${pk}`,0,front,z,0,s,1,s);
+    } else {
+      const s=dRoof/8;
+      for(let b=0;b<bays;b++)put(roof,b*KIT_BAY,front,z,0,1,s,s);
+      const g=style==='stone'||style==='brick'?'GABLE_stone':`GABLE_timber_${pk}`;
+      put(g,0,front,z,Math.PI/2,s,1,s);put(g,W,front,z,Math.PI/2,s,1,s);
+    }
+    if(R(9)<.85)put(`CHIMNEY_${style==='brick'?'brick':'stone'}`,W*(R(11)<.5?.2:.8),D*.62,z+1.2);
+    // Side and back walls in the web frame (Blender depth y becomes web z = D/2 - y).
+    const cos=Math.cos(yaw),sin=Math.sin(yaw);
+    const at=(x,y,zz)=>new BABYLON.Vector3(center.x+x*cos+zz*sin,y,center.z-x*sin+zz*cos);
+    const upperMat={timber:kitPlaster[pk](),render:kitPlaster[pk](),stone:mats.stone,brick:mats.brick}[style];
+    const lowerMat=style==='brick'?mats.brick:style==='render'?kitPlaster[pk]():mats.stone;
+    for(const sd of [-1,1]) {
+      addBox(lowerMat,.3,KIT_GROUND,D,at(sd*(W/2-.15),KIT_GROUND/2,0),yaw);
+      if(z>KIT_GROUND)addBox(upperMat,.3,z-KIT_GROUND,D-front-.2,at(sd*(W/2-.15),(z+KIT_GROUND)/2,-(front+.2)/2),yaw);
+    }
+    addBox(upperMat,W,z,.3,at(0,z/2,-D/2+.15),yaw);
+    // A hanging trade sign over the first shop, perpendicular to the street.
+    const shopBay=kinds.indexOf('shop');
+    if(shopBay>=0) {
+      const sx=W/2-(shopBay*KIT_BAY+.35),fz=D/2-front;
+      addBox(mats.timber,.07,.07,1.1,at(sx,3.95,fz+.55),yaw);
+      const trades=['bread','boot','key','fish','candle','scroll','mug','hammer'];
+      placeDecor(iconSigns[trades[Math.floor(R(18)*trades.length)]],at(sx,3.55,fz+.78),yaw-Math.PI/2);
+    }
+    collisions.push({x:center.x,z:center.z,hw:W/2+.03,hd:D/2+.08,yaw,kind:'house',h:z});
+    buildingCount++;
+  }
+  const raiseHouse=(center,yaw,bays,D,zone,seed,floors)=>kit
+    ?kitHouse(center,yaw,bays,D,zone,seed,floors)
+    :house(center,yaw,bays*KIT_BAY,D,zone,seed,floors);
+
   function streetFrontage() {
     roadLines.forEach(({road,line,bridge},ri)=>{
       if(bridge) return;
@@ -968,13 +1105,13 @@
         let s=3,seed=ri*977+(side>0?500:0),row=0;
         while(s<total-3) {
           seed++;
-          const f=4.3+hash(seed)*2.6,D=6.8+hash(seed+.5)*2.6;
+          const bays=pickBays(seed),f=bays*KIT_BAY,D=[7,8,9][Math.floor(hash(seed+.5)*3)];
           const {p,t}=sample(s+f/2),across=new BABYLON.Vector3(t.z,0,-t.x).scale(side);
           const center=p.add(across.scale(road.width/2+1.7+D/2));
           const facing=across.scale(-1),yaw=Math.atan2(facing.x,facing.z);
           const zone=(districts.find(d=>inside(pct(center).x,pct(center).y,d.poly))||{style:'south'}).style;
           if(footprintClear(center,yaw,f,D,1.5)) {
-            house(center,yaw,f,D,zone,seed,floorsFor(zone,seed));
+            raiseHouse(center,yaw,bays,D,zone,seed,floorsFor(zone,seed));
             // An occasional narrow alley breaks up longer terraces.
             const alley=++row>4&&hash(seed+.9)<.16;
             if(alley)row=0;
@@ -994,9 +1131,9 @@
       if(!inside(x,y,islandOutline)) continue;
       const center=map(x,y),road=nearestRoad(x,y),toward=map(road.x,road.y).subtract(center);
       const yaw=Math.atan2(toward.x,toward.z)+(hash(seed+3)-.5)*.2;
-      const f=5+hash(seed+4)*3,D=6+hash(seed+5)*3;
+      const bays=pickBays(seed+4),f=bays*KIT_BAY,D=[7,8,9][Math.floor(hash(seed+5)*3)];
       const zone=(districts.find(d=>inside(x,y,d.poly))||{style:'south'}).style;
-      if(footprintClear(center,yaw,f,D,2.2)) house(center,yaw,f,D,zone,seed+9000,Math.max(1,floorsFor(zone,seed)-(hash(seed+6)<.5?1:0)));
+      if(footprintClear(center,yaw,f,D,2.2)) raiseHouse(center,yaw,bays,D,zone,seed+9000,Math.max(1,floorsFor(zone,seed)-(hash(seed+6)<.5?1:0)));
     }
   }
   // Stone well-heads with a timber winding frame in the more open squares.
@@ -1024,10 +1161,10 @@
     (window.BASCTDELM_ROOFS || []).forEach(([bx,by,zone],seed)=>{
       if(nearestRoad(bx,by).distance<2.55) return;
       const center=map(bx,by),large=zone==='high'||zone==='north';
-      const f=(large?6.4:4.8)+hash(seed+1)*2.4,D=(large?6.2:5.4)+hash(seed+2)*2.2;
+      const bays=large?3:pickBays(seed+1),f=bays*KIT_BAY,D=[7,8,9][Math.floor(hash(seed+2)*3)];
       const road=nearestRoad(bx,by),toward=map(road.x,road.y).subtract(center);
       const yaw=Math.atan2(toward.x,toward.z)+(hash(seed+5)-.5)*.14;
-      if(footprintClear(center,yaw,f,D,1.2)) house(center,yaw,f,D,zone,seed+4000,Math.max(1,floorsFor(zone,seed)-1));
+      if(footprintClear(center,yaw,f,D,1.2)) raiseHouse(center,yaw,bays,D,zone,seed+4000,Math.max(1,floorsFor(zone,seed)-1));
     });
   }
 
@@ -1326,7 +1463,9 @@
     sail.rotation.y=hull.rotation.y;
   }
 
-  // Landmarks are all placed, so houses can now fill in around them.
+  // Landmarks are all placed, so houses can now fill in around them —
+  // from the Blender building kit when it loads, procedurally otherwise.
+  kit = await loadKit();
   streetFrontage();
   backLots();
   wells();
@@ -1441,7 +1580,7 @@
       mesh.thinInstanceBufferUpdated('matrix');mesh.receiveShadows=true;
     });
     scene.meshes.slice().forEach(mesh=>{
-      if(standalone.has(mesh)||!(mesh instanceof BABYLON.Mesh)||!mesh.material||mesh.material===mats.water||!mesh.getTotalVertices())return;
+      if(standalone.has(mesh)||(mesh.metadata&&mesh.metadata.kit)||!(mesh instanceof BABYLON.Mesh)||!mesh.material||mesh.material===mats.water||!mesh.getTotalVertices())return;
       if(!groups.has(mesh.material))groups.set(mesh.material,[]);
       groups.get(mesh.material).push(mesh);
     });
@@ -1467,18 +1606,22 @@
     });
     return merged;
   }
+  const kitMeshes=kit?finishKit():[];
   const cityMeshes=finishCity();
   const flatGround=new Set([mats.earth,mats.park,mats.paving,mats.bridge,mats.grassBlade,mats.flagstone,mats.gutter,mats.courtyard]);
-  const shadows=engine.webGLVersion>=2&&BABYLON.CascadedShadowGenerator
-    ?new BABYLON.CascadedShadowGenerator(2048,sun):new BABYLON.ShadowGenerator(2048,sun);
-  if(shadows instanceof BABYLON.CascadedShadowGenerator) {
-    shadows.numCascades=4;shadows.lambda=.86;shadows.shadowMaxZ=240;
-    shadows.stabilizeCascades=true;shadows.cascadeBlendPercentage=.06;shadows.depthClamp=true;
-  }
+  // The sun and the city never move, so their shadows are drawn once into a
+  // single 4K map covering the island rather than into four cascades every
+  // frame. Moving people, horses and carts get soft contact shadows instead
+  // (basctdelm-life.js); W.refreshShadows() redraws the map if statics change.
+  const shadows=new BABYLON.ShadowGenerator(4096,sun);
+  sun.autoUpdateExtends=true;sun.autoCalcShadowZBounds=true;
   shadows.usePercentageCloserFiltering=true;
-  shadows.filteringQuality=BABYLON.ShadowGenerator.QUALITY_MEDIUM;
-  shadows.bias=.0025;shadows.normalBias=.018;shadows.darkness=0;
+  shadows.filteringQuality=BABYLON.ShadowGenerator.QUALITY_HIGH;
+  shadows.bias=.0006;shadows.normalBias=.02;shadows.darkness=0;
+  shadows.getShadowMap().refreshRate=BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
+  const refreshShadows=()=>shadows.getShadowMap().resetRefreshCounter();
   decor.forEach(mesh=>{if(mesh.isEnabled())shadows.addShadowCaster(mesh,false);});
+  kitMeshes.forEach(mesh=>shadows.addShadowCaster(mesh,false));
   cityMeshes.forEach(mesh=>{
     mesh.receiveShadows=true;
     if(!flatGround.has(mesh.material))shadows.addShadowCaster(mesh,false);
@@ -1498,6 +1641,8 @@
   grade.imageProcessing.contrast=1.14;grade.imageProcessing.exposure=1.0;
   grade.imageProcessing.vignetteEnabled=true;grade.imageProcessing.vignetteWeight=1.6;
   grade.imageProcessing.vignetteColor=new BABYLON.Color4(.05,.03,.02,0);
+  // Only lamps glow: letting the glow pass draw the whole city cost a full extra render.
+  scene.meshes.filter(m=>m.material===mats.lantern||m.material===mats.gold).forEach(m=>glow.addIncludedOnlyMesh(m));
   // Measured when the view switches, so street life added later hides too.
   let streetMeshes=[];
   ground.setEnabled(false);
@@ -1669,10 +1814,24 @@
   window.addEventListener('resize',()=>engine.resize());
   const reveal=()=>document.getElementById('loading').classList.add('done');
   scene.executeWhenReady(reveal);
+  // Static city and kit materials never change once compiled: freezing them
+  // skips per-frame uniform checks (≈15% of frame time with ~350 draws).
+  scene.executeWhenReady(()=>setTimeout(()=>{
+    const frozen=new Set();
+    kitMeshes.concat(cityMeshes).forEach(m=>{if(m.material&&!frozen.has(m.material)){m.material.freeze();frozen.add(m.material);}});
+  },1500));
   // Babylon can keep an off-screen material in its pending list indefinitely.
   // Keep the street playable once the first render has had time to settle.
   setTimeout(reveal,5000);
   updateHud();
-  window.BasctdelmWalk={scene,camera,roads,districts,goTo,setAerial,isAerial:()=>aerial,
+  window.BasctdelmWalk={kitMeshes,staticShadows:true,refreshShadows,glow,scene,camera,roads,districts,goTo,setAerial,isAerial:()=>aerial,
     cityMeshes,decor,roadLines,roadClearance,collisions,hitsCollider,blocked,shadows,map,pct,hash,bridgeRiseAt,mats,stalls,docks,pinPoints,EYE_HEIGHT};
-})();
+  window.dispatchEvent(new Event('basctdelm-ready'));
+})().catch(e => {
+  document.getElementById('loading').classList.add('done');
+  const panel = document.getElementById('error');
+  panel.textContent = 'The city scene could not finish loading: ' + (e && e.message || e);
+  panel.style.display = 'block';
+  console.error(e);
+});
+

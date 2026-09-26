@@ -1,0 +1,474 @@
+{
+ "bay": 2.4,
+ "groundH": 3.4,
+ "floorH": 2.9,
+ "pitchDeg": 50.0,
+ "roofDepth": 8.0,
+ "gableDepth": 8.0,
+ "pieces": {
+  "G_door_stone": {
+   "dims": [
+    2.42,
+    1.0,
+    3.4
+   ],
+   "tris": 1080
+  },
+  "G_door_brick": {
+   "dims": [
+    2.42,
+    1.0,
+    3.4
+   ],
+   "tris": 1080
+  },
+  "G_door_plaster": {
+   "dims": [
+    2.42,
+    1.0,
+    3.4
+   ],
+   "tris": 1080
+  },
+  "G_window_stone": {
+   "dims": [
+    2.42,
+    0.67,
+    3.4
+   ],
+   "tris": 1040
+  },
+  "G_window_brick": {
+   "dims": [
+    2.42,
+    0.67,
+    3.4
+   ],
+   "tris": 1040
+  },
+  "G_window_plaster": {
+   "dims": [
+    2.42,
+    0.67,
+    3.4
+   ],
+   "tris": 1040
+  },
+  "G_shop_stone": {
+   "dims": [
+    2.42,
+    0.9,
+    3.7
+   ],
+   "tris": 640
+  },
+  "G_shop_brick": {
+   "dims": [
+    2.42,
+    0.9,
+    3.7
+   ],
+   "tris": 640
+  },
+  "G_shop_plaster": {
+   "dims": [
+    2.42,
+    0.9,
+    3.7
+   ],
+   "tris": 640
+  },
+  "GT_door_white": {
+   "dims": [
+    2.4,
+    0.7,
+    3.4
+   ],
+   "tris": 556
+  },
+  "GT_door_ochre": {
+   "dims": [
+    2.4,
+    0.7,
+    3.4
+   ],
+   "tris": 556
+  },
+  "GT_shop_white": {
+   "dims": [
+    2.4,
+    1.17,
+    3.4
+   ],
+   "tris": 560
+  },
+  "GT_shop_ochre": {
+   "dims": [
+    2.4,
+    1.17,
+    3.4
+   ],
+   "tris": 560
+  },
+  "UT_cross_win_white": {
+   "dims": [
+    2.422,
+    0.27,
+    2.92
+   ],
+   "tris": 780
+  },
+  "UT_cross_win_ochre": {
+   "dims": [
+    2.422,
+    0.27,
+    2.92
+   ],
+   "tris": 780
+  },
+  "UT_cross_win_rose": {
+   "dims": [
+    2.422,
+    0.27,
+    2.92
+   ],
+   "tris": 780
+  },
+  "UT_cross_win_worn": {
+   "dims": [
+    2.422,
+    0.27,
+    2.92
+   ],
+   "tris": 780
+  },
+  "UT_cross_solid_white": {
+   "dims": [
+    2.409,
+    0.22,
+    2.92
+   ],
+   "tris": 408
+  },
+  "UT_cross_solid_ochre": {
+   "dims": [
+    2.409,
+    0.22,
+    2.92
+   ],
+   "tris": 408
+  },
+  "UT_cross_solid_rose": {
+   "dims": [
+    2.409,
+    0.22,
+    2.92
+   ],
+   "tris": 408
+  },
+  "UT_cross_solid_worn": {
+   "dims": [
+    2.409,
+    0.22,
+    2.92
+   ],
+   "tris": 408
+  },
+  "UT_close_win_white": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 824
+  },
+  "UT_close_win_ochre": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 824
+  },
+  "UT_close_win_rose": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 824
+  },
+  "UT_close_win_worn": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 824
+  },
+  "UT_close_solid_white": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 320
+  },
+  "UT_close_solid_ochre": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 320
+  },
+  "UT_close_solid_rose": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 320
+  },
+  "UT_close_solid_worn": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 320
+  },
+  "UT_herring_win_white": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 868
+  },
+  "UT_herring_win_ochre": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 868
+  },
+  "UT_herring_win_rose": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 868
+  },
+  "UT_herring_win_worn": {
+   "dims": [
+    2.4,
+    0.27,
+    2.92
+   ],
+   "tris": 868
+  },
+  "UT_herring_solid_white": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 452
+  },
+  "UT_herring_solid_ochre": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 452
+  },
+  "UT_herring_solid_rose": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 452
+  },
+  "UT_herring_solid_worn": {
+   "dims": [
+    2.4,
+    0.22,
+    2.92
+   ],
+   "tris": 452
+  },
+  "US_stone_cross": {
+   "dims": [
+    2.42,
+    0.59,
+    2.9
+   ],
+   "tris": 472
+  },
+  "US_brick_lancet": {
+   "dims": [
+    2.42,
+    0.57,
+    2.9
+   ],
+   "tris": 1044
+  },
+  "US_white_small": {
+   "dims": [
+    2.42,
+    0.57,
+    2.9
+   ],
+   "tris": 340
+  },
+  "US_ochre_small": {
+   "dims": [
+    2.42,
+    0.57,
+    2.9
+   ],
+   "tris": 340
+  },
+  "US_stone_none": {
+   "dims": [
+    2.42,
+    0.5,
+    2.9
+   ],
+   "tris": 56
+  },
+  "US_brick_none": {
+   "dims": [
+    2.42,
+    0.5,
+    2.9
+   ],
+   "tris": 56
+  },
+  "US_white_none": {
+   "dims": [
+    2.42,
+    0.5,
+    2.9
+   ],
+   "tris": 56
+  },
+  "JETTY": {
+   "dims": [
+    2.4,
+    0.81,
+    0.42
+   ],
+   "tris": 264
+  },
+  "ROOF_tile": {
+   "dims": [
+    2.42,
+    8.98,
+    5.733
+   ],
+   "tris": 768
+  },
+  "ROOF_slate": {
+   "dims": [
+    2.42,
+    8.98,
+    5.733
+   ],
+   "tris": 768
+  },
+  "GABLE_timber_white": {
+   "dims": [
+    9.071,
+    0.34,
+    5.429
+   ],
+   "tris": 340
+  },
+  "GABLE_timber_ochre": {
+   "dims": [
+    9.071,
+    0.34,
+    5.429
+   ],
+   "tris": 340
+  },
+  "GABLE_timber_rose": {
+   "dims": [
+    9.071,
+    0.34,
+    5.429
+   ],
+   "tris": 340
+  },
+  "GABLE_timber_worn": {
+   "dims": [
+    9.071,
+    0.34,
+    5.429
+   ],
+   "tris": 340
+  },
+  "GABLE_stone": {
+   "dims": [
+    8.156,
+    0.7,
+    4.896
+   ],
+   "tris": 120
+  },
+  "STEP_4.8": {
+   "dims": [
+    4.92,
+    0.65,
+    3.9
+   ],
+   "tris": 880
+  },
+  "STEP_7.2": {
+   "dims": [
+    7.32,
+    0.65,
+    5.33
+   ],
+   "tris": 880
+  },
+  "CHIMNEY_stone": {
+   "dims": [
+    1.0,
+    1.2,
+    3.88
+   ],
+   "tris": 272
+  },
+  "CHIMNEY_brick": {
+   "dims": [
+    1.0,
+    1.2,
+    3.88
+   ],
+   "tris": 272
+  },
+  "ORIEL_white": {
+   "dims": [
+    2.0,
+    0.935,
+    3.519
+   ],
+   "tris": 616
+  },
+  "ORIEL_ochre": {
+   "dims": [
+    2.0,
+    0.935,
+    3.519
+   ],
+   "tris": 616
+  }
+ }
+}

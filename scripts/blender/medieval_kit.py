@@ -16,6 +16,7 @@ BAY = 2.4
 GROUND_H = 3.4
 FLOOR_H = 2.9
 PITCH = math.radians(50)
+BEVEL_SEGMENTS = 2       # build_kit.py lowers this to 1 for the web
 TEX = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'images', 'city-scenes', 'basctdelm', 'materials')
 
 # ------------------------------------------------------------------ materials
@@ -131,7 +132,7 @@ class Piece:
         for c in cutters:
             mod = obj.modifiers.new('cut', 'BOOLEAN'); mod.operation = 'DIFFERENCE'; mod.solver = 'EXACT'; mod.object = c
         if bevel:
-            bv = obj.modifiers.new('bevel', 'BEVEL'); bv.width = bevel; bv.segments = 2; bv.limit_method = 'ANGLE'
+            bv = obj.modifiers.new('bevel', 'BEVEL'); bv.width = bevel; bv.segments = BEVEL_SEGMENTS; bv.limit_method = 'ANGLE'
             bv.angle_limit = math.radians(40); bv.harden_normals = False
         bpy.context.view_layer.objects.active = obj
         for mod in list(obj.modifiers):
@@ -375,9 +376,9 @@ def gable(name, depth, style='timber', plaster='M_Plaster', over=.12):
     return p.finish(bevel=.01)
 
 
-def chimney(name, h=3.2):
+def chimney(name, h=3.2, mat='M_Stone'):
     p = Piece(name)
-    p.cuboid(-.4, .4, -.5, .5, 0, h, 'M_Brick' if hash(name) % 2 else 'M_Stone')
+    p.cuboid(-.4, .4, -.5, .5, 0, h, mat)
     p.cuboid(-.5, .5, -.6, .6, h, h + .18, 'M_StoneDressed')
     for y in (-.22, .22):
         bmesh.ops.create_cone(p.bm, cap_ends=True, segments=12, radius1=.14, radius2=.11, depth=.5,
