@@ -514,31 +514,33 @@
         curb.material=mats.stoneDark;
         continue;
       }
-      const wallPositions=[],wallUvs=[],wallIndices=[];let along=0;
-      edge.forEach((point,i)=>{
+      // Flat-faced parapet with an overhanging coping stone, built from
+      // planar quads so the masonry texture keeps its real-world scale.
+      const frames=edge.map((point,i)=>{
         const before=edge[Math.max(0,i-1)],after=edge[Math.min(edge.length-1,i+1)];
-        const tangent=after.subtract(before).normalize(),outward=new BABYLON.Vector3(tangent.z,0,-tangent.x).scale(side===0?-1:1);
-        const outside=point.add(outward.scale(.54));
-        if(i)along+=BABYLON.Vector3.Distance(point,edge[i-1]);
-        wallPositions.push(point.x,point.y,point.z,point.x,point.y+1.15,point.z,
-          outside.x,point.y,outside.z,outside.x,point.y+1.15,outside.z);
-        wallUvs.push(along/3,0,along/3,1,along/3+.18,0,along/3+.18,1);
-        if(i<edge.length-1){const base=i*4;
-          wallIndices.push(base,base+1,base+4,base+1,base+5,base+4,
-            base+2,base+6,base+3,base+3,base+6,base+7,
-            base+1,base+3,base+5,base+3,base+7,base+5);
-        }
-        if(i>0&&i<edge.length-1&&i%10===0) {
-          const stonePost=box(road.name+' dressed stone pier cap '+side+' '+i,.78,1.5,.78,new BABYLON.Vector3(outside.x,point.y+.75,outside.z),mats.parapet);
-          stonePost.rotation.y=Math.atan2(tangent.x,tangent.z);
-          const coping=box(road.name+' pier coping '+side+' '+i,.94,.18,.94,new BABYLON.Vector3(outside.x,point.y+1.5,outside.z),mats.stone);
-          coping.rotation.y=stonePost.rotation.y;
-        }
+        const tangent=after.subtract(before).normalize();
+        return {point,tangent,out:new BABYLON.Vector3(tangent.z,0,-tangent.x).scale(side===0?-1:1)};
       });
-      const wall=new BABYLON.Mesh(road.name+' carved stone parapet '+side,scene),wallData=new BABYLON.VertexData();
-      wallData.positions=wallPositions;wallData.indices=wallIndices;wallData.uvs=wallUvs;
-      wallData.normals=new Array(wallPositions.length).fill(0);BABYLON.VertexData.ComputeNormals(wallPositions,wallIndices,wallData.normals);
-      wallData.applyToMesh(wall);wall.material=mats.parapet;wall.isPickable=false;
+      const P=(fr,off,dy)=>new BABYLON.Vector3(fr.point.x+fr.out.x*off,fr.point.y+dy,fr.point.z+fr.out.z*off);
+      const up=new BABYLON.Vector3(0,1,0);
+      for(let i=1;i<frames.length;i++) {
+        const a=frames[i-1],b=frames[i],out=a.out,inn=a.out.scale(-1);
+        addPolygon(mats.parapet,[P(a,0,0),P(b,0,0),P(b,0,1.0),P(a,0,1.0)],inn);
+        addPolygon(mats.parapet,[P(a,.54,-.05),P(b,.54,-.05),P(b,.54,1.0),P(a,.54,1.0)],out);
+        addPolygon(mats.stone,[P(a,-.07,1.0),P(b,-.07,1.0),P(b,-.07,1.16),P(a,-.07,1.16)],inn);
+        addPolygon(mats.stone,[P(a,.61,1.0),P(b,.61,1.0),P(b,.61,1.16),P(a,.61,1.16)],out);
+        addPolygon(mats.stone,[P(a,-.07,1.16),P(b,-.07,1.16),P(b,.61,1.16),P(a,.61,1.16)],up);
+        addPolygon(mats.stone,[P(a,-.07,1.0),P(b,-.07,1.0),P(b,0,1.0),P(a,0,1.0)],up.scale(-1));
+        addPolygon(mats.stone,[P(a,.54,1.0),P(b,.54,1.0),P(b,.61,1.0),P(a,.61,1.0)],up.scale(-1));
+      }
+      frames.forEach(({point,tangent,out},i)=>{
+        if(i===0||i===frames.length-1||i%10!==0)return;
+        const outside=point.add(out.scale(.54)),yaw=Math.atan2(tangent.x,tangent.z);
+        // Refuge piers above each cutwater, capped with a pyramid-topped stone.
+        addBox(mats.parapet,.9,1.45,.9,new BABYLON.Vector3(outside.x,point.y+.72,outside.z),yaw);
+        addBox(mats.stone,1.06,.18,1.06,new BABYLON.Vector3(outside.x,point.y+1.53,outside.z),yaw);
+        addBox(mats.stone,.5,.36,.5,new BABYLON.Vector3(outside.x,point.y+1.8,outside.z),yaw);
+      });
     }
     if(bridge) archedBridge(road,centerline);
   }
@@ -556,9 +558,12 @@
     let length=0;for(let i=1;i<samples.length;i++)length+=BABYLON.Vector3.Distance(samples[i-1].p,samples[i].p);
     const arches=Math.max(3,Math.round(length/10)),pier=.1;
     const deckAt=u=>.04+2.45*Math.sin(Math.PI*u);
+    const pointAt=u=>samples[Math.min(samples.length-1,Math.round(u*(samples.length-1)))].p;
     const bottomAt=u=>{
       const cell=u*arches,t=cell-Math.floor(cell);
       if(u<=0||u>=1||t<pier||t>1-pier)return WATER;
+      const q=pct(pointAt(u));
+      if(inside(q.x,q.y,islandOutline))return WATER;
       const crown=Math.min(deckAt(u)-.8,SPRING+2.6);
       if(crown<=SPRING)return WATER;
       const tt=(t-pier)/(1-2*pier);
@@ -585,7 +590,7 @@
         addPolygon(mats.stoneDark,[at(a,-1,face,a.bottom),at(b,-1,face,b.bottom),at(b,1,face,b.bottom),at(a,1,face,a.bottom)],down);
     }
     for(let k=1;k<arches;k++) {
-      const fr=frames[Math.round(k/arches*(frames.length-1))],capY=SPRING+.55;
+      const fr=frames[Math.round(k/arches*(frames.length-1))],capY=Math.max(SPRING+.55,fr.top-1.1);
       for(const side of [-1,1]) {
         const out=fr.across.scale(side),half=fr.t.scale(pier*length/arches*.95);
         const base=at(fr,side,face,0),nose=at(fr,side,face+1.5,0);
@@ -1082,9 +1087,19 @@
   monument("Braethyn's Archives",32.7,43.4,13,10,12,mats.copper);
   monument('Vault of Basctdelm',31.1,48.1,10,9,9,mats.slate);
   const beacon=map(86,38.7);
-  cylinder('The Beacon lighthouse',86,38.7,3.7,23,mats.stone,12);
-  const beaconTop=BABYLON.MeshBuilder.CreateCylinder('Beacon lantern room',{diameter:8,height:3,tessellation:12},scene);
-  beaconTop.position=beacon.add(new BABYLON.Vector3(0,24,0));beaconTop.material=mats.gold;
+  // The Beacon of Iyo: tapered stone tower, gallery, glazed lantern, copper cap.
+  const cyl=(name,opts,y,mat)=>{const m=BABYLON.MeshBuilder.CreateCylinder(name,{tessellation:20,...opts},scene);m.position=beacon.add(new BABYLON.Vector3(0,y,0));m.material=mat;return m;};
+  cyl('Beacon plinth',{diameter:9.4,height:2},1,mats.stoneDark);
+  cyl('Beacon tower',{diameterBottom:8,diameterTop:5.4,height:21},12,mats.stone);
+  for(const [y,d] of [[7,7.5],[14,6.6],[21.4,5.9]]) cyl('Beacon string course',{diameter:d,height:.35},y,mats.stoneDark);
+  cyl('Beacon gallery',{diameter:7.4,height:.45},22.7,mats.stone);
+  const rail=BABYLON.MeshBuilder.CreateTorus('Beacon gallery rail',{diameter:7,thickness:.09,tessellation:40},scene);
+  rail.position=beacon.add(new BABYLON.Vector3(0,23.9,0));rail.material=mats.timber;
+  for(let k=0;k<16;k++){const a2=k*Math.PI/8;addBox(mats.timber,.08,1,.08,beacon.add(new BABYLON.Vector3(Math.cos(a2)*3.5,23.4,Math.sin(a2)*3.5)),0);}
+  cyl('Beacon lantern room',{diameter:4.2,height:2.8},24.35,mats.lantern);
+  for(let k=0;k<8;k++){const a2=k*Math.PI/4;addBox(mats.timber,.16,2.8,.16,beacon.add(new BABYLON.Vector3(Math.cos(a2)*2.12,24.35,Math.sin(a2)*2.12)),-a2);}
+  cyl('Beacon copper cap',{diameterTop:0,diameterBottom:5.2,height:2.6},27.05,mats.copper);
+  cyl('Beacon finial',{diameter:.35,height:1.2},28.9,mats.gold);
   const beaconLight=new BABYLON.PointLight('Beacon flame',beacon.add(new BABYLON.Vector3(0,25,0)),scene);
   beaconLight.diffuse=rgb('#ffd186');beaconLight.intensity=90;beaconLight.range=45;
   // The Dripping Dagger marks the mapped way down into the Bellows.
