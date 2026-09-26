@@ -219,6 +219,7 @@
   mats.paving=scannedMaterial('medieval street setts','medieval_blocks_05',1.6,1);
   mats.bridge=scannedMaterial('worn bridge setts','medieval_blocks_05',1.6,1,'#d7cfbf');
   mats.parapet=scannedMaterial('bridge dressed masonry','medieval_blocks_05',1,1,'#c9c0af');
+  mats.gutter=scannedMaterial('stone gutter','medieval_blocks_05',1,1,'#6f6a61');
   mats.flagstone=scannedMaterial('flagstone pavement','monastery_stone_floor',1,1,'#d9d2c4');
   mats.tile=scannedMaterial('weathered clay roof','roof_tiles',1,1,'#e39479');
   mats.tileDark=scannedMaterial('old clay roof','roof_tiles',1,1,'#9c6454');
@@ -232,7 +233,7 @@
   mats.glass=leadedGlass();
   [[mats.stone,2.6],[mats.stoneDark,2.4],[mats.plaster,2.2],[mats.plasterLight,2.2],[mats.plasterOchre,2.2],
     [mats.plasterRose,2.2],[mats.plasterGrey,2.2],[mats.parapet,2.2],[mats.wood,2.2],[mats.brick,1.8],
-    [mats.timber,1.4],[mats.flagstone,2.6],[mats.glass,.42]]
+    [mats.timber,1.4],[mats.flagstone,2.6],[mats.gutter,1.2],[mats.glass,.42]]
     .forEach(([mat,metres])=>tileSizes.set(mat,metres));
   mats.park=scannedMaterial('Greenscape grass','leafy_grass',1.5,1.5);
   const leafDir='images/city-scenes/basctdelm/materials/';
@@ -423,6 +424,13 @@
       addPolygon(mats.timber,[at(-L,-drop-.07,side*(s+e)),at(L,-drop-.07,side*(s+e)),at(L,-.07,side*s),at(-L,-.07,side*s)],dir(0,-1,side*.3));
       addPolygon(gableMat,[at(side*l,0,s),at(side*l,0,-s),at(side*l,r,0)],dir(side,0,0));
     }
+    const T2=.2;
+    for(const side of [1,-1]) {
+      const eave=side*(s+e);
+      addPolygon(mats.timber,[at(-L,-drop,eave),at(L,-drop,eave),at(L,-drop-T2,eave),at(-L,-drop-T2,eave)],dir(0,0,side));
+      for(const end of [1,-1])
+        addPolygon(mats.timber,[at(end*L,-drop,eave),at(end*L,r,0),at(end*L,r-T2,0),at(end*L,-drop-T2,eave)],dir(end,0,0));
+    }
     addBox(mats.stoneDark,2*L,.16,.26,at(0,r+.02,0),yaw);
   }
   function pathSegments(name, path, width, height, mat, elevation = 0, battlements = false) {
@@ -432,6 +440,17 @@
       const segment=box(name+' '+i,width,height,len+width*.12,new BABYLON.Vector3((a.x+b.x)/2,elevation,(a.z+b.z)/2),mat);
       segment.rotation.y=Math.atan2(b.x-a.x,b.z-a.z);
       if(battlements) {
+        // A battered (thickened) base and a corbel table under the parapet walk.
+        const yaw=segment.rotation.y,cos=Math.cos(yaw),sin=Math.sin(yaw);
+        addBox(mats.stoneDark,width+1.1,1.6,len+width*.12,new BABYLON.Vector3((a.x+b.x)/2,.8,(a.z+b.z)/2),yaw);
+        const corbels=Math.max(1,Math.floor(len/1.15));
+        for(let k=0;k<corbels;k++) {
+          const p=BABYLON.Vector3.Lerp(a,b,(k+.5)/corbels);
+          for(const side of [-1,1])
+            addBox(mats.stone,.34,.42,.3,new BABYLON.Vector3(p.x+cos*side*(width/2+.15),elevation+height/2-.55,p.z-sin*side*(width/2+.15)),yaw);
+        }
+        for(const side of [-1,1])
+          addBox(mats.stone,.2,.22,len+width*.12,new BABYLON.Vector3((a.x+b.x)/2+cos*side*(width/2+.2),elevation+height/2-.24,(a.z+b.z)/2-sin*side*(width/2+.2)),yaw);
         const count=Math.max(1,Math.floor(len/2.3));
         for(let merlon=0;merlon<count;merlon++) {
           const p=BABYLON.Vector3.Lerp(a,b,(merlon+.5)/count);
@@ -484,6 +503,10 @@
       };
       for(let i=1;i<centerline.length;i++)
         addPolygon(mats.flagstone,[side(i-1,-reach),side(i,-reach),side(i,reach),side(i-1,reach)],up);
+      // A dark stone drainage gutter just outside each kerb.
+      const inner=road.width/2+.14,outer=road.width/2+.52,lift=v=>new BABYLON.Vector3(v.x,.028,v.z);
+      for(let i=1;i<centerline.length;i++) for(const k of [-1,1])
+        addPolygon(mats.gutter,[lift(side(i-1,k*inner)),lift(side(i,k*inner)),lift(side(i,k*outer)),lift(side(i-1,k*outer))],up);
     }
     for(const [side,edge] of edges.entries()) {
       if(!bridge) {
@@ -708,7 +731,9 @@
       part(mats.timber,.74*wide,.06,.05,x,y+.12,fz+face*.07);
       part(mats.stoneDark,.98*wide,.12,.22,x,y-.64,fz+face*.09);
       part(frameMat,.98*wide,.16,.16,x,y+.66,fz+face*.07);
-      if(shuttered&&wide===1) for(const s of [-1,1]) part(mats.wood,.36,1.15,.07,x+s*.57,y,fz+face*.05);
+      // Jambs stand proud of the glass so every window reads as set into a thick wall.
+      for(const s of [-1,1]) part(frameMat,.12,1.32,.22,x+s*(.37*wide+.06),y,fz+face*.11);
+      if(shuttered&&wide===1) for(const s of [-1,1]) part(mats.wood,.36,1.15,.07,x+s*.69,y,fz+face*.05);
     }
     for(const face of [1,-1]) {
       const fz=face*(face>0?upperFront:D/2),gz=face*front;
@@ -719,6 +744,12 @@
           part(mats.timber,1.1,2.3,.1,x,1.15,gz+.03);
           part(mats.stoneDark,1.5,.3,.22,x,2.45,gz+.09);
           for(const s of [-1,1]) part(mats.stoneDark,.2,2.3,.18,x+s*.65,1.15,gz+.07);
+          part(mats.stoneDark,1.7,.16,.55,x,.08,gz+.27);
+          if(R(21)>.55) for(const s of [-1,1]) {
+            part(mats.tileDark,.32,.34,.32,x+s*1.0,.17,gz+.3);
+            part(mats.tree,.4,.26,.4,x+s*1.0,.44,gz+.3);
+            part(R(22)>.5?mats.flowers:mats.flowersPale,.24,.07,.24,x+s*1.0,.6,gz+.3);
+          }
         } else if(face>0&&shop) {
           part(mats.glass,bw*.72,1.35,.08,x,1.6,gz+.02);
           part(mats.timber,bw*.8,.18,.18,x,2.35,gz+.08);
@@ -825,6 +856,27 @@
       const f=5+hash(seed+4)*3,D=6+hash(seed+5)*3;
       const zone=(districts.find(d=>inside(x,y,d.poly))||{style:'south'}).style;
       if(footprintClear(center,yaw,f,D,2.2)) house(center,yaw,f,D,zone,seed+9000,Math.max(1,floorsFor(zone,seed)-(hash(seed+6)<.5?1:0)));
+    }
+  }
+  // Stone well-heads with a timber winding frame in the more open squares.
+  function wells() {
+    let placed=0;
+    for(let i=0;i<400&&placed<7;i++) {
+      const x=12+hash(i*7.3)*70,y=12+hash(i*3.9)*72;
+      if(!inside(x,y,islandOutline)) continue;
+      const c=map(x,y);
+      if(roadClearance(c.x,c.z)<2.2||wallClearance(c.x,c.z)<5) continue;
+      if(collisions.some(k=>hitsCollider(k,c.x,c.z,3.2))) continue;
+      if(placed&&collisions.some(k=>k.kind==='well'&&Math.hypot(k.x-c.x,k.z-c.z)<35)) continue;
+      const ring=BABYLON.MeshBuilder.CreateCylinder('well head',{diameter:1.7,height:.9,tessellation:18},scene);
+      ring.position=c.add(new BABYLON.Vector3(0,.45,0));ring.material=mats.stone;
+      const water=BABYLON.MeshBuilder.CreateCylinder('well shaft',{diameter:1.3,height:.02,tessellation:18},scene);
+      water.position=c.add(new BABYLON.Vector3(0,.88,0));water.material=mats.glass;
+      for(const s of [-1,1]) addBox(mats.timber,.14,2.2,.14,c.add(new BABYLON.Vector3(s*.72,1.1,0)),0);
+      addBox(mats.timber,1.7,.12,.12,c.add(new BABYLON.Vector3(0,1.95,0)),0);
+      gableRoof(c.add(new BABYLON.Vector3(0,2.15,0)),0,1.9,.55,.2,.55,mats.tileDark,mats.timber,.05);
+      collisions.push({x:c.x,z:c.z,hw:.9,hd:.9,yaw:0,kind:'well'});
+      placed++;
     }
   }
   function backLots() {
@@ -1054,6 +1106,7 @@
   // Landmarks are all placed, so houses can now fill in around them.
   streetFrontage();
   backLots();
+  wells();
   infill();
 
   // Scaled fabric stalls and hanging lamps give the commercial waterfront its life.
@@ -1187,7 +1240,7 @@
     return merged;
   }
   const cityMeshes=finishCity();
-  const flatGround=new Set([mats.earth,mats.park,mats.paving,mats.bridge,mats.grassBlade,mats.flagstone]);
+  const flatGround=new Set([mats.earth,mats.park,mats.paving,mats.bridge,mats.grassBlade,mats.flagstone,mats.gutter,mats.courtyard]);
   const shadows=engine.webGLVersion>=2&&BABYLON.CascadedShadowGenerator
     ?new BABYLON.CascadedShadowGenerator(2048,sun):new BABYLON.ShadowGenerator(2048,sun);
   if(shadows instanceof BABYLON.CascadedShadowGenerator) {
