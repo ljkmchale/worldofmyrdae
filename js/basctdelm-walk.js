@@ -460,6 +460,74 @@
       }
     }
   }
+  // Painted signs, flags and banners are thin-instanced planes. They keep
+  // their own textures, so finishCity() leaves them out of the material merge.
+  const decor = [];
+  const WIND = .7;
+  function woodBoard(g, w, h) {
+    g.fillStyle = '#3f281a'; g.fillRect(0, 0, w, h);
+    for (let y = 0; y < h; y += 9) { g.fillStyle = y % 18 ? '#46301f' : '#382315'; g.fillRect(0, y, w, 5); }
+    g.strokeStyle = '#c9a45a'; g.lineWidth = Math.max(6, w / 28); g.strokeRect(g.lineWidth, g.lineWidth, w - g.lineWidth * 2, h - g.lineWidth * 2);
+  }
+  const ICONS = {
+    mug(g) { g.fillRect(-38, -40, 64, 90); g.lineWidth = 13; g.beginPath(); g.arc(30, 5, 26, -1.4, 1.4); g.stroke();
+      g.fillStyle = '#f1e6c8'; for (const x of [-30, -8, 14]) { g.beginPath(); g.arc(x, -42, 14, 0, 7); g.fill(); } },
+    bread(g) { g.beginPath(); g.ellipse(0, 8, 72, 40, 0, 0, 7); g.fill(); g.strokeStyle = '#6b4020'; g.lineWidth = 7;
+      for (const x of [-30, 0, 30]) { g.beginPath(); g.moveTo(x - 10, -12); g.lineTo(x + 10, 26); g.stroke(); } },
+    sword(g) { g.beginPath(); g.moveTo(0, -78); g.lineTo(10, 26); g.lineTo(-10, 26); g.closePath(); g.fill();
+      g.fillRect(-38, 26, 76, 11); g.fillRect(-6, 37, 12, 28); g.beginPath(); g.arc(0, 72, 9, 0, 7); g.fill(); },
+    bow(g) { g.lineWidth = 10; g.beginPath(); g.arc(-40, 0, 72, -1.15, 1.15); g.stroke(); g.lineWidth = 3;
+      g.beginPath(); g.moveTo(-10, -66); g.lineTo(-10, 66); g.stroke(); g.lineWidth = 6; g.beginPath(); g.moveTo(-40, 0); g.lineTo(62, 0); g.stroke();
+      g.beginPath(); g.moveTo(74, 0); g.lineTo(56, -12); g.lineTo(56, 12); g.fill(); },
+    potion(g) { g.beginPath(); g.arc(0, 22, 42, 0, 7); g.fill(); g.fillRect(-12, -50, 24, 36); g.fillStyle = '#7a4a2a'; g.fillRect(-15, -64, 30, 16);
+      g.fillStyle = '#8fd0a8'; g.beginPath(); g.arc(0, 30, 28, 0, Math.PI); g.fill(); },
+    coin(g) { for (const [x, y] of [[-26, 30], [26, 30], [0, -14]]) { g.beginPath(); g.arc(x, y, 34, 0, 7); g.fill();
+      g.strokeStyle = '#6b4a1a'; g.lineWidth = 5; g.beginPath(); g.arc(x, y, 24, 0, 7); g.stroke(); } },
+    hammer(g) { g.fillRect(-48, -58, 96, 32); g.fillStyle = '#b07a44'; g.fillRect(-8, -26, 16, 92); },
+    candle(g) { g.fillStyle = '#f1e6c8'; g.fillRect(-16, -18, 32, 78); g.fillStyle = '#f0a83a'; g.beginPath(); g.ellipse(0, -38, 11, 22, 0, 0, 7); g.fill(); },
+    flower(g) { g.fillStyle = '#c8424a'; for (let k = 0; k < 5; k++) { const a = k * 1.2566; g.beginPath(); g.arc(Math.cos(a) * 26, Math.sin(a) * 26 - 12, 20, 0, 7); g.fill(); }
+      g.fillStyle = '#e0b85c'; g.beginPath(); g.arc(0, -12, 14, 0, 7); g.fill(); g.fillStyle = '#5c8a4a'; g.fillRect(-4, 10, 8, 60); },
+    scroll(g) { g.fillStyle = '#f1e6c8'; g.fillRect(-48, -40, 96, 80); g.fillStyle = '#e0b85c';
+      for (const y of [-44, 44]) { g.beginPath(); g.ellipse(0, y, 56, 12, 0, 0, 7); g.fill(); }
+      g.strokeStyle = '#6b4a2a'; g.lineWidth = 4; for (const y of [-18, 0, 18]) { g.beginPath(); g.moveTo(-34, y); g.lineTo(34, y); g.stroke(); } },
+    key(g) { g.lineWidth = 13; g.beginPath(); g.arc(-44, 0, 24, 0, 7); g.stroke(); g.fillRect(-20, -7, 90, 14); g.fillRect(44, 7, 11, 22); g.fillRect(60, 7, 10, 16); },
+    boot(g) { g.beginPath(); g.moveTo(-34, -64); g.lineTo(12, -64); g.lineTo(12, 14); g.lineTo(66, 28); g.lineTo(66, 58); g.lineTo(-34, 58); g.closePath(); g.fill(); },
+    fish(g) { g.beginPath(); g.ellipse(-12, 0, 56, 28, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(36, 0); g.lineTo(72, -30); g.lineTo(72, 30); g.fill();
+      g.fillStyle = '#3f281a'; g.beginPath(); g.arc(-44, -6, 6, 0, 7); g.fill(); }
+  };
+  function paintedPlane(name, w, h, px, draw) {
+    const tex = new BABYLON.DynamicTexture(name + ' paint', { width: px[0], height: px[1] }, scene, true);
+    draw(tex.getContext(), px[0], px[1]); tex.update();
+    const mat = new BABYLON.StandardMaterial(name, scene);
+    mat.diffuseTexture = tex; mat.emissiveColor = rgb('#241f18'); mat.specularColor = rgb('#141414'); mat.backFaceCulling = false;
+    const mesh = BABYLON.MeshBuilder.CreatePlane(name, { width: w, height: h, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
+    mesh.material = mat; mesh.isPickable = false; mesh.alwaysSelectAsActiveMesh = true;
+    decor.push(mesh);
+    return mesh;
+  }
+  const iconSigns = {};
+  for (const name of Object.keys(ICONS)) iconSigns[name] = paintedPlane(name + ' trade sign', .8, .64, [256, 205], (g, w, h) => {
+    woodBoard(g, w, h); g.save(); g.translate(w / 2, h / 2); g.scale(.95, .95); g.fillStyle = '#e0b85c'; g.strokeStyle = '#e0b85c'; ICONS[name](g); g.restore();
+  });
+  function crown(g, cx, cy, sc) {
+    g.save(); g.translate(cx, cy); g.scale(sc, sc); g.fillStyle = '#e3bd5f';
+    g.beginPath(); g.moveTo(-40, 24); g.lineTo(-44, -20); g.lineTo(-20, 2); g.lineTo(0, -34); g.lineTo(20, 2); g.lineTo(44, -20); g.lineTo(40, 24); g.closePath(); g.fill();
+    g.fillRect(-42, 28, 84, 12); g.restore();
+  }
+  const flagMesh = paintedPlane('imperial flag', 2.4, 1.5, [256, 160], (g, w, h) => {
+    g.fillStyle = '#1d3a82'; g.fillRect(0, 0, w, h); g.fillStyle = '#e3bd5f'; g.fillRect(0, 0, w, 12); g.fillRect(0, h - 12, w, 12); crown(g, w / 2, h / 2, 1);
+  });
+  const bannerMesh = paintedPlane('imperial banner', 1.3, 3.8, [128, 372], (g, w, h) => {
+    g.fillStyle = '#1d3a82'; g.fillRect(0, 0, w, h); g.fillStyle = '#e3bd5f'; g.fillRect(0, 0, w, 16); g.fillRect(8, 16, 6, h - 60); g.fillRect(w - 14, 16, 6, h - 60);
+    for (let x = 0; x < w; x += 16) g.fillRect(x, h - 40, 10, 40);
+    crown(g, w / 2, h * .38, .95);
+  });
+  function placeDecor(mesh, pos, yaw) {
+    mesh.thinInstanceAdd(BABYLON.Matrix.Compose(new BABYLON.Vector3(1, 1, 1), BABYLON.Quaternion.RotationYawPitchRoll(yaw, 0, 0), pos), false);
+  }
+  // A plane's width runs along world (cos yaw, -sin yaw); this yaw lays it along 'dir'.
+  const alongYaw = dir => Math.atan2(dir.x, dir.z) - Math.PI / 2;
+
   const isBridge = road => road.name.includes('Bridge')||road.name==='Historic Crossway';
   // Catmull-Rom centreline shared by the paving and the street-frontage houses.
   function roadCenterline(road) {
@@ -627,6 +695,9 @@
     }
     const roof=BABYLON.MeshBuilder.CreateCylinder(name+' roof',{diameterTop:0,diameterBottom:radius*2.1,height:2.8,tessellation:8},scene);
     roof.position=foot.add(new BABYLON.Vector3(0,height+2.1,0));roof.material=mats.slate;
+    // Every tower flies the blue-and-gold of the Bathaen crown, all in the same wind.
+    addBox(mats.timber,.09,2.7,.09,foot.add(new BABYLON.Vector3(0,height+4.8,0)),0);
+    placeDecor(flagMesh,foot.add(new BABYLON.Vector3(Math.sin(WIND)*1.2,height+5.4,Math.cos(WIND)*1.2)),WIND-Math.PI/2);
   }
   outerWalls.forEach((wall, wi) => {
     pathSegments('outer battlement '+wi,wall,1.15,6.8,mats.stoneDark,3.25,true);
@@ -642,6 +713,7 @@
     for(const side of [-1,1]) {
       const at=a.add(across.scale(side*4.55)),q=pct(at);
       tower('gate flanking tower '+i+' '+side,q.x,q.y,2.1,11);
+      for(const face of [-1,1]) placeDecor(bannerMesh,at.add(forward.scale(face*2.2)).add(new BABYLON.Vector3(0,6.2,0)),yaw);
     }
     const lintel=box('gate arch lintel '+i,9.4,1.3,1.5,a.add(new BABYLON.Vector3(0,8.8,0)),mats.stone);
     lintel.rotation.y=yaw;
@@ -666,9 +738,10 @@
   // a walled capital actually packs its streets); the roof sites traced from
   // the illustrated map then fill the back lots wherever they still fit.
   const plasterMats=[mats.plaster,mats.plasterLight,mats.plasterOchre,mats.plasterRose,mats.plasterGrey];
-  mats.flowers=material('window-box geraniums','#9e2a2f');
-  mats.flowersPale=material('window-box marigolds','#b87a24');
-  const signMats=[mats.marketRed,mats.marketBlue,mats.gold,mats.wood];
+  mats.flowers=material('window-box geraniums','#6e1a1f');
+  mats.flowersPale=material('window-box marigolds','#7e5418');
+  mats.potPlant=material('potted box shrub','#263d22');
+  mats.shopDark=material('shadowed shop interior','#15110d');
   const roadLines=roads.map(road=>({road,line:roadCenterline(road),bridge:isBridge(road)}));
   const wallLines=[...outerWalls,...innerWalls].map(points);
   const pinPoints=city.pins.map(p=>map(p.x,p.y));
@@ -723,41 +796,59 @@
     const roofMat=zone==='high'||zone==='north'?(R(5)<.8?mats.slate:mats.tileDark):R(5)<.36?mats.tile:R(5)<.54?mats.tileBrown:R(5)<.7?mats.tileDark:R(5)<.82?mats.tileMoss:mats.slate;
     // About a third of houses turn their gable to the street, which breaks the
     // eave line into the saw-tooth skyline of a real medieval street.
-    const gableFront=f>=4.6&&R(13)<.34;
+    const gableFront=f>=4.6&&R(13)<.45;
     const gableRise=f/2*(1.05+R(14)*.3);
     if(gableFront) gableRoof(at(0,H,jetty/2),yaw+Math.PI/2,D+jetty,f/2,.32,gableRise,roofMat,wallMat,.3);
     else gableRoof(at(0,H,jetty/2),yaw,f,span,.5,rise,roofMat,wallMat,.06);
-    const timbered=isPlaster&&R(6)>.4,shuttered=R(7)>.45,shop=(zone==='trade'||zone==='central'||zone==='lower')&&R(8)>.4;
+    const timbered=isPlaster&&R(6)>.25,shuttered=R(7)>.45,shop=(zone==='trade'||zone==='central'||zone==='lower')&&R(8)>.4;
     const bays=Math.max(1,Math.round(f/1.9)),bw=f/bays,door=Math.floor(R(9)*bays);
     const frameMat=wallMat===mats.brick||wallMat===mats.stone?mats.stoneDark:mats.timber;
-    function windowAt(x,y,fz,face,wide=1) {
-      part(mats.glass,.74*wide,1.15,.08,x,y,fz+face*.02);
-      part(mats.timber,.06,1.15,.05,x,y,fz+face*.07);
-      part(mats.timber,.74*wide,.06,.05,x,y+.12,fz+face*.07);
-      part(mats.stoneDark,.98*wide,.12,.22,x,y-.64,fz+face*.09);
-      part(frameMat,.98*wide,.16,.16,x,y+.66,fz+face*.07);
-      // Jambs stand proud of the glass so every window reads as set into a thick wall.
-      for(const s of [-1,1]) part(frameMat,.12,1.32,.22,x+s*(.37*wide+.06),y,fz+face*.11);
-      if(shuttered&&wide===1) for(const s of [-1,1]) part(mats.wood,.36,1.15,.07,x+s*.69,y,fz+face*.05);
+    // Small medieval casements: leaded lights split by a mullion and transom,
+    // set in deep reveals; top-floor windows are smaller still.
+    function windowAt(x,y,fz,face,wide=1,sc=1) {
+      const w=.62*wide*sc,h=.95*sc;
+      part(mats.glass,w,h,.08,x,y,fz+face*.02);
+      part(mats.timber,.06,h,.05,x,y,fz+face*.07);
+      part(mats.timber,w,.06,.05,x,y+h*.12,fz+face*.07);
+      part(mats.stoneDark,w+.24,.12,.22,x,y-h/2-.08,fz+face*.09);
+      part(frameMat,w+.24,.16,.16,x,y+h/2+.08,fz+face*.07);
+      for(const s of [-1,1]) part(frameMat,.12,h+.17,.22,x+s*(w/2+.06),y,fz+face*.11);
+      if(shuttered&&wide===1) for(const s of [-1,1]) part(mats.wood,w*.5,h,.07,x+s*(w*.75+.14),y,fz+face*.05);
+    }
+    const out=at(0,0,1).subtract(at(0,0,0));
+    const facePoly=(mat,pts,z)=>addPolygon(mat,pts.map(([px,py])=>at(px,py,z)),out);
+    // Diagonal timber brace on the street face, from (x1,y1) to (x2,y2).
+    function brace(x1,y1,x2,y2,z) {
+      const dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy),nx=-dy/l*.07,ny=dx/l*.07;
+      facePoly(mats.timber,[[x1+nx,y1+ny],[x2+nx,y2+ny],[x2-nx,y2-ny],[x1-nx,y1-ny]],z);
     }
     for(const face of [1,-1]) {
       const fz=face*(face>0?upperFront:D/2),gz=face*front;
-      for(let k=1;k<floors;k++) for(let b=0;b<bays;b++) windowAt(-f/2+bw*(b+.5),groundH+(k-1)*floorH+1.45,fz,face);
+      for(let k=1;k<floors;k++) for(let b=0;b<bays;b++) {
+        // Irregular, hand-set casements: some bays blind, sizes and heights varying.
+        if(R(40+k*5+b+(face>0?0:50))>.84) continue;
+        windowAt(-f/2+bw*(b+.5)+(R(60+k*3+b)-.5)*.3,groundH+(k-1)*floorH+1.4+(R(70+k+b)-.5)*.14,fz,face,1,k===floors-1?.82:1);
+      }
       for(let b=0;b<bays;b++) {
         const x=-f/2+bw*(b+.5);
         if(face>0&&b===door) {
-          part(mats.timber,1.1,2.3,.1,x,1.15,gz+.03);
-          part(mats.stoneDark,1.5,.3,.22,x,2.45,gz+.09);
-          for(const s of [-1,1]) part(mats.stoneDark,.2,2.3,.18,x+s*.65,1.15,gz+.07);
+          // Pointed-arch doorway: dressed stone surround around an oak door.
+          facePoly(mats.stoneDark,[[x-.8,0],[x+.8,0],[x+.8,2.05],[x,2.9],[x-.8,2.05]],gz+.03);
+          facePoly(mats.timber,[[x-.55,0],[x+.55,0],[x+.55,1.95],[x,2.58],[x-.55,1.95]],gz+.06);
+          for(const y of [.55,1.55]) part(mats.shopDark,1.02,.06,.03,x,y,gz+.075);
           part(mats.stoneDark,1.7,.16,.55,x,.08,gz+.27);
           if(R(21)>.55) for(const s of [-1,1]) {
             part(mats.tileDark,.32,.34,.32,x+s*1.0,.17,gz+.3);
-            part(mats.tree,.4,.26,.4,x+s*1.0,.44,gz+.3);
-            part(R(22)>.5?mats.flowers:mats.flowersPale,.24,.07,.24,x+s*1.0,.6,gz+.3);
+            part(mats.potPlant,.36,.3,.36,x+s*1.0,.47,gz+.3);
+            part(R(22)>.5?mats.flowers:mats.flowersPale,.16,.06,.16,x+s*1.0+.05,.64,gz+.27);
           }
         } else if(face>0&&shop) {
-          part(mats.glass,bw*.72,1.35,.08,x,1.6,gz+.02);
-          part(mats.timber,bw*.8,.18,.18,x,2.35,gz+.08);
+          // Open shop front: a dark opening over a fold-down stall board with goods.
+          facePoly(mats.shopDark,[[x-bw*.36,.95],[x+bw*.36,.95],[x+bw*.36,2.3],[x-bw*.36,2.3]],gz+.03);
+          part(mats.timber,bw*.8,.18,.18,x,2.38,gz+.08);
+          part(mats.wood,bw*.78,.08,.6,x,.92,gz+.32);
+          for(const s of [-1,1]) part(mats.timber,.08,.9,.08,x+s*bw*.36,.45,gz+.55);
+          for(let g2=0;g2<3;g2++) part([mats.market,mats.marketRed,mats.wood][g2],.28,.22,.28,x+(g2-1)*bw*.24,1.07,gz+.34);
           const awning=[mats.marketRed,mats.marketBlue,mats.market][Math.floor(R(10+b)*3)];
           const hw=bw*.44;
           addPolygon(awning,[at(x-hw,3.05,gz),at(x+hw,3.05,gz),at(x+hw,2.6,gz+1.25),at(x-hw,2.6,gz+1.25)],at(0,1,0).subtract(at(0,0,0)));
@@ -775,6 +866,17 @@
       const top=H-groundH;
       for(let b=0;b<=bays;b++) part(mats.timber,.2,top,.08,-f/2+bw*b+(b===0?.1:b===bays?-.1:0),groundH+top/2,upperFront+.04);
       for(let k=1;k<floors;k++) part(mats.timber,f,.2,.08,0,groundH+k*floorH-.05,upperFront+.04);
+      for(let k=1;k<floors;k++) {
+        const y0=groundH+(k-1)*floorH;
+        part(mats.timber,f,.14,.08,0,y0+.84,upperFront+.04);
+        // St Andrew's crosses under each window and curved-style braces at the corners.
+        for(let b=0;b<bays;b++) {
+          const x=-f/2+bw*(b+.5);
+          brace(x-.4,y0+.14,x+.4,y0+.78,upperFront+.05);
+          brace(x-.4,y0+.78,x+.4,y0+.14,upperFront+.05);
+        }
+        for(const sd of [-1,1]) brace(sd*(f/2-.12),y0+floorH-.2,sd*(f/2-.75),y0+floorH-.95,upperFront+.05);
+      }
     }
     if(gableFront) {
       // Attic window high in the street gable, with a timber collar beam.
@@ -799,7 +901,8 @@
       // Hanging trade sign on an iron-dark bracket.
       const sx=(R(17)>.5?1:-1)*(f/2-.35);
       part(mats.timber,.07,.07,1.1,sx,3.95,upperFront+.55);
-      part(signMats[Math.floor(R(18)*signMats.length)],.06,.62,.78,sx,3.5,upperFront+.72);
+      const trades=['bread','boot','key','fish','candle','scroll','mug','hammer'];
+      placeDecor(iconSigns[trades[Math.floor(R(18)*trades.length)]],at(sx,3.55,upperFront+.78),yaw-Math.PI/2);
     }
     if(R(19)>.62) for(let b=0;b<bays;b++) {
       // Window boxes of geraniums on the first floor.
@@ -895,7 +998,7 @@
     });
   }
 
-  function landmarkInn(pin) {
+  function landmarkInn(pin,icon='mug') {
     const center=map(pin.x,pin.y);
     const street=nearestRoad(pin.x,pin.y);
     const toward=map(street.x,street.y).subtract(center);
@@ -952,10 +1055,25 @@
     signMat.diffuseTexture=painted;signMat.emissiveTexture=painted;signMat.disableLighting=true;signMat.backFaceCulling=false;
     const sign=BABYLON.MeshBuilder.CreatePlane(pin.name+' readable hanging sign',{width:1.48,height:1.06},scene);
     sign.position=at(4.0,4.15,depth/2+.756);sign.rotation.y=yaw+Math.PI;sign.material=signMat;
+    // A long painted fascia over the entrance carries the name in large letters.
+    const fascia=new BABYLON.DynamicTexture(pin.name+' fascia paint',{width:1024,height:160},scene,true);
+    const fg=fascia.getContext();woodBoard(fg,1024,160);
+    fg.fillStyle='#f1dca4';fg.textAlign='center';fg.textBaseline='middle';fg.font='bold 78px Georgia';
+    fg.fillText(pin.name,512,84,960);fascia.update();
+    const fasciaMat=new BABYLON.StandardMaterial(pin.name+' fascia',scene);
+    fasciaMat.diffuseTexture=fascia;fasciaMat.emissiveColor=rgb('#2a241c');fasciaMat.specularColor=rgb('#141414');
+    const board=BABYLON.MeshBuilder.CreatePlane(pin.name+' fascia board',{width:5.2,height:.82},scene);
+    board.position=at(0,3.72,depth/2+.62);board.rotation.y=yaw+Math.PI;board.material=fasciaMat;board.isPickable=false;
+    // Second bracket carries the trade symbol, readable from along the street.
+    box(pin.name+' trade sign bracket',.08,.08,1.1,at(-3.6,4.62,depth/2+.62),mats.timber).rotation.y=yaw;
+    placeDecor(iconSigns[icon],at(-3.6,4.15,depth/2+.95),yaw-Math.PI/2);
     const chimney=box(pin.name+' stone chimney',1.1,3.3,1.1,at(-2.7,height+1.15,-1.6),mats.stoneDark);
     chimney.rotation.y=yaw;
   }
-  city.pins.filter(pin=>[10,11,12,13,14,15].includes(pin.n)).forEach(landmarkInn);
+  city.pins.filter(pin=>[10,11,12,13,14,15].includes(pin.n)).forEach(pin=>landmarkInn(pin,'mug'));
+  // Every named business on the gazetteer map gets its own signed shopfront.
+  const shopIcons={9:'mug',16:'scroll',17:'sword',18:'bow',19:'potion',20:'candle',21:'hammer',26:'bread',27:'coin',28:'flower'};
+  city.pins.filter(pin=>shopIcons[pin.n]).forEach(pin=>landmarkInn(pin,shopIcons[pin.n]));
 
   function cylinder(name,x,y,radius,height,mat,tess=12) {
     const mesh=BABYLON.MeshBuilder.CreateCylinder(name,{diameter:radius*2,height,tessellation:tess},scene);
@@ -1019,7 +1137,8 @@
   for(let i=0;i<44;i++) {
     const x=18+hash(i*9+7)*17,y=48+hash(i*13+4)*21;
     const lake=((x-24)/5.2)**2+((y-58)/6)**2<1;
-    if(!lake && nearestRoad(x,y).distance>2 && hash(i*16)>.17) tree(x,y,.65+hash(i+10)*.52);
+    const templeClear=Math.hypot((x-22.5)*MAP_WIDTH/100,(y-67)*MAP_DEPTH/100)>19;
+    if(!lake && templeClear && nearestRoad(x,y).distance>2 && hash(i*16)>.17) tree(x,y,.65+hash(i+10)*.52);
   }
   for(let i=0;i<760;i++) {
     const x=16+hash(i*19+8)*18,y=47+hash(i*23+3)*22;
@@ -1042,8 +1161,9 @@
   });
   // Civic and fortified halls get real facades instead of blank walls: a
   // moulded plinth, buttresses, tall leaded windows between them and a cornice.
-  function dressFacades(origin,width,depth,baseY,height,skipFront=false) {
-    const put=(mat,w,h,d,x,y,z)=>addBox(mat,w,h,d,origin.add(new BABYLON.Vector3(x,y,z)),0);
+  function dressFacades(origin,width,depth,baseY,height,skipFront=false,yaw=0) {
+    const cos=Math.cos(yaw),sin=Math.sin(yaw);
+    const put=(mat,w,h,d,x,y,z)=>addBox(mat,w,h,d,origin.add(new BABYLON.Vector3(x*cos+z*sin,y,-x*sin+z*cos)),yaw);
     put(mats.stoneDark,width+.34,.8,depth+.34,0,baseY+.4,0);
     put(mats.stone,width+.5,.42,depth+.5,0,baseY+height-.21,0);
     const winH=Math.min(3.4,height*.38),winY=baseY+height*.56;
@@ -1078,10 +1198,69 @@
       box(name+' column capital '+i,1.1,.4,1.1,column.position.add(new BABYLON.Vector3(0,2.35,0)),mats.gold);
     }
     for(const side of [-1,1]) {
-      box(name+' royal banner '+side,1.1,4,.12,origin.add(new BABYLON.Vector3(side*width*.34,height*.6,depth/2+.22)),mats.marketBlue);
-      box(name+' banner gold trim '+side,1.2,.19,.15,origin.add(new BABYLON.Vector3(side*width*.34,height*.6-2,depth/2+.3)),mats.gold);
+      placeDecor(bannerMesh,origin.add(new BABYLON.Vector3(side*width*.34,height*.62,depth/2+.46)),0);
     }
   }
+  // The Temple of Tiash: a buttressed nave with a west tower and tall spire,
+  // the landmark that shows over every roof in the southern city.
+  function sacredFrame(pin) {
+    const c=map(pin.x,pin.y),road=nearestRoad(pin.x,pin.y),toward=map(road.x,road.y).subtract(c);
+    const yaw=Math.atan2(toward.x,toward.z),cos=Math.cos(yaw),sin=Math.sin(yaw);
+    return {yaw,at:(x,y,z)=>new BABYLON.Vector3(c.x+x*cos+z*sin,y,c.z-x*sin+z*cos),out:new BABYLON.Vector3(sin,0,cos)};
+  }
+  function pointedDoor(at,out,x,z,w,h) {
+    addPolygon(mats.stoneDark,[at(x-w/2-.3,0,z),at(x+w/2+.3,0,z),at(x+w/2+.3,h*.7,z),at(x,h+.5,z),at(x-w/2-.3,h*.7,z)],out);
+    addPolygon(mats.timber,[at(x-w/2,0,z+.04),at(x+w/2,0,z+.04),at(x+w/2,h*.68,z+.04),at(x,h,z+.04),at(x-w/2,h*.68,z+.04)],out);
+  }
+  function temple(pin) {
+    const {yaw,at,out}=sacredFrame(pin),W2=11,Lz=22,Hn=12;
+    box(pin.name+' nave',W2,Hn,Lz,at(0,Hn/2,-4),mats.stone,true).rotation.y=yaw;
+    dressFacades(at(0,0,-4),W2,Lz,0,Hn,true,yaw);
+    gableRoof(at(0,Hn,-4),yaw+Math.PI/2,Lz,W2/2,.5,7.8,mats.slate,mats.stone,.3);
+    const tz=Lz/2-4+3.1,TW=6.4,TH=27;
+    box(pin.name+' west tower',TW,TH,TW,at(0,TH/2,tz),mats.stone,true).rotation.y=yaw;
+    dressFacades(at(0,0,tz),TW,TW,0,TH,false,yaw);
+    addBox(mats.stoneDark,TW+.6,.5,TW+.6,at(0,TH+.25,tz),yaw);
+    for(const [px,pz] of [[-1,-1],[1,-1],[-1,1],[1,1]]) {
+      const p=at(px*(TW/2-.2),0,tz+pz*(TW/2-.2));
+      const pin2=BABYLON.MeshBuilder.CreateCylinder('temple pinnacle',{diameterTop:0,diameterBottom:1,height:3.4,tessellation:4},scene);
+      pin2.position=p.add(new BABYLON.Vector3(0,TH+2.2,0));pin2.material=mats.stone;
+    }
+    const spire=BABYLON.MeshBuilder.CreateCylinder(pin.name+' spire',{diameterTop:0,diameterBottom:TW*.95,height:16,tessellation:8},scene);
+    spire.position=at(0,TH+8.5,tz);spire.rotation.y=yaw+Math.PI/8;spire.material=mats.slate;
+    const finial=BABYLON.MeshBuilder.CreateCylinder('temple finial',{diameter:.3,height:2,tessellation:6},scene);
+    finial.position=at(0,TH+17.4,tz);finial.material=mats.gold;
+    const rose=BABYLON.MeshBuilder.CreateDisc(pin.name+' rose window',{radius:1.7,tessellation:24,sideOrientation:BABYLON.Mesh.DOUBLESIDE},scene);
+    rose.position=at(0,15,tz+TW/2+.06);rose.rotation.y=yaw;rose.material=mats.glass;
+    const ring=BABYLON.MeshBuilder.CreateTorus('rose window tracery',{diameter:3.6,thickness:.3,tessellation:28},scene);
+    ring.position=rose.position.clone();ring.rotation.x=Math.PI/2;ring.rotation.y=yaw;ring.material=mats.stone;
+    pointedDoor(at,out,0,tz+TW/2+.02,2.4,4.6);
+    placeDecor(bannerMesh,at(-2.3,9.5,tz+TW/2+.5),yaw);placeDecor(bannerMesh,at(2.3,9.5,tz+TW/2+.5),yaw);
+  }
+  function shrine(pin) {
+    const {yaw,at,out}=sacredFrame(pin),W2=5.6,Lz=9,Hn=5.6;
+    box(pin.name+' chapel',W2,Hn,Lz,at(0,Hn/2,-1),mats.stone,true).rotation.y=yaw;
+    dressFacades(at(0,0,-1),W2,Lz,0,Hn,true,yaw);
+    gableRoof(at(0,Hn,-1),yaw+Math.PI/2,Lz,W2/2,.35,3.4,mats.slate,mats.stone,.2);
+    addBox(mats.stone,1.2,1.8,.7,at(0,Hn+3.2,Lz/2-1-.3),yaw);
+    gableRoof(at(0,Hn+4.1,Lz/2-1-.3),yaw,1.4,.4,.1,.6,mats.slate,mats.stone,.05);
+    addBox(mats.shopDark,.6,.8,.72,at(0,Hn+3.2,Lz/2-1-.3),yaw);
+    pointedDoor(at,out,0,Lz/2-1+.02,1.5,3.1);
+  }
+  function fountain(pin) {
+    const c=map(pin.x,pin.y);
+    if(collisions.some(k=>hitsCollider(k,c.x,c.z,3)))return;
+    const cyl=(opts,y,mat)=>{const m=BABYLON.MeshBuilder.CreateCylinder('market fountain',{tessellation:8,...opts},scene);m.position=c.add(new BABYLON.Vector3(0,y,0));m.material=mat;};
+    cyl({diameter:5.2,height:.8},.4,mats.stone);
+    cyl({diameter:4.6,height:.05},.78,mats.glass);
+    cyl({diameter:.7,height:2.6},1.3,mats.stone);
+    cyl({diameterTop:2,diameterBottom:.6,height:.5},2.7,mats.stone);
+    cyl({diameter:.3,height:1.1},3.4,mats.gold);
+    collisions.push({x:c.x,z:c.z,hw:2.6,hd:2.6,yaw:0,kind:'fountain'});
+  }
+  temple(city.pins.find(p=>p.n===23));
+  shrine(city.pins.find(p=>p.n===24));
+  fountain(city.pins.find(p=>p.n===7));
   monument('House of Myr',14.5,35.7,11,9,10,mats.slate);
   monument('Talward Garrison',26,19.9,14,11,11,mats.slate);
   monument("Braethyn's Archives",32.7,43.4,13,10,12,mats.copper);
@@ -1103,10 +1282,6 @@
   const beaconLight=new BABYLON.PointLight('Beacon flame',beacon.add(new BABYLON.Vector3(0,25,0)),scene);
   beaconLight.diffuse=rgb('#ffd186');beaconLight.intensity=90;beaconLight.range=45;
   // The Dripping Dagger marks the mapped way down into the Bellows.
-  const bellows=map(12.9,45.9);
-  box('Bellows entrance stone portal',5.8,5.3,1.5,bellows.add(new BABYLON.Vector3(0,2.65,0)),mats.stoneDark);
-  box('Bellows portal dark opening',2.9,3.5,.12,bellows.add(new BABYLON.Vector3(0,1.75,.84)),mats.timber);
-  box('Dripping Dagger hanging sign',2.3,.8,.16,bellows.add(new BABYLON.Vector3(3.4,4.1,.92)),mats.gold);
   // Ships sit alongside the piers actually drawn along the Dibaryn shoreline.
   for(let i=0;i<8;i++) {
     const x=84.4+hash(i*19)*3.2,y=34+i*3.2;
@@ -1226,7 +1401,11 @@
     });
     batches.clear();
     collisions.forEach(c=>{if(c.yaw===undefined)c.yaw=c.mesh?c.mesh.rotation.y:0;delete c.mesh;});
-    const standalone=new Set([sky,ground,waterPlane,griffonloch]),groups=new Map();
+    const standalone=new Set([sky,ground,waterPlane,griffonloch,...decor]),groups=new Map();
+    decor.forEach(mesh=>{
+      if(!mesh.thinInstanceCount){mesh.setEnabled(false);return;}
+      mesh.thinInstanceBufferUpdated('matrix');mesh.receiveShadows=true;
+    });
     scene.meshes.slice().forEach(mesh=>{
       if(standalone.has(mesh)||!(mesh instanceof BABYLON.Mesh)||!mesh.material||mesh.material===mats.water||!mesh.getTotalVertices())return;
       if(!groups.has(mesh.material))groups.set(mesh.material,[]);
@@ -1265,6 +1444,7 @@
   shadows.usePercentageCloserFiltering=true;
   shadows.filteringQuality=BABYLON.ShadowGenerator.QUALITY_MEDIUM;
   shadows.bias=.0025;shadows.normalBias=.018;shadows.darkness=0;
+  decor.forEach(mesh=>{if(mesh.isEnabled())shadows.addShadowCaster(mesh,false);});
   cityMeshes.forEach(mesh=>{
     mesh.receiveShadows=true;
     if(!flatGround.has(mesh.material))shadows.addShadowCaster(mesh,false);
