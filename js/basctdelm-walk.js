@@ -171,11 +171,25 @@
     mat.diffuseTexture=patternedTexture(mat.name+' pattern',base,kind);
     mat.diffuseColor=BABYLON.Color3.White();
   }
-  textureMat(mats.brick,'#725343','brick');
   mats.grassBlade.backFaceCulling=false;
   mats.grassBlade.emissiveColor=rgb('#0e170a');mats.grassBlade.specularColor=BABYLON.Color3.Black();
   mats.earth=material('weathered city ground','#898477');
   textureMat(mats.earth,'#8f8978','earth');
+  // Diamond-leaded window glass: dark, faintly green panes with a sky sheen
+  // toward the top, framed by lead cames. Tiles every ~0.42 m of window.
+  function leadedGlass() {
+    const t=new BABYLON.DynamicTexture('leaded glass panes',{width:256,height:256},scene,true);
+    const g=t.getContext(),grad=g.createLinearGradient(0,0,0,256);
+    grad.addColorStop(0,'#4a5a63');grad.addColorStop(.5,'#222b30');grad.addColorStop(1,'#14191c');
+    g.fillStyle=grad;g.fillRect(0,0,256,256);
+    g.strokeStyle='#2a2826';g.lineWidth=3.5;
+    for(let k=-256;k<=512;k+=64){g.beginPath();g.moveTo(k,0);g.lineTo(k+256,256);g.stroke();g.beginPath();g.moveTo(k,256);g.lineTo(k+256,0);g.stroke();}
+    t.update();t.wrapU=t.wrapV=BABYLON.Texture.WRAP_ADDRESSMODE;
+    const m=new BABYLON.StandardMaterial('leaded window glass',scene);
+    m.diffuseTexture=t;m.emissiveTexture=t;m.emissiveColor=rgb('#3a3a3a');
+    m.specularColor=rgb('#8c9aa3');m.specularPower=90;
+    return m;
+  }
   function scannedMaterial(name,asset,repeatU,repeatV,tint='#ffffff') {
     const dir='images/city-scenes/basctdelm/materials/';
     const pbr=new BABYLON.PBRMaterial(name,scene);
@@ -196,21 +210,29 @@
   // texture repeat is 1 and tileSizes says how many metres one texture covers.
   mats.stone=scannedMaterial('scanned medieval wall','medieval_wall_02',1,1);
   mats.stoneDark=scannedMaterial('weathered wall stone','medieval_wall_02',1,1,'#b0a99b');
-  mats.plaster=scannedMaterial('aged plaster','medieval_wall_01',1,1);
-  mats.plasterLight=scannedMaterial('light plaster','medieval_wall_01',1,1,'#f3e7d4');
-  mats.plasterOchre=scannedMaterial('ochre limewash','medieval_wall_01',1,1,'#efd09a');
-  mats.plasterRose=scannedMaterial('rose limewash','medieval_wall_01',1,1,'#eec3b0');
-  mats.plasterGrey=scannedMaterial('grey lime render','medieval_wall_01',1,1,'#cfcbc2');
+  // House walls are lime render: rough white plaster tinted as limewash, plus a worn render.
+  mats.plaster=scannedMaterial('aged lime render','white_plaster_rough_01',1,1,'#e6d8c0');
+  mats.plasterLight=scannedMaterial('white limewash','white_plaster_rough_01',1,1,'#f6f0e4');
+  mats.plasterOchre=scannedMaterial('ochre limewash','white_plaster_rough_01',1,1,'#f0d49c');
+  mats.plasterRose=scannedMaterial('rose limewash','white_plaster_rough_01',1,1,'#f0cbbb');
+  mats.plasterGrey=scannedMaterial('weathered lime render','worn_plaster_wall',1,1,'#fbf5ea');
   mats.paving=scannedMaterial('medieval street setts','medieval_blocks_05',1.6,1);
   mats.bridge=scannedMaterial('worn bridge setts','medieval_blocks_05',1.6,1,'#d7cfbf');
   mats.parapet=scannedMaterial('bridge dressed masonry','medieval_blocks_05',1,1,'#c9c0af');
+  mats.flagstone=scannedMaterial('flagstone pavement','monastery_stone_floor',1,1,'#d9d2c4');
   mats.tile=scannedMaterial('weathered clay roof','roof_tiles',1,1,'#e39479');
   mats.tileDark=scannedMaterial('old clay roof','roof_tiles',1,1,'#9c6454');
+  mats.tileBrown=scannedMaterial('sun-bleached clay roof','roof_tiles',1,1,'#c8a28a');
+  mats.tileMoss=scannedMaterial('lichened clay roof','roof_tiles',1,1,'#9a8c70');
   mats.slate=scannedMaterial('weathered slate roof','roof_slates_02',1,1,'#d4e1e9');
   mats.wood=scannedMaterial('aged timber','old_planks_02',1,1);
-  mats.brick.diffuseTexture.uScale=mats.brick.diffuseTexture.vScale=1;
-  [[mats.stone,2.6],[mats.stoneDark,2.6],[mats.plaster,2.4],[mats.plasterLight,2.4],[mats.plasterOchre,2.4],
-    [mats.plasterRose,2.4],[mats.plasterGrey,2.4],[mats.parapet,2],[mats.wood,2.2],[mats.brick,1.9]]
+  mats.brick=scannedMaterial('medieval red brick','medieval_red_brick',1,1,'#e8d6cc');
+  // Beams, doors and shutters: dark oak planks rather than flat brown paint.
+  mats.timber=scannedMaterial('dark oak timber','dark_wooden_planks',1,1,'#9a8574');
+  mats.glass=leadedGlass();
+  [[mats.stone,2.6],[mats.stoneDark,2.4],[mats.plaster,2.2],[mats.plasterLight,2.2],[mats.plasterOchre,2.2],
+    [mats.plasterRose,2.2],[mats.plasterGrey,2.2],[mats.parapet,2.2],[mats.wood,2.2],[mats.brick,1.8],
+    [mats.timber,1.4],[mats.flagstone,2.6],[mats.glass,.42]]
     .forEach(([mat,metres])=>tileSizes.set(mat,metres));
   mats.park=scannedMaterial('Greenscape grass','leafy_grass',1.5,1.5);
   const leafDir='images/city-scenes/basctdelm/materials/';
@@ -324,7 +346,10 @@
     mat.backFaceCulling=false;
     return region;
   }
-  planarRegion('stone island beneath Basctdelm',islandOutline,-.17,mats.earth);
+  // Open ground inside the city is worn paving (yards, squares, lanes); the
+  // region UVs span 20 m, so the flagstone texture repeats ~8 times across that.
+  mats.courtyard=scannedMaterial('worn courtyard paving','monastery_stone_floor',20/2.6,20/2.6,'#aaa296');
+  planarRegion('stone island beneath Basctdelm',islandOutline,-.17,mats.courtyard);
   planarRegion('Greenscape garden',[[16,47],[25,44],[32,48],[34,59],[29,67],[20,69],[15,62]],-.14,mats.park);
   const griffonloch=BABYLON.MeshBuilder.CreateDisc('Griffonloch',{radius:12,tessellation:48},scene);
   griffonloch.rotation.x=-Math.PI/2;griffonloch.scaling.y=.7;
@@ -449,6 +474,17 @@
     data.positions=positions;data.indices=indices;data.uvs=uvs;data.normals=new Array(positions.length).fill(0);
     BABYLON.VertexData.ComputeNormals(positions,indices,data.normals);data.applyToMesh(mesh);
     mesh.material=bridge?mats.bridge:mats.paving;mesh.isPickable=false;
+    if(!bridge) {
+      // Flagstone pavements run from the kerb right up to the house fronts.
+      const reach=road.width/2+2.05,up=new BABYLON.Vector3(0,1,0);
+      const side=(i,k)=>{
+        const p=centerline[i],a=centerline[Math.max(0,i-1)],b=centerline[Math.min(centerline.length-1,i+1)];
+        const t=b.subtract(a).normalize();
+        return new BABYLON.Vector3(p.x+t.z*k,.015,p.z-t.x*k);
+      };
+      for(let i=1;i<centerline.length;i++)
+        addPolygon(mats.flagstone,[side(i-1,-reach),side(i,-reach),side(i,reach),side(i-1,reach)],up);
+    }
     for(const [side,edge] of edges.entries()) {
       if(!bridge) {
         const curb=BABYLON.MeshBuilder.CreateTube(road.name+' shaped stone curb '+side,{path:edge.map(p=>p.add(new BABYLON.Vector3(0,.13,0))),radius:.12,tessellation:6},scene);
@@ -656,7 +692,7 @@
     part(mats.stoneDark,f+.05,.55,D+.16,0,.275,0);
     const span=(D+jetty)/2;
     const rise=span*(zone==='high'||zone==='north'?1.05:.82)*(.85+R(4)*.4);
-    const roofMat=zone==='high'||zone==='north'?(R(5)<.8?mats.slate:mats.tileDark):R(5)<.62?mats.tile:R(5)<.8?mats.tileDark:mats.slate;
+    const roofMat=zone==='high'||zone==='north'?(R(5)<.8?mats.slate:mats.tileDark):R(5)<.36?mats.tile:R(5)<.54?mats.tileBrown:R(5)<.7?mats.tileDark:R(5)<.82?mats.tileMoss:mats.slate;
     // About a third of houses turn their gable to the street, which breaks the
     // eave line into the saw-tooth skyline of a real medieval street.
     const gableFront=f>=4.6&&R(13)<.34;
@@ -692,6 +728,12 @@
           addPolygon(awning,[at(x-hw,3.0,gz),at(x+hw,3.0,gz),at(x+hw,2.55,gz+1.25),at(x-hw,2.55,gz+1.25)],at(0,-1,0).subtract(at(0,0,0)));
         } else windowAt(x,1.75,gz,face);
       }
+    }
+    for(const side of [-1,1]) for(let k=1;k<floors;k++) {
+      const y=groundH+(k-1)*floorH+1.45,x=side*(f/2);
+      part(mats.glass,.08,1.15,.74,x+side*.02,y,0);
+      part(mats.stoneDark,.22,.12,.98,x+side*.09,y-.64,0);
+      part(frameMat,.16,.16,.98,x+side*.07,y+.66,0);
     }
     if(timbered) {
       const top=H-groundH;
@@ -769,6 +811,21 @@
         }
       }
     });
+  }
+  // Close up the blocks: any sizeable open plot inside the city gets a house
+  // turned toward its nearest street, leaving only small yards and lanes.
+  function infill() {
+    for(let gy=8;gy<92;gy+=2.7) for(let gx=8;gx<95;gx+=2.2) {
+      const seed=Math.round(gx*131+gy*977);
+      if(hash(seed)<.14) continue;
+      const x=gx+(hash(seed+1)-.5)*1.4,y=gy+(hash(seed+2)-.5)*1.4;
+      if(!inside(x,y,islandOutline)) continue;
+      const center=map(x,y),road=nearestRoad(x,y),toward=map(road.x,road.y).subtract(center);
+      const yaw=Math.atan2(toward.x,toward.z)+(hash(seed+3)-.5)*.2;
+      const f=5+hash(seed+4)*3,D=6+hash(seed+5)*3;
+      const zone=(districts.find(d=>inside(x,y,d.poly))||{style:'south'}).style;
+      if(footprintClear(center,yaw,f,D,2.2)) house(center,yaw,f,D,zone,seed+9000,Math.max(1,floorsFor(zone,seed)-(hash(seed+6)<.5?1:0)));
+    }
   }
   function backLots() {
     (window.BASCTDELM_ROOFS || []).forEach(([bx,by,zone],seed)=>{
@@ -920,15 +977,44 @@
   // The island's named seat of government uses its surveyed map position.
   const keep=map(10.8,18.5);
   const keepBase=box('Talward Keep fortified main hall',14,14,11,keep.add(new BABYLON.Vector3(0,7,0)),mats.stone,true);
-  box('Talward Keep slate roof',15,2,12,keep.add(new BABYLON.Vector3(0,15,0)),mats.slate);
+  dressFacades(keep,14,11,0,14);
+  gableRoof(keep.add(new BABYLON.Vector3(0,14,0)),0,14,5.5,.4,4.2,mats.slate,mats.stone,.3);
   [[-7,-6],[-7,6],[7,-6],[7,6]].forEach((offset,i)=>{
     const p=keep.add(new BABYLON.Vector3(offset[0],0,offset[1]));
     const q=pct(p);tower('Talward Keep tower '+i,q.x,q.y,2.3,17);
   });
+  // Civic and fortified halls get real facades instead of blank walls: a
+  // moulded plinth, buttresses, tall leaded windows between them and a cornice.
+  function dressFacades(origin,width,depth,baseY,height,skipFront=false) {
+    const put=(mat,w,h,d,x,y,z)=>addBox(mat,w,h,d,origin.add(new BABYLON.Vector3(x,y,z)),0);
+    put(mats.stoneDark,width+.34,.8,depth+.34,0,baseY+.4,0);
+    put(mats.stone,width+.5,.42,depth+.5,0,baseY+height-.21,0);
+    const winH=Math.min(3.4,height*.38),winY=baseY+height*.56;
+    for(const [len,across,axis] of [[depth,width,'x'],[width,depth,'z']]) {
+      const bays=Math.max(2,Math.round(len/3.2)),step=len/bays;
+      for(const side of [-1,1]) {
+        if(axis==='z'&&side>0&&skipFront)continue;
+        const face=side*(across/2);
+        for(let b=0;b<=bays;b++) {
+          const u=-len/2+b*step;
+          const [bx,bz]=axis==='x'?[face+side*.33,u]:[u,face+side*.33];
+          put(mats.stoneDark,axis==='x'?.66:.8,height*.82,axis==='x'?.8:.66,bx,baseY+height*.41,bz);
+          if(b===bays)continue;
+          const m=u+step/2;
+          const at=(o)=>axis==='x'?[face+side*o,m]:[m,face+side*o];
+          const [gx,gz]=at(.03),[lx,lz]=at(.1);
+          put(mats.glass,axis==='x'?.08:1.05,winH,axis==='x'?1.05:.08,gx,winY,gz);
+          put(mats.stone,axis==='x'?.22:1.4,.3,axis==='x'?1.4:.22,lx,winY+winH/2+.15,lz);
+          put(mats.stone,axis==='x'?.26:1.35,.16,axis==='x'?1.35:.26,lx,winY-winH/2-.08,lz);
+        }
+      }
+    }
+  }
   function monument(name,x,y,width,depth,height,roofMaterial) {
     const origin=map(x,y);
     box(name+' raised terrace',width+3,1.1,depth+3,origin.add(new BABYLON.Vector3(0,.55,0)),mats.stoneDark);
     box(name+' masonry hall',width,height,depth,origin.add(new BABYLON.Vector3(0,1.1+height/2,0)),mats.stone,true);
+    dressFacades(origin,width,depth,1.1,height);
     gableRoof(origin.add(new BABYLON.Vector3(0,height+1.1,0)),Math.PI/2,depth,width/2,width*.05,width*.25,roofMaterial,mats.stone,.4);
     for(let i=-2;i<=2;i++) {
       const column=box(name+' colonnade '+i,.56,5,.56,origin.add(new BABYLON.Vector3(i*width*.16,3.5,depth/2+1.2)),mats.stone);
@@ -968,6 +1054,7 @@
   // Landmarks are all placed, so houses can now fill in around them.
   streetFrontage();
   backLots();
+  infill();
 
   // Scaled fabric stalls and hanging lamps give the commercial waterfront its life.
   const stalls=[];
@@ -1100,7 +1187,7 @@
     return merged;
   }
   const cityMeshes=finishCity();
-  const flatGround=new Set([mats.earth,mats.park,mats.paving,mats.bridge,mats.grassBlade]);
+  const flatGround=new Set([mats.earth,mats.park,mats.paving,mats.bridge,mats.grassBlade,mats.flagstone]);
   const shadows=engine.webGLVersion>=2&&BABYLON.CascadedShadowGenerator
     ?new BABYLON.CascadedShadowGenerator(2048,sun):new BABYLON.ShadowGenerator(2048,sun);
   if(shadows instanceof BABYLON.CascadedShadowGenerator) {
@@ -1114,6 +1201,21 @@
     mesh.receiveShadows=true;
     if(!flatGround.has(mesh.material))shadows.addShadowCaster(mesh,false);
   });
+  // Ambient occlusion darkens corners, eaves and doorways; the grade adds
+  // anti-aliasing, a soft bloom on sunlit stone, gentle contrast and a vignette.
+  if(BABYLON.SSAO2RenderingPipeline&&BABYLON.SSAO2RenderingPipeline.IsSupported) {
+    const ssao=new BABYLON.SSAO2RenderingPipeline('ambient occlusion',scene,{ssaoRatio:.5,blurRatio:1},[camera]);
+    ssao.radius=1.4;ssao.totalStrength=1.15;ssao.base=.08;ssao.samples=16;ssao.maxZ=140;ssao.minZAspect=.4;
+    ssao.expensiveBlur=true;
+  }
+  const grade=new BABYLON.DefaultRenderingPipeline('city grade',true,scene,[camera]);
+  grade.samples=4;grade.fxaaEnabled=true;
+  grade.bloomEnabled=true;grade.bloomThreshold=.8;grade.bloomWeight=.16;grade.bloomKernel=48;grade.bloomScale=.5;
+  grade.sharpenEnabled=true;grade.sharpen.edgeAmount=.22;
+  grade.imageProcessingEnabled=true;
+  grade.imageProcessing.contrast=1.14;grade.imageProcessing.exposure=1.0;
+  grade.imageProcessing.vignetteEnabled=true;grade.imageProcessing.vignetteWeight=1.6;
+  grade.imageProcessing.vignetteColor=new BABYLON.Color4(.05,.03,.02,0);
   // Measured when the view switches, so street life added later hides too.
   let streetMeshes=[];
   ground.setEnabled(false);
