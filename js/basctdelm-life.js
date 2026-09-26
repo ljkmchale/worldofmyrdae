@@ -398,7 +398,7 @@
       const total = lengths[lengths.length - 1], count = Math.round(total / (bridge ? 9 : 6.5));
       for (let k = 0; k < count; k++) {
         const p = person(0, 0, 0, true);
-        Object.assign(p, { line, lengths, total, bridge, s: rnd() * total, dir: rnd() < .5 ? 1 : -1,
+        Object.assign(p, { role: 'walk', line, lengths, total, bridge, s: rnd() * total, dir: rnd() < .5 ? 1 : -1,
           lane: (rnd() - .5) * (road.width - 1.1), speed: 1.05 + rnd() * .5 });
       }
     });
@@ -415,8 +415,8 @@
     });
     // Vendors behind the stalls, and customers in front of some.
     W.stalls.forEach((s, i) => {
-      person(s.x, s.z - 1.05, 0, false);
-      if (hash(i * 4.4) > .45) person(s.x + (hash(i) - .5), s.z + 1.35, Math.PI, false);
+      person(s.x, s.z - 1.05, 0, false).role = 'vendor';
+      if (hash(i * 4.4) > .45) person(s.x + (hash(i) - .5), s.z + 1.35, Math.PI, false).role = 'talk';
     });
     // Neighbours chatting at the roadside.
     roadLines.forEach(({ road, line, bridge }, ri) => {
@@ -430,7 +430,7 @@
         for (let k = 0; k < n; k++) {
           const ang = k * Math.PI * 2 / n + hash(i + k);
           const x = c.x + Math.sin(ang) * .55, z = c.z + Math.cos(ang) * .55;
-          if (freeAt(x, z, .25)) person(x, z, ang + Math.PI, false);
+          if (freeAt(x, z, .25)) person(x, z, ang + Math.PI, false).role = 'talk';
         }
       }
     });
@@ -542,6 +542,8 @@
     const bob = moving ? Math.abs(Math.cos(ph)) * .03 * stride : 0;
     let y = p.baseY || 0;
     if (p.bridge) { const q = pct(p); y = W.bridgeRiseAt(q.x, q.y); }
+    p.moving = moving; p.curSpeed = speed; p.drawY = y;
+    if (RIG.ready) return;
     M.ComposeToRef(new V3(p.scale, p.scale, p.scale), Q.RotationYawPitchRoll(p.yaw + (moving ? Math.sin(ph) * .05 : 0), 0, 0), new V3(p.x, y + bob, p.z), tmp.root);
     const s = p.slots;
     at('torso', s.torso, 0, .96, 0); at('shoulders', s.shoulders, 0, 1.43, 0); at('neck', s.neck, 0, 1.53, 0);
@@ -563,6 +565,96 @@
       limb('upper', 'fore', 'hand', i, s, side * .225, 1.44, side * .07, shoulder, elbow, .3, .28, -.02, 0);
     }
   }
+  // ------------------------------------------------ rigged townsfolk
+  // Quaternius CC0 characters (peasant and ranger outfits, Universal Animation
+  // Library clips), assembled in Blender (scripts/build-basctdelm-folk.py).
+  // Each variant's walk/idle/talk clips are baked into a bone-matrix texture
+  // so hundreds of animated people draw as a few instanced calls instead of
+  // hundreds of skeletons. The procedural figures stay until the cast loads.
+  const RIG = { ready: false, variants: [], yawOffset: 0, lift: 0 };
+  const RIG_DIR = 'images/city-scenes/basctdelm/characters/';
+  const RIG_NAMES = ['man_peasant_a', 'man_peasant_b', 'man_peasant_c', 'woman_peasant_a', 'woman_peasant_b', 'woman_peasant_c', 'man_ranger', 'woman_ranger'];
+  const CLIPS = ['Walk_Loop', 'Idle_Loop', 'Idle_Talking_Loop'];
+  const WALK_MPS = 1.25, BAKE_FPS = 30;
+  async function loadVariant(name) {
+    const res = await BABYLON.SceneLoader.ImportMeshAsync('', RIG_DIR, name + '.glb', scene);
+    // The loader splits one mesh per material (body, clothes, hair, eyes...);
+    // they share one skeleton, so they share one baked animation texture.
+    const parts = res.meshes.filter(m => m.skeleton && m.getTotalVertices() > 0), mesh = parts[0];
+    const skel = mesh.skeleton, groups = res.animationGroups;
+    groups.forEach(g => g.stop());
+    const stride = (skel.bones.length + 1) * 16, rows = [], ranges = {};
+    for (const clip of CLIPS) {
+      const g = groups.find(x => x.name === clip), step = 60 / BAKE_FPS, first = rows.length;
+      g.start(false, 1, g.from, g.to); g.pause();
+      for (let fr = g.from; fr < g.to - step * .5; fr += step) {
+        g.goToFrame(fr); skel.prepare(true);
+        rows.push(Float32Array.from(skel.getTransformMatrices(mesh)));
+      }
+      g.stop();
+      ranges[clip] = [first, rows.length - 1];
+    }
+    const data = new Float32Array(rows.length * stride);
+    rows.forEach((r, k) => data.set(r, k * stride));
+    const manager = new BABYLON.BakedVertexAnimationManager(scene);
+    manager.texture = new BABYLON.VertexAnimationBaker(scene, mesh).textureFromBakedVertexData(data);
+    groups.forEach(g => g.dispose());
+    res.meshes.forEach(m => { m.isPickable = false; });
+    parts.forEach(m => {
+      m.bakedVertexAnimationManager = manager;
+      m.alwaysSelectAsActiveMesh = true; m.receiveShadows = true;
+      shadows.addShadowCaster(m, false);
+    });
+    return { name, mesh, parts, manager, ranges, inv: mesh.computeWorldMatrix(true).clone().invert(), members: [] };
+  }
+  async function loadRigged() {
+    try { RIG.variants = await Promise.all(RIG_NAMES.map(loadVariant)); }
+    catch (error) { console.warn('Rigged townsfolk unavailable; keeping procedural figures:', error); return; }
+    const rangers = RIG.variants.filter(v => /ranger/.test(v.name)), commoners = RIG.variants.filter(v => !/ranger/.test(v.name));
+    people.forEach((p, k) => {
+      // Hooded folk (the Bellows) wear the hooded ranger outfits; a few rangers walk the surface too.
+      const pool = p.headwear === 'hood' && p.baseY ? rangers : hash(k * 3.7) < .12 ? rangers : commoners;
+      const v = pool[Math.floor(hash(k * 1.31) * pool.length) % pool.length];
+      p.rig = { v, slot: v.members.length, state: null, fps: 0 };
+      v.members.push(p);
+    });
+    RIG.variants.forEach(v => {
+      const n = Math.max(1, v.members.length);
+      v.matrices = new Float32Array(n * 16); v.settings = new Float32Array(n * 4);
+      v.parts.forEach(m => {
+        m.thinInstanceSetBuffer('matrix', v.matrices, 16, false);
+        m.thinInstanceSetBuffer('bakedVertexAnimationSettingsInstanced', v.settings, 4, false);
+        if (!v.members.length) m.setEnabled(false);
+      });
+    });
+    for (const part in P) P[part].setEnabled(false);
+    RIG.ready = true;
+    drawRigged(0);
+  }
+  const rm = { a: new M(), b: new M(), s: new V3(), p: new V3(), q: new Q() };
+  function drawRigged(dt) {
+    for (const v of RIG.variants) {
+      let dirty = false;
+      for (const p of v.members) {
+        rm.s.set(p.scale, p.scale, p.scale); rm.p.set(p.x, (p.drawY || 0) + RIG.lift, p.z);
+        Q.RotationYawPitchRollToRef(p.yaw + RIG.yawOffset, 0, 0, rm.q);
+        M.ComposeToRef(rm.s, rm.q, rm.p, rm.a);
+        rm.a.multiplyToRef(v.inv, rm.b); rm.b.copyToArray(v.matrices, p.rig.slot * 16);
+        const state = p.moving ? 'Walk_Loop' : p.role === 'talk' ? 'Idle_Talking_Loop' : 'Idle_Loop';
+        const fps = state === 'Walk_Loop' ? BAKE_FPS * Math.max(.6, Math.min(1.6, (p.curSpeed || WALK_MPS) / WALK_MPS)) : BAKE_FPS;
+        if (state !== p.rig.state || Math.abs(fps - p.rig.fps) > 2) {
+          const r = v.ranges[state];
+          v.settings.set([r[0], r[1], hash(p.rig.slot * 7.7 + v.name.length) * 90, fps], p.rig.slot * 4);
+          p.rig.state = state; p.rig.fps = fps; dirty = true;
+        }
+      }
+      for (const m of v.parts) {
+        m.thinInstanceBufferUpdated('matrix');
+        if (dirty) m.thinInstanceBufferUpdated('bakedVertexAnimationSettingsInstanced');
+      }
+      v.manager.time += dt;
+    }
+  }
   const camFar = 70 * 70;
   function animate() {
     if (W.isAerial()) return;
@@ -577,7 +669,7 @@
       const far = (p.x - cam.x) ** 2 + (p.z - cam.z) ** 2 > camFar;
       if (!far || p.lod > .12) { pose(p, p.lod); p.lod = 0; }
     }
-    for (const part in P) P[part].thinInstanceBufferUpdated('matrix');
+    if (RIG.ready) drawRigged(dt); else for (const part in P) P[part].thinInstanceBufferUpdated('matrix');
     for (const h of horses) { if (!h.moving) h.phase += dt; poseHorse(h); }
     for (const part in H) H[part].thinInstanceBufferUpdated('matrix');
   }
@@ -601,5 +693,7 @@
   people.forEach(p => pose(p, 0));
   scene.onBeforeRenderObservable.add(animate);
   loadProps();
-  W.life = { people, carts, horses, travellers };
+  // The rigged cast streams in after the city is on screen.
+  setTimeout(loadRigged, 400);
+  W.life = { people, carts, horses, travellers, rig: RIG };
 })();

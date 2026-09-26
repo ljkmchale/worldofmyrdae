@@ -916,10 +916,43 @@
       part(mats.stoneDark,.75,ch,.95,cx,H+ch/2-.2,-span*.3);
       part(mats.stone,.95,.16,1.15,cx,H+ch-.12,-span*.3);
     }
-    collisions.push({x:center.x,z:center.z,hw:f/2+.03,hd:D/2+.08,yaw,kind:'house'});
+    collisions.push({x:center.x,z:center.z,hw:f/2+.03,hd:D/2+.08,yaw,kind:'house',h:H});
     buildingCount++;
   }
   let buildingCount=0;
+  // Washing strung across the street between facing upper windows: a sagging
+  // rope with sheets, shirts and cloths pegged along it.
+  function washingLines() {
+    mats.rope=material('washing line rope','#5e5140');
+    // Undyed linen and plant-dyed cloth, kept dark: the strong sun doubles them.
+    const cloth=[material('linen washing','#6f685a'),material('woad washing','#34414d'),
+      material('madder washing','#5a2b25'),material('weld washing','#5f5033'),material('bleached washing','#7d786c')];
+    cloth.forEach(m=>{m.backFaceCulling=false;m.specularColor=BABYLON.Color3.Black();});
+    const houses=collisions.filter(c=>c.kind==='house');
+    const houseAt=(x,z)=>houses.find(c=>hitsCollider(c,x,z,0));
+    // Walk out from the street centre until we reach a house front.
+    const facade=(a,dir)=>{for(let d=1;d<12;d+=.1){const p=a.add(dir.scale(d)),h=houseAt(p.x,p.z);if(h)return {p:a.add(dir.scale(d+.25)),h};}return null;};
+    roadLines.forEach(({line,bridge},ri)=>{
+      if(bridge)return;
+      for(let i=3;i<line.length-3;i+=2) {
+        if(hash(ri*57+i*3.3)>.28)continue;
+        const a=line[i],t=line[i+1].subtract(a).normalize(),n=new BABYLON.Vector3(t.z,0,-t.x);
+        const A=facade(a,n),B=facade(a,n.scale(-1));
+        if(!A||!B||A.h.h<6||B.h.h<6)continue;
+        const y=Math.min(A.h.h,B.h.h)-1.1-hash(ri+i)*1.2;
+        const sag=.35+hash(i*7)*.3,span=BABYLON.Vector3.Distance(A.p,B.p);
+        const at=u=>{const p=BABYLON.Vector3.Lerp(A.p,B.p,u);p.y=y-sag*(1-(2*u-1)**2);return p;};
+        const rope=BABYLON.MeshBuilder.CreateTube('washing line',{path:Array.from({length:13},(_,k)=>at(k/12)),radius:.013,tessellation:4},scene);
+        rope.material=mats.rope;rope.isPickable=false;
+        const dir=B.p.subtract(A.p).normalize(),yaw=Math.atan2(dir.x,dir.z)-Math.PI/2;
+        for(let u=.1+hash(i)*.06;u<.9;) {
+          const w=.35+hash(u*97+i)*.45,h=.35+hash(u*53+i)*.5,c=at(u+w/span/2);
+          if(hash(u*31+ri)>.18) addBox(cloth[Math.floor(hash(u*11+i)*cloth.length)],w,h,.015,c.add(new BABYLON.Vector3(0,-h/2-.02,0)),yaw);
+          u+=(w+.12+hash(u*7)*.3)/span;
+        }
+      }
+    });
+  }
   function streetFrontage() {
     roadLines.forEach(({road,line,bridge},ri)=>{
       if(bridge) return;
@@ -1298,6 +1331,7 @@
   backLots();
   wells();
   infill();
+  washingLines();
 
   // Scaled fabric stalls and hanging lamps give the commercial waterfront its life.
   const stalls=[];
