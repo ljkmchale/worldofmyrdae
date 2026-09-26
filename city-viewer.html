@@ -121,6 +121,18 @@
       font-style: italic;
       margin-top: 0.1rem;
     }
+    #walk-city-link {
+      display: none;
+      margin-left: auto;
+      padding: 0.65rem 0.9rem;
+      border: 1px solid rgba(212,175,55,0.7);
+      background: rgba(9,17,24,0.85);
+      color: #f5dea5;
+      font: 0.72rem 'Cinzel', serif;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    #walk-city-link:hover { background: rgba(93,70,39,0.9); }
 
     /* ── RIGHT CONTROLS ── */
     #controls {
@@ -386,6 +398,7 @@
       <div class="city-title" id="city-name-title">City Map</div>
       <div class="city-subtitle" id="city-subtitle">World of Myrdae</div>
     </div>
+    <a id="walk-city-link" href="basctdelm-walk.html">Walk Basctdelm in 3D ↗</a>
   </div>
 
   <!-- MAP VIEWPORT -->
@@ -1055,6 +1068,7 @@ function _initCity(_city) {
 if (!_safeId) {
   _initCity(null);
 } else {
+  if (_safeId === 'basctdelm') document.getElementById('walk-city-link').style.display = 'block';
   const _s = document.createElement('script');
   _s.src = 'js/cities/' + _safeId + '.js?v=' + Date.now();
   _s.onload = () => _initCity((window.CITY_MAPS_REGISTRY || {})[_safeId] || null);
