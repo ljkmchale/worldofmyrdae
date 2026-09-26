@@ -182,6 +182,10 @@
         carts.push({ x: c.x, z: c.z, yaw, loaded: hash(ri * 5 + i) > .45 });
       }
     });
+    (W.extraCarts || []).forEach(e => {
+      horseCart.thinInstanceAdd(place(e.x, e.baseY || 0, e.z, e.yaw));
+      addHorse(false).root = place(e.x + Math.sin(e.yaw) * 2.75, e.baseY || 0, e.z + Math.cos(e.yaw) * 2.75, e.yaw);
+    });
   }
   // Horse carts travelling the wider streets, keeping to their side and
   // turning back at the ends of the road; a carter walks at the horse's head.
@@ -284,6 +288,7 @@
         u += prop.radius * 2 + .12;
       }
     });
+    (W.extraProps || []).forEach(e => { const prop = props[e.kind]; if (prop) put(prop, e.x, e.y || 0, e.z, e.yaw || 0, false); });
     // Beside every market stall.
     W.stalls.forEach((s, i) => {
       for (const [dx, dz, prop] of [[1.95, .4, basket], [1.95, -.5, crate], [-1.95, .2, barrel]]) {
@@ -355,9 +360,9 @@
     shoe: partMesh('shoes', MB.CreateBox('so', { width: .1, height: .07, depth: .23 }, scene))
   };
   const people = [];
-  function person(x, z, yaw, walker) {
-    const r = rnd, robed = r() < .38;
-    const headwear = robed ? pick(['hood', 'coif', 'coif', 'bare'], r()) : pick(['bare', 'bare', 'hood', 'hat'], r());
+  function person(x, z, yaw, walker, hooded = false) {
+    const r = rnd, robed = hooded || r() < .38;
+    const headwear = hooded ? 'hood' : robed ? pick(['hood', 'coif', 'coif', 'bare'], r()) : pick(['bare', 'bare', 'hood', 'hat'], r());
     const tunic = rgb(pick(cloth, r())), face = rgb(pick(skin, r())), leather = rgb(pick(['#3a2a1c', '#2a1f16', '#4a3422'], r()));
     const outer = robed ? (r() < .5 ? tunic : rgb(pick(cloth, r()))) : tunic;
     const p = { x, z, yaw, walker, robed, headwear, scale: .9 + r() * .17, phase: r() * 6.28,
@@ -395,6 +400,17 @@
         const p = person(0, 0, 0, true);
         Object.assign(p, { line, lengths, total, bridge, s: rnd() * total, dir: rnd() < .5 ? 1 : -1,
           lane: (rnd() - .5) * (road.width - 1.1), speed: 1.05 + rnd() * .5 });
+      }
+    });
+    // Other districts (the Bellows) register folk before the buffers are sized.
+    (W.extraFolk || []).forEach(e => {
+      const p = person(e.x, e.z, e.yaw || 0, !!e.line, e.hooded);
+      p.baseY = e.baseY || 0;
+      if (e.line) {
+        const lengths = [0];
+        for (let i = 1; i < e.line.length; i++) lengths.push(lengths[i - 1] + V3.Distance(e.line[i - 1], e.line[i]));
+        Object.assign(p, { line: e.line, lengths, total: lengths[lengths.length - 1], s: rnd() * lengths[lengths.length - 1],
+          dir: rnd() < .5 ? 1 : -1, lane: e.lane || 0, speed: e.speed || .9 });
       }
     });
     // Vendors behind the stalls, and customers in front of some.
@@ -524,7 +540,7 @@
     p.look += dt * .35;
     const ph = p.phase, stride = moving ? Math.min(1, speed / 1.1) : 0;
     const bob = moving ? Math.abs(Math.cos(ph)) * .03 * stride : 0;
-    let y = 0;
+    let y = p.baseY || 0;
     if (p.bridge) { const q = pct(p); y = W.bridgeRiseAt(q.x, q.y); }
     M.ComposeToRef(new V3(p.scale, p.scale, p.scale), Q.RotationYawPitchRoll(p.yaw + (moving ? Math.sin(ph) * .05 : 0), 0, 0), new V3(p.x, y + bob, p.z), tmp.root);
     const s = p.slots;

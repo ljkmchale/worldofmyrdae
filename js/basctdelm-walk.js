@@ -1469,6 +1469,7 @@
   ground.setEnabled(false);
   function setAerial(on) {
     if(on===aerial)return;
+    {const zone=window.BasctdelmWalk&&window.BasctdelmWalk.zone;if(zone&&zone.leave)zone.leave(true);}
     aerial=on;
     if(on){active=false;dragging=false;keys.clear();}
     if(on) streetMeshes=scene.meshes.filter(mesh=>mesh!==ground&&mesh!==sky&&mesh.isEnabled());
@@ -1489,6 +1490,7 @@
     updatePrompt();
   }
   function reset() {
+    {const zone=window.BasctdelmWalk&&window.BasctdelmWalk.zone;if(zone&&zone.leave)zone.leave(true);}
     if(aerial)setAerial(false);
     camera.position=start.clone();camera.setTarget(map(70,29,2));
     setMap(false);
@@ -1507,6 +1509,7 @@
     return best.distance<1.6?best.rise:0;
   }
   function goTo(x,y,standOff=0) {
+    {const zone=window.BasctdelmWalk&&window.BasctdelmWalk.zone;if(zone&&zone.leave)zone.leave(true);}
     const near=nearestRoad(x,y);
     const destination=near.distance<8?near:{x,y};
     if(aerial)setAerial(false);
@@ -1582,6 +1585,9 @@
     return roads.some(r=>(r.name.includes('Bridge')||r.name==='Historic Crossway')&&r.path.slice(1).some((end,i)=>segmentDistance(q.x,q.y,r.path[i],end).distance<1.6));
   }
   function blocked(v) {
+    // Underground districts (the Bellows) supply their own walkable space.
+    const zone=window.BasctdelmWalk&&window.BasctdelmWalk.zone;
+    if(zone)return zone.blocked(v);
     if(!isWalkable(v))return true;
     // Street life (people, moving carts) blocks the player too; basctdelm-life.js supplies it.
     const moving=window.BasctdelmWalk&&window.BasctdelmWalk.dynamicBlocked;
@@ -1600,11 +1606,14 @@
     if(!blocked(tryX))camera.position.x=tryX.x;
     if(!blocked(tryZ))camera.position.z=tryZ.z;
     const where=pct(camera.position);
-    camera.position.y=EYE_HEIGHT+bridgeRiseAt(where.x,where.y);
+    const zone=window.BasctdelmWalk&&window.BasctdelmWalk.zone;
+    camera.position.y=zone?zone.height(camera.position):EYE_HEIGHT+bridgeRiseAt(where.x,where.y);
   }
   function updateHud() {
     const q=pct(camera.position);
     playerDot.style.left=q.x+'%';playerDot.style.top=q.y+'%';
+    const zone=window.BasctdelmWalk&&window.BasctdelmWalk.zone;
+    if(zone){districtLabel.textContent=zone.district;placeName.textContent=zone.place();locationLine.textContent=zone.note;return;}
     let district=districts.find(d=>inside(q.x,q.y,d.poly));
     districtLabel.textContent=district?district.name:'Approach to Basctdelm';
     let closest=null,distance=Infinity;
@@ -1631,5 +1640,5 @@
   setTimeout(reveal,5000);
   updateHud();
   window.BasctdelmWalk={scene,camera,roads,districts,goTo,setAerial,isAerial:()=>aerial,
-    roadLines,roadClearance,collisions,hitsCollider,blocked,shadows,map,pct,hash,bridgeRiseAt,mats,stalls,docks,pinPoints,EYE_HEIGHT};
+    cityMeshes,decor,roadLines,roadClearance,collisions,hitsCollider,blocked,shadows,map,pct,hash,bridgeRiseAt,mats,stalls,docks,pinPoints,EYE_HEIGHT};
 })();
